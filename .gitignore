@@ -1,0 +1,19 @@
+# System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Excel / non-web files
+*.xls
+*.xlsx
+
+# Working / temp directories
+updating/
+videos/
+
+# IDE
+.vscode/
+.idea/
+
+# Node (if later used)
+node_modules/

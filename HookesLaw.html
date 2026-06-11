@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>胡克定律 / Hooke's Law</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            /* Warm Theme Palette */
+            --bg-color: #FFF9F0;
+            --primary: #FF8c42;
+            --secondary: #FFC75F;
+            --accent: #FF5E5B;
+            --text-dark: #4A403A;
+            --text-light: #FFF9F0;
+            --card-bg: #FFFFFF;
+            --shadow: 0 4px 20px rgba(255, 140, 66, 0.2);
+            --radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Branding */
+        .watermark {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            background: #ff8c00;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
+            z-index: 1000;
+            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Main Container */
+        .container {
+            display: grid;
+            grid-template-areas:
+                "title title"
+                "formula formula"
+                "diagram controls"
+                "graph graph";
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 100%;
+            max-width: 1000px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        /* Formula Display */
+        .formula-section {
+            grid-area: formula;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            background: #fff5eb;
+            border-radius: var(--radius);
+            border: 2px solid var(--secondary);
+        }
+
+        .formula-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            font-size: 3rem;
+            height: 100px;
+            width: 100%;
+        }
+
+        .symbol {
+            transition: transform 0.3s ease, color 0.3s ease;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        #sym-F {
+            color: var(--accent);
+        }
+
+        #sym-k {
+            color: var(--primary);
+        }
+
+        #sym-x {
+            color: #0081a7;
+        }
+
+        .operator {
+            color: var(--text-dark);
+            font-weight: 400;
+        }
+
+        .legend {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .legend-item {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .symbol-key {
+            font-weight: 700;
+            margin-right: 5px;
+        }
+
+        /* Diagram Section */
+        .diagram-section {
+            grid-area: diagram;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #fdfdfd;
+            border-radius: var(--radius);
+            border: 1px solid #eee;
+            min-height: 400px;
+        }
+
+        /* Graph Section */
+        .graph-section {
+            grid-area: graph;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #fdfdfd;
+            border-radius: var(--radius);
+            border: 1px solid #eee;
+            padding: 20px;
+            min-height: 300px;
+        }
+
+        .graph-title {
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--text-dark);
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Controls Section */
+        .controls-section {
+            grid-area: controls;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 30px;
+            padding: 10px 20px;
+        }
+
+        .control-group {
+            background: #fff;
+        }
+
+        label {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .math-symbol {
+            font-family: serif;
+            font-style: italic;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        .unit {
+            font-size: 0.85rem;
+            color: #888;
+            margin-left: 5px;
+        }
+
+        input[type=range] {
+            width: 100%;
+            appearance: none;
+            height: 8px;
+            background: #eee;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: transform 0.1s;
+        }
+
+        #slider-F::-webkit-slider-thumb {
+            background: var(--accent);
+        }
+
+        #slider-k::-webkit-slider-thumb {
+            background: var(--primary);
+        }
+
+        /* Button Styles */
+        .button-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .btn-start {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(255, 140, 66, 0.3);
+        }
+
+        .btn-start:hover {
+            background-color: #e67e3a;
+            transform: translateY(-2px);
+        }
+
+        .btn-reset {
+            background-color: #eee;
+            color: var(--text-dark);
+        }
+
+        .btn-reset:hover {
+            background-color: #ddd;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive */
+        @media (max-width: 850px) {
+            .container {
+                grid-template-areas:
+                    "formula"
+                    "diagram"
+                    "controls"
+                    "graph";
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="watermark">Wuli布雷克</div>
+
+    <main class="container">
+        <h1 style="grid-area: title; text-align: center; font-size: 2.2rem; margin-bottom: 10px;">胡克定律 <span
+                class="subtitle" style="font-size: 1.1rem; color: var(--primary); font-weight: 400;">Hooke's Law</span>
+        </h1>
+        <!-- Interactive Formula -->
+        <section class="formula-section">
+            <div class="formula-container">
+                <span id="sym-F" class="symbol">F</span>
+                <span class="operator">=</span>
+                <span id="sym-k" class="symbol">k</span>
+                <span class="operator">·</span>
+                <span id="sym-x" class="symbol">x</span>
+            </div>
+            <div class="legend">
+                <div class="legend-item"><span class="symbol-key" style="color: var(--accent)">F</span>: 力 Force (N)
+                </div>
+                <div class="legend-item"><span class="symbol-key" style="color: var(--primary)">k</span>: 劲度系数 Spring
+                    Constant (N/m)</div>
+                <div class="legend-item"><span class="symbol-key" style="color: #0081a7">x</span>: 形变量 Extension (m)
+                </div>
+            </div>
+        </section>
+
+        <!-- Visualization Diagram -->
+        <section class="diagram-section">
+            <canvas id="springCanvas" width="450" height="400"></canvas>
+        </section>
+
+        <!-- Controls -->
+        <section class="controls-section">
+            <div class="control-group">
+                <label for="slider-F">
+                    <span>拉力 Force <span class="math-symbol">F</span></span>
+                    <span><span id="disp-F">50</span> <span class="unit">N</span></span>
+                </label>
+                <input type="range" id="slider-F" min="0" max="100" step="1" value="50">
+            </div>
+
+            <div class="control-group">
+                <label for="slider-k">
+                    <span>劲度系数 Constant <span class="math-symbol">k</span></span>
+                    <span><span id="disp-k">20</span> <span class="unit">N/m</span></span>
+                </label>
+                <input type="range" id="slider-k" min="10" max="50" step="1" value="20">
+            </div>
+
+            <div class="result-box" style="text-align: center; font-size: 1.1rem; font-weight: bold; color: #0081a7;">
+                形变量 Extension (x = F/k) = <span id="disp-x">2.50</span> m
+            </div>
+
+            <div class="button-container">
+                <button id="btn-start" class="btn btn-start">开始 Start</button>
+                <button id="btn-reset" class="btn btn-reset">重置 Reset</button>
+            </div>
+        </section>
+
+        <!-- Graph Section -->
+        <section class="graph-section">
+            <div class="graph-title">x - F 图像 / Extension-Force Graph</div>
+            <canvas id="graphCanvas" width="800" height="300"></canvas>
+        </section>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('springCanvas');
+        const ctx = canvas.getContext('2d');
+        const graphCanvas = document.getElementById('graphCanvas');
+        const graphCtx = graphCanvas.getContext('2d');
+
+        const btnStart = document.getElementById('btn-start');
+        const btnReset = document.getElementById('btn-reset');
+
+        const sliderF = document.getElementById('slider-F');
+        const sliderK = document.getElementById('slider-k');
+        const dispF = document.getElementById('disp-F');
+        const dispK = document.getElementById('disp-k');
+        const dispX = document.getElementById('disp-x');
+
+        const symF = document.getElementById('sym-F');
+        const symK = document.getElementById('sym-k');
+        const symX = document.getElementById('sym-x');
+
+        let state = {
+            F: 50,
+            k: 20,
+            x: 2.5
+        };
+
+        let animationId = null;
+
+        function update() {
+            state.F = parseFloat(sliderF.value);
+            state.k = parseFloat(sliderK.value);
+            state.x = state.F / state.k;
+
+            // Update text displays
+            dispF.textContent = state.F;
+            dispK.textContent = state.k;
+            dispX.textContent = state.x.toFixed(2);
+
+            // Update formula scaling
+            // F: 0-100 -> scale 0.8 to 2.2
+            const scaleF = 0.8 + (state.F / 100) * 1.4;
+            // k: 10-50 -> scale 0.8 to 1.8
+            const scaleK = 0.8 + ((state.k - 10) / 40) * 1.0;
+            // x: depends on F/k. Max x = 100/10 = 10, Min x = 0.
+            // x scale: 0.8 to 2.5
+            const scaleX = 0.8 + (state.x / 10) * 1.7;
+
+            symF.style.transform = `scale(${scaleF})`;
+            symK.style.transform = `scale(${scaleK})`;
+            symX.style.transform = `scale(${Math.min(scaleX, 2.5)})`;
+
+            draw();
+            drawGraph();
+        }
+
+        function drawSpring(x, y, width, height, coils) {
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+
+            const coilHeight = height / coils;
+            for (let i = 0; i < coils; i++) {
+                const startY = y + i * coilHeight;
+                // Draw a zig-zag coil
+                ctx.lineTo(x + width / 2, startY + coilHeight * 0.25);
+                ctx.lineTo(x - width / 2, startY + coilHeight * 0.75);
+                ctx.lineTo(x, startY + coilHeight);
+            }
+            ctx.stroke();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const cx = canvas.width / 2 + 30; // Shifted right for left labels
+            const topY = 60;
+            const springWidth = 40;
+            const naturalLength = 100;
+
+            // Draw Ceiling/Support
+            ctx.strokeStyle = '#4A403A';
+            ctx.lineWidth = 6;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(cx - 60, topY);
+            ctx.lineTo(cx + 60, topY);
+            ctx.stroke();
+
+            // Draw shadow/texture on ceiling
+            ctx.lineWidth = 2;
+            for (let i = -50; i <= 50; i += 10) {
+                ctx.beginPath();
+                ctx.moveTo(cx + i, topY);
+                ctx.lineTo(cx + i + 5, topY - 10);
+                ctx.stroke();
+            }
+
+            // Calculate visual extension
+            // Map x (0-10m) to pixels (0-250px)
+            const visualExtension = state.x * 20; // Adjusted for smaller scale if needed
+            const currentSpringHeight = naturalLength + visualExtension;
+
+            // Draw Spring
+            ctx.strokeStyle = '#777';
+            ctx.lineWidth = 3;
+            // The spring stiffness k affects thickness visually? 
+            // Let's make it thicker if k is higher
+            ctx.lineWidth = 2 + (state.k / 50) * 4;
+            drawSpring(cx, topY, springWidth, currentSpringHeight, 15);
+
+            const bottomY = topY + currentSpringHeight;
+
+            // Draw Hook at the bottom
+            ctx.strokeStyle = '#777';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(cx, bottomY + 10, 10, -Math.PI / 2, Math.PI / 2, false);
+            ctx.stroke();
+
+            // Draw Weight / Force Arrow
+            if (state.F > 0) {
+                // Draw Weight
+                ctx.fillStyle = '#FF5E5B';
+                const weightSize = 30 + (state.F / 100) * 30;
+                ctx.fillRect(cx - weightSize / 2, bottomY + 20, weightSize, weightSize * 0.7);
+
+                // Label on weight
+                ctx.fillStyle = '#FFF';
+                ctx.font = 'bold 14px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(state.F.toFixed(0) + "N", cx, bottomY + 20 + weightSize * 0.45);
+
+                // Force Arrow
+                const arrowLength = 20 + (state.F / 100) * 60;
+                const arrowY = bottomY + 20 + weightSize * 0.7 + 5;
+                drawArrow(cx, arrowY, cx, arrowY + arrowLength);
+            }
+
+            // --- LEFT LABELS (Natural + Total) ---
+            const leftX = cx - 100;
+            ctx.strokeStyle = '#4A403A';
+            ctx.fillStyle = '#4A403A';
+            ctx.lineWidth = 1;
+            ctx.font = '14px sans-serif';
+
+            // Natural Length L0
+            drawDimensionLineSimple(leftX, topY, topY + naturalLength, "L₀ = 4.0m", "left");
+
+            // Total Length L
+            if (state.x > 0) {
+                drawDimensionLineSimple(leftX - 40, topY, bottomY, "L = " + (4.0 + state.x).toFixed(2) + "m", "left");
+            }
+
+            // --- RIGHT LABEL (Extension x) ---
+            if (state.x > 0) {
+                ctx.setLineDash([5, 5]);
+                ctx.strokeStyle = '#0081a7';
+                ctx.lineWidth = 1;
+
+                // Natural length horizontal line
+                ctx.beginPath();
+                ctx.moveTo(cx + 60, topY + naturalLength);
+                ctx.lineTo(cx + 100, topY + naturalLength);
+                ctx.stroke();
+
+                // Current length horizontal line
+                ctx.beginPath();
+                ctx.moveTo(cx + 60, bottomY);
+                ctx.lineTo(cx + 100, bottomY);
+                ctx.stroke();
+
+                ctx.setLineDash([]);
+                // Dimension line for x
+                drawDimensionLine(cx + 90, topY + naturalLength, bottomY, "x=" + state.x.toFixed(2) + "m");
+            }
+        }
+
+        function drawDimensionLineSimple(x, y1, y2, label, side) {
+            ctx.beginPath();
+            ctx.moveTo(x, y1);
+            ctx.lineTo(x, y2);
+            ctx.stroke();
+
+            // End ticks
+            ctx.beginPath();
+            ctx.moveTo(x - 5, y1); ctx.lineTo(x + 5, y1);
+            ctx.moveTo(x - 5, y2); ctx.lineTo(x + 5, y2);
+            ctx.stroke();
+
+            ctx.save();
+            ctx.translate(side === "left" ? x - 10 : x + 10, (y1 + y2) / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.textAlign = 'center';
+            ctx.font = "bold 13px sans-serif";
+            ctx.fillText(label, 0, 0);
+            ctx.restore();
+        }
+
+        function drawGraph() {
+            const w = graphCanvas.width;
+            const h = graphCanvas.height;
+            graphCtx.clearRect(0, 0, w, h);
+
+            const margin = 50;
+            const chartW = w - margin * 2;
+            const chartH = h - margin * 2;
+
+            // Draw Axes
+            graphCtx.strokeStyle = '#4A403A';
+            graphCtx.lineWidth = 2;
+            graphCtx.beginPath();
+            graphCtx.moveTo(margin, margin);
+            graphCtx.lineTo(margin, h - margin); // Y axis (Extension x)
+            graphCtx.lineTo(w - margin, h - margin); // X axis (Force F)
+            graphCtx.stroke();
+
+            // Labels
+            graphCtx.fillStyle = '#4A403A';
+            graphCtx.font = 'bold 14px sans-serif';
+            graphCtx.textAlign = 'center';
+            graphCtx.fillText("拉力 Force F (N)", w / 2, h - 10);
+
+            graphCtx.save();
+            graphCtx.translate(15, h / 2);
+            graphCtx.rotate(-Math.PI / 2);
+            graphCtx.fillText("形变量 Extension x (m)", 0, 0);
+            graphCtx.restore();
+
+            // Max Ranges
+            const maxF = 100;
+            const maxX = 10;
+
+            // Draw Line x = (1/k) * F
+            graphCtx.strokeStyle = '#0081a7';
+            graphCtx.lineWidth = 3;
+            graphCtx.beginPath();
+            graphCtx.moveTo(margin, h - margin);
+
+            // Equation x = F/k. If F = 100, x = 100/k.
+            const forceAtEdge = 100;
+            const extAtEdgeF = forceAtEdge / state.k; // max 10m
+
+            const edgeVisualX = margin + (forceAtEdge / maxF) * chartW;
+            const edgeVisualY = (h - margin) - (extAtEdgeF / maxX) * chartH;
+
+            graphCtx.lineTo(edgeVisualX, edgeVisualY);
+            graphCtx.stroke();
+
+            // Trace Dot for current state
+            const currentVisualX = margin + (state.F / maxF) * chartW;
+            const currentVisualY = (h - margin) - (state.x / maxX) * chartH;
+
+            // Dotted lines to axes
+            graphCtx.setLineDash([3, 3]);
+            graphCtx.strokeStyle = '#aaa';
+            graphCtx.beginPath();
+            graphCtx.moveTo(currentVisualX, currentVisualY);
+            graphCtx.lineTo(margin, currentVisualY);
+            graphCtx.moveTo(currentVisualX, currentVisualY);
+            graphCtx.lineTo(currentVisualX, h - margin);
+            graphCtx.stroke();
+            graphCtx.setLineDash([]);
+
+            // Dot
+            graphCtx.fillStyle = '#FF5E5B';
+            graphCtx.beginPath();
+            graphCtx.arc(currentVisualX, currentVisualY, 6, 0, Math.PI * 2);
+            graphCtx.fill();
+        }
+
+        function drawArrow(x1, y1, x2, y2) {
+            const headlen = 10;
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            ctx.strokeStyle = '#FF8c42';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(x2, y2);
+            ctx.lineTo(x2 - headlen * Math.cos(angle - Math.PI / 6), y2 - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(x2 - headlen * Math.cos(angle + Math.PI / 6), y2 - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.fillStyle = '#FF8c42';
+            ctx.fill();
+        }
+
+        function drawDimensionLine(x, y1, y2, label) {
+            ctx.strokeStyle = '#0081a7';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(x, y1);
+            ctx.lineTo(x, y2);
+            ctx.stroke();
+
+            // Arrows
+            ctx.beginPath();
+            ctx.moveTo(x - 5, y1 + 10);
+            ctx.lineTo(x, y1);
+            ctx.lineTo(x + 5, y1 + 10);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(x - 5, y2 - 10);
+            ctx.lineTo(x, y2);
+            ctx.lineTo(x + 5, y2 - 10);
+            ctx.stroke();
+
+            // Label
+            ctx.save();
+            ctx.translate(x + 5, (y1 + y2) / 2);
+            ctx.rotate(Math.PI / 2);
+            ctx.fillStyle = '#0081a7';
+            ctx.font = 'bold 14px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, 0, 0);
+            ctx.restore();
+        }
+
+        // --- Interaction Logic ---
+
+        btnReset.addEventListener('click', () => {
+            if (animationId) cancelAnimationFrame(animationId);
+            sliderF.value = 50;
+            sliderK.value = 20;
+            update();
+        });
+
+        btnStart.addEventListener('click', () => {
+            if (animationId) cancelAnimationFrame(animationId);
+            const targetF = parseFloat(sliderF.value);
+            let currentF = 0;
+
+            function animate() {
+                currentF += 2; // Animation speed
+                if (currentF >= targetF) {
+                    currentF = targetF;
+                    sliderF.value = currentF;
+                    update();
+                    return;
+                }
+
+                sliderF.value = currentF;
+                update();
+                animationId = requestAnimationFrame(animate);
+            }
+            animate();
+        });
+
+        sliderF.addEventListener('input', update);
+        sliderK.addEventListener('input', update);
+
+        // Initial draw
+        update();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>做功 / Work - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #FFF9F0;
+            --primary: #FF8c42;
+            --secondary: #FFC75F;
+            --accent: #FF5E5B;
+            --text-dark: #4A403A;
+            --card-bg: #FFFFFF;
+            --shadow: 0 6px 30px rgba(255, 140, 66, 0.18);
+            --radius: 30px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px 40px;
+        }
+
+        .branding {
+            position: fixed;
+            top: 25px;
+            left: 30px;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.6rem;
+            color: #FFFFFF;
+            background: var(--primary);
+            padding: 10px 25px;
+            border-radius: 20px;
+            box-shadow: 4px 4px 15px rgba(255, 140, 66, 0.3);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin-top: 20px;
+            display: grid;
+            grid-template-areas:
+                "header header"
+                "formula formula"
+                "diagram controls";
+            grid-template-columns: 1fr 450px;
+            gap: 25px;
+        }
+
+        header {
+            grid-area: header;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+
+        .subtitle-text {
+            font-size: 1.4rem;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* Formula Section */
+        .formula-display {
+            grid-area: formula;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px solid #fff5eb;
+        }
+
+        .formula-container {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 15px;
+            height: 80px;
+        }
+
+        .result-row {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            gap: 25px;
+            justify-content: center;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+            width: 100%;
+        }
+
+        .legend-item {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .sym-key {
+            font-weight: 700;
+            margin-right: 5px;
+        }
+
+        /* Diagram Section */
+        .diagram-section {
+            grid-area: diagram;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        canvas {
+            width: 100%;
+            flex: 1;
+            display: block;
+        }
+
+        /* Controls Section */
+        .controls-section {
+            grid-area: controls;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .control-panel {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        .val-badge {
+            background: #fff;
+            padding: 4px 12px;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            border: 2px solid #eee;
+        }
+
+        /* Sliders */
+        input[type=range] {
+            width: 100%;
+            appearance: none;
+            height: 10px;
+            background: #eee;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            appearance: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.1s;
+        }
+
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        #f-slider::-webkit-slider-thumb {
+            background: var(--primary);
+        }
+
+        #s-slider::-webkit-slider-thumb {
+            background: #0081a7;
+        }
+
+        #theta-slider::-webkit-slider-thumb {
+            background: var(--secondary);
+        }
+
+        .btn-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .ctrl-btn {
+            padding: 18px;
+            border: none;
+            border-radius: 18px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .ctrl-btn:active {
+            transform: translateY(3px);
+            box-shadow: none;
+        }
+
+        .start {
+            background-color: var(--primary);
+        }
+
+        .pause {
+            background-color: #2ecc71;
+        }
+
+        .start:hover {
+            background-color: #27ae60;
+        }
+
+        .reset {
+            background-color: #95a5a6;
+        }
+
+        .reset:hover {
+            background-color: #7f8c8d;
+        }
+
+        /* Gauge Area */
+        .gauge-panel {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 1100px) {
+            .container {
+                grid-template-areas:
+                    "header"
+                    "formula"
+                    "diagram"
+                    "controls";
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="branding">
+        <div class="logo">Wuli布雷克</div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>功 / Work</h1>
+            <p class="subtitle-text">
+                Work is done when a force acts upon an object to cause a displacement.<br>
+                当力作用于物体使其发生位移时，力对物体做了功。
+            </p>
+        </header>
+
+        <!-- Formula Section -->
+        <section class="formula-display">
+            <div class="formula-container" id="formula-root">
+                <!-- Symbols rendered via JS like Torque -->
+            </div>
+            <div class="result-row">
+                W = <span id="res-F" style="color:var(--primary)">0</span> N × <span id="res-S"
+                    style="color:#0081a7">0</span> m × <span id="res-cos" style="color:var(--secondary)">1.00</span>
+                = <span id="res-W" style="color:var(--accent)">0.00</span> J
+            </div>
+            <div class="legend">
+                <div class="legend-item"><span class="sym-key" style="color:var(--accent)">W</span>: Work (功)</div>
+                <div class="legend-item"><span class="sym-key" style="color:var(--primary)">F</span>: Force (力)</div>
+                <div class="legend-item"><span class="sym-key" style="color:#0081a7">s</span>: Displacement (位移)</div>
+                <div class="legend-item"><span class="sym-key" style="color:var(--secondary)">θ</span>: Angle between F
+                    & s (力和位移的夹角)</div>
+            </div>
+        </section>
+
+        <!-- Diagram Section -->
+        <section class="diagram-section">
+            <canvas id="simCanvas"></canvas>
+        </section>
+
+        <!-- Controls Section -->
+        <section class="controls-section">
+            <div class="control-panel">
+                <div class="control-group">
+                    <div class="label-row">
+                        <span>Force (恒力 F)</span>
+                        <span id="f-val" class="val-badge">10 N</span>
+                    </div>
+                    <input type="range" id="f-slider" min="0" max="50" value="10">
+                </div>
+
+                <div class="control-group">
+                    <div class="label-row">
+                        <span>Displacement (位移 s)</span>
+                        <span id="s-val" class="val-badge">50 m</span>
+                    </div>
+                    <input type="range" id="s-slider" min="10" max="100" value="50">
+                </div>
+
+                <div class="control-group">
+                    <div class="label-row">
+                        <span>Angle (力和位移的夹角 θ)</span>
+                        <span id="theta-val" class="val-badge">0°</span>
+                    </div>
+                    <input type="range" id="theta-slider" min="0" max="180" value="0">
+                </div>
+
+                <div class="btn-row">
+                    <button id="btn-start" class="ctrl-btn start">开始 Start</button>
+                    <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
+                </div>
+            </div>
+
+            <div class="gauge-panel">
+                <canvas id="gaugeCanvas" width="300" height="220"></canvas>
+                <div id="gauge-label" style="font-weight: 700; font-size: 1.4rem; color: #555; margin-top: -10px;">Work
+                    (做功)</div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        const gCanvas = document.getElementById('gaugeCanvas');
+        const gCtx = gCanvas.getContext('2d');
+
+        const sF = document.getElementById('f-slider'), sS = document.getElementById('s-slider'), sTheta = document.getElementById('theta-slider');
+        const vF = document.getElementById('f-val'), vS = document.getElementById('s-val'), vTheta = document.getElementById('theta-val');
+        const resW = document.getElementById('res-W'), resF = document.getElementById('res-F'), resS = document.getElementById('res-S'), resCos = document.getElementById('res-cos');
+        const formulaRoot = document.getElementById('formula-root');
+        const btnStart = document.getElementById('btn-start'), btnReset = document.getElementById('btn-reset');
+
+        const state = {
+            F: 10, S: 50, theta: 0,
+            progress: 0,
+            isPlaying: false,
+            baseX: 100
+        };
+
+        function resize() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            draw();
+        }
+        window.addEventListener('resize', resize);
+
+        function update() {
+            state.F = parseInt(sF.value);
+            state.S = parseInt(sS.value);
+            state.theta = parseInt(sTheta.value);
+
+            vF.textContent = state.F + ' N';
+            vS.textContent = state.S + ' m';
+            vTheta.textContent = state.theta + '°';
+
+            if (state.isPlaying) {
+                state.progress += 0.005;
+                if (state.progress >= 1) {
+                    state.progress = 1;
+                    state.isPlaying = false;
+                    btnStart.textContent = '开始 Start';
+                    btnStart.classList.add('start');
+                    btnStart.classList.remove('pause');
+                }
+            }
+
+            updateFormula();
+            draw();
+            drawGauge();
+            requestAnimationFrame(update);
+        }
+
+        function updateFormula() {
+            const rad = state.theta * Math.PI / 180;
+            const cosTheta = Math.cos(rad);
+            const W = state.F * state.S * cosTheta;
+
+            resF.textContent = state.F;
+            resS.textContent = state.S;
+            resCos.textContent = cosTheta.toFixed(2);
+            resW.textContent = W.toFixed(2);
+
+            const baseSize = 48;
+            const scaleW = 1 + (Math.abs(W) / 5000) * 0.3;
+            const scaleF = 1 + (state.F / 50) * 0.3;
+            const scaleS = 1 + (state.S / 100) * 0.3;
+            const scaleCos = 1 + Math.abs(cosTheta) * 0.2;
+
+            const parts = [
+                { l: 'W', c: '#FF5E5B', s: scaleW },
+                { l: '=', c: '#4A403A', s: 1 },
+                { l: 'F', c: '#FF8c42', s: scaleF },
+                { l: '·', c: '#4A403A', s: 1 },
+                { l: 's', c: '#0081a7', s: scaleS },
+                { l: '·', c: '#4A403A', s: 1 },
+                { l: 'cos(θ)', c: '#FFC75F', s: scaleCos }
+            ];
+
+            // Only rebuild if sizes change significantly or items count mismatch
+            const html = parts.map(p => `<span style="color:${p.c}; font-weight:700; font-size:${baseSize * p.s}px; display:inline-block; transition:all 0.2s;">${p.l}</span>`).join('<span style="width:15px; display:inline-block"></span>');
+            if (formulaRoot.innerHTML !== html) formulaRoot.innerHTML = html;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const scale = 1.33;
+            const groundY = canvas.height * 0.75;
+            const boxW = 80 * scale, boxH = 60 * scale;
+
+            const currentS = state.S * state.progress * scale * 5;
+            const boxX = state.baseX + currentS;
+
+            // Ground
+            ctx.beginPath(); ctx.strokeStyle = '#e0e0e0'; ctx.lineWidth = 4;
+            ctx.moveTo(0, groundY); ctx.lineTo(canvas.width, groundY); ctx.stroke();
+
+            // Markers
+            if (state.progress > 0) {
+                ctx.setLineDash([5, 5]); ctx.beginPath(); ctx.strokeStyle = '#ccc';
+                ctx.moveTo(state.baseX + boxW / 2, groundY); ctx.lineTo(state.baseX + boxW / 2, groundY + 50);
+                ctx.moveTo(boxX + boxW / 2, groundY); ctx.lineTo(boxX + boxW / 2, groundY + 50);
+                ctx.stroke(); ctx.setLineDash([]);
+
+                drawArrow(state.baseX + boxW / 2, groundY + 40, boxX + boxW / 2, groundY + 40, '#0081a7', 2, 's');
+            }
+
+            // Box
+            ctx.fillStyle = '#FFC75F'; ctx.fillRect(boxX, groundY - boxH, boxW, boxH);
+            ctx.strokeStyle = '#4A403A'; ctx.lineWidth = 2; ctx.strokeRect(boxX, groundY - boxH, boxW, boxH);
+
+            // Force
+            const forceRad = state.theta * Math.PI / 180;
+            const forceLen = state.F * scale * 4;
+            const fx = boxX + boxW / 2, fy = groundY - boxH / 2;
+            drawArrow(fx, fy, fx + forceLen * Math.cos(forceRad), fy - forceLen * Math.sin(forceRad), '#FF5E5B', 4, 'F');
+        }
+
+        function drawArrow(x1, y1, x2, y2, color, width, label) {
+            const headlen = 12;
+            const dx = x2 - x1, dy = y2 - y1;
+            const angle = Math.atan2(dy, dx);
+
+            ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+            ctx.strokeStyle = color; ctx.lineWidth = width; ctx.lineCap = 'round'; ctx.stroke();
+
+            ctx.beginPath(); ctx.moveTo(x2, y2);
+            ctx.lineTo(x2 - headlen * Math.cos(angle - Math.PI / 6), y2 - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(x2 - headlen * Math.cos(angle + Math.PI / 6), y2 - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.closePath(); ctx.fillStyle = color; ctx.fill();
+
+            if (label) {
+                ctx.fillStyle = color; ctx.font = 'bold 24px Fredoka'; ctx.textAlign = 'center';
+                ctx.fillText(label, x2 + 15 * Math.cos(angle), y2 + 15 * Math.sin(angle));
+            }
+        }
+
+        function drawGauge() {
+            gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
+            const cx = gCanvas.width / 2, cy = gCanvas.height * 0.75;
+            const r = 100;
+            const startAngle = Math.PI * 0.8, endAngle = Math.PI * 2.2, range = endAngle - startAngle;
+
+            const rad = state.theta * Math.PI / 180;
+            const W = state.F * state.S * Math.cos(rad);
+            const maxVal = 50 * 100;
+
+            gCtx.beginPath(); gCtx.arc(cx, cy, r, startAngle, endAngle); gCtx.lineWidth = 12; gCtx.strokeStyle = '#f0f0f0'; gCtx.lineCap = 'round'; gCtx.stroke();
+
+            const normVal = (W / maxVal + 1) / 2;
+            const currentAngle = startAngle + range * normVal;
+            const midAngle = startAngle + range * 0.5;
+
+            gCtx.beginPath(); gCtx.arc(cx, cy, r, Math.min(midAngle, currentAngle), Math.max(midAngle, currentAngle));
+            gCtx.strokeStyle = W >= 0 ? '#2ecc71' : '#FF5E5B'; gCtx.lineWidth = 12; gCtx.stroke();
+
+            gCtx.beginPath(); gCtx.lineWidth = 4; gCtx.strokeStyle = '#333';
+            gCtx.moveTo(cx, cy); gCtx.lineTo(cx + (r - 15) * Math.cos(currentAngle), cy + (r - 15) * Math.sin(currentAngle));
+            gCtx.stroke();
+            gCtx.beginPath(); gCtx.arc(cx, cy, 7, 0, Math.PI * 2); gCtx.fillStyle = '#333'; gCtx.fill();
+
+            gCtx.font = 'bold 24px Fredoka'; gCtx.fillStyle = '#444'; gCtx.textAlign = 'center';
+            gCtx.fillText(W.toFixed(2) + ' J', cx, cy + 40);
+
+            gCtx.font = '14px Arial'; gCtx.fillStyle = '#bbb';
+            gCtx.fillText("-W", cx - r - 20, cy); gCtx.fillText("+W", cx + r + 20, cy); gCtx.fillText("0", cx, cy - r - 20);
+        }
+
+        function resetSim() {
+            state.progress = 0; state.isPlaying = false; state.baseX = 100;
+        }
+
+        btnStart.onclick = () => {
+            state.isPlaying = !state.isPlaying;
+            btnStart.textContent = state.isPlaying ? '暂停 Pause' : '开始 Start';
+            btnStart.classList.toggle('start', !state.isPlaying);
+            btnStart.classList.toggle('pause', state.isPlaying);
+        };
+
+        btnReset.onclick = () => {
+            resetSim();
+            btnStart.textContent = '开始 Start';
+            btnStart.className = 'ctrl-btn start';
+        };
+
+        resize();
+        update();
+    </script>
+</body>
+
+</html>

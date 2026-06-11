@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多普勒效应 / Doppler Effect - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #FFF9F0;
+            --primary: #FF8c42;
+            --secondary: #FFC75F;
+            --accent: #FF5E5B;
+            --text-dark: #4A403A;
+            --card-bg: #FFFFFF;
+            --shadow: 0 6px 30px rgba(255, 140, 66, 0.18);
+            --radius: 30px;
+            --f-color: #2ecc71;
+            /* Source Frequency */
+            --fo-color: #e67e22;
+            /* Observed Frequency */
+            --v-color: #9b59b6;
+            /* Wave Speed */
+            --vs-color: #f39c12;
+            /* Source Velocity */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px 40px;
+        }
+
+        .branding {
+            position: fixed;
+            top: 25px;
+            left: 30px;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.6rem;
+            color: #FFFFFF;
+            background: var(--primary);
+            padding: 10px 25px;
+            border-radius: 20px;
+            box-shadow: 4px 4px 15px rgba(255, 140, 66, 0.3);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin-top: 15px;
+            display: grid;
+            grid-template-areas:
+                "header header"
+                "formula formula"
+                "diagram controls";
+            grid-template-columns: 1fr 450px;
+            gap: 20px;
+        }
+
+        header {
+            grid-area: header;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+
+        .subtitle-text {
+            font-size: 1.25rem;
+            color: #5D6D7E;
+            line-height: 1.4;
+        }
+
+        /* Formula Section */
+        .formula-display {
+            grid-area: formula;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px solid #eef2f7;
+        }
+
+        .formula-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            height: 90px;
+            width: 100%;
+        }
+
+        .result-row {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-top: 5px;
+            display: flex;
+            gap: 20px;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            gap: 25px;
+            justify-content: center;
+            border-top: 1px solid #f0f0f0;
+            padding-top: 10px;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .sym-key {
+            font-weight: 700;
+            margin-right: 5px;
+        }
+
+        /* Diagram Section */
+        .diagram-section {
+            grid-area: diagram;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+            border: 2px solid #fff;
+        }
+
+        canvas {
+            width: 100%;
+            flex: 1;
+            display: block;
+        }
+
+        /* Controls Section */
+        .controls-section {
+            grid-area: controls;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .control-panel {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 1.15rem;
+        }
+
+        .val-badge {
+            background: #fff;
+            padding: 3px 10px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            border: 2px solid #f0f0f0;
+        }
+
+        input[type=range] {
+            width: 100%;
+            appearance: none;
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            background: var(--primary);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        #vs-slider::-webkit-slider-thumb {
+            background: var(--vs-color);
+        }
+
+        #v-slider::-webkit-slider-thumb {
+            background: var(--v-color);
+        }
+
+        #f-slider::-webkit-slider-thumb {
+            background: var(--f-color);
+        }
+
+        .btn-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .ctrl-btn {
+            padding: 14px;
+            border: none;
+            border-radius: 18px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .start {
+            background-color: var(--primary);
+        }
+
+        .pause {
+            background-color: #2ecc71;
+        }
+
+        .reset {
+            background-color: #95a5a6;
+        }
+
+        .ctrl-btn:active {
+            transform: translateY(2px);
+            box-shadow: none;
+        }
+
+        /* Stats Panel */
+        .stats-panel {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .freq-compare {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .bar-container {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .bar-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .bar-bg {
+            background: #f0f0f0;
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .observer-tag {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 15px;
+            border-radius: 12px;
+            border: 2px solid var(--fo-color);
+            font-weight: 700;
+            color: var(--fo-color);
+        }
+
+        @media (max-width: 1100px) {
+            .container {
+                grid-template-areas: "header" "formula" "diagram" "controls";
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="branding">
+        <div class="logo">Wuli布雷克</div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>多普勒效应 / Doppler Effect</h1>
+            <p class="subtitle-text">
+                The change in frequency of a wave in observer when there is a relative motion between wave source and
+                observer.<br>
+                波源与观察者有相对运动时，观察者感知的波频率发生变化的现象。
+            </p>
+        </header>
+
+        <!-- Formula Section -->
+        <section class="formula-display">
+            <div class="formula-container" id="formula-root">
+                <!-- Dynamic Formula -->
+            </div>
+            <div class="result-row">
+                <span id="res-calc"
+                    style="font-size: 1.1rem; color: #888; font-weight: normal; margin-right: 15px;"></span>
+                <span style="color:var(--fo-color)">f' = <span id="res-f-prime">0</span> Hz</span>
+            </div>
+            <div class="legend">
+                <div class="legend-item"><span class="sym-key" style="color:var(--fo-color)">f'</span>: Observed
+                    Frequency (观测频率)</div>
+                <div class="legend-item"><span class="sym-key" style="color:var(--f-color)">f</span>: Source Frequency
+                    (波源频率)</div>
+                <div class="legend-item"><span class="sym-key" style="color:var(--v-color)">v</span>: Wave Speed (波速)
+                </div>
+                <div class="legend-item"><span class="sym-key" style="color:var(--vs-color)">v<sub>s</sub></span>:
+                    Source Velocity (波源速度)</div>
+            </div>
+        </section>
+
+        <!-- Diagram Section -->
+        <section class="diagram-section">
+            <canvas id="simCanvas"></canvas>
+            <div class="observer-tag">OBSERVER 观察者 (静止)</div>
+        </section>
+
+        <!-- Controls Section -->
+        <section class="controls-section">
+            <div class="control-panel">
+                <div class="control-group">
+                    <div class="label-row">
+                        <span>Movement Direction (运动方向)</span>
+                    </div>
+                    <select id="vs-dir"
+                        style="padding: 10px; border-radius: 12px; border: 2px solid #eee; font-family: inherit; font-size: 1rem; outline: none;">
+                        <option value="toward">靠近 Approaching</option>
+                        <option value="away">远离 Moving Away</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <div class="label-row">
+                        <span>Source Speed (波源速率 vₛ)</span>
+                        <span id="vs-badge" class="val-badge">100 m/s</span>
+                    </div>
+                    <input type="range" id="vs-slider" min="0" max="300" value="100">
+                </div>
+
+                <div class="control-group">
+                    <div class="label-row">
+                        <span>Wave Speed (波速 v)</span>
+                        <span id="v-badge" class="val-badge">340 m/s</span>
+                    </div>
+                    <input type="range" id="v-slider" min="100" max="500" value="340">
+                </div>
+
+                <div class="control-group">
+                    <div class="label-row">
+                        <span>Source Frequency (频率 f)</span>
+                        <span id="f-badge" class="val-badge">10 Hz</span>
+                    </div>
+                    <input type="range" id="f-slider" min="1" max="25" value="10">
+                </div>
+
+                <div class="btn-row">
+                    <button id="btn-start" class="ctrl-btn start">开始 Start</button>
+                    <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
+                </div>
+            </div>
+
+            <div class="stats-panel">
+                <h3 style="color:var(--text-dark); margin-bottom:10px;">FREQUENCY ANALYSIS 频率对比</h3>
+                <div class="freq-compare">
+                    <div class="bar-container">
+                        <div class="bar-header"><span>Source f (波源)</span><span id="val-f">10 Hz</span></div>
+                        <div class="bar-bg">
+                            <div id="bar-f" class="bar-fill" style="background: var(--f-color); width: 40%;"></div>
+                        </div>
+                    </div>
+                    <div class="bar-container">
+                        <div class="bar-header"><span>Observed f' (观测)</span><span id="val-f-prime">12.5 Hz</span></div>
+                        <div class="bar-bg">
+                            <div id="bar-f-prime" class="bar-fill" style="background: var(--fo-color); width: 50%;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    style="margin-top:20px; padding:15px; background:#f8fbff; border-radius:15px; font-size:0.9rem; line-height:1.5; color:#5D6D7E;">
+                    <strong style="color:var(--primary)">提示：</strong> 当波源向观察者靠近时，波阵面被压缩，观测频率
+                    <strong>升高</strong>；远离时波阵面被拉伸，频率 <strong>降低</strong>。
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas'), ctx = canvas.getContext('2d');
+        const sVs = document.getElementById('vs-slider'), sVsDir = document.getElementById('vs-dir'), sV = document.getElementById('v-slider'), sF = document.getElementById('f-slider');
+        const bVs = document.getElementById('vs-badge'), bV = document.getElementById('v-badge'), bF = document.getElementById('f-badge');
+        const resFp = document.getElementById('res-f-prime'), resCalc = document.getElementById('res-calc'), valF = document.getElementById('val-f'), valFp = document.getElementById('val-f-prime');
+        const barF = document.getElementById('bar-f'), barFp = document.getElementById('bar-f-prime');
+        const bStart = document.getElementById('btn-start'), bReset = document.getElementById('btn-reset');
+        const formulaRoot = document.getElementById('formula-root');
+
+        const state = {
+            vs: 100, v: 340, f: 10, dir: 'toward',
+            time: 0, isPlaying: false,
+            sourceX: 0,
+            waves: [] // {t0, x0}
+        };
+
+        function resize() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            if (state.sourceX === 0) state.sourceX = canvas.width / 2;
+        }
+        window.addEventListener('resize', resize);
+
+        function update() {
+            state.vs = parseFloat(sVs.value);
+            state.v = parseFloat(sV.value);
+            state.f = parseFloat(sF.value);
+            state.dir = sVsDir.value;
+
+            bVs.textContent = state.vs + ' m/s';
+            bV.textContent = state.v + ' m/s';
+            bF.textContent = state.f + ' Hz';
+
+            const scale = 200 / 340;
+            const dirVal = state.dir === 'toward' ? 1 : -1;
+            const pxVs = state.vs * scale * dirVal;
+            const pxV = state.v * scale;
+
+            if (state.isPlaying) {
+                state.time += 0.016;
+                state.sourceX += pxVs * 0.016;
+
+                const obsX = canvas.width * 0.94;
+                // Auto-pause logic
+                if (state.dir === 'toward' && state.sourceX >= obsX - 30) {
+                    state.isPlaying = false;
+                    pauseUI();
+                } else if (state.dir === 'away' && state.sourceX <= 30) {
+                    state.isPlaying = false;
+                    pauseUI();
+                }
+
+                // Emit wave
+                const period = 1 / state.f;
+                if (state.waves.length === 0 || (state.time - state.waves[state.waves.length - 1].t0) > period) {
+                    state.waves.push({ t0: state.time, x0: state.sourceX });
+                }
+
+                if (state.waves.length > 50) state.waves.shift();
+            }
+
+            const effectiveVs = state.dir === 'toward' ? state.vs : -state.vs;
+            const fPrime = state.f * (state.v / (state.v - effectiveVs));
+
+            updateUI(fPrime, effectiveVs);
+            draw(pxV);
+            requestAnimationFrame(update);
+        }
+
+        function pauseUI() {
+            bStart.textContent = '开始 Start';
+            bStart.classList.replace('pause', 'start');
+        }
+
+        function updateUI(fPrime, effectiveVs) {
+            const displayFp = Math.abs(fPrime) === Infinity || isNaN(fPrime) || fPrime < 0 ? "---" : Math.abs(fPrime).toFixed(1);
+            resFp.textContent = displayFp;
+
+            const sign = effectiveVs >= 0 ? '-' : '+';
+            resCalc.innerHTML = `f' = f × [v / (v ${sign} vₛ)] = ${state.f} × [${state.v} / (${state.v} ${sign} ${state.vs})] =`;
+
+            valF.textContent = state.f + ' Hz';
+            valFp.textContent = displayFp + ' Hz';
+
+            barF.style.width = (state.f / 25) * 100 + '%';
+            barFp.style.width = Math.min(100, (parseFloat(displayFp) || 0) / 25 * 100) + '%';
+
+            // Formula Scaling
+            const baseSize = 35;
+            const sF = 1 + (state.f / 25) * 0.3;
+            const sFp = 1 + (Math.min(50, parseFloat(displayFp) || 0) / 50) * 0.5;
+
+            formulaRoot.innerHTML = `
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="color:var(--fo-color); font-size:${baseSize * sFp}px; font-weight:700;">f'</span>
+                    <span style="font-size:${baseSize}px">=</span>
+                    <span style="color:var(--f-color); font-size:${baseSize * sF}px; font-weight:700;">f</span>
+                    <span style="font-size:30px; margin:0 5px">×</span>
+                    <div style="display:flex; flex-direction:column; align-items:center;">
+                        <span style="color:var(--v-color); font-size:${baseSize * 0.8}px; border-bottom:2px solid; padding:0 10px;">v</span>
+                        <div style="display:flex; align-items:center; gap:5px;">
+                            <span style="color:var(--v-color); font-size:${baseSize * 0.7}px;">v</span>
+                            <span style="font-size:18px">${effectiveVs >= 0 ? '-' : '+'}</span>
+                            <span style="color:var(--vs-color); font-size:${baseSize * 0.7}px;">v<sub>s</sub></span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function draw(pxV) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cy = canvas.height * 0.6; // Lower a bit for sky feel
+
+            // Observer at Right
+            const obsX = canvas.width * 0.94;
+            drawStickman(obsX, cy + 20);
+
+            // Draw Waves
+            state.waves.forEach(w => {
+                const dt = state.time - w.t0;
+                const r = pxV * dt;
+
+                if (r < canvas.width * 1.5) {
+                    ctx.beginPath();
+                    ctx.arc(w.x0, cy, r, 0, Math.PI * 2);
+                    // Fade out
+                    const opacity = Math.max(0, 0.6 - r / (canvas.width * 1.2));
+                    ctx.strokeStyle = `rgba(52, 152, 219, ${opacity})`;
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+
+                    // Check if wave hit observer
+                    if (Math.abs(r - Math.abs(obsX - w.x0)) < 5) {
+                        ctx.beginPath();
+                        ctx.arc(obsX, cy, 25, 0, Math.PI * 2);
+                        ctx.strokeStyle = `rgba(230, 126, 34, 0.5)`;
+                        ctx.lineWidth = 3;
+                        ctx.stroke();
+                    }
+                }
+            });
+
+            // Draw Source Car
+            const sX = state.sourceX;
+            ctx.save();
+            ctx.translate(sX, cy + 20);
+            if (state.dir === 'away') ctx.scale(-1, 1);
+
+            // Draw a more stylish car
+            ctx.fillStyle = '#4A403A'; // Chassis
+            ctx.roundRect(-40, 15, 80, 15, 5); ctx.fill();
+
+            ctx.fillStyle = '#FF8c42'; // Body
+            ctx.beginPath();
+            ctx.moveTo(-40, 15); ctx.lineTo(-30, -10); ctx.lineTo(10, -10); ctx.lineTo(40, 15);
+            ctx.fill();
+
+            ctx.fillStyle = 'rgba(255,255,255,0.4)'; // Window
+            ctx.beginPath();
+            ctx.moveTo(-25, -2); ctx.lineTo(-10, -2); ctx.lineTo(-10, 10); ctx.lineTo(-25, 10);
+            ctx.fill();
+
+            // Wheels
+            ctx.fillStyle = '#333';
+            ctx.beginPath(); ctx.arc(-22, 25, 12, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(22, 25, 12, 0, Math.PI * 2); ctx.fill();
+
+            // Light
+            ctx.beginPath();
+            ctx.arc(42, 5, 6, 0, Math.PI * 2);
+            ctx.fillStyle = state.isPlaying ? (Math.floor(state.time * 10) % 2 ? '#FF5E5B' : '#FFFFFF') : '#999';
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function drawStickman(x, y) {
+            ctx.strokeStyle = '#2C3E50'; ctx.lineWidth = 4; ctx.lineCap = 'round';
+            // Head
+            ctx.beginPath(); ctx.arc(x, y - 50, 10, 0, Math.PI * 2); ctx.stroke();
+            // Body
+            ctx.beginPath(); ctx.moveTo(x, y - 40); ctx.lineTo(x, y - 10); ctx.stroke();
+            // Arms
+            ctx.beginPath(); ctx.moveTo(x - 15, y - 30); ctx.lineTo(x + 15, y - 30); ctx.stroke();
+            // Legs
+            ctx.beginPath(); ctx.moveTo(x, y - 10); ctx.lineTo(x - 12, y + 15); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x, y - 10); ctx.lineTo(x + 12, y + 15); ctx.stroke();
+
+            // Ear/Hearing indicator
+            if (state.isPlaying) {
+                ctx.beginPath(); ctx.arc(x + 15, y - 50, 5, -Math.PI / 2, Math.PI / 2); ctx.stroke();
+            }
+        }
+
+        function varColor(name) {
+            return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        }
+
+        bStart.onclick = () => {
+            state.isPlaying = !state.isPlaying;
+            bStart.textContent = state.isPlaying ? '暂停 Pause' : '开始 Start';
+            bStart.classList.toggle('start', !state.isPlaying);
+            bStart.classList.toggle('pause', state.isPlaying);
+        };
+
+        bReset.onclick = () => {
+            state.time = 0;
+            state.dir = sVsDir.value;
+            state.sourceX = canvas.width / 2;
+            state.waves = [];
+            state.isPlaying = false;
+            bStart.textContent = '开始 Start';
+            bStart.className = 'ctrl-btn start';
+        };
+
+        resize();
+        state.sourceX = canvas.width / 2; // Initial middle
+        update();
+    </script>
+</body>
+
+</html>

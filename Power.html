@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>功率 / Power - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #FFF9F0;
+            --primary: #FF8c42;
+            --secondary: #FFC75F;
+            --accent: #FF5E5B;
+            --text-dark: #4A403A;
+            --card-bg: #FFFFFF;
+            --shadow: 0 6px 30px rgba(255, 140, 66, 0.18);
+            --radius: 30px;
+            --p-color: #9b59b6;
+            /* Power */
+            --f-color: #e67e22;
+            /* Force */
+            --v-color: #f1c40f;
+            /* Velocity */
+            --w-color: #2ecc71;
+            /* Work */
+            --t-color: #3498db;
+            /* Time */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px 40px;
+        }
+
+        .branding {
+            position: fixed;
+            top: 25px;
+            left: 30px;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.6rem;
+            color: #FFFFFF;
+            background: var(--primary);
+            padding: 10px 25px;
+            border-radius: 20px;
+            box-shadow: 4px 4px 15px rgba(255, 140, 66, 0.3);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin-top: 15px;
+            display: grid;
+            grid-template-areas:
+                "header header"
+                "formula formula"
+                "diagram controls";
+            grid-template-columns: 1fr 450px;
+            gap: 20px;
+        }
+
+        header {
+            grid-area: header;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+
+        .subtitle-text {
+            font-size: 1.25rem;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* Formula Section */
+        .formula-display {
+            grid-area: formula;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px solid #fff5eb;
+        }
+
+        .formula-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            height: 90px;
+            width: 100%;
+        }
+
+        .result-row {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-top: 5px;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .sym-key {
+            font-weight: 700;
+            margin-right: 5px;
+        }
+
+        /* Diagram Section */
+        .diagram-section {
+            grid-area: diagram;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        canvas {
+            width: 100%;
+            flex: 1;
+            display: block;
+        }
+
+        /* Controls Section */
+        .controls-section {
+            grid-area: controls;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .control-panel {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 1.15rem;
+        }
+
+        .val-badge {
+            background: #fff;
+            padding: 3px 10px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            border: 2px solid #f0f0f0;
+        }
+
+        input[type=range] {
+            width: 100%;
+            appearance: none;
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            background: var(--primary);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        #m-slider::-webkit-slider-thumb {
+            background: var(--f-color);
+        }
+
+        #v-slider::-webkit-slider-thumb {
+            background: var(--v-color);
+        }
+
+        .btn-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .ctrl-btn {
+            padding: 14px;
+            border: none;
+            border-radius: 18px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .start {
+            background-color: var(--primary);
+        }
+
+        .pause {
+            background-color: #2ecc71;
+        }
+
+        .reset {
+            background-color: #95a5a6;
+        }
+
+        .ctrl-btn:active {
+            transform: translateY(2px);
+            box-shadow: none;
+        }
+
+        /* Gauge Panel */
+        .gauge-panel {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #gaugeCanvas {
+            width: 280px;
+            height: 180px;
+        }
+
+        .stats-display {
+            width: 100%;
+            margin-top: 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .stat-card {
+            background: #fff9f0;
+            padding: 10px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid #ffe8cc;
+        }
+
+        .stat-val {
+            font-size: 1.2rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        @media (max-width: 1100px) {
+            .container {
+                grid-template-areas: "header" "formula" "diagram" "controls";
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="branding">
+        <div class="logo">Wuli布雷克</div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>功率 / Power</h1>
+            <p class="subtitle-text">
+                The rate at which work is done or energy is transferred.<br>
+                做功的快慢或单位时间内所做的功。
+            </p>
+        </header>
+
+        <!-- Formula Section -->
+        <section class="formula-display">
+            <div class="formula-container" id="formula-root">
+                <!-- Dynamic Formula -->
+            </div>
+            <div class="result-row">
+                <span id="res-calc"
+                    style="font-size: 1.2rem; color: #888; font-weight: normal; margin-right: 15px;"></span>
+                P = <span id="res-P" style="color:var(--p-color)">0</span> W
+            </div>
+            <div class="legend">
+                <div class="legend-item"><span class="sym-key" style="color:var(--p-color)">P</span>: Power (功率)</div>
+                <div class="legend-item"><span class="sym-key" style="color:var(--w-color)">W</span>: Work (功)</div>
+                <div class="legend-item"><span class="sym-key" style="color:var(--t-color)">t</span>: Time (时间)</div>
+                <div class="legend-item"><span class="sym-key" style="color:var(--f-color)">F</span>: Force (动力)</div>
+                <div class="legend-item"><span class="sym-key" style="color:var(--v-color)">v</span>: Velocity (速度)
+                </div>
+            </div>
+        </section>
+
+        <!-- Diagram Section -->
+        <section class="diagram-section">
+            <canvas id="simCanvas"></canvas>
+        </section>
+
+        <!-- Controls Section -->
+        <section class="controls-section">
+            <div class="control-panel">
+                <div class="control-group">
+                    <div class="label-row">
+                        <span>Mass (重物质量 m)</span>
+                        <span id="m-badge" class="val-badge">10 kg</span>
+                    </div>
+                    <input type="range" id="m-slider" min="1" max="100" value="10">
+                </div>
+
+                <div class="control-group">
+                    <div class="label-row">
+                        <span>Velocity (提升速度 v)</span>
+                        <span id="v-badge" class="val-badge">1.0 m/s</span>
+                    </div>
+                    <input type="range" id="v-slider" min="0" max="5.0" step="0.1" value="1.0">
+                </div>
+
+                <div class="btn-row">
+                    <button id="btn-start" class="ctrl-btn start">开始 Start</button>
+                    <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
+                </div>
+            </div>
+
+            <div class="gauge-panel">
+                <h3 style="margin-bottom: 5px; color:#888; font-size:0.9rem;">OUTPUT POWER 实时输出功率</h3>
+                <canvas id="gaugeCanvas"></canvas>
+                <div class="stats-display">
+                    <div class="stat-card">
+                        <span class="stat-label">Work Done 功 (W)</span>
+                        <span id="stat-W" class="stat-val" style="color:var(--w-color)">0 J</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Time 耗时 (t)</span>
+                        <span id="stat-t" class="stat-val" style="color:var(--t-color)">0.0 s</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas'), ctx = canvas.getContext('2d');
+        const gCanvas = document.getElementById('gaugeCanvas'), gCtx = gCanvas.getContext('2d');
+        const sM = document.getElementById('m-slider'), sV = document.getElementById('v-slider');
+        const bM = document.getElementById('m-badge'), bV = document.getElementById('v-badge');
+        const resP = document.getElementById('res-P'), resCalc = document.getElementById('res-calc'), statW = document.getElementById('stat-W'), statT = document.getElementById('stat-t');
+        const bStart = document.getElementById('btn-start'), bReset = document.getElementById('btn-reset');
+        const formulaRoot = document.getElementById('formula-root');
+
+        const state = {
+            m: 10, v: 1.0, g: 9.8,
+            time: 0, work: 0,
+            isPlaying: false,
+            yPos: 0, // Crate height
+            motorAngle: 0
+        };
+
+        function resize() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            gCanvas.width = gCanvas.clientWidth;
+            gCanvas.height = gCanvas.clientHeight;
+            state.yPos = canvas.height * 0.7; // Start low
+        }
+        window.addEventListener('resize', resize);
+
+        function update() {
+            state.m = parseFloat(sM.value);
+            state.v = parseFloat(sV.value);
+            bM.textContent = state.m + ' kg';
+            bV.textContent = state.v.toFixed(1) + ' m/s';
+
+            const force = state.m * state.g;
+            const power = force * state.v;
+
+            if (state.isPlaying && state.v > 0) {
+                state.time += 0.016;
+                state.work = force * state.v * state.time;
+                state.yPos -= state.v * 1.5; // Scale height for vis
+                state.motorAngle += state.v * 0.1;
+
+                if (state.yPos < 120) {
+                    state.isPlaying = false; // Top limit
+                    bStart.textContent = '开始 Start';
+                    bStart.classList.add('start');
+                    bStart.classList.remove('pause');
+                }
+            }
+
+            updateUI(power);
+            draw();
+            drawGauge(power);
+            requestAnimationFrame(update);
+        }
+
+        function updateUI(power) {
+            const force = (state.m * state.g).toFixed(1);
+            const vel = state.v.toFixed(1);
+            resCalc.textContent = `P = F × v = ${force}N × ${vel}m/s =`;
+            resP.textContent = Math.round(power);
+            statW.textContent = Math.round(state.work) + ' J';
+            statT.textContent = state.time.toFixed(1) + ' s';
+
+            // Formula Scaling
+            const baseSize = 35;
+            const maxP = 100 * 9.8 * 5;
+            const sP = 1 + (power / maxP) * 0.4;
+            const sF = 1 + (state.m / 100) * 0.3;
+            const sV = 1 + (state.v / 5) * 0.3;
+
+            formulaRoot.innerHTML = `
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="color:var(--p-color); font-size:${baseSize * sP}px; font-weight:700;">P</span>
+                    <span style="font-size:${baseSize}px">=</span>
+                    <div style="display:flex; flex-direction:column; align-items:center;">
+                        <span style="color:var(--w-color); font-size:${baseSize * 0.8}px; border-bottom:2px solid; padding:0 10px;">W</span>
+                        <span style="color:var(--t-color); font-size:${baseSize * 0.8}px;">t</span>
+                    </div>
+                    <span style="font-size:${baseSize}px">=</span>
+                    <span style="color:var(--f-color); font-size:${baseSize * sF}px; font-weight:700;">F</span>
+                    <span style="font-size:24px; color:#ccc;">×</span>
+                    <span style="color:var(--v-color); font-size:${baseSize * sV}px; font-weight:700;">v</span>
+                </div>
+            `;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const groundY = canvas.height * 0.85;
+
+            // Draw Motor / Pulley
+            const pulleyX = cx, pulleyY = 100;
+            const radius = 35;
+
+            // Beam
+            ctx.fillStyle = '#e5e5e5';
+            ctx.fillRect(pulleyX - 100, pulleyY - 60, 200, 20);
+
+            // Pulley
+            ctx.save();
+            ctx.translate(pulleyX, pulleyY);
+            ctx.rotate(state.motorAngle);
+            ctx.beginPath();
+            ctx.arc(0, 0, radius, 0, Math.PI * 2);
+            ctx.fillStyle = '#95a5a6'; ctx.fill();
+            ctx.strokeStyle = '#7f8c8d'; ctx.lineWidth = 4; ctx.stroke();
+            // Spokes
+            for (let i = 0; i < 4; i++) {
+                ctx.rotate(Math.PI / 2);
+                ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(radius, 0); ctx.stroke();
+            }
+            ctx.restore();
+
+            // Rope
+            ctx.beginPath(); ctx.strokeStyle = '#5d4037'; ctx.lineWidth = 3;
+            ctx.moveTo(pulleyX + radius, pulleyY);
+            ctx.lineTo(pulleyX + radius, state.yPos);
+            ctx.stroke();
+
+            // Ground
+            ctx.beginPath(); ctx.strokeStyle = '#ddd'; ctx.lineWidth = 2;
+            ctx.moveTo(0, groundY); ctx.lineTo(canvas.width, groundY); ctx.stroke();
+
+            // Crate
+            const crateW = 80 + (Math.log10(state.m) * 20);
+            const crateH = 60 + (Math.log10(state.m) * 15);
+            const crX = pulleyX + radius - crateW / 2;
+            const crY = state.yPos;
+
+            // Gradient for crate
+            const grad = ctx.createLinearGradient(crX, crY, crX + crateW, crY + crateH);
+            grad.addColorStop(0, '#d35400'); grad.addColorStop(1, '#e67e22');
+            ctx.fillStyle = grad;
+            ctx.roundRect(crX, crY, crateW, crateH, 10);
+            ctx.fill();
+            ctx.strokeStyle = '#a04000'; ctx.lineWidth = 2; ctx.stroke();
+
+            // Crate Detail (X mark)
+            ctx.beginPath(); ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+            ctx.moveTo(crX + 10, crY + 10); ctx.lineTo(crX + crateW - 10, crY + crateH - 10);
+            ctx.moveTo(crX + crateW - 10, crY + 10); ctx.lineTo(crX + 10, crY + crateH - 10);
+            ctx.stroke();
+
+            // Force Arrows
+            if (state.isPlaying && state.v > 0) {
+                // Tension up
+                drawArrow(pulleyX + radius, crY - 10, pulleyX + radius, crY - 60, '#f1c40f', 'F');
+                // Weight down
+                drawArrow(pulleyX + radius, crY + crateH + 10, pulleyX + radius, crY + crateH + 60, '#e74c3c', 'G=mg');
+            }
+        }
+
+        function drawArrow(x1, y1, x2, y2, color, label) {
+            const head = 10;
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = 4;
+            ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+            ctx.lineTo(x2 - head * Math.cos(angle - Math.PI / 6), y2 - head * Math.sin(angle - Math.PI / 6));
+            ctx.moveTo(x2, y2);
+            ctx.lineTo(x2 - head * Math.cos(angle + Math.PI / 6), y2 - head * Math.sin(angle + Math.PI / 6));
+            ctx.stroke();
+
+            ctx.fillStyle = color; ctx.font = 'bold 16px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillText(label, x2 + (y1 < y2 ? 0 : 0), x2 > x1 ? y2 + 20 : y2 - 15);
+        }
+
+        function drawGauge(power) {
+            gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
+            const cx = gCanvas.width / 2, cy = gCanvas.height - 20;
+            const r = 130;
+            const maxP = 5000; // 5kW max
+
+            // BG Arc
+            gCtx.beginPath();
+            gCtx.arc(cx, cy, r, Math.PI, Math.PI * 2);
+            gCtx.strokeStyle = '#f0f0f0'; gCtx.lineWidth = 20; gCtx.lineCap = 'round';
+            gCtx.stroke();
+
+            // Progress Arc
+            const angle = Math.PI + (Math.min(power, maxP) / maxP) * Math.PI;
+            const grad = gCtx.createLinearGradient(cx - r, cy, cx + r, cy);
+            grad.addColorStop(0, '#FFC75F'); grad.addColorStop(1, '#FF5E5B');
+            gCtx.beginPath();
+            gCtx.arc(cx, cy, r, Math.PI, angle);
+            gCtx.strokeStyle = grad; gCtx.lineWidth = 20; gCtx.stroke();
+
+            // Needle
+            gCtx.save();
+            gCtx.translate(cx, cy);
+            gCtx.rotate(angle);
+            gCtx.beginPath();
+            gCtx.moveTo(0, -5); gCtx.lineTo(r - 10, 0); gCtx.lineTo(0, 5);
+            gCtx.fillStyle = '#4A403A'; gCtx.fill();
+            gCtx.restore();
+
+            // Hub
+            gCtx.beginPath(); gCtx.arc(cx, cy, 12, 0, Math.PI * 2); gCtx.fillStyle = '#4A403A'; gCtx.fill();
+
+            // Ticks
+            gCtx.textAlign = 'center'; gCtx.fillStyle = '#888'; gCtx.font = '12px Fredoka';
+            for (let i = 0; i <= 5; i++) {
+                const a = Math.PI + (i / 5) * Math.PI;
+                const tx = cx + (r + 25) * Math.cos(a);
+                const ty = cy + (r + 25) * Math.sin(a);
+                gCtx.fillText(i + 'k', tx, ty);
+            }
+        }
+
+        bStart.onclick = () => {
+            state.isPlaying = !state.isPlaying;
+            bStart.textContent = state.isPlaying ? '暂停 Pause' : '开始 Start';
+            bStart.classList.toggle('start', !state.isPlaying);
+            bStart.classList.toggle('pause', state.isPlaying);
+        };
+
+        bReset.onclick = () => {
+            state.time = 0; state.work = 0;
+            state.yPos = canvas.height * 0.7;
+            state.motorAngle = 0;
+            state.isPlaying = false;
+            bStart.textContent = '开始 Start';
+            bStart.className = 'ctrl-btn start';
+        };
+
+        resize();
+        update();
+    </script>
+</body>
+
+</html>

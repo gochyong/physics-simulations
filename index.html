@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wuli布雷克 - 物理模拟实验室</title>
+    <style>
+        :root {
+            --bg-color: #fffaf5;
+            --primary-warm: #ff9800;
+            --accent-warm: #f57c00;
+            --text-main: #3e2723;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', system-ui, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* 专属徽标 */
+        header {
+            width: 100%;
+            padding: 40px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .brand-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-main {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent-warm), var(--primary-warm));
+            padding: 10px 25px;
+            border-radius: 15px 15px 15px 0;
+            box-shadow: 5px 5px 20px rgba(245, 124, 0, 0.2);
+        }
+
+        .logo-sub {
+            font-size: 0.9rem;
+            letter-spacing: 4px;
+            color: var(--accent-warm);
+            margin-top: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .intro {
+            text-align: center;
+            max-width: 600px;
+            padding: 0 20px;
+            color: #795548;
+            line-height: 1.6;
+        }
+
+        /* 导航卡片网格 */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            width: 90%;
+            max-width: 1000px;
+            padding: 40px 0;
+        }
+
+        .sim-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 152, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .sim-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(245, 124, 0, 0.15);
+            border-color: var(--primary-warm);
+        }
+
+        .sim-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.4rem;
+            color: var(--accent-warm);
+        }
+
+        .sim-card p {
+            font-size: 0.95rem;
+            color: #6d4c41;
+            margin-bottom: 20px;
+        }
+
+        .sim-card .tag {
+            font-size: 0.8rem;
+            background: #fff3e0;
+            color: var(--accent-warm);
+            padding: 4px 12px;
+            border-radius: 20px;
+            align-self: flex-start;
+            font-weight: bold;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 40px;
+            font-size: 0.85rem;
+            color: #a1887f;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="brand-logo">
+            <div class="logo-main">Wuli布雷克</div>
+            <div class="logo-sub">Physics Lab Portal</div>
+        </div>
+        <div class="intro">
+            <div
+                style="font-size: 1.6rem; font-weight: 700; color: var(--accent-warm); margin-bottom: 12px; letter-spacing: 1px;">
+                欢迎来到Wuli布雷克的物理模拟实验室<br>
+                <span style="font-size: 1.1rem; font-weight: 400; opacity: 0.8; font-style: italic;">Welcome to Wuli
+                    Blake's Physics Simulation Lab</span>
+            </div>
+            <div style="padding-top: 10px; border-top: 2px solid rgba(245, 124, 0, 0.1); display: inline-block;">
+                在这里，你可以通过直观的交互程序探索复杂的物理公式和现象。<br>
+                <span style="font-size: 0.9rem; opacity: 0.7;">Explore complex physics formulas and concepts through
+                    interactive visuals.</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="grid-container">
+
+
+        <a href="density.html" class="sim-card">
+            <div>
+                <h3>密度 / Density</h3>
+                <p>动态演示质量和体积如何影响物体密度。Density = m / V</p>
+            </div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <a href="pressure.html" class="sim-card">
+            <div>
+                <h3>压强 / Pressure</h3>
+                <p>动态演示压力和面积如何影响压强。P = F / S</p>
+            </div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <a href="LiquidPressure.html" class="sim-card">
+            <div>
+                <h3>液体压强 / Liquid Pressure</h3>
+                <p>液体的深度、密度与压强的关系。P = ρgh</p>
+            </div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <a href="upthrust.html" class="sim-card">
+            <div>
+                <h3>阿基米德原理 / Archimedes' Principle</h3>
+                <p>探索浮力与排开液体重力的关系。F = ρgV</p>
+            </div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <a href="HookesLaw.html" class="sim-card">
+            <div>
+                <h3>胡克定律 / Hooke's Law</h3>
+                <p>弹力与伸长量的线性关系模拟。F = kx</p>
+            </div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <a href="Torque.html" class="sim-card">
+            <div>
+                <h3>力矩 / Torque</h3>
+                <p>动态演示力、臂及夹角如何影响合力矩。Moment = F × r × sinθ</p>
+            </div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <a href="MomentBalance.html" class="sim-card">
+            <div>
+                <h3>杠杆平衡 / Lever Balance</h3>
+                <p>探索力矩平衡条件，模拟不同质量和位置下的杠杆平衡。</p>
+            </div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <a href="Momentum.html" class="sim-card">
+            <div>
+                <h3>动量 / Momentum</h3>
+                <p>动态演示动量公式，直观感受质量和速度对动量的影响。p = mv</p>
+            </div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <a href="Impulse.html" class="sim-card">
+            <div>
+                <h3>冲量 / Impulse</h3>
+                <p>演示力的时间累积效应，观察冲量如何改变物体的动量。I = Ft</p>
+            </div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <a href="MomentumConservation.html" class="sim-card">
+            <div>
+                <h3>动量守恒 / Momentum Conservation</h3>
+                <p>模拟弹性与非弹性碰撞，验证动量守恒定律和能量转化。</p>
+            </div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <a href="Work.html" class="sim-card">
+            <div>
+                <h3>功 / Work</h3>
+                <p>研究力、位移与夹角对功的影响，直观演示恒力功的计算与正负。W = Fs cosθ</p>
+            </div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <a href="KineticEnergy.html" class="sim-card">
+            <div>
+                <h3>动能 / Kinetic Energy</h3>
+                <p>探索质量与速度对动能的影响，直观动态演示 E<sub>k</sub> = ½mv²。</p>
+            </div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <a href="PotentialEnergy.html" class="sim-card">
+            <div>
+                <h3>重力势能 / Gravitational Potential Energy</h3>
+                <p>实时观察质量、高度及重力常数对势能的影响。E<sub>p</sub> = mgh</p>
+            </div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <a href="EnergyConservation.html" class="sim-card">
+            <div>
+                <h3>能量守恒 / Energy Conservation</h3>
+                <p>通过 U 型轨道演示动能与势能的实时转化，验证能量守恒定律。</p>
+            </div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <a href="Power.html" class="sim-card">
+            <div>
+                <h3>功率 / Power</h3>
+                <p>通过电动机提升重物演示做功的快慢，直观理解 P = W/t = Fv。</p>
+            </div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <a href="NewtonLaw.html" class="sim-card">
+            <div>
+                <h3>牛顿定律 / Newton's Laws</h3>
+                <p>综合演示惯性、F=ma及作用力与反作用力。</p>
+            </div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <a href="AlphaScattering.html" class="sim-card">
+            <div>
+                <h3>卢瑟福散射 / Rutherford Scattering</h3>
+                <p>α粒子散射实验模拟，探索原子核结构。</p>
+            </div>
+            <span class="tag">原子物理 / Atomic</span>
+        </a>
+
+        <a href="DopplerEffect.html" class="sim-card">
+            <div>
+                <h3>多普勒效应 / Doppler Effect</h3>
+                <p>演示波源移动导致的频率变化，直观观察波前压缩与拉伸现象。</p>
+            </div>
+            <span class="tag">声学与波 / Waves</span>
+        </a>
+
+        <a href="WaveGeneration.html" class="sim-card">
+            <div>
+                <h3>波形产生 / Wave Generation</h3>
+                <p>演示波在空间与时间维度的产生，理解波长、频率与周期的物理意义。</p>
+            </div>
+            <span class="tag">声学与波 / Waves</span>
+        </a>
+
+        <a href="WaveSpeed.html" class="sim-card">
+            <div>
+                <h3>波速 / Wave Speed</h3>
+                <p>直观演示 v = fλ 关系，观察波长与频率如何共同决定波的传播速度。</p>
+            </div>
+            <span class="tag">声学与波 / Waves</span>
+        </a>
+
+        <a href="TransverseLongitudinalWave.html" class="sim-card">
+            <div>
+                <h3>横波与纵波 / Transverse & Longitudinal Waves</h3>
+                <p>对比横波与纵波的质点振动方式，理解疏密部与波峰波谷的形成原理。</p>
+            </div>
+            <span class="tag">声学与波 / Waves</span>
+        </a>
+
+        <a href="StandingWave.html" class="sim-card">
+            <div>
+                <h3>驻波形成 / Standing Wave Formation</h3>
+                <p>演示两列反向传播的波叠加形成驻波，观察波节与波腹的分布规律。</p>
+            </div>
+            <span class="tag">声学与波 / Waves</span>
+        </a>
+
+        <a href="DoubleSlitInterference.html" class="sim-card">
+            <div>
+                <h3>双缝干涉 / Double-Slit Interference</h3>
+                <p>模拟双缝干涉的二维波动场与强度分布，验证 d sinθ = nλ 亮暗纹条件。</p>
+            </div>
+            <span class="tag">声学与波 / Waves</span>
+        </a>
+
+        <a href="resistor.html" class="sim-card">
+            <div>
+                <h3>电阻 / Resistance</h3>
+                <p>演示电阻率、长度和截面积如何影响电阻. R = ρL/A</p>
+            </div>
+            <span class="tag">电学 / Electricity</span>
+        </a>
+
+        <a href="Ohm'sLaw.html" class="sim-card">
+            <div>
+                <h3>欧姆定律 / Ohm's Law</h3>
+                <p>探究电压、电流与电阻的关系。I = V / R</p>
+            </div>
+            <span class="tag">电学 / Electricity</span>
+        </a>
+
+        <a href="#" class="sim-card upcoming" style="opacity: 0.9; cursor: default;">
+            <div>
+                <h3 style="color: #ff9d5c;">新程序开发中...</h3>
+                <p>更多精彩的物理模拟程序正在制作中，敬请期待。</p>
+            </div>
+            <span class="tag" style="background: #fff4e6; color: #ff9d5c;">即将到来</span>
+        </a>
+
+    </main>
+
+    <!-- ===== 留言区 / Comments (Giscus) ===== -->
+    <section style="width:90%;max-width:1000px;margin:30px auto 50px;padding:30px;background:#fff;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,0.05);">
+        <h2 style="text-align:center;color:#f57c00;margin-bottom:20px;font-size:1.5rem;">
+            留言讨论 / Discussion
+        </h2>
+        <!--
+        ╔══════════════════════════════════════════════════════════════╗
+        ║  Giscus 配置说明 / Setup Instructions                       ║
+        ║                                                            ║
+        ║  1. 在 GitHub 创建仓库 (如 physics-simulations)            ║
+        ║  2. 仓库 Settings → Features → 启用 Discussions            ║
+        ║  3. 访问 https://giscus.app 按引导配置                     ║
+        ║  4. 将下面 4 个值替换为 Giscus 生成的对应值:               ║
+        ║     - data-repo="你的用户名/仓库名"                        ║
+        ║     - data-repo-id="MDEwOlJlcG9zaXRvcnk..."               ║
+        ║     - data-category="Announcements"                       ║
+        ║     - data-category-id="DIC_kwDO..."                      ║
+        ║  5. 删除此注释块即可启用                                   ║
+        ╚══════════════════════════════════════════════════════════════╝
+        -->
+        <script src="https://giscus.app/client.js"
+            data-repo="你的用户名/仓库名"
+            data-repo-id="在此填入你的-repo-id"
+            data-category="Announcements"
+            data-category-id="在此填入你的-category-id"
+            data-mapping="pathname"
+            data-strict="0"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-theme="light"
+            data-lang="zh-CN"
+            crossorigin="anonymous"
+            async>
+        </script>
+        <!-- Giscus 未配置时会静默失败，配置完成后自动显示留言区 -->
+        <p style="text-align:center;color:#aaa;font-size:0.9rem;margin-top:10px;">
+            💬 留言由 <a href="https://giscus.app" target="_blank" style="color:#f57c00;">Giscus</a> 驱动 · 需登录 GitHub 账号
+        </p>
+    </section>
+
+    <footer>
+        © 2025 Wuli布雷克 | 由 HTML5 & CSS3 驱动
+    </footer>
+
+</body>
+
+</html>

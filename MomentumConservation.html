@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动量守恒 / Momentum Conservation - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #FFF9F0;
+            --primary: #FF8c42;
+            --secondary: #FFC75F;
+            --accent: #FF5E5B;
+            --text-dark: #4A403A;
+            --card-bg: #FFFFFF;
+            --shadow: 0 6px 30px rgba(255, 140, 66, 0.18);
+            --radius: 30px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            padding: 15px 30px;
+        }
+
+        .branding {
+            position: fixed;
+            top: 20px;
+            left: 25px;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #FFFFFF;
+            background: var(--primary);
+            padding: 8px 20px;
+            border-radius: 18px;
+            box-shadow: 3px 3px 15px rgba(255, 140, 66, 0.3);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        h1 {
+            font-size: 2.4rem;
+            color: var(--text-dark);
+            margin-bottom: 3px;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* Simulation Area */
+        .simulation-area {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+        }
+
+        canvas {
+            width: 100%;
+            flex: 1;
+            display: block;
+            background: #fff;
+            min-height: 0;
+        }
+
+        /* Controls */
+        .controls-overlay {
+            padding: 20px 35px;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(15px);
+            border-top: 2px solid rgba(0, 0, 0, 0.04);
+            display: grid;
+            grid-template-columns: 1.25fr 1.25fr 1fr 1fr;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .object-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 15px;
+            background: #fdfdfd;
+            border-radius: 20px;
+            border: 1.5px solid #f0f0f0;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .val-badge {
+            background: #fff;
+            padding: 2px 10px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            border: 1.5px solid #eee;
+        }
+
+        /* Sliders */
+        input[type=range] {
+            width: 100%;
+            appearance: none;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 1.5px 4px rgba(0, 0, 0, 0.2);
+            transition: transform 0.1s;
+        }
+
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+
+        #m1-slider::-webkit-slider-thumb,
+        #v1-slider::-webkit-slider-thumb {
+            background: #3498db;
+        }
+
+        #m2-slider::-webkit-slider-thumb,
+        #v2-slider::-webkit-slider-thumb {
+            background: #e74c3c;
+        }
+
+        .obj1-title {
+            color: #3498db;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 4px;
+            margin-bottom: 10px;
+            font-size: 1.25rem;
+        }
+
+        .obj2-title {
+            color: #e74c3c;
+            border-bottom: 3px solid #e74c3c;
+            padding-bottom: 4px;
+            margin-bottom: 10px;
+            font-size: 1.25rem;
+        }
+
+        /* Global Controls */
+        .global-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .mode-toggle {
+            display: flex;
+            background: #eee;
+            border-radius: 15px;
+            padding: 4px;
+            cursor: pointer;
+        }
+
+        .mode-option {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+            color: #666;
+            line-height: 1.2;
+        }
+
+        .mode-option.active {
+            background: #fff;
+            color: var(--primary);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .ctrl-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .ctrl-btn:active {
+            transform: translateY(3px);
+            box-shadow: none;
+        }
+
+        .start {
+            background-color: var(--primary);
+        }
+
+        .start:hover {
+            background-color: #ff7a2f;
+        }
+
+        .pause {
+            background-color: #2ecc71;
+        }
+
+        .pause:hover {
+            background-color: #27ae60;
+        }
+
+        .reset {
+            background-color: #95a5a6;
+        }
+
+        .reset:hover {
+            background-color: #7f8c8d;
+        }
+
+        @media (max-width: 1100px) {
+            .controls-overlay {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                padding: 10px 20px;
+            }
+
+            body {
+                overflow-y: auto;
+                height: auto;
+            }
+
+            .container {
+                height: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="branding">
+        <div class="logo">Wuli布雷克</div>
+    </div>
+
+    <header>
+        <h1>动量守恒 Momentum Conservation</h1>
+        <div class="subtitle">
+            In an isolated system, total momentum is constant.<br>
+            在孤立系统中，总动量保持不变。
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Simulation -->
+        <div class="simulation-area">
+            <canvas id="simCanvas"></canvas>
+
+            <div class="controls-overlay">
+                <!-- Object 1 Controls -->
+                <div class="object-controls">
+                    <h3 class="obj1-title">Object 1 (Blue)</h3>
+                    <div class="control-group">
+                        <div class="label-row">
+                            <span>Mass (质量)</span>
+                            <span id="m1-val" class="val-badge">20 kg</span>
+                        </div>
+                        <input type="range" id="m1-slider" min="5" max="50" value="20">
+                    </div>
+                    <div class="control-group">
+                        <div class="label-row">
+                            <span>Velocity (初速度)</span>
+                            <span id="v1-val" class="val-badge">10 m/s</span>
+                        </div>
+                        <input type="range" id="v1-slider" min="-25" max="25" step="1" value="10">
+                    </div>
+                </div>
+
+                <!-- Object 2 Controls -->
+                <div class="object-controls">
+                    <h3 class="obj2-title">Object 2 (Red)</h3>
+                    <div class="control-group">
+                        <div class="label-row">
+                            <span>Mass (质量)</span>
+                            <span id="m2-val" class="val-badge">20 kg</span>
+                        </div>
+                        <input type="range" id="m2-slider" min="5" max="50" value="20">
+                    </div>
+                    <div class="control-group">
+                        <div class="label-row">
+                            <span>Velocity (初速度)</span>
+                            <span id="v2-val" class="val-badge">-5 m/s</span>
+                        </div>
+                        <input type="range" id="v2-slider" min="-25" max="25" step="1" value="-5">
+                    </div>
+                </div>
+
+                <!-- Collision Mode -->
+                <div class="global-controls">
+                    <div style="font-weight: 600; color: #555; margin-bottom: 3px; font-size: 1.1rem;">Collision Type
+                        (碰撞类型):</div>
+                    <div class="mode-toggle">
+                        <div class="mode-option active" id="mode-elastic" onclick="setMode('elastic')">Elastic<br>弹性
+                        </div>
+                        <div class="mode-option" id="mode-inelastic" onclick="setMode('inelastic')">Inelastic<br>非弹性
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="global-controls">
+                    <button id="btn-start" class="ctrl-btn start">开始 Start</button>
+                    <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Slider Refs
+        const sM1 = document.getElementById('m1-slider'), sV1 = document.getElementById('v1-slider');
+        const sM2 = document.getElementById('m2-slider'), sV2 = document.getElementById('v2-slider');
+        const vM1 = document.getElementById('m1-val'), vV1 = document.getElementById('v1-val');
+        const vM2 = document.getElementById('m2-val'), vV2 = document.getElementById('v2-val');
+
+        const btnStart = document.getElementById('btn-start'), btnReset = document.getElementById('btn-reset');
+
+        let mode = 'elastic';
+        const state = {
+            m1: 20, v1: 10, m2: 20, v2: -5,
+            x1: 200, x2: 600,
+            initialP: 0, initialE: 0, initialV1: 0, initialV2: 0,
+            isPlaying: false,
+            hasCollided: false
+        };
+
+        function setMode(m) {
+            mode = m;
+            document.getElementById('mode-elastic').classList.toggle('active', m === 'elastic');
+            document.getElementById('mode-inelastic').classList.toggle('active', m === 'inelastic');
+            resetSim();
+        }
+
+        function resize() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            if (!state.isPlaying) resetSim();
+        }
+        window.addEventListener('resize', resize);
+
+        function update() {
+            vM1.textContent = state.m1 + ' kg'; vV1.textContent = state.v1 + ' m/s';
+            vM2.textContent = state.m2 + ' kg'; vV2.textContent = state.v2 + ' m/s';
+
+            if (state.isPlaying) {
+                const dt = 0.45;
+                // Ratio calculation for 1.33x scale
+                const r1 = (15 + (Math.log10(state.m1) * 12)) * 1.33;
+                const r2 = (15 + (Math.log10(state.m2) * 12)) * 1.33;
+                const nextX1 = state.x1 + state.v1 * dt * 1.33;
+                const nextX2 = state.x2 + state.v2 * dt * 1.33;
+                const dist = Math.abs(nextX2 - nextX1);
+                const minDist = r1 + r2;
+                const approaching = (state.x1 < state.x2 && state.v1 > state.v2) || (state.x1 > state.x2 && state.v1 < state.v2);
+
+                if (dist <= minDist && approaching) {
+                    state.hasCollided = true;
+                    if (mode === 'elastic') {
+                        const v1f = ((state.m1 - state.m2) * state.v1 + 2 * state.m2 * state.v2) / (state.m1 + state.m2);
+                        const v2f = ((state.m2 - state.m1) * state.v2 + 2 * state.m1 * state.v1) / (state.m1 + state.m2);
+                        state.v1 = v1f; state.v2 = v2f;
+                    } else {
+                        const vf = (state.m1 * state.v1 + state.m2 * state.v2) / (state.m1 + state.m2);
+                        state.v1 = vf; state.v2 = vf;
+                    }
+                }
+                state.x1 += state.v1 * dt * 1.33;
+                state.x2 += state.v2 * dt * 1.33;
+            }
+            draw();
+            requestAnimationFrame(update);
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cy = canvas.height * 0.6;
+            const cx = canvas.width / 2;
+
+            // Floor
+            ctx.beginPath(); ctx.strokeStyle = '#e0e0e0'; ctx.lineWidth = 3;
+            ctx.moveTo(0, cy + 60); ctx.lineTo(canvas.width, cy + 60); ctx.stroke();
+
+            const r1 = (15 + (Math.log10(state.m1) * 12)) * 1.33;
+            const r2 = (15 + (Math.log10(state.m2) * 12)) * 1.33;
+            drawBall(state.x1, cy + 60 - r1, r1, '#3498db', state.m1, state.v1);
+            drawBall(state.x2, cy + 60 - r2, r2, '#e74c3c', state.m2, state.v2);
+
+            drawDashboard(cx, 30);
+        }
+
+        function drawBall(x, y, r, color, m, v) {
+            ctx.beginPath(); ctx.ellipse(x, y + r, r, r * 0.2, 0, 0, Math.PI * 2); ctx.fillStyle = 'rgba(0,0,0,0.08)'; ctx.fill();
+            ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+            const g = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.1, x, y, r);
+            g.addColorStop(0, '#fff'); g.addColorStop(0.2, color); g.addColorStop(1, '#000');
+            ctx.fillStyle = g; ctx.fill();
+            ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.strokeStyle = 'rgba(0,0,0,0.1)'; ctx.lineWidth = 1.5; ctx.stroke();
+            ctx.fillStyle = 'white'; ctx.font = 'bold 16px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(m + 'k', x, y);
+
+            // Velocity Labels Above Ball
+            ctx.fillStyle = color;
+            ctx.font = 'bold 16px Arial';
+            ctx.textBaseline = 'bottom';
+            ctx.fillText(v.toFixed(2) + ' m/s', x, y - r - 10);
+        }
+
+        function drawDashboard(cx, y) {
+            const blockW = 400;
+            const yText = y;
+
+            drawDataBlock(cx - blockW / 2 - 30, yText, "Initial (碰前)", state.initialP, state.initialE, state.initialV1, state.initialV2, true);
+
+            if (state.hasCollided) {
+                const currentP = state.m1 * state.v1 + state.m2 * state.v2;
+                const currentE = 0.5 * state.m1 * state.v1 ** 2 + 0.5 * state.m2 * state.v2 ** 2;
+                drawDataBlock(cx + blockW / 2 + 30, yText, "After (碰后)", currentP, currentE, state.v1, state.v2, true);
+            } else {
+                ctx.fillStyle = "#bbb"; ctx.textAlign = "center"; ctx.font = "italic 22px Fredoka";
+                ctx.fillText("Waiting for collision...", cx + blockW / 2 + 30, yText + 80);
+            }
+
+            // Divider
+            ctx.beginPath(); ctx.strokeStyle = '#eee'; ctx.lineWidth = 1.5;
+            ctx.moveTo(cx, yText); ctx.lineTo(cx, yText + 220); ctx.stroke();
+        }
+
+        function drawDataBlock(x, y, title, p, e, v1, v2, show) {
+            if (!show) return;
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#4A403A'; ctx.font = '700 24px Fredoka';
+            ctx.fillText(title, x, y + 20);
+
+            ctx.font = '600 18px Fredoka'; ctx.fillStyle = '#8e44ad';
+            ctx.fillText(`P_tot: ${p.toFixed(2)}`, x, y + 50);
+            ctx.fillStyle = '#f39c12';
+            ctx.fillText(`E_tot: ${e.toFixed(2)} J`, x, y + 78);
+
+            // Gauges
+            drawGauge(x - 80, y + 155, v1, "v1", "#3498db");
+            drawGauge(x + 80, y + 155, v2, "v2", "#e74c3c");
+        }
+
+        function drawGauge(x, y, val, label, color) {
+            const r = 50;
+            const startAngle = Math.PI * 0.8, endAngle = Math.PI * 2.2;
+            const range = endAngle - startAngle;
+
+            ctx.beginPath(); ctx.arc(x, y, r, startAngle, endAngle); ctx.lineWidth = 7; ctx.strokeStyle = '#f4f4f4'; ctx.lineCap = 'round'; ctx.stroke();
+
+            const angleVal = (Math.max(-25, Math.min(25, val)) + 25) / 50;
+            const currentAngle = startAngle + range * angleVal;
+
+            ctx.beginPath();
+            const midAngle = startAngle + range * 0.5;
+            ctx.arc(x, y, r, Math.min(midAngle, currentAngle), Math.max(midAngle, currentAngle));
+            ctx.strokeStyle = color; ctx.lineWidth = 7; ctx.stroke();
+
+            ctx.fillStyle = "#ccc"; ctx.font = "11px Arial";
+            ctx.fillText("0", x, y - r - 8);
+
+            ctx.beginPath(); ctx.lineWidth = 3; ctx.strokeStyle = '#333';
+            ctx.moveTo(x, y); ctx.lineTo(x + (r - 6) * Math.cos(currentAngle), y + (r - 6) * Math.sin(currentAngle));
+            ctx.stroke();
+            ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fillStyle = '#333'; ctx.fill();
+
+            ctx.fillStyle = '#777'; ctx.font = 'bold 15px Arial'; ctx.textAlign = 'center';
+            ctx.fillText(`${label}: ${val.toFixed(2)}`, x, y + r + 22);
+        }
+
+        function resetSim() {
+            state.isPlaying = false; state.hasCollided = false;
+            state.m1 = parseInt(sM1.value); state.v1 = parseInt(sV1.value);
+            state.m2 = parseInt(sM2.value); state.v2 = parseInt(sV2.value);
+            state.initialP = state.m1 * state.v1 + state.m2 * state.v2;
+            state.initialE = 0.5 * state.m1 * state.v1 ** 2 + 0.5 * state.m2 * state.v2 ** 2;
+            state.initialV1 = state.v1; state.initialV2 = state.v2;
+            const cx = canvas.width / 2; state.x1 = cx - 220; state.x2 = cx + 220;
+            draw();
+        }
+
+        sM1.oninput = sM2.oninput = sV1.oninput = sV2.oninput = () => { if (!state.isPlaying) resetSim(); };
+        btnStart.onclick = () => {
+            state.isPlaying = !state.isPlaying;
+            btnStart.textContent = state.isPlaying ? '暂停 Pause' : '开始 Start';
+            btnStart.classList.toggle('start', !state.isPlaying);
+            btnStart.classList.toggle('pause', state.isPlaying);
+        };
+
+        btnReset.onclick = () => {
+            resetSim();
+            btnStart.textContent = '开始 Start';
+            btnStart.className = 'ctrl-btn start';
+        };
+
+        resize();
+        update();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>欧姆定律模拟 - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #FFF9F0;
+            --primary: #FF8c42;
+            --secondary: #FFC75F;
+            --accent: #FF5E5B;
+            --text-dark: #4A403A;
+            --card-bg: #FFFFFF;
+            --shadow: 0 4px 20px rgba(255, 140, 66, 0.15);
+            --radius: 20px;
+
+            /* Physics Specific */
+            --col-v: #d32f2f;
+            --col-i: #2e7d32;
+            --col-r: #1565c0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px 20px 40px 20px;
+        }
+
+        /* Branding */
+        .branding {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #FFFFFF;
+            background: var(--primary);
+            padding: 8px 18px;
+            border-radius: 12px;
+            box-shadow: 2px 2px 10px rgba(255, 140, 66, 0.3);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1600px;
+            /* Increased from 1200px */
+            margin-top: 60px;
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 25px;
+        }
+
+        /* Title Section */
+        header {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--primary);
+            font-weight: 400;
+        }
+
+        /* Simulation Area */
+        .simulation-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-height: 500px;
+        }
+
+        .formula-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            background: #fffcf5;
+            border-bottom: 2px solid #fff3e0;
+            font-family: "Times New Roman", serif;
+            font-weight: bold;
+            font-size: 3rem;
+        }
+
+        .sym {
+            display: inline-block;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .frac {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.85em;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        .line {
+            width: 1.2em;
+            height: 4px;
+            background: var(--text-dark);
+            margin: 4px 0;
+            border-radius: 2px;
+        }
+
+        .visual-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .visual-box {
+            background: #fafafa;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .box-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #999;
+            text-transform: uppercase;
+        }
+
+        .circuit-svg {
+            width: 100%;
+            height: 100%;
+            max-height: 300px;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Controls Section */
+        .controls-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .val-badge {
+            font-family: 'Fredoka', monospace;
+            padding: 4px 10px;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.95rem;
+        }
+
+        input[type=range] {
+            width: 100%;
+            appearance: none;
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.1s;
+        }
+
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        /* Voltage styling */
+        #sld-v::-webkit-slider-thumb {
+            background: var(--col-v);
+        }
+
+        .bg-v {
+            background-color: var(--col-v);
+        }
+
+        /* Resistance styling */
+        #sld-r::-webkit-slider-thumb {
+            background: var(--col-r);
+        }
+
+        .bg-r {
+            background-color: var(--col-r);
+        }
+
+        .result-box {
+            background: #e8f5e9;
+            border: 2px solid var(--col-i);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .result-title {
+            color: var(--col-i);
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .result-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--col-i);
+            font-family: 'Fredoka', monospace;
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .branding {
+                position: absolute;
+            }
+
+            .visual-grid {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+
+            .visual-box {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="branding">
+        <div class="logo">Wuli布雷克</div>
+    </div>
+
+    <header>
+        <h1>欧姆定律</h1>
+        <div class="subtitle">Ohm's Law Simulation</div>
+    </header>
+
+    <main class="container">
+        <!-- Simulation Visuals -->
+        <section class="simulation-card">
+            <!-- Formula -->
+            <div class="formula-section">
+                <span id="f-i" class="sym" style="color: var(--col-i);">I</span>
+                <span style="margin: 0 15px; color: #aaa;">=</span>
+                <div class="frac">
+                    <span id="f-v" class="sym" style="color: var(--col-v);">V</span>
+                    <div class="line"></div>
+                    <span id="f-r" class="sym" style="color: var(--col-r);">R</span>
+                </div>
+            </div>
+
+            <!-- Visualization Grid -->
+            <div class="visual-grid">
+                <div class="visual-box">
+                    <div class="box-label">Circuit Diagram</div>
+                    <svg class="circuit-svg" viewBox="0 0 400 220" preserveAspectRatio="xMidYMid meet">
+                        <!-- Wires -->
+                        <path d="M 80 160 L 80 50 L 320 50 L 320 160 L 80 160" fill="none" stroke="#444"
+                            stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+
+                        <!-- Battery -->
+                        <line x1="70" y1="100" x2="90" y2="100" stroke="#444" stroke-width="2" />
+                        <line x1="75" y1="110" x2="85" y2="110" stroke="#444" stroke-width="5" />
+
+                        <!-- Resistor -->
+                        <rect x="165" y="35" width="70" height="30" fill="white" stroke="var(--col-r)" stroke-width="3"
+                            rx="4" />
+                        <text x="188" y="56" font-family="Fredoka" font-size="16" fill="var(--col-r)"
+                            font-weight="bold">R</text>
+
+                        <!-- Ammeter -->
+                        <circle cx="320" cy="105" r="22" fill="white" stroke="var(--col-i)" stroke-width="3" />
+                        <text x="314" y="111" font-family="Fredoka" font-size="18" fill="var(--col-i)"
+                            font-weight="bold">A</text>
+
+                        <!-- Voltmeter (Parallel) -->
+                        <path d="M 165 50 L 165 100 L 235 100 L 235 50" fill="none" stroke="var(--col-v)"
+                            stroke-width="2" />
+                        <circle cx="200" cy="100" r="22" fill="white" stroke="var(--col-v)" stroke-width="3" />
+                        <text x="193" y="106" font-family="Fredoka" font-size="18" fill="var(--col-v)"
+                            font-weight="bold">V</text>
+                    </svg>
+                </div>
+
+                <div class="visual-box">
+                    <div class="box-label">I-V Graph</div>
+                    <canvas id="cvs"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Control Sidebar -->
+        <section class="controls-card">
+
+            <!-- Voltage Control -->
+            <div class="control-group">
+                <div class="label-row">
+                    <span>电压 Voltage (V)</span>
+                    <span id="txt-v" class="val-badge bg-v">-- V</span>
+                </div>
+                <input type="range" id="sld-v" min="1" max="30" step="0.5" value="15">
+            </div>
+
+            <!-- Resistance Control -->
+            <div class="control-group">
+                <div class="label-row">
+                    <span>电阻 Resistance (R)</span>
+                    <span id="txt-r" class="val-badge bg-r">-- Ω</span>
+                </div>
+                <input type="range" id="sld-r" min="1" max="50" step="1" value="10">
+            </div>
+
+            <hr style="border: 0; border-top: 2px dashed #eee; margin: 10px 0;">
+
+            <!-- Results -->
+            <div class="result-box">
+                <div class="result-title">计算电流 / Current (I)</div>
+                <div id="txt-i" class="result-value">-- A</div>
+            </div>
+
+        </section>
+    </main>
+
+    <script>
+        const sldV = document.getElementById('sld-v');
+        const sldR = document.getElementById('sld-r');
+        const txtV = document.getElementById('txt-v');
+        const txtR = document.getElementById('txt-r');
+        const txtI = document.getElementById('txt-i');
+        const fi = document.getElementById('f-i');
+        const fv = document.getElementById('f-v');
+        const fr = document.getElementById('f-r');
+        const canvas = document.getElementById('cvs');
+        const ctx = canvas.getContext('2d');
+
+        // Config
+        const MAX_V = 30;
+        const MAX_I_GRAPH = 3; // Y-axis max for graph
+
+        function drawGraph(V, R, I) {
+            // Resize canvas to parent
+            const rect = canvas.parentElement.getBoundingClientRect();
+            // Subtract padding
+            const w = canvas.width = rect.width - 22;
+            const h = canvas.height = rect.height - 40;
+
+            const padLeft = 40;
+            const padBottom = 30;
+            const padTop = 20;
+            const padRight = 20;
+
+            const graphW = w - padLeft - padRight;
+            const graphH = h - padTop - padBottom;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Axes
+            ctx.beginPath();
+            ctx.strokeStyle = '#888';
+            ctx.lineWidth = 2;
+            // Y axis
+            ctx.moveTo(padLeft, padTop);
+            ctx.lineTo(padLeft, h - padBottom);
+            // X axis
+            ctx.lineTo(w - padRight, h - padBottom);
+            ctx.stroke();
+
+            // Labels
+            ctx.fillStyle = '#666';
+            ctx.font = 'bold 12px Fredoka';
+            ctx.textAlign = 'right';
+            ctx.fillText("I (A)", padLeft - 10, padTop + 10);
+            ctx.textAlign = 'right';
+            ctx.fillText("V (V)", w - padRight, h - padBottom - 10);
+
+            // Grid lines (Simple)
+            ctx.strokeStyle = '#eee';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            // Max I line
+            /*
+            let y = padTop;
+            ctx.moveTo(padLeft, y); ctx.lineTo(w-padRight, y);
+            */
+            ctx.stroke();
+
+            // Plot Characteristic Line (Slope = 1/R)
+            // Points: (0,0) -> (MAX_V, MAX_V/R)
+            const x1 = 0;
+            const y1 = 0;
+            const x2 = MAX_V;
+            const y2 = MAX_V / R;
+
+            const mapX = (x) => padLeft + (x / MAX_V) * graphW;
+            const mapY = (y) => (h - padBottom) - (y / MAX_I_GRAPH) * graphH;
+
+            // Draw Full Line
+            ctx.beginPath();
+            ctx.strokeStyle = '#bbdefb'; // Light Blue
+            ctx.lineWidth = 2;
+            ctx.moveTo(mapX(x1), mapY(y1));
+            // Clamp to visible graph area area? 
+            // Ideally we draw to V=MAX_V, but I might exceed axes if R is small.
+            // Let's just draw to V_max for this R at current scale, or edge of graph
+
+            // Actually, let's just draw the line segment relevant to current V? 
+            // No, the line represents the Resistance.
+            // Let's find end point. End X is MAX_V.
+            let endX = MAX_V;
+            let endY = MAX_V / R;
+
+            if (endY > MAX_I_GRAPH) {
+                // Clip by Y
+                endY = MAX_I_GRAPH;
+                endX = endY * R;
+            }
+
+            ctx.lineTo(mapX(endX), mapY(endY));
+            ctx.stroke();
+
+            // Draw Current Point
+            const ptX = mapX(V);
+            const ptY = mapY(I);
+
+            // Dashed Guides
+            ctx.setLineDash([5, 5]);
+            ctx.strokeStyle = '#aaa';
+            ctx.beginPath();
+            ctx.moveTo(ptX, h - padBottom);
+            ctx.lineTo(ptX, ptY);
+            ctx.lineTo(padLeft, ptY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Highlight Active Segment
+            ctx.beginPath();
+            ctx.strokeStyle = 'var(--col-r)'; // Blue
+            ctx.lineWidth = 3;
+            ctx.moveTo(mapX(0), mapY(0));
+            ctx.lineTo(ptX, ptY);
+            ctx.stroke();
+
+            // Point
+            ctx.fillStyle = 'var(--col-v)'; // Red dot
+            ctx.beginPath();
+            ctx.arc(ptX, ptY, 6, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        function update() {
+            const V = parseFloat(sldV.value);
+            const R = parseFloat(sldR.value);
+            const I = V / R;
+
+            txtV.innerText = V.toFixed(1) + " V";
+            txtR.innerText = R.toFixed(0) + " Ω";
+            txtI.innerText = I.toFixed(2) + " A";
+
+            // Formula Animation
+            fv.style.transform = `scale(${0.9 + V / 60})`;
+            fr.style.transform = `scale(${0.9 + R / 100})`;
+            const iScale = Math.min(Math.max(0.8 + I / 3, 0.8), 1.3);
+            fi.style.transform = `scale(${iScale})`;
+
+            requestAnimationFrame(() => drawGraph(V, R, I));
+        }
+
+        sldV.addEventListener('input', update);
+        sldR.addEventListener('input', update);
+        window.addEventListener('resize', update);
+
+        // Init
+        update();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>浮力探究实验室 - Wuli布雷克</title>
+    <style>
+        :root {
+            --bg-warm: #fffaf5;
+            --primary: #ff9800;
+            --accent: #f57c00;
+            --text-dark: #5d4037;
+            --fluid-color: rgba(33, 150, 243, 0.45);
+            --border-color: #ffe0b2;
+            --btn-check: #4caf50;
+            --btn-reset: #e91e63;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            background-color: var(--bg-warm);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        .watermark {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            background: #ff8c00;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 1.6em;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
+            z-index: 1000;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 10px 20px;
+            box-sizing: border-box;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            text-align: center;
+            margin: 5px 0;
+            color: var(--text-dark);
+            font-size: 1.2rem;
+        }
+
+        /* 顶部看板 */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1.6fr 1fr;
+            gap: 15px;
+            height: 26vh;
+            margin-bottom: 10px;
+            flex-shrink: 0;
+        }
+
+        .card {
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+        }
+
+        .math-text {
+            font-family: "Times New Roman", serif;
+            font-weight: bold;
+            font-size: clamp(1.4rem, 4.5vh, 2.8rem);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .sym {
+            display: inline-block;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* 1. 符号解析说明区 */
+        .sym-legend {
+            display: grid;
+            grid-template-columns: 1fr 1.3fr;
+            gap: 4px 15px;
+            font-size: 0.78rem;
+            color: #795548;
+            width: 95%;
+            border-top: 1px dashed #ffe0b2;
+            padding-top: 8px;
+        }
+
+        .res-val {
+            font-size: clamp(1.5rem, 5vh, 2.8rem);
+            font-weight: 900;
+            color: #bdbdbd;
+            transition: color 0.3s;
+        }
+
+        .res-sub {
+            font-size: 0.9rem;
+            color: #bdbdbd;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .active-res {
+            color: var(--accent) !important;
+        }
+
+        .active-v {
+            color: #1976d2 !important;
+        }
+
+        /* 中间布局 */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 15px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .visual-box {
+            background: #e3f2fd;
+            border: 2px solid #bbdefb;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 6px 15px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #1565c0;
+            border: 1px solid #bbdefb;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        /* 控制区 */
+        .controls {
+            background: #fffcf5;
+            border-radius: 15px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+        }
+
+        .group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding-bottom: 5px;
+        }
+
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        .val-tag {
+            color: var(--accent);
+            background: #fff;
+            padding: 1px 6px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            font-family: monospace;
+        }
+
+        .lang-en {
+            font-size: 0.7rem;
+            color: #8d6e63;
+            font-weight: normal;
+        }
+
+        /* 2. 按钮行 */
+        .button-row {
+            display: grid;
+            grid-template-columns: 1.8fr 1fr;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        button {
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            color: white;
+            transition: all 0.2s;
+        }
+
+        #btn-check {
+            background-color: var(--btn-check);
+            box-shadow: 0 4px #2e7d32;
+        }
+
+        #btn-check:hover {
+            background-color: #43a047;
+        }
+
+        #btn-check:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px #2e7d32;
+        }
+
+        #btn-reset {
+            background-color: var(--btn-reset);
+            box-shadow: 0 4px #c2185b;
+        }
+
+        #btn-reset:hover {
+            background-color: #d81b60;
+        }
+
+        #btn-reset:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px #c2185b;
+        }
+
+        input[type=range] {
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="watermark">Wuli布雷克</div>
+
+    <div class="container">
+        <h2>浮力探究实验室 / Upthrust Discovery Lab</h2>
+
+        <div class="dashboard">
+            <div class="card">
+                <div class="math-text">
+                    <span id="f-fb" class="sym" style="color:var(--accent)">F<sub>up</sub></span>
+                    <span>=</span>
+                    <span id="f-rho" class="sym" style="color:#1976d2">ρ<sub>l</sub></span>
+                    <span>•</span>
+                    <span class="sym" style="color:#388e3c">g</span>
+                    <span>•</span>
+                    <span id="f-v" class="sym" style="color:#d84315">V<sub>disp</sub></span>
+                </div>
+                <div class="sym-legend">
+                    <div><b>F<sub>up</sub></b>: 浮力 <span class="lang-en">/ Upthrust Force (N)</span></div>
+                    <div><b>ρ<sub>l</sub></b>: 液体密度 <span class="lang-en">/ Liquid Density (kg/m³)</span></div>
+                    <div><b>g</b>: 重力场强度 <span class="lang-en">/ Gravitational field strength (9.81 m/s²)</span></div>
+                    <div><b>V<sub>disp</sub></b>: 排开体积 <span class="lang-en">/ Displaced Volume (m³)</span></div>
+                </div>
+            </div>
+            <div class="card" style="background:#fff8e1">
+                <div style="font-size:0.8rem; font-weight:bold; color:#795548">验证结果 / Verification Result</div>
+                <div id="res-fb" class="res-val">-- N</div>
+                <div id="res-vdisp" class="res-sub">V<sub>disp</sub>: -- m³</div>
+            </div>
+        </div>
+
+        <div class="main-layout">
+            <div class="visual-box">
+                <canvas id="cvs"></canvas>
+                <div id="status" class="status-badge">等待验证 / Waiting</div>
+            </div>
+
+            <div class="controls">
+                <div class="group">
+                    <label class="label-row"><span>物体形状 <span class="lang-en">/ Object Shape</span></span></label>
+                    <select id="shape">
+                        <option value="cube">立方体 / Cube</option>
+                        <option value="sphere">球体 / Sphere</option>
+                        <option value="irregular">不规则 / Irregular</option>
+                    </select>
+                </div>
+
+                <div class="group">
+                    <div class="label-row">
+                        <span>液体密度 <span class="lang-en">/ ρ<sub>l</sub></span></span>
+                        <span id="txt-rhol" class="val-tag">1000 kg/m³</span>
+                    </div>
+                    <input type="range" id="sld-rhol" min="500" max="2000" step="50" value="1000">
+                </div>
+
+                <div class="group">
+                    <div class="label-row">
+                        <span>物体密度 <span class="lang-en">/ ρ<sub>o</sub></span></span>
+                        <span id="txt-rhoo" class="val-tag">600 kg/m³</span>
+                    </div>
+                    <input type="range" id="sld-rhoo" min="100" max="2500" step="50" value="600">
+                </div>
+
+                <div class="group">
+                    <div class="label-row">
+                        <span>物体体积 <span class="lang-en">/ V<sub>o</sub></span></span>
+                        <span id="txt-vo" class="val-tag">1.0 m³</span>
+                    </div>
+                    <input type="range" id="sld-vo" min="0.1" max="2.0" step="0.1" value="1.0">
+                </div>
+
+                <div class="button-row">
+                    <button id="btn-check">检查 / CHECK</button>
+                    <button id="btn-reset">重置 / RESET</button>
+                </div>
+
+                <div style="font-size: 0.72rem; color: #8d6e63; margin-top:5px; line-height: 1.4;">
+                    <strong>操作说明：</strong> 调节参数后，点击“检查”按钮，观察物体的最终平衡状态及浮力数值变化。<br>
+                    <span class="lang-en">Adjust parameters and click CHECK to see the equilibrium and result.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('cvs');
+        const ctx = canvas.getContext('2d');
+        const G_FIELD = 9.81;
+
+        const sldRhoL = document.getElementById('sld-rhol');
+        const sldRhoO = document.getElementById('sld-rhoo');
+        const sldVO = document.getElementById('sld-vo');
+        const selShape = document.getElementById('shape');
+        const btnCheck = document.getElementById('btn-check');
+        const btnReset = document.getElementById('btn-reset');
+
+        let currentSubRatio = -0.3;
+        let targetSubRatio = -0.3;
+        let currentVO = 1.0;
+        let isSinking = false;
+
+        function onSliderChange() {
+            document.getElementById('txt-rhol').innerText = sldRhoL.value + " kg/m³";
+            document.getElementById('txt-rhoo').innerText = sldRhoO.value + " kg/m³";
+            document.getElementById('txt-vo').innerText = parseFloat(sldVO.value).toFixed(1) + " m³";
+        }
+
+        function calculate() {
+            const rhoL = parseFloat(sldRhoL.value);
+            const rhoO = parseFloat(sldRhoO.value);
+            const VO = parseFloat(sldVO.value);
+            currentVO = VO;
+
+            let fb, vDisp, statusCN, statusEN, subRatio;
+
+            if (rhoO > rhoL) {
+                vDisp = VO;
+                fb = rhoL * vDisp * G_FIELD;
+                statusCN = "下沉至底"; statusEN = "Sinking to Bottom";
+                subRatio = 1.0;
+                isSinking = true;
+            } else {
+                fb = rhoO * VO * G_FIELD;
+                vDisp = fb / (rhoL * G_FIELD);
+                statusCN = (rhoO === rhoL) ? "悬浮" : "漂浮";
+                statusEN = (rhoO === rhoL) ? "Neutral Buoyancy" : "Floating";
+                subRatio = vDisp / VO;
+                isSinking = false;
+            }
+
+            const resFb = document.getElementById('res-fb');
+            const resV = document.getElementById('res-vdisp');
+            resFb.innerText = fb.toFixed(1) + " N";
+            resV.innerHTML = `V<sub>disp</sub>: ${vDisp.toFixed(3)} m³`;
+            resFb.classList.add('active-res');
+            resV.classList.add('active-v');
+
+            document.getElementById('status').innerText = `${statusCN} / ${statusEN}`;
+
+            // 公式缩放动画
+            document.getElementById('f-fb').style.transform = `scale(${0.85 + (fb / 40000) * 0.6})`;
+            document.getElementById('f-rho').style.transform = `scale(${0.85 + (rhoL / 2000) * 0.4})`;
+            document.getElementById('f-v').style.transform = `scale(${0.85 + (vDisp / 2.0) * 0.6})`;
+
+            targetSubRatio = subRatio;
+            drawLoop();
+        }
+
+        function resetAll() {
+            sldRhoL.value = 1000;
+            sldRhoO.value = 600;
+            sldVO.value = 1.0;
+            selShape.selectedIndex = 0;
+            onSliderChange();
+
+            const resFb = document.getElementById('res-fb');
+            const resV = document.getElementById('res-vdisp');
+            resFb.innerText = "-- N";
+            resV.innerText = "Vdisp: -- m³";
+            resFb.classList.remove('active-res');
+            resV.classList.remove('active-v');
+            document.getElementById('status').innerText = "等待验证 / Waiting";
+
+            document.querySelectorAll('.sym').forEach(s => s.style.transform = 'scale(1)');
+
+            targetSubRatio = -0.3;
+            currentSubRatio = -0.3;
+            isSinking = false;
+            drawLoop();
+        }
+
+        function drawLoop() {
+            if (Math.abs(currentSubRatio - targetSubRatio) > 0.005) {
+                currentSubRatio += (targetSubRatio - currentSubRatio) * 0.08;
+                requestAnimationFrame(drawLoop);
+            }
+
+            const w = canvas.width = canvas.offsetWidth;
+            const h = canvas.height = canvas.offsetHeight;
+            const waterY = h * 0.55;
+
+            ctx.clearRect(0, 0, w, h);
+            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--fluid-color');
+            ctx.fillRect(0, waterY, w, h - waterY);
+
+            const size = (Math.min(w, h) * 0.22) * Math.pow(currentVO, 1 / 3);
+            const cx = w / 2;
+
+            let cy;
+            // 沉底判定逻辑
+            if (isSinking && currentSubRatio > 0.98) {
+                cy = h - size / 2 - 5;
+            } else {
+                cy = waterY - (0.5 - currentSubRatio) * size;
+            }
+
+            ctx.fillStyle = '#a1887f';
+            ctx.strokeStyle = '#5d4037';
+            ctx.lineWidth = 2;
+
+            ctx.beginPath();
+            const shape = selShape.value;
+            if (shape === 'cube') {
+                ctx.rect(cx - size / 2, cy - size / 2, size, size);
+            } else if (shape === 'sphere') {
+                ctx.arc(cx, cy, size / 2, 0, Math.PI * 2);
+            } else {
+                ctx.moveTo(cx - size * 0.4, cy - size * 0.3);
+                ctx.bezierCurveTo(cx - size * 0.7, cy + size * 0.5, cx + size * 0.7, cy + size * 0.5, cx + size * 0.4, cy - size * 0.3);
+                ctx.closePath();
+            }
+            ctx.fill(); ctx.stroke();
+
+            ctx.save();
+            ctx.clip();
+            ctx.fillStyle = "rgba(33, 150, 243, 0.2)";
+            ctx.fillRect(0, waterY, w, h - waterY);
+            ctx.restore();
+        }
+
+        [sldRhoL, sldRhoO, sldVO].forEach(el => el.oninput = onSliderChange);
+        btnCheck.onclick = calculate;
+        btnReset.onclick = resetAll;
+
+        window.addEventListener('load', () => setTimeout(resetAll, 100));
+        window.onresize = drawLoop;
+    </script>
+</body>
+
+</html>

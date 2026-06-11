@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>力矩计算公式 / Moment Formula</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            /* Warm Theme Palette */
+            --bg-color: #FFF9F0;
+            --primary: #FF8c42;
+            --secondary: #FFC75F;
+            --accent: #FF5E5B;
+            --text-dark: #4A403A;
+            --text-light: #FFF9F0;
+            --card-bg: #FFFFFF;
+            --shadow: 0 4px 20px rgba(255, 140, 66, 0.2);
+            --radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            padding-top: 100px;
+        }
+
+        /* Branding - Top-Left */
+        .branding {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: #FFFFFF;
+            background: #FF8C00;
+            padding: 10px 24px;
+            border-radius: 15px;
+            box-shadow: 4px 4px 15px rgba(255, 140, 0, 0.3);
+            letter-spacing: 1px;
+            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
+        }
+
+        /* Main Layout */
+        .container {
+            display: grid;
+            grid-template-areas:
+                "title title"
+                "formula formula"
+                "diagram controls";
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            width: 100%;
+            max-width: 1000px;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .main-title {
+            grid-area: title;
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--primary);
+            font-weight: 400;
+            display: block;
+        }
+
+        /* Formula Display */
+        .formula-display {
+            grid-area: formula;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: #fff5eb;
+            border-radius: var(--radius);
+            border: 2px solid var(--secondary);
+        }
+
+        .formula-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 3rem;
+            margin-bottom: 15px;
+            height: 120px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .symbol {
+            transition: transform 0.3s ease, color 0.3s ease;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        #sym-tau {
+            color: var(--accent);
+        }
+
+        #sym-F {
+            color: var(--primary);
+        }
+
+        #sym-r {
+            color: #0081a7;
+        }
+
+        #sym-theta {
+            color: var(--secondary);
+        }
+
+        .operator {
+            color: var(--text-dark);
+            font-weight: 400;
+        }
+
+        .result-display {
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        #val-tau {
+            color: var(--accent);
+        }
+
+        /* Legend */
+        .legend {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.6);
+            padding: 10px 20px;
+            border-radius: 12px;
+        }
+
+        .legend-item {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .symbol-key {
+            font-weight: 700;
+            margin-right: 4px;
+        }
+
+        /* Diagram Section */
+        .diagram-section {
+            grid-area: diagram;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #fdfdfd;
+            border-radius: var(--radius);
+            border: 1px solid #eee;
+            padding: 10px;
+            min-height: 400px;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Controls Section */
+        .controls-section {
+            grid-area: controls;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 30px;
+            padding: 20px;
+        }
+
+        .control-group {
+            background: #fff;
+        }
+
+        label {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .label-text {
+            flex-grow: 1;
+        }
+
+        .math-symbol {
+            font-family: serif;
+            font-style: italic;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        .unit {
+            font-size: 0.9rem;
+            color: #888;
+            margin-left: 5px;
+        }
+
+        input[type=range] {
+            width: 100%;
+            appearance: none;
+            height: 10px;
+            background: #eee;
+            border-radius: 5px;
+            outline: none;
+            opacity: 0.9;
+            transition: opacity .2s;
+        }
+
+        input[type=range]:hover {
+            opacity: 1;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: transform 0.1s;
+        }
+
+        input[type=range]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* Color coding sliders */
+        #slider-F::-webkit-slider-thumb {
+            background: var(--primary);
+        }
+
+        #slider-F::-moz-range-thumb {
+            background: var(--primary);
+        }
+
+        #slider-r::-webkit-slider-thumb {
+            background: #0081a7;
+        }
+
+        #slider-r::-moz-range-thumb {
+            background: #0081a7;
+        }
+
+        #slider-theta::-webkit-slider-thumb {
+            background: var(--secondary);
+        }
+
+        #slider-theta::-moz-range-thumb {
+            background: var(--secondary);
+        }
+
+        /* Check Button */
+        .check-button {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(255, 140, 66, 0.3);
+            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
+        }
+
+        .check-button:hover {
+            background: #ff7a2f;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 140, 66, 0.4);
+        }
+
+        .check-button:active {
+            transform: translateY(0);
+        }
+
+        /* Direction Selector */
+        select {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: 2px solid var(--secondary);
+            border-radius: 8px;
+            background: white;
+            color: var(--text-dark);
+            cursor: pointer;
+            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
+            transition: border-color 0.3s ease;
+        }
+
+        select:hover {
+            border-color: var(--primary);
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .direction-label {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+
+        /* Responsive */
+        @media (max-width: 800px) {
+            .container {
+                grid-template-areas:
+                    "title"
+                    "formula"
+                    "diagram"
+                    "controls";
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="branding">
+        <div class="logo">Wuli布雷克</div>
+    </div>
+
+    <main class="container">
+        <h1 class="main-title">力矩计算公式<br><span class="subtitle">Moment Formula</span></h1>
+
+        <!-- Formula Display -->
+        <section class="formula-display">
+            <div class="formula-container">
+                <span id="sym-tau" class="symbol" title="Moment / 力矩">τ</span>
+                <span class="operator">=</span>
+                <span id="sym-F" class="symbol" title="Force / 力">F</span>
+                <span class="operator">×</span>
+                <span id="sym-r" class="symbol" title="Distance / 力臂">r</span>
+                <span class="operator">×</span>
+                <span class="operator">sin(</span>
+                <span id="sym-theta" class="symbol" title="Angle / 角度">θ</span>
+                <span class="operator">)</span>
+            </div>
+            <div class="result-display" id="result-container" style="display: none;">
+                τ = <span id="val-tau">0</span> N·m <span id="direction-text"
+                    style="color: var(--primary); margin-left: 10px;"></span>
+            </div>
+
+            <!-- Legend -->
+            <div class="legend">
+                <div class="legend-item"><span class="symbol-key" style="color: var(--accent)">τ</span> : Moment (力矩)
+                </div>
+                <div class="legend-item"><span class="symbol-key" style="color: var(--primary)">F</span> : Force (力)
+                </div>
+                <div class="legend-item"><span class="symbol-key" style="color: #0081a7">r</span> : Distance (力臂)</div>
+                <div class="legend-item"><span class="symbol-key" style="color: var(--secondary)">θ</span> : Angle (角度)
+                </div>
+            </div>
+        </section>
+
+        <!-- Diagram -->
+        <section class="diagram-section">
+            <canvas id="torqueCanvas" width="400" height="400"></canvas>
+        </section>
+
+        <!-- Controls -->
+        <section class="controls-section">
+            <div class="control-group">
+                <label for="slider-F">
+                    <span class="label-text">Force (力) <span class="math-symbol">F</span></span>
+                    <span class="value-display" id="disp-F">50</span> <span class="unit">N</span>
+                </label>
+                <input type="range" id="slider-F" min="10" max="100" step="5" value="50">
+            </div>
+
+            <div class="control-group">
+                <label for="slider-r">
+                    <span class="label-text">Distance (力臂) <span class="math-symbol">r</span></span>
+                    <span class="value-display" id="disp-r">2</span> <span class="unit">m</span>
+                </label>
+                <input type="range" id="slider-r" min="0.5" max="5" step="0.1" value="2">
+            </div>
+
+            <div class="control-group">
+                <label for="slider-theta">
+                    <span class="label-text">Angle (角度) <span class="math-symbol">θ</span></span>
+                    <span class="value-display" id="disp-theta">90</span> <span class="unit">°</span>
+                </label>
+                <input type="range" id="slider-theta" min="0" max="180" step="5" value="90">
+            </div>
+
+            <div class="control-group">
+                <div class="direction-label">Direction (方向)</div>
+                <select id="direction-select">
+                    <option value="ccw">逆时针 / Counterclockwise</option>
+                    <option value="cw">顺时针 / Clockwise</option>
+                </select>
+            </div>
+
+            <button id="check-btn" class="check-button">Check (检查)</button>
+        </section>
+    </main>
+
+    <script>
+        // Elements
+        const sliderF = document.getElementById('slider-F');
+        const sliderR = document.getElementById('slider-r');
+        const sliderTheta = document.getElementById('slider-theta');
+
+        const dispF = document.getElementById('disp-F');
+        const dispR = document.getElementById('disp-r');
+        const dispTheta = document.getElementById('disp-theta');
+
+        const symTau = document.getElementById('sym-tau');
+        const symF = document.getElementById('sym-F');
+        const symR = document.getElementById('sym-r');
+        const symTheta = document.getElementById('sym-theta');
+
+        const valTau = document.getElementById('val-tau');
+        const resultContainer = document.getElementById('result-container');
+        const directionText = document.getElementById('direction-text');
+        const checkBtn = document.getElementById('check-btn');
+        const directionSelect = document.getElementById('direction-select');
+
+        const canvas = document.getElementById('torqueCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // State
+        let state = {
+            F: 50,
+            r: 2,
+            theta: 90,
+            direction: 'ccw', // 'ccw' or 'cw'
+            showResult: false
+        };
+
+        // Initialize
+        function init() {
+            addListeners();
+            update();
+        }
+
+        function addListeners() {
+            sliderF.addEventListener('input', (e) => {
+                state.F = parseFloat(e.target.value);
+                state.showResult = false;
+                update();
+            });
+            sliderR.addEventListener('input', (e) => {
+                state.r = parseFloat(e.target.value);
+                state.showResult = false;
+                update();
+            });
+            sliderTheta.addEventListener('input', (e) => {
+                state.theta = parseFloat(e.target.value);
+                state.showResult = false;
+                update();
+            });
+            directionSelect.addEventListener('change', (e) => {
+                state.direction = e.target.value;
+                state.showResult = false;
+                update();
+            });
+            checkBtn.addEventListener('click', () => {
+                state.showResult = true;
+                update();
+            });
+        }
+
+        function update() {
+            // Update display values
+            dispF.textContent = state.F;
+            dispR.textContent = state.r.toFixed(1);
+            dispTheta.textContent = state.theta;
+
+            // Calculate torque: τ = F × r × sin(θ)
+            // Apply direction: counterclockwise (ccw) is positive, clockwise (cw) is negative
+            const thetaRad = state.theta * Math.PI / 180;
+            let torque = state.F * state.r * Math.sin(thetaRad);
+
+            // Apply direction modifier
+            if (state.direction === 'cw') {
+                torque = -torque;
+            }
+
+            // Show/hide result
+            if (state.showResult) {
+                resultContainer.style.display = 'block';
+                valTau.textContent = torque.toFixed(1);
+
+                // Display the selected direction
+                if (state.direction === 'ccw') {
+                    directionText.textContent = '(逆时针 / Counterclockwise)';
+                } else {
+                    directionText.textContent = '(顺时针 / Clockwise)';
+                }
+            } else {
+                resultContainer.style.display = 'none';
+            }
+
+            // Update formula symbol sizes
+            updateFormulaSizes(torque, thetaRad);
+
+            // Draw diagram
+            drawDiagram(torque, thetaRad);
+        }
+
+        function mapRange(value, inMin, inMax, outMin, outMax) {
+            return ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
+        }
+
+        function updateFormulaSizes(torque, thetaRad) {
+            // Scale based on parameter ranges
+            const scaleF = mapRange(state.F, 10, 100, 1.0, 1.8);
+            const scaleR = mapRange(state.r, 0.5, 5, 0.8, 1.8);
+            const scaleTheta = mapRange(Math.sin(thetaRad), 0, 1, 0.8, 1.6);
+
+            // Torque scales logarithmically
+            const scaleTau = Math.max(1, Math.log10(Math.abs(torque) + 1) * 0.5);
+
+            symF.style.transform = `scale(${scaleF})`;
+            symR.style.transform = `scale(${scaleR})`;
+            symTheta.style.transform = `scale(${scaleTheta})`;
+            symTau.style.transform = `scale(${Math.min(scaleTau, 2.5)})`;
+        }
+
+        function drawDiagram(torque, thetaRad) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const cx = canvas.width / 4;
+            const cy = canvas.height / 2;
+
+            // Draw pivot point
+            ctx.fillStyle = '#333';
+            ctx.beginPath();
+            ctx.arc(cx, cy, 8, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Label pivot point
+            ctx.fillStyle = '#333';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('支点 / Pivot', cx, cy + 30);
+
+            // Draw lever arm (horizontal)
+            const leverLength = mapRange(state.r, 0.5, 5, 80, 220); // increased max length
+            const leverEndX = cx + leverLength;
+            const leverEndY = cy;
+
+            ctx.strokeStyle = '#8B7355';
+            ctx.lineWidth = 8;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(leverEndX, leverEndY);
+            ctx.stroke();
+
+            // Draw force application point
+            ctx.fillStyle = '#FF5E5B';
+            ctx.beginPath();
+            ctx.arc(leverEndX, leverEndY, 6, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Draw force vector
+            const forceScale = mapRange(state.F, 10, 100, 40, 120);
+            // Left (towards pivot) is 0 reference for θ
+            // CCW: Up-Left, CW: Down-Left
+            const thetaRad_val = state.theta * Math.PI / 180;
+            let forceAngle;
+            if (state.direction === 'ccw') {
+                forceAngle = Math.PI - thetaRad_val;
+            } else {
+                forceAngle = Math.PI + thetaRad_val;
+            }
+            const forceEndX = leverEndX + forceScale * Math.cos(forceAngle);
+            const forceEndY = leverEndY - forceScale * Math.sin(forceAngle); // -sin for upward on canvas
+
+            ctx.strokeStyle = '#FF8c42';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(leverEndX, leverEndY);
+            ctx.lineTo(forceEndX, forceEndY);
+            ctx.stroke();
+
+            // Arrow head for force
+            drawArrowHead(forceEndX, forceEndY, forceAngle, '#FF8c42');
+
+
+            // Draw angle symbol θ (Reference: Left)
+            if (state.theta > 0 && state.theta < 180) {
+                const labelDist = 55;
+                const startAngle = Math.PI; // Pointing left
+                const midAngle = (startAngle + forceAngle) / 2;
+                const labelX = leverEndX + labelDist * Math.cos(midAngle);
+                const labelY = leverEndY - labelDist * Math.sin(midAngle);
+                ctx.fillStyle = '#333';
+                ctx.font = 'bold 18px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('θ', labelX, labelY);
+            }
+
+            // Draw perpendicular component Fsinθ (GREEN)
+            if (state.theta > 0 && state.theta < 180) {
+                const perpLength = forceScale * Math.sin(thetaRad);
+                // CCW pulls up (-1), CW pulls down (+1)
+                const vDir = state.direction === 'ccw' ? -1 : 1;
+
+                // Draw perpendicular component (vertical from lever end point)
+                ctx.strokeStyle = '#32CD32'; // Green color for Fsinθ
+                ctx.lineWidth = 3;
+                ctx.setLineDash([]);
+                ctx.beginPath();
+                ctx.moveTo(leverEndX, leverEndY);
+                ctx.lineTo(leverEndX, leverEndY + (vDir * perpLength));
+                ctx.stroke();
+
+                // Arrow head for perpendicular component
+                const perpAngle = vDir === -1 ? Math.PI / 2 : -Math.PI / 2;
+                drawArrowHead(leverEndX, leverEndY + (vDir * perpLength), perpAngle, '#32CD32');
+
+                // Label Fsinθ
+                ctx.fillStyle = '#32CD32';
+                ctx.font = 'bold 14px Arial';
+                ctx.textAlign = 'left';
+                ctx.fillText('Fsinθ', leverEndX + 10, leverEndY + (vDir * perpLength / 2));
+
+                // Optional: Draw dashed line showing decomposition
+                if (state.theta !== 90) {
+                    ctx.strokeStyle = 'rgba(50, 205, 50, 0.3)';
+                    ctx.lineWidth = 1;
+                    ctx.setLineDash([3, 3]);
+                    ctx.beginPath();
+                    ctx.moveTo(leverEndX, leverEndY + (vDir * perpLength));
+                    ctx.lineTo(forceEndX, forceEndY);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+            }
+
+            // Draw distance label
+            ctx.fillStyle = '#0081a7';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('r', cx + leverLength / 2, cy - 15);
+
+            // Draw force label
+            ctx.fillStyle = '#FF8c42';
+            ctx.font = 'bold 14px Arial';
+            const forceLabelX = leverEndX + (forceScale / 2) * Math.cos(forceAngle);
+            const forceLabelY = leverEndY - (forceScale / 2) * Math.sin(forceAngle);
+            ctx.fillText('F', forceLabelX + 20, forceLabelY - 10);
+
+            // Draw torque direction indicator if result is shown
+            if (state.showResult && Math.abs(torque) > 0.1) {
+                const torqueDirection = torque >= 0 ? 1 : -1;
+                drawTorqueIndicator(cx, cy, 30, torqueDirection);
+            }
+        }
+
+        function drawArrowHead(x, y, angle, color) {
+            const headLen = 12;
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x - headLen * Math.cos(angle - Math.PI / 6), y + headLen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(x - headLen * Math.cos(angle + Math.PI / 6), y + headLen * Math.sin(angle + Math.PI / 6));
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function drawTorqueIndicator(cx, cy, radius, direction) {
+            // direction > 0 is CCW, direction < 0 is CW
+            const startAngle = direction > 0 ? 0 : 0; // Relative to horizontal
+            const sweepAngle = direction > 0 ? -1.5 * Math.PI : 1.5 * Math.PI;
+            const endAngle = startAngle + sweepAngle;
+
+            ctx.strokeStyle = '#FF5E5B';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, startAngle, endAngle, direction > 0);
+            ctx.stroke();
+
+            // Arrow head at the end of the arc
+            // The arrowhead should be tangential to the circle at endAngle
+            // If CCW (direction > 0), the tangent points "forward" along the circle
+            const tangentAngle = endAngle + (direction > 0 ? -Math.PI / 2 : Math.PI / 2);
+
+            const headSize = 10;
+            const arrowX = cx + radius * Math.cos(endAngle);
+            const arrowY = cy + radius * Math.sin(endAngle);
+
+            ctx.fillStyle = '#FF5E5B';
+            ctx.beginPath();
+            ctx.moveTo(arrowX, arrowY);
+            ctx.lineTo(arrowX - headSize * Math.cos(tangentAngle - Math.PI / 6),
+                arrowY - headSize * Math.sin(tangentAngle - Math.PI / 6));
+            ctx.lineTo(arrowX - headSize * Math.cos(tangentAngle + Math.PI / 6),
+                arrowY - headSize * Math.sin(tangentAngle + Math.PI / 6));
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        // Start
+        init();
+    </script>
+</body>
+
+</html>

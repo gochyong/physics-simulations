@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>液压计算公式 / Liquid Pressure</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            /* Warm Theme Palette */
+            --bg-color: #FFF9F0;
+            /* Soft Cream */
+            --primary: #FF8c42;
+            /* Warm Orange */
+            --secondary: #FFC75F;
+            /* Sunny Yellow */
+            --accent: #FF5E5B;
+            /* Soft Red/Coral */
+            --text-dark: #4A403A;
+            /* Dark Warm Grey/Brown */
+            --text-light: #FFF9F0;
+            --card-bg: #FFFFFF;
+
+            --shadow: 0 4px 20px rgba(255, 140, 66, 0.2);
+            --radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            padding-top: 100px;
+            /* Space for the fixed branding */
+        }
+
+        /* Branding */
+        .watermark {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            background: #ff8c00;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
+            z-index: 1000;
+            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .main-title {
+            grid-area: title;
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--primary);
+            font-weight: 400;
+            display: block;
+        }
+
+        /* Main Layout */
+        .container {
+            display: grid;
+            grid-template-areas:
+                "title title"
+                "formula formula"
+                "diagram controls";
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            width: 100%;
+            max-width: 1000px;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        /* Formula Display */
+        .formula-display {
+            grid-area: formula;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: #fff5eb;
+            border-radius: var(--radius);
+            border: 2px solid var(--secondary);
+        }
+
+        .formula-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 3rem;
+            /* Base size */
+            margin-bottom: 15px;
+            height: 120px;
+            /* Allocated space for growing symbols */
+        }
+
+        .symbol {
+            transition: font-size 0.3s ease, color 0.3s ease;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        #sym-P {
+            color: var(--accent);
+        }
+
+        #sym-rho {
+            color: var(--primary);
+        }
+
+        #sym-g {
+            color: var(--secondary);
+            text-shadow: 1px 1px 0 #dca13a;
+        }
+
+        #sym-h {
+            color: #0081a7;
+        }
+
+        /* Blue for water depth contrast */
+
+        .operator {
+            color: var(--text-dark);
+            font-weight: 400;
+        }
+
+        .result-display {
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        #val-P {
+            color: var(--accent);
+        }
+
+        /* Diagram Section */
+        .diagram-section {
+            grid-area: diagram;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            background: #fdfdfd;
+            border-radius: var(--radius);
+            border: 1px solid #eee;
+            padding: 10px;
+            min-height: 400px;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Controls Section */
+        .controls-section {
+            grid-area: controls;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 30px;
+            padding: 20px;
+        }
+
+        .control-group {
+            background: #fff;
+        }
+
+        label {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .label-text {
+            flex-grow: 1;
+        }
+
+        .math-symbol {
+            font-family: serif;
+            font-style: italic;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        .unit {
+            font-size: 0.9rem;
+            color: #888;
+            margin-left: 5px;
+        }
+
+        input[type=range] {
+            width: 100%;
+            appearance: none;
+            height: 10px;
+            background: #eee;
+            border-radius: 5px;
+            outline: none;
+            opacity: 0.9;
+            transition: opacity .2s;
+        }
+
+        input[type=range]:hover {
+            opacity: 1;
+        }
+
+        /* Custom Slider Support */
+        input[type=range]::-webkit-slider-thumb {
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: transform 0.1s;
+        }
+
+        input[type=range]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* Color coding sliders to match formula */
+        #slider-rho::-webkit-slider-thumb {
+            background: var(--primary);
+        }
+
+        #slider-rho::-moz-range-thumb {
+            background: var(--primary);
+        }
+
+        #slider-g::-webkit-slider-thumb {
+            background: var(--secondary);
+        }
+
+        #slider-g::-moz-range-thumb {
+            background: var(--secondary);
+        }
+
+        #slider-h::-webkit-slider-thumb {
+            background: #0081a7;
+        }
+
+        #slider-h::-moz-range-thumb {
+            background: #0081a7;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 800px) {
+            .container {
+                grid-template-areas:
+                    "formula"
+                    "diagram"
+                    "controls";
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Legend Styles */
+        .legend {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.6);
+            padding: 10px 20px;
+            border-radius: 12px;
+        }
+
+        .legend-item {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .symbol-key {
+            font-weight: 700;
+            margin-right: 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="watermark">Wuli布雷克</div>
+
+    <main class="container">
+        <h1 class="main-title">液压计算公式<br><span class="subtitle">Liquid Pressure Formula</span></h1>
+
+        <!-- Interactive Formula Section -->
+        <section class="formula-display">
+            <div class="formula-container">
+                <span id="sym-P" class="symbol" title="Pressure / 压强">P</span>
+                <span class="operator">=</span>
+                <span id="sym-rho" class="symbol" title="Density / 密度">&rho;</span>
+                <span id="sym-g" class="symbol" title="Gravitational field strength / 重力场强度">g</span>
+                <span id="sym-h" class="symbol" title="Depth / 深度">h</span>
+            </div>
+            <div class="result-display">
+                P = <span id="val-P">0</span> Pa
+            </div>
+
+            <!-- Symbol Legend -->
+            <div class="legend">
+                <div class="legend-item"><span class="symbol-key" style="color: var(--accent)">P</span> : Pressure (压强)
+                </div>
+                <div class="legend-item"><span class="symbol-key" style="color: var(--primary)">ρ</span> : Density
+                    (液体的密度)</div>
+                <div class="legend-item"><span class="symbol-key" style="color: var(--secondary)">g</span> :
+                    Gravitational field strength (重力场强度)</div>
+                <div class="legend-item"><span class="symbol-key" style="color: #0081a7">h</span> : Depth (深度)</div>
+            </div>
+        </section>
+
+        <!-- Visualization Diagram -->
+        <section class="diagram-section">
+            <canvas id="pressureCanvas" width="400" height="400"></canvas>
+            <div class="overlay-info">
+                <!-- Labels can go here if needed overlaying the canvas -->
+            </div>
+        </section>
+
+        <!-- Controls Section -->
+        <section class="controls-section">
+            <div class="control-group">
+                <label for="slider-rho">
+                    <span class="label-text">Density (密度) <span class="math-symbol">&rho;</span></span>
+                    <span class="value-display" id="disp-rho">1000</span> <span class="unit">kg/m³</span>
+                </label>
+                <input type="range" id="slider-rho" min="500" max="2000" step="50" value="1000">
+            </div>
+
+            <div class="control-group">
+                <label for="slider-g">
+                    <span class="label-text">Gravitational field strength (重力场强度) <span
+                            class="math-symbol">g</span></span>
+                    <span class="value-display" id="disp-g">9.81</span> <span class="unit">N/kg</span>
+                </label>
+                <!-- Fixed value, no slider needed or disabled -->
+                <input type="range" id="slider-g" min="1" max="20" step="0.1" value="9.81" disabled
+                    style="opacity: 0.5; cursor: not-allowed;">
+            </div>
+
+            <div class="control-group">
+                <label for="slider-h">
+                    <span class="label-text">Depth (深度) <span class="math-symbol">h</span></span>
+                    <span class="value-display" id="disp-h">2</span> <span class="unit">m</span>
+                </label>
+                <input type="range" id="slider-h" min="0" max="10" step="0.1" value="2">
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Elements
+        const sliderRho = document.getElementById('slider-rho');
+        const sliderG = document.getElementById('slider-g');
+        const sliderH = document.getElementById('slider-h');
+
+        const dispRho = document.getElementById('disp-rho');
+        const dispG = document.getElementById('disp-g');
+        const dispH = document.getElementById('disp-h');
+
+        const symP = document.getElementById('sym-P');
+        const symRho = document.getElementById('sym-rho');
+        const symG = document.getElementById('sym-g');
+        const symH = document.getElementById('sym-h');
+
+        const valP = document.getElementById('val-P');
+
+        const canvas = document.getElementById('pressureCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Constants
+        const BASE_FONT_SIZE = 3; // rem
+        const MIN_SCALE = 0.8;
+        const MAX_SCALE = 2.0;
+
+        // State
+        let state = {
+            rho: 1000,
+            g: 9.81,
+            h: 2
+        };
+
+        // Initialization
+        function init() {
+            addListeners();
+            update();
+        }
+
+        function addListeners() {
+            sliderRho.addEventListener('input', (e) => {
+                state.rho = parseFloat(e.target.value);
+                update();
+            });
+            // g is fixed
+            sliderH.addEventListener('input', (e) => {
+                state.h = parseFloat(e.target.value);
+                update();
+            });
+        }
+
+        function update() {
+            // 1. Update Display Values
+            dispRho.textContent = state.rho;
+            dispG.textContent = state.g.toFixed(2);
+            dispH.textContent = state.h.toFixed(1);
+
+            // 2. Calculate Pressure
+            // P = rho * g * h
+            const pressure = state.rho * state.g * state.h;
+            valP.textContent = pressure.toFixed(0);
+
+            // 3. Update Visual Formula Sizes
+            updateFormulaSizes(pressure);
+
+            // 4. Draw Diagram
+            drawDiagram(pressure);
+        }
+
+        function mapRange(value, inMin, inMax, outMin, outMax) {
+            return ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
+        }
+
+        function updateFormulaSizes(pressure) {
+            // Scale factors based on input ranges
+            // Rho: 500-2000
+            const scaleRho = mapRange(state.rho, 500, 2000, 1.0, 1.8);
+            // g: 1-20
+            const scaleG = mapRange(state.g, 1, 20, 0.8, 1.5);
+            // h: 0-10
+            const scaleH = mapRange(state.h, 0, 10, 0.8, 2.0);
+
+            // P is result, let it scale loosely based on anticipated max/min P
+            // Min P ~ 0, Max P ~ 2000 * 20 * 10 = 400,000
+            // Logarithmic scale might be better for P to avoid exploding size
+            const scaleP = Math.max(1, Math.log10(pressure + 1) * 0.4);
+
+            // Apply scales (clamped reasonably)
+            symRho.style.transform = `scale(${scaleRho})`;
+            symG.style.transform = `scale(${scaleG})`;
+            symH.style.transform = `scale(${scaleH})`;
+            symP.style.transform = `scale(${Math.min(scaleP, 2.5)})`; // Cap P scale
+        }
+
+        function drawDiagram(pressure) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const tankWidth = 200;
+            const tankHeight = 300;
+            const tankTop = 50;
+            const waterLevelY = tankTop + 20; // Water starts a bit below rim
+            const tankBottom = tankTop + tankHeight;
+
+            // Draw Tank
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(cx - tankWidth / 2, tankTop);
+            ctx.lineTo(cx - tankWidth / 2, tankBottom);
+            ctx.lineTo(cx + tankWidth / 2, tankBottom);
+            ctx.lineTo(cx + tankWidth / 2, tankTop);
+            ctx.stroke();
+
+            // Draw Water
+            // Color depends on density (rho)
+            // 500 (light) -> 2000 (dark)
+            const lightness = mapRange(state.rho, 500, 2000, 90, 40);
+            ctx.fillStyle = `hsl(200, 80%, ${lightness}%)`;
+            ctx.fillRect(cx - tankWidth / 2 + 2, waterLevelY, tankWidth - 4, tankBottom - waterLevelY - 2);
+
+            // Draw Depth Point (h)
+            // h goes from 0 to 10m
+            // We map 0-10m to visual pixels in the tank
+            // Let's say the tank represents 10m depth capacity for visualization
+            const maxVisualDepth = tankBottom - waterLevelY - 20; // buffer
+            const visualDepth = mapRange(state.h, 0, 10, 0, maxVisualDepth);
+            const pointY = waterLevelY + visualDepth;
+
+            if (state.h > 0) {
+                // Draw dashed line for surface
+                ctx.setLineDash([5, 5]);
+                ctx.strokeStyle = '#555';
+                ctx.beginPath();
+                ctx.moveTo(cx - tankWidth / 2 - 20, waterLevelY);
+                ctx.lineTo(cx + tankWidth / 2 + 20, waterLevelY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Draw dashed line for depth
+                ctx.beginPath();
+                ctx.moveTo(cx - tankWidth / 2 - 20, pointY);
+                ctx.lineTo(cx, pointY);
+                ctx.stroke();
+
+                // Draw 'h' arrows
+                drawDimensionLine(cx - tankWidth / 2 - 10, waterLevelY, pointY, 'h');
+
+                // Draw "Compressible Sphere"
+                // Sphere shrinks as pressure increases
+                // Max radius = 35, Min radius = 5 (Exaggerated effect)
+                // Assume max pressure around 200,000 for visualization scale
+                const maxRadius = 35;
+                const minRadius = 5;
+                const radius = mapRange(pressure, 0, 200000, maxRadius, minRadius); // Shrinks with pressure
+
+                ctx.fillStyle = '#FF5E5B';
+                ctx.beginPath();
+                ctx.arc(cx, pointY, radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Draw contour/shading for 3D effect
+                ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                ctx.beginPath();
+                ctx.arc(cx - radius * 0.3, pointY - radius * 0.3, radius * 0.2, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Draw Pressure Arrows acting on the sphere
+                // Arrow size depends on g (gravity) or just P
+                // They should touch the sphere surface
+                const arrowLength = mapRange(pressure, 0, 200000, 15, 90);
+                drawPressureArrowsOnSphere(cx, pointY, radius, arrowLength);
+            } else {
+                // h=0, point at surface
+                ctx.fillStyle = '#FF5E5B';
+                ctx.beginPath();
+                ctx.arc(cx, waterLevelY, 25, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function drawPressureArrowsOnSphere(cx, cy, radius, length) {
+            ctx.strokeStyle = '#FF8c42';
+            ctx.lineWidth = 3;
+            const numArrows = 8;
+
+            for (let i = 0; i < numArrows; i++) {
+                const angle = (Math.PI * 2 * i) / numArrows;
+                const startR = radius + length + 5; // Start further out
+                const endR = radius + 2; // End near the surface
+
+                const x1 = cx + Math.cos(angle) * startR;
+                const y1 = cy + Math.sin(angle) * startR;
+                const x2 = cx + Math.cos(angle) * endR;
+                const y2 = cy + Math.sin(angle) * endR;
+
+                drawSingleArrow(x1, y1, x2, y2);
+            }
+        }
+
+        function drawDimensionLine(x, yStart, yEnd, label) {
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(x, yStart);
+            ctx.lineTo(x, yEnd);
+            ctx.stroke();
+
+            // Arrows
+            // Top
+            ctx.beginPath();
+            ctx.moveTo(x - 3, yStart + 5);
+            ctx.lineTo(x, yStart);
+            ctx.lineTo(x + 3, yStart + 5);
+            ctx.stroke();
+
+            // Bottom
+            ctx.beginPath();
+            ctx.moveTo(x - 3, yEnd - 5);
+            ctx.lineTo(x, yEnd);
+            ctx.lineTo(x + 3, yEnd - 5);
+            ctx.stroke();
+
+            // Label
+            ctx.fillStyle = '#000';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'right';
+            ctx.fillText(label, x - 5, (yStart + yEnd) / 2 + 5);
+        }
+
+        function drawPressureArrows(x, y, size) {
+            ctx.strokeStyle = '#FF8c42';
+            ctx.lineWidth = 2;
+            const offset = 8;
+            const s = Math.min(size, 30); // Cap visual size
+
+            // Top arrow (down)
+            drawSingleArrow(x, y - offset - s, x, y - offset);
+            // Bottom arrow (up)
+            drawSingleArrow(x, y + offset + s, x, y + offset);
+            // Left arrow (right)
+            drawSingleArrow(x - offset - s, y, x - offset, y);
+            // Right arrow (left)
+            drawSingleArrow(x + offset + s, y, x + offset, y);
+        }
+
+        function drawSingleArrow(x1, y1, x2, y2) {
+            const headLen = 5;
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(x2, y2);
+            ctx.lineTo(x2 - headLen * Math.cos(angle - Math.PI / 6), y2 - headLen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(x2 - headLen * Math.cos(angle + Math.PI / 6), y2 - headLen * Math.sin(angle + Math.PI / 6));
+            ctx.fillStyle = '#FF8c42';
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        // Start
+        init();
+    </script>
+</body>
+
+</html>

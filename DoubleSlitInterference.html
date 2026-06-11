@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>双缝干涉 / Double-Slit Interference - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #FFF9F0; --primary: #FF8c42; --secondary: #FFC75F;
+            --accent: #FF5E5B; --text-dark: #4A403A; --card-bg: #FFFFFF;
+            --shadow: 0 6px 30px rgba(255, 140, 66, 0.18);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-color); color: var(--text-dark);
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh; padding: 5px 40px 10px;
+        }
+        .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
+        .logo {
+            font-weight: 700; font-size: 1.3rem; color: #fff;
+            background: var(--primary); padding: 6px 18px; border-radius: 16px;
+            box-shadow: 4px 4px 15px rgba(255,140,66,0.3);
+        }
+        .container {
+            width: 100%; max-width: 1400px; margin-top: 8px;
+            display: grid;
+            grid-template-areas:
+                "header header"
+                "formula formula"
+                "diagram controls";
+            grid-template-columns: 1fr 420px; gap: 12px;
+        }
+        header { grid-area: header; text-align: center; }
+        h1 { font-size: 2rem; color: var(--text-dark); margin-bottom: 2px; }
+        .formula-display {
+            grid-area: formula; background: var(--card-bg);
+            border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px;
+            display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb;
+        }
+        .formula-container {
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px; flex-wrap: wrap; min-height: 44px;
+        }
+        .result-row {
+            font-size: 0.95rem; font-weight: 600; color: var(--text-dark);
+            margin-top: 4px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;
+        }
+        .legend {
+            display: flex; gap: 16px; justify-content: center;
+            border-top: 1px solid #eee; padding-top: 6px; width: 100%; flex-wrap: wrap;
+        }
+        .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+        .color-swatch { width: 18px; height: 18px; border-radius: 4px; display: inline-block; border: 1px solid #ddd; vertical-align: middle; }
+
+        .diagram-section {
+            grid-area: diagram; background: #1a1a2e; border-radius: 20px;
+            box-shadow: var(--shadow); position: relative; overflow: hidden;
+            min-height: 440px; display: flex; flex-direction: column; border: 2px solid #fff;
+        }
+        canvas { width: 100%; flex: 1; display: block; }
+
+        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
+        .control-panel {
+            background: var(--card-bg); border-radius: 20px; box-shadow: var(--shadow);
+            padding: 14px 18px; display: flex; flex-direction: column; gap: 10px;
+        }
+        .param-section {
+            background: #fff; border-radius: 14px; padding: 10px 14px 8px; border: 2px solid #f5f0eb;
+        }
+        .param-section-header {
+            font-weight: 700; font-size: 0.95rem; margin-bottom: 6px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .param-section-header .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+        .control-group { display: flex; flex-direction: column; gap: 3px; margin-bottom: 1px; }
+        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
+        .val-badge {
+            background: #fff; padding: 1px 7px; border-radius: 7px;
+            font-size: 0.85rem; border: 2px solid #f0f0f0;
+        }
+        input[type=range] {
+            width: 100%; appearance: none; height: 6px;
+            background: #eee; border-radius: 3px; outline: none;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            appearance: none; width: 20px; height: 20px; border-radius: 50%;
+            cursor: pointer; background: var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px; }
+        .ctrl-btn {
+            padding: 10px; border: none; border-radius: 14px;
+            font-size: 1.05rem; font-weight: 700; cursor: pointer;
+            transition: all 0.2s; color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .start { background-color: var(--primary); }
+        .pause { background-color: #2ecc71; }
+        .reset { background-color: #95a5a6; }
+        .ctrl-btn:active { transform: translateY(2px); box-shadow: none; }
+        .info-card {
+            background: var(--card-bg); border-radius: 20px;
+            padding: 12px 16px; box-shadow: var(--shadow);
+            font-size: 0.9rem; line-height: 1.4; color: #5D6D7E;
+        }
+        @media (max-width: 1100px) {
+            .container {
+                grid-template-areas: "header" "formula" "diagram" "controls";
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="branding"><div class="logo">Wuli布雷克</div></div>
+
+    <div class="container">
+        <header><h1>双缝干涉 / Double-Slit Interference</h1></header>
+
+        <section class="formula-display">
+            <div class="formula-container" id="formula-root"></div>
+            <div class="result-row">
+                <span>条纹间距 Δx = <strong style="color:var(--primary)" id="res-dx">—</strong></span>
+                <span>可见亮纹: <strong style="color:var(--accent)" id="res-orders">—</strong></span>
+            </div>
+            <div class="legend">
+                <div class="legend-item"><span class="legend-dot" style="background:#ffdd57"></span> 亮纹 Bright</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#111;border:2px solid #555"></span> 暗纹 Dark</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#e74c3c"></span> 缝 S₁ S₂</div>
+                <div class="legend-item"><span class="color-swatch" id="swatch-legend"></span> λ 颜色</div>
+            </div>
+        </section>
+
+        <section class="diagram-section">
+            <canvas id="simCanvas"></canvas>
+        </section>
+
+        <section class="controls-section">
+            <div class="control-panel">
+                <div class="param-section" style="border-left-color:#9b59b6;">
+                    <div class="param-section-header">
+                        <span class="dot" style="background:#9b59b6;"></span>
+                        光源 / Light &nbsp;<span class="color-swatch" id="swatch-light"></span>
+                    </div>
+                    <div class="control-group">
+                        <div class="label-row"><span>波长 λ / Wavelength</span><span id="lambda-badge" class="val-badge">550 nm</span></div>
+                        <input type="range" id="lambda-slider" min="400" max="700" step="5" value="550">
+                    </div>
+                </div>
+                <div class="param-section" style="border-left-color:#e74c3c;">
+                    <div class="param-section-header">
+                        <span class="dot" style="background:#e74c3c;"></span>
+                        双缝与屏 / Slits &amp; Screen
+                    </div>
+                    <div class="control-group">
+                        <div class="label-row"><span>缝间距 a / Separation</span><span id="a-badge" class="val-badge">0.50 mm</span></div>
+                        <input type="range" id="a-slider" min="0.2" max="2.0" step="0.01" value="0.5">
+                    </div>
+                    <div class="control-group">
+                        <div class="label-row"><span>缝到屏距离 D / Distance</span><span id="d-badge" class="val-badge">2.0 m</span></div>
+                        <input type="range" id="d-slider" min="0.5" max="5.0" step="0.1" value="2.0">
+                    </div>
+                </div>
+                <div class="btn-row">
+                    <button id="btn-start" class="ctrl-btn start">开始 Start</button>
+                    <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
+                </div>
+            </div>
+            <div class="info-card">
+                <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem;">演示要点 / Key points</div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;background:rgba(255,140,66,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--primary);font-weight:700;">⊕</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">波峰+波峰 → 亮纹</div><div style="font-size:0.78rem;color:#888;">Crest + Crest = Constructive → Bright fringe.</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;background:rgba(44,62,80,0.08);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#555;font-weight:700;">⊖</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">波峰+波谷 → 暗纹</div><div style="font-size:0.78rem;color:#888;">Crest + Trough = Destructive → Dark fringe.</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;background:rgba(46,204,113,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#2ecc71;font-weight:700;">Δ</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">Δx = λD/a，红光条纹更宽</div><div style="font-size:0.78rem;color:#888;">Longer λ → wider fringe spacing.</div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas'), ctx = canvas.getContext('2d');
+        const sLambda = document.getElementById('lambda-slider'), sA=document.getElementById('a-slider'), sD=document.getElementById('d-slider');
+        const bLambda = document.getElementById('lambda-badge'), bA=document.getElementById('a-badge'), bD=document.getElementById('d-badge');
+        const resDx = document.getElementById('res-dx'), resOrders = document.getElementById('res-orders');
+        const fRoot = document.getElementById('formula-root');
+        const swatchLight = document.getElementById('swatch-light'), swatchLegend=document.getElementById('swatch-legend');
+        const bStart = document.getElementById('btn-start'), bReset=document.getElementById('btn-reset');
+
+        const state = { lambdaNm:550, aMm:0.5, Dm:2.0, time:0, isPlaying:false };
+
+        function lambdaToRGB(nm) {
+            let r,g,b;
+            if(nm<440){r=-(nm-440)/60;g=0;b=1;}
+            else if(nm<490){r=0;g=(nm-440)/50;b=1;}
+            else if(nm<510){r=0;g=1;b=-(nm-510)/20;}
+            else if(nm<580){r=(nm-510)/70;g=1;b=0;}
+            else if(nm<645){r=1;g=-(nm-645)/65;b=0;}
+            else{r=1;g=0;b=0;}
+            let f=1;
+            if(nm<420)f=0.3+0.7*(nm-380)/40;
+            else if(nm>700)f=0.3+0.7*(780-nm)/80;
+            return {r:Math.round(r*f*255),g:Math.round(g*f*255),b:Math.round(b*f*255)};
+        }
+        function lCSS(nm){const c=lambdaToRGB(nm);return `rgb(${c.r},${c.g},${c.b})`;}
+
+        function resize(){canvas.width=canvas.clientWidth;canvas.height=canvas.clientHeight;}
+        window.addEventListener('resize',resize);
+
+        function updateFormulaUI(){
+            const base=22,lc=lCSS(state.lambdaNm);
+            fRoot.innerHTML=`
+                <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;justify-content:center;">
+                    <span style="font-size:${base}px;font-weight:700;">Δx</span>
+                    <span style="font-size:${base}px;">=</span>
+                    <span style="color:${lc};font-size:${base*1.1}px;font-weight:700;">λ</span>
+                    <span style="font-size:${base}px;">·</span>
+                    <span style="color:#2ecc71;font-size:${base*1.1}px;font-weight:700;">D</span>
+                    <span style="font-size:${base}px;">/</span>
+                    <span style="color:#e74c3c;font-size:${base*1.1}px;font-weight:700;">a</span>
+                </div>
+                <div style="font-size:0.82rem;color:#999;margin-top:4px;text-align:center;">
+                    λ=${state.lambdaNm}nm | a=${state.aMm.toFixed(2)}mm | D=${state.Dm.toFixed(1)}m
+                </div>`;
+        }
+
+        function update(){
+            state.lambdaNm=parseInt(sLambda.value); state.aMm=parseFloat(sA.value); state.Dm=parseFloat(sD.value);
+            bLambda.textContent=state.lambdaNm+' nm';
+            bA.textContent=state.aMm.toFixed(2)+' mm';
+            bD.textContent=state.Dm.toFixed(1)+' m';
+            const css=lCSS(state.lambdaNm); swatchLight.style.backgroundColor=css; swatchLegend.style.backgroundColor=css;
+            updateFormulaUI();
+            if(state.isPlaying)state.time+=0.016;
+            const lm=state.lambdaNm*1e-9, am=state.aMm*1e-3;
+            resDx.textContent=(lm*state.Dm/am*1000).toFixed(3)+' mm';
+            const maxN=Math.floor(am/lm);
+            if(maxN<=4){const o=[];for(let n=-maxN;n<=maxN;n++)o.push(n);resOrders.textContent=o.join(', ');}
+            else resOrders.textContent='0,±1,…,±'+maxN;
+            draw(); requestAnimationFrame(update);
+        }
+
+        function draw(){
+            const w=canvas.width, h=canvas.height;
+            ctx.clearRect(0,0,w,h);
+            ctx.fillStyle='#1a1a2e'; ctx.fillRect(0,0,w,h);
+
+            const midY=h*0.5;
+            const lc=lCSS(state.lambdaNm);
+            const lrgb=lambdaToRGB(state.lambdaNm);
+            const lm=state.lambdaNm*1e-9;
+            const am=state.aMm*1e-3;
+
+            // === Balanced Layout ===
+            const srcX2=w*0.07;               // light source right edge
+            const slitX=w*0.18;               // slit barrier x
+            const fieldX1=slitX+1;            // wave field start
+            const fieldY1=h*0.04;             // wave field top
+            const fieldY2=h*0.96;             // wave field bottom
+            const fieldH=fieldY2-fieldY1;
+            // Screen position varies with D: D=0.5→closer, D=5.0→farther
+            const dMin=0.5, dMax=5.0;
+            const screenXMin=slitX+80;
+            const screenXMax=w*0.94;
+            const dFrac=(state.Dm-dMin)/(dMax-dMin);
+            const screenX=screenXMin+dFrac*(screenXMax-screenXMin);
+            const fieldW=screenX-fieldX1;
+
+            // Slit positions in pixel space
+            const aPx=state.aMm*100;           // visual scaling
+            const halfA=aPx/2;
+            const s1y=midY-halfA;
+            const s2y=midY+halfA;
+
+            // simLambda: visual wavelength spacing on canvas
+            const simLambda=14+(state.lambdaNm-400)/300*12; // 14-26 px
+
+            // --- Light Source ---
+            const grad=ctx.createLinearGradient(0,0,srcX2,0);
+            grad.addColorStop(0,lc); grad.addColorStop(0.7,lc); grad.addColorStop(1,'rgba(0,0,0,0)');
+            ctx.fillStyle=grad; ctx.fillRect(0,midY-25,srcX2,50);
+            ctx.fillStyle='#fff'; ctx.font='bold 10px Fredoka'; ctx.textAlign='center';
+            ctx.fillText('单色光源',srcX2/2,midY-30);
+            ctx.fillText('λ='+state.lambdaNm+'nm',srcX2/2,midY+38);
+
+            // --- Rays to slits ---
+            ctx.strokeStyle=lc; ctx.lineWidth=1; ctx.globalAlpha=0.3; ctx.setLineDash([4,5]);
+            ctx.beginPath(); ctx.moveTo(srcX2,midY-6); ctx.lineTo(slitX-3,s1y); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(srcX2,midY+6); ctx.lineTo(slitX-3,s2y); ctx.stroke();
+            ctx.setLineDash([]); ctx.globalAlpha=1;
+
+            // --- Slit Barrier ---
+            ctx.fillStyle='#2c3e50';
+            const barTop=Math.min(s1y,s2y)-20;
+            const barBot=Math.max(s1y,s2y)+20;
+            ctx.fillRect(slitX-2,barTop,8,barBot-barTop);
+
+            // Slit glow
+            [s1y,s2y].forEach(sy=>{
+                const g=ctx.createRadialGradient(slitX,sy,0,slitX,sy,12);
+                g.addColorStop(0,'#fff'); g.addColorStop(0.3,lc); g.addColorStop(1,'rgba(0,0,0,0)');
+                ctx.fillStyle=g; ctx.fillRect(slitX-10,sy-12,20,24);
+                ctx.fillStyle='#fff'; ctx.fillRect(slitX-1,sy-3,5,6);
+            });
+            ctx.fillStyle='#e74c3c'; ctx.font='bold 10px Fredoka'; ctx.textAlign='right';
+            ctx.fillText('S₁',slitX-7,s1y+4); ctx.fillText('S₂',slitX-7,s2y+4);
+
+            // a label
+            ctx.strokeStyle='#e74c3c'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+            ctx.beginPath(); ctx.moveTo(slitX+14,s1y); ctx.lineTo(slitX+14,s2y); ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle='#e74c3c'; ctx.textAlign='left';
+            ctx.fillText('a='+state.aMm.toFixed(2)+'mm',slitX+18,midY+4);
+
+            // === Circular Wavefronts ===
+            const maxR=Math.sqrt(fieldW*fieldW+(fieldH/2)*(fieldH/2))+30;
+            const numRings=Math.floor(maxR/simLambda)+2;
+
+            // Clip to field
+            ctx.save();
+            ctx.beginPath(); ctx.rect(fieldX1,fieldY1,fieldW,fieldH); ctx.clip();
+
+            const t=state.time;
+            // Phase offset makes wavefronts expand outward
+            const phase=(t*simLambda*1.6)%simLambda;
+
+            // Draw crests from S₁ (solid colored circles at r = n*simLambda + phase)
+            for(let i=0;i<numRings;i++){
+                const r=i*simLambda+phase;
+                ctx.beginPath(); ctx.arc(slitX,s1y,r,0,Math.PI*2);
+                ctx.strokeStyle=lc; ctx.lineWidth=1.3; ctx.globalAlpha=0.6; ctx.stroke();
+            }
+            // Draw troughs from S₁ (dashed, between crests)
+            for(let i=0;i<numRings;i++){
+                const r=i*simLambda+simLambda/2+phase;
+                ctx.beginPath(); ctx.arc(slitX,s1y,r,0,Math.PI*2);
+                ctx.setLineDash([3,5]); ctx.strokeStyle=lc; ctx.lineWidth=0.8; ctx.globalAlpha=0.25; ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            // Draw crests from S₂
+            for(let i=0;i<numRings;i++){
+                const r=i*simLambda+phase;
+                ctx.beginPath(); ctx.arc(slitX,s2y,r,0,Math.PI*2);
+                ctx.strokeStyle=lc; ctx.lineWidth=1.3; ctx.globalAlpha=0.6; ctx.stroke();
+            }
+            // Draw troughs from S₂ (dashed)
+            for(let i=0;i<numRings;i++){
+                const r=i*simLambda+simLambda/2+phase;
+                ctx.beginPath(); ctx.arc(slitX,s2y,r,0,Math.PI*2);
+                ctx.setLineDash([3,5]); ctx.strokeStyle=lc; ctx.lineWidth=0.8; ctx.globalAlpha=0.25; ctx.stroke();
+                ctx.setLineDash([]);
+            }
+            ctx.globalAlpha=1;
+
+            ctx.restore();
+
+            // Field subtle border
+            ctx.strokeStyle='rgba(255,255,255,0.1)'; ctx.lineWidth=1;
+            ctx.strokeRect(fieldX1,fieldY1,fieldW,fieldH);
+
+            // --- Screen (spans full field height) ---
+            const scrTop=fieldY1+4;
+            const scrBot=fieldY2-4;
+            ctx.strokeStyle='#aaa'; ctx.lineWidth=2;
+            ctx.beginPath(); ctx.moveTo(screenX,scrTop); ctx.lineTo(screenX,scrBot); ctx.stroke();
+            ctx.fillStyle='#ddd'; ctx.font='bold 12px Fredoka'; ctx.textAlign='center';
+            ctx.fillText('屏 Screen',screenX,scrTop-10);
+
+            // D arrow (positioned just below the field)
+            const dY=fieldY2+10;
+            if(dY<h-8){
+                ctx.strokeStyle='#2ecc71'; ctx.lineWidth=1.5; ctx.setLineDash([4,3]);
+                ctx.beginPath(); ctx.moveTo(slitX+6,dY); ctx.lineTo(screenX-3,dY); ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.fillStyle='#2ecc71';
+                ctx.beginPath();ctx.moveTo(slitX+6,dY);ctx.lineTo(slitX+15,dY-5);ctx.lineTo(slitX+15,dY+5);ctx.fill();
+                ctx.beginPath();ctx.moveTo(screenX-3,dY);ctx.lineTo(screenX-13,dY-5);ctx.lineTo(screenX-13,dY+5);ctx.fill();
+                ctx.fillText('D='+state.Dm.toFixed(1)+'m',(slitX+screenX)/2,dY-7);
+            }
+
+            // --- Fringe pattern on screen (pixel-space geometric computation) ---
+            const scrY1=scrTop+2, scrY2=scrBot-2, scrH=scrY2-scrY1;
+            const Dpx=screenX-slitX;
+
+            // Effective pixel-wavelength: scales with real λ, tuned so ~5 fringes at defaults
+            const lambdaPx=10*(state.lambdaNm/550);
+            // Effective max order
+            const rawMaxN=Math.floor(Math.max(aPx,1)/Math.max(lambdaPx,0.5));
+
+            // Draw fringe intensity for each pixel row on screen
+            for(let i=0;i<Math.floor(scrH);i++){
+                const yPx=scrY1+i;
+                const dy=yPx-midY;
+
+                // Geometric path difference from S₁ and S₂ in px
+                const d1=Math.sqrt(Dpx*Dpx+(dy-halfA)*(dy-halfA));
+                const d2=Math.sqrt(Dpx*Dpx+(dy+halfA)*(dy+halfA));
+                const pathDiffPx=d1-d2;
+
+                // Intensity using effective px-wavelength
+                const delta=Math.PI*pathDiffPx/lambdaPx;
+                const I=Math.cos(delta)*Math.cos(delta);
+
+                ctx.fillStyle=`rgb(${Math.floor(lrgb.r*I)},${Math.floor(lrgb.g*I)},${Math.floor(lrgb.b*I)})`;
+                ctx.fillRect(screenX+2,yPx,5,1.2);
+                if(I>0.7){
+                    ctx.fillStyle=`rgba(${lrgb.r},${lrgb.g},${lrgb.b},${0.1+I*0.5})`;
+                    ctx.fillRect(screenX+8,yPx-0.6,22,1.8);
+                }else if(I<0.15){
+                    ctx.fillStyle='rgba(0,0,0,0.5)';
+                    ctx.fillRect(screenX+8,yPx-0.6,22,1.8);
+                }
+            }
+
+            // Order labels — positions where pathDiff = n*lambdaPx (Newton-refined)
+            const maxLabel=Math.min(rawMaxN,7);
+            for(let n=-maxLabel;n<=maxLabel;n++){
+                let dyApprox=n*lambdaPx*Dpx/Math.max(aPx,1);
+                for(let iter=0;iter<3;iter++){
+                    const dd1=Math.sqrt(Dpx*Dpx+(dyApprox-halfA)*(dyApprox-halfA));
+                    const dd2=Math.sqrt(Dpx*Dpx+(dyApprox+halfA)*(dyApprox+halfA));
+                    const f=dd1-dd2-n*lambdaPx;
+                    const df=(dyApprox-halfA)/dd1-(dyApprox+halfA)/dd2;
+                    if(Math.abs(df)>1e-9)dyApprox-=f/df;
+                }
+                const yPx=midY+dyApprox;
+                if(yPx<scrY1+4||yPx>scrY2-4)continue;
+
+                ctx.beginPath();ctx.arc(screenX+4,yPx,3.5,0,Math.PI*2);
+                ctx.fillStyle='#ffdd57';ctx.fill();
+                ctx.strokeStyle='#fff';ctx.lineWidth=0.8;ctx.stroke();
+                ctx.fillStyle='#fff';ctx.font='bold 9px Fredoka';ctx.textAlign='left';
+                ctx.fillText(n===0?'0':(n>0?'+'+n:''+n),screenX+32,yPx+3);
+            }
+
+            // Central max label
+            ctx.fillStyle='#ffdd57';ctx.font='bold 10px Fredoka';ctx.textAlign='left';
+            ctx.fillText('中央极大',screenX+32,midY+3);
+
+            // Time
+            ctx.fillStyle='rgba(255,255,255,0.3)';ctx.font='500 10px Fredoka';ctx.textAlign='right';
+            ctx.fillText('t='+state.time.toFixed(1)+'s',w-12,16);
+        }
+
+        const DEFAULTS={lambda:550,a:0.5,d:2.0};
+        function resetAll(){
+            sLambda.value=DEFAULTS.lambda;sA.value=DEFAULTS.a;sD.value=DEFAULTS.d;
+            state.lambdaNm=DEFAULTS.lambda;state.aMm=DEFAULTS.a;state.Dm=DEFAULTS.d;
+            bLambda.textContent=DEFAULTS.lambda+' nm';
+            bA.textContent=DEFAULTS.a.toFixed(2)+' mm';
+            bD.textContent=DEFAULTS.d.toFixed(1)+' m';
+            const css=lCSS(DEFAULTS.lambda);swatchLight.style.backgroundColor=css;swatchLegend.style.backgroundColor=css;
+            updateFormulaUI();
+        }
+        bStart.onclick=()=>{
+            state.isPlaying=!state.isPlaying;
+            bStart.textContent=state.isPlaying?'暂停 Pause':'开始 Start';
+            bStart.classList.toggle('start',!state.isPlaying);
+            bStart.classList.toggle('pause',state.isPlaying);
+        };
+        bReset.onclick=()=>{state.time=0;state.isPlaying=false;bStart.textContent='开始 Start';bStart.className='ctrl-btn start';resetAll();};
+
+        resize();update();
+    </script>
+</body>
+</html>

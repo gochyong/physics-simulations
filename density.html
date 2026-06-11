@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>密度计算模拟器 | Density Calculation Simulator</title>
+    <style>
+        :root {
+            --bg: #fdf6e3;
+            --text: #586e75;
+            --accent: #cb4b16;
+            --accent-yellow: #b58900;
+            --accent-blue: #268bd2;
+            --panel: #eee8d5;
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .main-container {
+            width: 95vw;
+            height: 95vh;
+            display: grid;
+            grid-template-rows: auto 1fr;
+            gap: 20px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* 标题与公式区 */
+        .header {
+            text-align: center;
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        h1 {
+            margin: 0;
+            color: var(--accent);
+            font-size: 2.2em;
+        }
+
+        .sub-title {
+            font-size: 1.1em;
+            opacity: 0.7;
+            margin-bottom: 15px;
+        }
+
+        .formula-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 140px;
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+        }
+
+        .symbol-unit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .symbol {
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .unit-text {
+            font-size: 14px;
+            font-style: normal;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .fraction {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 20px;
+        }
+
+        .line {
+            width: 100%;
+            height: 4px;
+            background: var(--text);
+            margin: 10px 0;
+            border-radius: 2px;
+        }
+
+        /* 交互主区域 */
+        .content-area {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 20px;
+        }
+
+        .canvas-wrapper {
+            background: #fffbf0;
+            border-radius: 20px;
+            position: relative;
+            border: 2px solid var(--panel);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.02);
+        }
+
+        #material-popup {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--accent);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.2em;
+            transform: scale(0);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 20px rgba(203, 75, 22, 0.3);
+            z-index: 10;
+        }
+
+        #material-popup.show {
+            transform: scale(1);
+        }
+
+        /* 控制面板 */
+        .controls {
+            background: var(--panel);
+            border-radius: 20px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+        }
+
+        input[type=range] {
+            width: 100%;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .result-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: auto;
+            border: 2px solid var(--accent);
+        }
+
+        .res-label {
+            font-size: 0.9em;
+            text-transform: uppercase;
+            color: #888;
+        }
+
+        .res-val {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: var(--accent);
+            margin: 5px 0;
+        }
+
+        .watermark {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            background: #ff8c00;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 1.6em;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
+            z-index: 1000;
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="watermark">Wuli布雷克</div>
+
+    <div class="main-container">
+        <div class="header">
+            <h1>密度计算公式模拟</h1>
+            <div class="sub-title">Density Calculation Formula Simulation</div>
+
+            <div class="formula-display">
+                <div class="symbol-unit" id="rho-box">
+                    <span class="symbol" style="color: var(--accent);">ρ</span>
+                    <span class="unit-text">密度 Density</span>
+                </div>
+                <span style="font-size: 40px; margin: 0 30px;">=</span>
+                <div class="fraction">
+                    <div class="symbol-unit" id="m-box">
+                        <span class="symbol" style="color: var(--accent-blue);">m</span>
+                        <span class="unit-text">质量 Mass</span>
+                    </div>
+                    <div class="line"></div>
+                    <div class="symbol-unit" id="v-box">
+                        <span class="symbol" style="color: var(--accent-yellow);">V</span>
+                        <span class="unit-text">体积 Volume</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <div class="canvas-wrapper">
+                <canvas id="simCanvas"></canvas>
+                <div id="material-popup">匹配材料: --</div>
+            </div>
+
+            <div class="controls">
+                <div class="input-group">
+                    <div class="label-row" style="color: var(--accent-blue);">
+                        <span>质量 Mass (m)</span>
+                        <span><span id="m-text">1000</span> g</span>
+                    </div>
+                    <input type="range" id="m-input" min="1" max="5000" value="1000">
+                </div>
+
+                <div class="input-group">
+                    <div class="label-row" style="color: var(--accent-yellow);">
+                        <span>体积 Volume (V)</span>
+                        <span><span id="v-text">1000</span> cm³</span>
+                    </div>
+                    <input type="range" id="v-input" min="10" max="2000" value="1000">
+                </div>
+
+                <div class="result-card">
+                    <div class="res-label">实时密度计算 / Density Result</div>
+                    <div class="res-val" id="rho-text">1.000</div>
+                    <div style="font-size: 0.9em;">g/cm³</div>
+                </div>
+
+                <p style="font-size: 0.8em; color: #888; line-height: 1.4;">
+                    * 提示：自然界最轻固体密度约 0.002 g/cm³，最重锇金属约 22.59 g/cm³。<br>
+                    Tip: Aerogel ≈ 0.002, Osmium ≈ 22.59.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        const mInput = document.getElementById('m-input');
+        const vInput = document.getElementById('v-input');
+        const mText = document.getElementById('m-text');
+        const vText = document.getElementById('v-text');
+        const rhoText = document.getElementById('rho-text');
+        const popup = document.getElementById('material-popup');
+
+        const mBox = document.getElementById('m-box');
+        const vBox = document.getElementById('v-box');
+        const rhoBox = document.getElementById('rho-box');
+
+        // 常见材料数据库
+        const materials = [
+            { name: "全息气凝胶 Aerogel", density: 0.003, range: 0.01 },
+            { name: "软木 Cork", density: 0.24, range: 0.05 },
+            { name: "松木 Pine", density: 0.5, range: 0.05 },
+            { name: "锂 Lithium", density: 0.53, range: 0.02 },
+            { name: "冰 Ice", density: 0.92, range: 0.02 },
+            { name: "纯水 Water", density: 1.0, range: 0.01 },
+            { name: "镁 Magnesium", density: 1.74, range: 0.05 },
+            { name: "铝 Aluminum", density: 2.7, range: 0.1 },
+            { name: "钛 Titanium", density: 4.5, range: 0.1 },
+            { name: "铁 Iron", density: 7.87, range: 0.2 },
+            { name: "铜 Copper", density: 8.96, range: 0.2 },
+            { name: "银 Silver", density: 10.5, range: 0.2 },
+            { name: "汞 Mercury", density: 13.6, range: 0.3 },
+            { name: "金 Gold", density: 19.3, range: 0.3 },
+            { name: "铂 Platinum", density: 21.4, range: 0.3 },
+            { name: "锇 Osmium", density: 22.59, range: 0.4 }
+        ];
+
+        function resize() {
+            const parent = canvas.parentElement;
+            canvas.width = parent.clientWidth;
+            canvas.height = parent.clientHeight;
+            update();
+        }
+
+        function update() {
+            const m = parseFloat(mInput.value);
+            const v = parseFloat(vInput.value);
+            const rho = m / v;
+
+            // 更新文本
+            mText.textContent = m;
+            vText.textContent = v;
+            rhoText.textContent = rho.toFixed(3);
+
+            // --- 核心：公式符号动态缩放 ---
+            // 映射逻辑：将数值转换为 20px - 100px 的字体大小
+            const mFontSize = Math.min(100, Math.max(25, 30 + (m / 5000) * 60));
+            const vFontSize = Math.min(100, Math.max(25, 30 + (v / 2000) * 60));
+            const rhoFontSize = Math.min(120, Math.max(25, 35 + (rho / 10) * 50));
+
+            mBox.querySelector('.symbol').style.fontSize = mFontSize + 'px';
+            vBox.querySelector('.symbol').style.fontSize = vFontSize + 'px';
+            rhoBox.querySelector('.symbol').style.fontSize = rhoFontSize + 'px';
+
+            draw(m, v, rho);
+            checkMaterial(rho);
+        }
+
+        function draw(m, v, rho) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 计算方块尺寸（以体积开立方根为基准）
+            const side = Math.pow(v, 1 / 3) * 35;
+            const x = (canvas.width - side) / 2;
+            const y = (canvas.height - side) / 2;
+
+            // 绘制方块
+            ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+            ctx.strokeStyle = varColor(rho);
+            ctx.lineWidth = 3;
+            ctx.fillRect(x, y, side, side);
+            ctx.strokeRect(x, y, side, side);
+
+            // 绘制粒子
+            // 限制最大渲染数防止卡顿，但视觉上维持比例
+            const particleCount = Math.min(m, 4000);
+            ctx.fillStyle = varColor(rho);
+
+            // 使用固定随机种子保证拖动滑块时粒子位置不乱跳
+            let seed = 42;
+            function seededRandom() {
+                seed = (seed * 9301 + 49297) % 233280;
+                return seed / 233280;
+            }
+
+            for (let i = 0; i < particleCount; i++) {
+                const px = x + seededRandom() * side;
+                const py = y + seededRandom() * side;
+                ctx.beginPath();
+                const r = Math.max(0.5, Math.min(2.5, rho * 0.4));
+                ctx.arc(px, py, r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function varColor(rho) {
+            // 颜色随密度从 蓝(低密度) -> 黄(中) -> 红(极高)
+            if (rho < 1) return `rgba(38, 139, 210, 0.8)`;
+            if (rho < 10) return `rgba(181, 137, 0, 0.8)`;
+            return `rgba(220, 50, 47, 0.9)`;
+        }
+
+        function checkMaterial(rho) {
+            let match = materials.find(mat => Math.abs(rho - mat.density) <= mat.range);
+            if (match) {
+                popup.textContent = `匹配材料: ${match.name}`;
+                popup.classList.add('show');
+            } else {
+                popup.classList.remove('show');
+            }
+        }
+
+        window.addEventListener('resize', resize);
+        mInput.addEventListener('input', update);
+        vInput.addEventListener('input', update);
+
+        resize();
+    </script>
+
+</body>
+
+</html>

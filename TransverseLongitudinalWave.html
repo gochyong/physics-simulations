@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>横波与纵波 / Transverse & Longitudinal Waves - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #FFF9F0;
+            --primary: #FF8c42;
+            --secondary: #FFC75F;
+            --accent: #FF5E5B;
+            --text-dark: #4A403A;
+            --card-bg: #FFFFFF;
+            --shadow: 0 6px 30px rgba(255, 140, 66, 0.18);
+            --radius: 30px;
+            --t-color: #3498db;
+            /* Transverse */
+            --l-color: #9b59b6;
+            /* Longitudinal */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px 40px;
+        }
+
+        .branding {
+            position: fixed;
+            top: 25px;
+            left: 30px;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.6rem;
+            color: #FFFFFF;
+            background: var(--primary);
+            padding: 10px 25px;
+            border-radius: 20px;
+            box-shadow: 4px 4px 15px rgba(255, 140, 66, 0.3);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin-top: 15px;
+            display: grid;
+            grid-template-areas:
+                "header header"
+                "diagram controls";
+            grid-template-columns: 1fr 450px;
+            gap: 20px;
+        }
+
+        header {
+            grid-area: header;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+
+        /* Diagram Section */
+        .diagram-section {
+            grid-area: diagram;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .wave-panel {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            height: 280px;
+            display: flex;
+            flex-direction: column;
+            border: 2px solid #fff;
+        }
+
+        .panel-label {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 5px 15px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            z-index: 10;
+        }
+
+        canvas {
+            width: 100%;
+            flex: 1;
+            display: block;
+        }
+
+        /* Controls Section */
+        .controls-section {
+            grid-area: controls;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .control-panel {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .val-badge {
+            background: #fff;
+            padding: 2px 10px;
+            border-radius: 8px;
+            font-size: 1rem;
+            border: 2px solid #f8f0e0;
+        }
+
+        input[type=range] {
+            width: 100%;
+            appearance: none;
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            cursor: pointer;
+            background: var(--primary);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 5px;
+        }
+
+        .ctrl-btn {
+            padding: 14px;
+            border: none;
+            border-radius: 18px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .start {
+            background-color: var(--primary);
+        }
+
+        .pause {
+            background-color: #2ecc71;
+        }
+
+        .reset {
+            background-color: #95a5a6;
+        }
+
+        .ctrl-btn:active {
+            transform: translateY(2px);
+            box-shadow: none;
+        }
+
+        /* Info Card */
+        .info-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .point-item {
+            background: white;
+            padding: 12px;
+            border: 1px solid #eee;
+            border-radius: 15px;
+            display: grid;
+            grid-template-columns: 45px 1fr;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .point-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        @media (max-width: 1100px) {
+            .container {
+                grid-template-areas: "header" "diagram" "controls";
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="branding">
+        <div class="logo">Wuli布雷克</div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>横波与纵波 / Transverse & Longitudinal</h1>
+            <div
+                style="margin-top: 15px; background: white; padding: 20px 30px; border-radius: var(--radius); box-shadow: var(--shadow); max-width: 1400px; margin-left: auto; margin-right: auto; text-align: left; display: flex; flex-direction: column; gap: 15px; border: 2px solid #fff5eb;">
+                <div style="border-left: 5px solid var(--t-color); padding-left: 15px;">
+                    <div style="font-weight: 700; color: var(--t-color); font-size: 1.1rem; margin-bottom: 4px;">横波
+                        (Transverse Wave)</div>
+                    <div style="font-size: 0.95rem; color: #666; line-height: 1.5;">粒子振动方向与波形或能量传播方向垂直 / The direction
+                        of particle vibration is perpendicular to the direction of wave propagation or energy
+                        transmission.</div>
+                </div>
+                <div style="border-left: 5px solid var(--l-color); padding-left: 15px;">
+                    <div style="font-weight: 700; color: var(--l-color); font-size: 1.1rem; margin-bottom: 4px;">纵波
+                        (Longitudinal Wave)</div>
+                    <div style="font-size: 0.95rem; color: #666; line-height: 1.5;">粒子振动方向与波形或能量传播方向平行 / The direction
+                        of particle vibration is parallel to the direction of wave propagation or energy transmission.
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Diagram Section -->
+        <section class="diagram-section">
+            <div class="wave-panel">
+                <div class="panel-label" style="color: var(--t-color);">横波 Transverse Wave</div>
+                <canvas id="transverseCanvas"></canvas>
+            </div>
+            <div class="wave-panel">
+                <div class="panel-label" style="color: var(--l-color);">纵波 Longitudinal Wave</div>
+                <canvas id="longitudinalCanvas"></canvas>
+            </div>
+        </section>
+
+        <!-- Controls Section -->
+        <section class="controls-section">
+            <div class="control-panel">
+                <div class="control-group">
+                    <div class="label-row">
+                        <span>Frequency (频率 f)</span>
+                        <span id="freq-badge" class="val-badge">1.0 Hz</span>
+                    </div>
+                    <input type="range" id="freq-slider" min="0.5" max="3.0" step="0.1" value="1.0">
+                </div>
+
+                <div class="control-group">
+                    <div class="label-row">
+                        <span>Wavelength (波长 λ)</span>
+                        <span id="len-badge" class="val-badge">15 cm</span>
+                    </div>
+                    <input type="range" id="len-slider" min="8" max="25" step="0.5" value="15">
+                </div>
+
+                <div class="control-group">
+                    <div class="label-row">
+                        <span>Amplitude (振幅 A)</span>
+                        <span id="amp-badge" class="val-badge">2.0 cm</span>
+                    </div>
+                    <input type="range" id="amp-slider" min="0.5" max="4.0" step="0.1" value="2.0">
+                </div>
+
+                <div class="btn-row">
+                    <button id="btn-start" class="ctrl-btn start">开始 Start</button>
+                    <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div style="font-weight: 700; color: var(--primary); margin-bottom: 15px; font-size: 1.25rem;">演示要点 /
+                    Key points</div>
+
+                <div class="point-item">
+                    <div class="point-icon" style="background: var(--accent);">P</div>
+                    <div>
+                        <div style="font-weight: 700; font-size: 1rem;">同步质点 (Particle P & Q)</div>
+                        <div style="font-size: 0.85rem; color: #888;">两者相距一个波长，振动步调完全一致 / Separated by one wavelength,
+                            their vibrations are perfectly synchronized.</div>
+                    </div>
+                </div>
+
+                <div class="point-item" style="margin-bottom: 0;">
+                    <div class="point-icon" style="background: var(--secondary);">V</div>
+                    <div>
+                        <div style="font-weight: 700; font-size: 1rem;">局部振动 (Local Vibration)</div>
+                        <div style="font-size: 0.85rem; color: #888;">粒子仅在平衡位置附近振动，不随波迁移 / Particles vibrate locally and
+                            do not travel with the wave.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const tCanvas = document.getElementById('transverseCanvas'), tCtx = tCanvas.getContext('2d');
+        const lCanvas = document.getElementById('longitudinalCanvas'), lCtx = lCanvas.getContext('2d');
+
+        const sFreq = document.getElementById('freq-slider'), sLen = document.getElementById('len-slider'), sAmp = document.getElementById('amp-slider');
+        const bFreq = document.getElementById('freq-badge'), bLen = document.getElementById('len-badge'), bAmp = document.getElementById('amp-badge');
+        const bStart = document.getElementById('btn-start'), bReset = document.getElementById('btn-reset');
+
+        const state = {
+            freq: 1.0, wavelength: 15, amp: 2.0,
+            time: 0, isPlaying: false,
+            pxPerCm: 25,
+            v: 15 * 1.0 * 25 // λ * f * px
+        };
+
+        function resize() {
+            [tCanvas, lCanvas].forEach(c => {
+                c.width = c.clientWidth;
+                c.height = c.clientHeight;
+            });
+        }
+        window.addEventListener('resize', resize);
+
+        function update() {
+            state.freq = parseFloat(sFreq.value);
+            state.wavelength = parseFloat(sLen.value);
+            state.amp = parseFloat(sAmp.value);
+
+            bFreq.textContent = state.freq.toFixed(1) + ' Hz';
+            bLen.textContent = state.wavelength.toFixed(1) + ' cm';
+            bAmp.textContent = state.amp.toFixed(1) + ' cm';
+
+            if (state.isPlaying) {
+                state.time += 0.016;
+            }
+
+            draw();
+            requestAnimationFrame(update);
+        }
+
+        function draw() {
+            const pxWavelength = state.wavelength * state.pxPerCm;
+            const pxAmp = state.amp * state.pxPerCm;
+            const pxSpeed = state.freq * pxWavelength;
+
+            // Clear
+            tCtx.clearRect(0, 0, tCanvas.width, tCanvas.height);
+            lCtx.clearRect(0, 0, lCanvas.width, lCanvas.height);
+
+            const midX = 50;
+            const midYt = tCanvas.height / 2;
+            const midYl = lCanvas.height / 2;
+
+            // Common Background (Axes)
+            [tCtx, lCtx].forEach((ctx, idx) => {
+                const midY = idx === 0 ? midYt : midYl;
+                ctx.strokeStyle = '#fef5eb'; ctx.lineWidth = 1;
+                for (let x = 0; x < tCanvas.width; x += 50) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, tCanvas.height); ctx.stroke(); }
+
+                ctx.strokeStyle = '#ecf0f1'; ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.moveTo(midX, midY); ctx.lineTo(tCanvas.width - 50, midY); ctx.stroke();
+
+                // Ruler
+                ctx.fillStyle = '#bdc3c7'; ctx.font = '500 12px Fredoka'; ctx.textAlign = 'center';
+                for (let i = 0; i <= 40; i++) {
+                    const x = midX + i * state.pxPerCm;
+                    if (x > tCanvas.width - 50) break;
+                    ctx.beginPath(); ctx.moveTo(x, midY - 5); ctx.lineTo(x, midY + 5); ctx.stroke();
+                    if (i % 5 === 0) ctx.fillText(i + 'cm', x, midY + 20);
+                }
+            });
+
+            // Particles logic
+            const count = 60;
+            const spacing = (tCanvas.width - 100) / count;
+            const pIdx = 10;
+            const qIdx = Math.round(pIdx + pxWavelength / spacing);
+
+            // Draw Transverse
+            for (let i = 0; i <= count; i++) {
+                const baseX = midX + i * spacing;
+                const pxX = i * spacing;
+                let y = midYt;
+
+                const timeNeeded = pxX / pxSpeed;
+                if (state.time >= timeNeeded && pxSpeed > 0) {
+                    y = midYt - pxAmp * Math.sin(2 * Math.PI * (state.freq * state.time - pxX / pxWavelength));
+                }
+
+                tCtx.beginPath();
+                tCtx.arc(baseX, y, 6, 0, Math.PI * 2);
+
+                let color = '#3498db';
+                let label = "";
+                if (i === pIdx) { color = varColor('--accent'); label = "Particle P"; }
+                else if (i === qIdx) { color = '#2ecc71'; label = "Particle Q"; }
+
+                tCtx.fillStyle = color;
+                tCtx.fill();
+                tCtx.strokeStyle = '#fff'; tCtx.lineWidth = 1; tCtx.stroke();
+
+                if (label) {
+                    tCtx.fillStyle = color; tCtx.font = 'bold 12px Fredoka';
+                    tCtx.textAlign = 'center';
+                    tCtx.fillText(label, baseX, y - 15);
+                }
+            }
+
+            // Draw Longitudinal
+            for (let i = 0; i <= count; i++) {
+                const baseX = midX + i * spacing;
+                const pxX = i * spacing;
+                let x = baseX;
+
+                const timeNeeded = pxX / pxSpeed;
+                if (state.time >= timeNeeded && pxSpeed > 0) {
+                    const dx = pxAmp * Math.sin(2 * Math.PI * (state.freq * state.time - pxX / pxWavelength));
+                    x = baseX + dx;
+                }
+
+                lCtx.beginPath();
+                lCtx.arc(x, midYl, 6, 0, Math.PI * 2);
+
+                let color = '#9b59b6';
+                let label = "";
+                if (i === pIdx) { color = varColor('--accent'); label = "Particle P"; }
+                else if (i === qIdx) { color = '#2ecc71'; label = "Particle Q"; }
+
+                lCtx.fillStyle = color;
+                lCtx.fill();
+                lCtx.strokeStyle = '#fff'; lCtx.lineWidth = 1; lCtx.stroke();
+
+                if (label) {
+                    lCtx.fillStyle = color; lCtx.font = 'bold 12px Fredoka';
+                    lCtx.textAlign = 'center';
+                    lCtx.fillText(label, x, midYl - 15);
+                }
+            }
+        }
+
+        function varColor(name) {
+            return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        }
+
+        bStart.onclick = () => {
+            state.isPlaying = !state.isPlaying;
+            bStart.textContent = state.isPlaying ? '暂停 Pause' : '开始 Start';
+            bStart.classList.toggle('start', !state.isPlaying);
+            bStart.classList.toggle('pause', state.isPlaying);
+        };
+
+        bReset.onclick = () => {
+            state.time = 0;
+            state.isPlaying = false;
+            bStart.textContent = '开始 Start';
+            bStart.className = 'ctrl-btn start';
+        };
+
+        resize();
+        update();
+    </script>
+</body>
+
+</html>

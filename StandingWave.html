@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>驻波形成 / Standing Wave Formation - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #FFF9F0;
+            --primary: #FF8c42;
+            --secondary: #FFC75F;
+            --accent: #FF5E5B;
+            --text-dark: #4A403A;
+            --card-bg: #FFFFFF;
+            --shadow: 0 6px 30px rgba(255, 140, 66, 0.18);
+            --radius: 30px;
+            --w1-color: #e74c3c;
+            --w2-color: #3498db;
+            --standing-color: #9b59b6;
+            --node-color: #2ecc71;
+            --anti-color: #FF5E5B;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 5px 40px 10px;
+        }
+
+        .branding {
+            position: fixed;
+            top: 10px; left: 20px;
+            z-index: 1000;
+        }
+        .logo {
+            font-weight: 700; font-size: 1.3rem;
+            color: #FFFFFF; background: var(--primary);
+            padding: 6px 18px; border-radius: 16px;
+            box-shadow: 4px 4px 15px rgba(255, 140, 66, 0.3);
+        }
+
+        .container {
+            width: 100%; max-width: 1400px;
+            margin-top: 8px;
+            display: grid;
+            grid-template-areas:
+                "header header"
+                "formula formula"
+                "diagram controls";
+            grid-template-columns: 1fr 450px;
+            gap: 12px;
+        }
+
+        header { grid-area: header; text-align: center; }
+        h1 { font-size: 2rem; color: var(--text-dark); margin-bottom: 2px; }
+
+        /* Formula Section */
+        .formula-display {
+            grid-area: formula;
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            padding: 10px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px solid #fff5eb;
+        }
+        .formula-container {
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px; flex-wrap: wrap; min-height: 44px;
+        }
+        .result-row {
+            font-size: 0.95rem; font-weight: 600; color: var(--text-dark);
+            margin-top: 4px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;
+        }
+        .legend {
+            display: flex; gap: 16px; justify-content: center;
+            border-top: 1px solid #eee; padding-top: 6px; width: 100%; flex-wrap: wrap;
+        }
+        .legend-item {
+            font-size: 0.85rem; font-weight: 600;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .legend-dot {
+            width: 11px; height: 11px; border-radius: 50%; display: inline-block;
+        }
+
+        /* Diagram Section */
+        .diagram-section {
+            grid-area: diagram;
+            background: var(--card-bg); border-radius: 20px;
+            box-shadow: var(--shadow); position: relative; overflow: hidden;
+            min-height: 380px; display: flex; flex-direction: column; border: 2px solid #fff;
+        }
+        canvas { width: 100%; flex: 1; display: block; }
+
+        /* Controls Section */
+        .controls-section {
+            grid-area: controls; display: flex; flex-direction: column; gap: 10px;
+        }
+        .control-panel {
+            background: var(--card-bg); border-radius: 20px;
+            box-shadow: var(--shadow); padding: 14px 18px;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+
+        /* Wave section header */
+        .wave-section {
+            background: #fff; border-radius: 14px;
+            padding: 10px 14px 6px;
+            border: 2px solid #f5f0eb;
+        }
+        .wave-section.w1 { border-left: 5px solid var(--w1-color); }
+        .wave-section.w2 { border-left: 5px solid var(--w2-color); }
+        .wave-section-header {
+            font-weight: 700; font-size: 0.95rem;
+            margin-bottom: 6px; display: flex; align-items: center; gap: 6px;
+        }
+        .wave-section-header .dot {
+            width: 12px; height: 12px; border-radius: 50%; display: inline-block;
+        }
+
+        .control-group { display: flex; flex-direction: column; gap: 3px; margin-bottom: 1px; }
+        .label-row {
+            display: flex; justify-content: space-between;
+            font-weight: 600; font-size: 0.9rem;
+        }
+        .val-badge {
+            background: #fff; padding: 1px 7px; border-radius: 7px;
+            font-size: 0.85rem; border: 2px solid #f0f0f0;
+        }
+
+        input[type=range] {
+            width: 100%; appearance: none; height: 6px;
+            background: #eee; border-radius: 3px; outline: none;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            appearance: none; width: 20px; height: 20px;
+            border-radius: 50%; cursor: pointer;
+            background: var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        .w1-slider::-webkit-slider-thumb { background: var(--w1-color) !important; }
+        .w2-slider::-webkit-slider-thumb { background: var(--w2-color) !important; }
+
+        /* Dropdown */
+        select.mode-select {
+            width: 100%; padding: 8px 14px;
+            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
+            font-size: 0.95rem; font-weight: 600;
+            color: var(--text-dark); background: #fff;
+            border: 2px solid #e8ddd0; border-radius: 12px;
+            cursor: pointer;
+            appearance: none; -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23FF8c42' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+            transition: border-color 0.2s;
+        }
+        select.mode-select:focus {
+            outline: none; border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255,140,66,0.12);
+        }
+
+        .btn-row {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px;
+        }
+        .ctrl-btn {
+            padding: 10px; border: none; border-radius: 14px;
+            font-size: 1.05rem; font-weight: 700; cursor: pointer;
+            transition: all 0.2s; color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .start { background-color: var(--primary); }
+        .pause { background-color: #2ecc71; }
+        .reset { background-color: #95a5a6; }
+        .ctrl-btn:active { transform: translateY(2px); box-shadow: none; }
+
+        .info-card {
+            background: var(--card-bg); border-radius: 20px;
+            padding: 12px 16px; box-shadow: var(--shadow);
+            font-size: 0.9rem; line-height: 1.4; color: #5D6D7E;
+        }
+
+        @media (max-width: 1100px) {
+            .container {
+                grid-template-areas: "header" "formula" "diagram" "controls";
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="branding">
+        <div class="logo">Wuli布雷克</div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>驻波形成 / Standing Wave Formation</h1>
+        </header>
+
+        <!-- Formula Section -->
+        <section class="formula-display">
+            <div class="formula-container" id="formula-root">
+                <!-- Dynamic Formula injected by JS -->
+            </div>
+            <div class="result-row">
+                <span id="status-text" style="color: var(--standing-color); font-weight: 700;">
+                    驻波条件满足 ✓ Standing wave formed
+                </span>
+                <span>波节 (Nodes): <strong style="color: var(--node-color)" id="res-nodes">5</strong></span>
+                <span>波腹 (Antinodes): <strong style="color: var(--anti-color)" id="res-anti">4</strong></span>
+            </div>
+            <div class="legend">
+                <div class="legend-item"><span class="legend-dot" style="background: var(--w1-color)"></span> 右行波 Wave 1 (→)</div>
+                <div class="legend-item"><span class="legend-dot" style="background: var(--w2-color)"></span> 左行波 Wave 2 (←)</div>
+                <div class="legend-item"><span class="legend-dot" style="background: var(--standing-color)"></span> 合成波 Superposition</div>
+                <div class="legend-item"><span class="legend-dot" style="background: var(--node-color)"></span> 波节 Node</div>
+                <div class="legend-item"><span class="legend-dot" style="background: var(--anti-color)"></span> 波腹 Antinode</div>
+            </div>
+        </section>
+
+        <!-- Diagram Section -->
+        <section class="diagram-section">
+            <canvas id="simCanvas"></canvas>
+        </section>
+
+        <!-- Controls Section -->
+        <section class="controls-section">
+            <div class="control-panel">
+
+                <!-- Wave 1 -->
+                <div class="wave-section w1">
+                    <div class="wave-section-header">
+                        <span class="dot" style="background: var(--w1-color);"></span>
+                        右行波 Wave 1 (→) &nbsp;<span style="color: var(--w1-color);">y₁ = A₁ sin(k₁x − ω₁t)</span>
+                    </div>
+                    <div class="control-group">
+                        <div class="label-row">
+                            <span>频率 f₁ / Frequency</span>
+                            <span id="f1-badge" class="val-badge">2.0 Hz</span>
+                        </div>
+                        <input type="range" id="f1-slider" class="w1-slider" min="0.5" max="20" step="0.1" value="2.0">
+                    </div>
+                    <div class="control-group">
+                        <div class="label-row">
+                            <span>波长 λ₁ / Wavelength</span>
+                            <span id="l1-badge" class="val-badge">10 cm</span>
+                        </div>
+                        <input type="range" id="l1-slider" class="w1-slider" min="4" max="25" step="0.5" value="10">
+                    </div>
+                    <div class="control-group">
+                        <div class="label-row">
+                            <span>振幅 A₁ / Amplitude</span>
+                            <span id="a1-badge" class="val-badge">2.5 cm</span>
+                        </div>
+                        <input type="range" id="a1-slider" class="w1-slider" min="1.0" max="4.5" step="0.1" value="2.5">
+                    </div>
+                </div>
+
+                <!-- Wave 2 -->
+                <div class="wave-section w2">
+                    <div class="wave-section-header">
+                        <span class="dot" style="background: var(--w2-color);"></span>
+                        左行波 Wave 2 (←) &nbsp;<span style="color: var(--w2-color);">y₂ = A₂ sin(k₂x + ω₂t)</span>
+                    </div>
+                    <div class="control-group">
+                        <div class="label-row">
+                            <span>频率 f₂ / Frequency</span>
+                            <span id="f2-badge" class="val-badge">2.0 Hz</span>
+                        </div>
+                        <input type="range" id="f2-slider" class="w2-slider" min="0.5" max="20" step="0.1" value="2.0">
+                    </div>
+                    <div class="control-group">
+                        <div class="label-row">
+                            <span>波长 λ₂ / Wavelength</span>
+                            <span id="l2-badge" class="val-badge">10 cm</span>
+                        </div>
+                        <input type="range" id="l2-slider" class="w2-slider" min="4" max="25" step="0.5" value="10">
+                    </div>
+                    <div class="control-group">
+                        <div class="label-row">
+                            <span>振幅 A₂ / Amplitude</span>
+                            <span id="a2-badge" class="val-badge">2.5 cm</span>
+                        </div>
+                        <input type="range" id="a2-slider" class="w2-slider" min="1.0" max="4.5" step="0.1" value="2.5">
+                    </div>
+                </div>
+
+                <!-- Display Mode -->
+                <div class="control-group">
+                    <div class="label-row">
+                        <span>显示模式 / Display Mode</span>
+                    </div>
+                    <select id="mode-select" class="mode-select">
+                        <option value="1">全部显示 / Show All</option>
+                        <option value="2">仅行波分量 / Components Only</option>
+                        <option value="3">仅合成结果 / Superposition Only</option>
+                    </select>
+                </div>
+
+                <div class="btn-row">
+                    <button id="btn-start" class="ctrl-btn start">开始 Start</button>
+                    <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div style="font-weight: 700; color: var(--primary); margin-bottom: 8px; font-size: 1.1rem;">
+                    演示要点 / Key points
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <div style="background: white; padding: 8px 10px; border: 1px solid #eee; border-radius: 12px; display: grid; grid-template-columns: 36px 1fr; gap: 8px; align-items: center;">
+                        <div style="width: 32px; height: 32px; background: rgba(155,89,182,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--standing-color); font-weight: 700; font-size: 1.2rem;">↕</div>
+                        <div>
+                            <div style="font-weight: 700; font-size: 0.9rem;">两列波反向传播叠加</div>
+                            <div style="font-size: 0.85rem; color: #888;">Two waves traveling in opposite directions superpose.</div>
+                        </div>
+                    </div>
+                    <div style="background: white; padding: 8px 10px; border: 1px solid #eee; border-radius: 12px; display: grid; grid-template-columns: 36px 1fr; gap: 8px; align-items: center;">
+                        <div style="width: 32px; height: 32px; background: rgba(46,204,113,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--node-color); font-weight: 700; font-size: 1.2rem;">●</div>
+                        <div>
+                            <div style="font-weight: 700; font-size: 0.9rem;">f、λ 相同时形成稳定驻波</div>
+                            <div style="font-size: 0.85rem; color: #888;">Identical f and λ produce a stationary standing wave.</div>
+                        </div>
+                    </div>
+                    <div style="background: white; padding: 8px 10px; border: 1px solid #eee; border-radius: 12px; display: grid; grid-template-columns: 36px 1fr; gap: 8px; align-items: center;">
+                        <div style="width: 32px; height: 32px; background: rgba(255,94,91,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--anti-color); font-weight: 700; font-size: 1.2rem;">◆</div>
+                        <div>
+                            <div style="font-weight: 700; font-size: 0.9rem;">改变单侧参数观察拍频现象</div>
+                            <div style="font-size: 0.85rem; color: #888;">Detune one wave to observe beating / traveling envelope.</div>
+                        </div>
+                    </div>
+                    <div style="background: white; padding: 8px 10px; border: 1px solid #eee; border-radius: 12px; display: grid; grid-template-columns: 36px 1fr; gap: 8px; align-items: center;">
+                        <div style="width: 32px; height: 32px; background: rgba(255,140,66,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--primary); font-weight: 700; font-size: 1.2rem;">↔</div>
+                        <div>
+                            <div style="font-weight: 700; font-size: 0.9rem;">波节间距 = λ/2，波腹振幅 = A₁+A₂</div>
+                            <div style="font-size: 0.85rem; color: #888;">Node spacing = λ/2, antinode amplitude = A₁+A₂.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas'), ctx = canvas.getContext('2d');
+        const sF1 = document.getElementById('f1-slider'), sL1 = document.getElementById('l1-slider'), sA1 = document.getElementById('a1-slider');
+        const sF2 = document.getElementById('f2-slider'), sL2 = document.getElementById('l2-slider'), sA2 = document.getElementById('a2-slider');
+        const sMode = document.getElementById('mode-select');
+        const bF1 = document.getElementById('f1-badge'), bL1 = document.getElementById('l1-badge'), bA1 = document.getElementById('a1-badge');
+        const bF2 = document.getElementById('f2-badge'), bL2 = document.getElementById('l2-badge'), bA2 = document.getElementById('a2-badge');
+        const statusText = document.getElementById('status-text');
+        const resNodes = document.getElementById('res-nodes'), resAnti = document.getElementById('res-anti');
+        const fRoot = document.getElementById('formula-root');
+        const bStart = document.getElementById('btn-start'), bReset = document.getElementById('btn-reset');
+
+        const state = {
+            f1: 2.0, lambda1: 10, A1: 2.5,
+            f2: 2.0, lambda2: 10, A2: 2.5,
+            time: 0, isPlaying: false,
+            pxPerCm: 25, displayMode: 1
+        };
+
+        function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+        window.addEventListener('resize', resize);
+
+        // Check if standing wave condition is satisfied
+        function isStandingWave() {
+            return Math.abs(state.f1 - state.f2) < 0.05 && Math.abs(state.lambda1 - state.lambda2) < 0.05;
+        }
+
+        function updateFormulaUI() {
+            const baseSize = 26;
+            const standing = isStandingWave();
+
+            let resultHTML;
+            if (standing) {
+                // When identical, show classic standing wave formula
+                resultHTML = `
+                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:center;">
+                    <span style="color:var(--w1-color); font-size:${baseSize}px; font-weight:700;">
+                        y<sub>1</sub> = A sin(kx − ωt)
+                    </span>
+                    <span style="font-size:${baseSize * 0.8}px; color:#aaa;">+</span>
+                    <span style="color:var(--w2-color); font-size:${baseSize}px; font-weight:700;">
+                        y<sub>2</sub> = A sin(kx + ωt)
+                    </span>
+                    <span style="font-size:${baseSize * 0.8}px; color:#aaa;">=</span>
+                    <span style="color:var(--standing-color); font-size:${baseSize * 1.1}px; font-weight:700;">
+                        y = 2A sin(kx) cos(ωt)
+                    </span>
+                </div>`;
+            } else {
+                // Different parameters: show individual forms
+                resultHTML = `
+                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:center;">
+                    <span style="color:var(--w1-color); font-size:${baseSize}px; font-weight:700;">
+                        y<sub>1</sub> = A<sub>1</sub> sin(k<sub>1</sub>x − ω<sub>1</sub>t)
+                    </span>
+                    <span style="font-size:${baseSize * 0.8}px; color:#aaa;">+</span>
+                    <span style="color:var(--w2-color); font-size:${baseSize}px; font-weight:700;">
+                        y<sub>2</sub> = A<sub>2</sub> sin(k<sub>2</sub>x + ω<sub>2</sub>t)
+                    </span>
+                    <span style="font-size:${baseSize * 0.8}px; color:#aaa;">=</span>
+                    <span style="color:var(--standing-color); font-size:${baseSize}px; font-weight:700;">
+                        y = y<sub>1</sub> + y<sub>2</sub>
+                    </span>
+                </div>
+                <div style="font-size:0.9rem; color:#999; margin-top:6px; text-align:center;">
+                    f₁=${state.f1.toFixed(1)}Hz λ₁=${state.lambda1.toFixed(1)}cm A₁=${state.A1.toFixed(1)}cm &nbsp;|&nbsp;
+                    f₂=${state.f2.toFixed(1)}Hz λ₂=${state.lambda2.toFixed(1)}cm A₂=${state.A2.toFixed(1)}cm
+                </div>`;
+            }
+            fRoot.innerHTML = resultHTML;
+        }
+
+        function update() {
+            state.f1 = parseFloat(sF1.value); state.lambda1 = parseFloat(sL1.value); state.A1 = parseFloat(sA1.value);
+            state.f2 = parseFloat(sF2.value); state.lambda2 = parseFloat(sL2.value); state.A2 = parseFloat(sA2.value);
+            state.displayMode = parseInt(sMode.value);
+
+            bF1.textContent = state.f1.toFixed(1) + ' Hz';
+            bL1.textContent = state.lambda1.toFixed(1) + ' cm';
+            bA1.textContent = state.A1.toFixed(1) + ' cm';
+            bF2.textContent = state.f2.toFixed(1) + ' Hz';
+            bL2.textContent = state.lambda2.toFixed(1) + ' cm';
+            bA2.textContent = state.A2.toFixed(1) + ' cm';
+
+            updateFormulaUI();
+
+            if (state.isPlaying) { state.time += 0.016; }
+
+            const standing = isStandingWave();
+            if (standing) {
+                const k = 2 * Math.PI / state.lambda1;
+                const visibleWidth = canvas.width - 100;
+                const xEnd = visibleWidth / state.pxPerCm;
+                const nodeCount = Math.floor(k * xEnd / Math.PI) + 1;
+                resNodes.textContent = nodeCount;
+                resAnti.textContent = nodeCount - 1;
+                statusText.innerHTML = '✅ 驻波条件满足 / Standing wave formed';
+                statusText.style.color = 'var(--node-color)';
+            } else {
+                resNodes.textContent = '—';
+                resAnti.textContent = '—';
+                statusText.innerHTML = '⚠ 参数不同，合成波在移动 / Parameters differ — traveling superposition';
+                statusText.style.color = 'var(--anti-color)';
+            }
+
+            draw();
+            requestAnimationFrame(update);
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const k1 = 2 * Math.PI / state.lambda1, omega1 = 2 * Math.PI * state.f1;
+            const k2 = 2 * Math.PI / state.lambda2, omega2 = 2 * Math.PI * state.f2;
+            const pxAmp1 = state.A1 * state.pxPerCm, pxAmp2 = state.A2 * state.pxPerCm;
+
+            const margin = 60;
+            const usableHeight = canvas.height - margin * 2;
+            const bandHeight = usableHeight / 3;
+            const midY1 = margin + bandHeight * 0.5;
+            const midY2 = margin + bandHeight * 1.5;
+            const midY3 = margin + bandHeight * 2.5;
+
+            const bands = [
+                { y: midY1, label: 'Wave 1 右行波 (→)', colorCode: '#e74c3c' },
+                { y: midY2, label: 'Wave 2 左行波 (←)', colorCode: '#3498db' },
+                { y: midY3, label: '合成波 Superposition', colorCode: '#9b59b6' }
+            ];
+
+            // Background grid
+            ctx.strokeStyle = '#fef5eb'; ctx.lineWidth = 1;
+            for (let x = 0; x < canvas.width; x += 50) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke(); }
+            for (let y = 0; y < canvas.height; y += 50) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke(); }
+
+            // Separators
+            ctx.strokeStyle = '#e0d5c8'; ctx.lineWidth = 1; ctx.setLineDash([8, 8]);
+            for (let i = 1; i < 3; i++) {
+                ctx.beginPath(); ctx.moveTo(50, margin + bandHeight * i); ctx.lineTo(canvas.width - 50, margin + bandHeight * i); ctx.stroke();
+            }
+            ctx.setLineDash([]);
+
+            // Axes
+            bands.forEach(b => {
+                ctx.strokeStyle = '#e8ddd0'; ctx.lineWidth = 1.5;
+                ctx.beginPath(); ctx.moveTo(45, b.y); ctx.lineTo(canvas.width - 45, b.y); ctx.stroke();
+            });
+
+            // Labels
+            ctx.font = '600 13px Fredoka';
+            bands.forEach(b => {
+                ctx.fillStyle = b.colorCode; ctx.textAlign = 'left';
+                ctx.fillText(b.label, 55, b.y - bandHeight * 0.35 + 5);
+            });
+
+            const points = 240;
+            const step = (canvas.width - 100) / points;
+
+            // ---- Band 1: Right-going wave y₁ = A₁ sin(k₁x - ω₁t) ----
+            if (state.displayMode !== 3) {
+                ctx.beginPath(); ctx.strokeStyle = '#e74c3c'; ctx.lineWidth = 3; ctx.globalAlpha = 0.85;
+                for (let i = 0; i <= points; i++) {
+                    const x = 50 + i * step, pxX = i * step;
+                    const y = bands[0].y - pxAmp1 * Math.sin(k1 * (pxX / state.pxPerCm) - omega1 * state.time);
+                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                }
+                ctx.stroke(); ctx.globalAlpha = 1;
+
+                const bi = 6;
+                for (let i = 0; i <= points; i += bi) {
+                    const x = 50 + i * step, pxX = i * step;
+                    const y = bands[0].y - pxAmp1 * Math.sin(k1 * (pxX / state.pxPerCm) - omega1 * state.time);
+                    ctx.beginPath(); ctx.arc(x, y, 4.5, 0, Math.PI * 2);
+                    ctx.fillStyle = (i % (bi * 3) === 0) ? '#c0392b' : '#f5b7b1';
+                    ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1; ctx.stroke();
+                }
+
+                // v1 arrow
+                if (state.isPlaying) {
+                    const v1Px = state.f1 * state.lambda1 * state.pxPerCm;
+                    const arrowX = 50 + (state.time * v1Px * 0.5) % (canvas.width - 100);
+                    const arrowY = bands[0].y - bandHeight * 0.38;
+                    drawArrow(arrowX, arrowY, arrowX + 35, arrowY, '#e74c3c', 'v₁=' + (state.f1 * state.lambda1).toFixed(0));
+                }
+            }
+
+            // ---- Band 2: Left-going wave y₂ = A₂ sin(k₂x + ω₂t) ----
+            if (state.displayMode !== 3) {
+                ctx.beginPath(); ctx.strokeStyle = '#3498db'; ctx.lineWidth = 3; ctx.globalAlpha = 0.85;
+                for (let i = 0; i <= points; i++) {
+                    const x = 50 + i * step, pxX = i * step;
+                    const y = bands[1].y - pxAmp2 * Math.sin(k2 * (pxX / state.pxPerCm) + omega2 * state.time);
+                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                }
+                ctx.stroke(); ctx.globalAlpha = 1;
+
+                const bi = 6;
+                for (let i = 0; i <= points; i += bi) {
+                    const x = 50 + i * step, pxX = i * step;
+                    const y = bands[1].y - pxAmp2 * Math.sin(k2 * (pxX / state.pxPerCm) + omega2 * state.time);
+                    ctx.beginPath(); ctx.arc(x, y, 4.5, 0, Math.PI * 2);
+                    ctx.fillStyle = (i % (bi * 3) === 0) ? '#2471a3' : '#aed6f1';
+                    ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1; ctx.stroke();
+                }
+
+                // v2 arrow
+                if (state.isPlaying) {
+                    const v2Px = state.f2 * state.lambda2 * state.pxPerCm;
+                    const arrowX = canvas.width - 50 - (state.time * v2Px * 0.5) % (canvas.width - 100);
+                    const arrowY = bands[1].y - bandHeight * 0.38;
+                    drawArrow(arrowX, arrowY, arrowX - 35, arrowY, '#3498db', 'v₂=' + (state.f2 * state.lambda2).toFixed(0));
+                }
+            }
+
+            // ---- Band 3: Superposition y = y₁ + y₂ ----
+            if (state.displayMode !== 2) {
+                const standing = isStandingWave();
+
+                if (standing) {
+                    // Draw envelope for pure standing wave
+                    const envAmp = pxAmp1 + pxAmp2;
+                    ctx.beginPath(); ctx.strokeStyle = 'rgba(155,89,182,0.3)'; ctx.lineWidth = 2; ctx.setLineDash([5, 5]);
+                    for (let i = 0; i <= points; i++) {
+                        const x = 50 + i * step, pxX = i * step;
+                        const env = envAmp * Math.abs(Math.sin(k1 * (pxX / state.pxPerCm)));
+                        if (i === 0) ctx.moveTo(x, bands[2].y - env); else ctx.lineTo(x, bands[2].y - env);
+                    }
+                    ctx.stroke();
+                    ctx.beginPath();
+                    for (let i = 0; i <= points; i++) {
+                        const x = 50 + i * step, pxX = i * step;
+                        const env = envAmp * Math.abs(Math.sin(k1 * (pxX / state.pxPerCm)));
+                        if (i === 0) ctx.moveTo(x, bands[2].y + env); else ctx.lineTo(x, bands[2].y + env);
+                    }
+                    ctx.stroke(); ctx.setLineDash([]);
+                }
+
+                // Draw superposition wave
+                ctx.beginPath(); ctx.strokeStyle = '#9b59b6'; ctx.lineWidth = 4;
+                ctx.shadowColor = 'rgba(155,89,182,0.4)'; ctx.shadowBlur = 8;
+                for (let i = 0; i <= points; i++) {
+                    const x = 50 + i * step, pxX = i * step;
+                    const y1 = pxAmp1 * Math.sin(k1 * (pxX / state.pxPerCm) - omega1 * state.time);
+                    const y2 = pxAmp2 * Math.sin(k2 * (pxX / state.pxPerCm) + omega2 * state.time);
+                    const y = bands[2].y - (y1 + y2);
+                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                }
+                ctx.stroke(); ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0;
+
+                // Particles on superposition
+                const bi = 6;
+                for (let i = 0; i <= points; i += bi) {
+                    const x = 50 + i * step, pxX = i * step;
+                    const y1 = pxAmp1 * Math.sin(k1 * (pxX / state.pxPerCm) - omega1 * state.time);
+                    const y2 = pxAmp2 * Math.sin(k2 * (pxX / state.pxPerCm) + omega2 * state.time);
+                    const y = bands[2].y - (y1 + y2);
+
+                    let fillColor = '#d7bde2';
+                    if (standing) {
+                        const absSinKx = Math.abs(Math.sin(k1 * (pxX / state.pxPerCm)));
+                        if (absSinKx < 0.15) fillColor = '#2ecc71';
+                        else if (absSinKx > 0.92) fillColor = '#FF5E5B';
+                    }
+                    ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2);
+                    ctx.fillStyle = fillColor; ctx.fill();
+                    ctx.strokeStyle = '#fff'; ctx.lineWidth = 1; ctx.stroke();
+                }
+
+                // Node / Antinode markers (only when standing wave)
+                if (standing) {
+                    for (let i = 0; i <= points; i++) {
+                        const x = 50 + i * step, pxX = i * step;
+                        const sinKx = Math.sin(k1 * (pxX / state.pxPerCm));
+                        if (Math.abs(sinKx) < 0.05 && x < canvas.width - 50) {
+                            ctx.beginPath(); ctx.arc(x, bands[2].y, 9, 0, Math.PI * 2);
+                            ctx.fillStyle = 'rgba(46,204,113,0.15)'; ctx.fill();
+                            ctx.strokeStyle = '#2ecc71'; ctx.lineWidth = 2; ctx.stroke();
+                            ctx.fillStyle = '#2ecc71'; ctx.font = 'bold 10px Fredoka'; ctx.textAlign = 'center';
+                            ctx.fillText('N', x, bands[2].y - 16);
+                        }
+                    }
+                    const antiInterval = Math.PI / k1 * state.pxPerCm;
+                    for (let ax = antiInterval * 0.5; ax < canvas.width - 100; ax += antiInterval) {
+                        const x = 50 + ax;
+                        if (x > canvas.width - 55) continue;
+                        ctx.fillStyle = 'rgba(255,94,91,0.15)'; ctx.beginPath();
+                        ctx.arc(x, bands[2].y, 9, 0, Math.PI * 2); ctx.fill();
+                        ctx.strokeStyle = '#FF5E5B'; ctx.lineWidth = 2; ctx.stroke();
+                        ctx.fillStyle = '#FF5E5B'; ctx.font = 'bold 10px Fredoka'; ctx.textAlign = 'center';
+                        ctx.fillText('A', x, bands[2].y - 16);
+                    }
+                }
+            }
+
+            // x-axis scale
+            ctx.fillStyle = '#95a5a6'; ctx.font = '500 11px Fredoka'; ctx.textAlign = 'center';
+            for (let i = 0; i <= 40; i++) {
+                const x = 50 + i * state.pxPerCm;
+                if (x > canvas.width - 50) break;
+                if (i % 5 === 0) ctx.fillText(i + ' cm', x, bands[2].y + bandHeight * 0.5 - 8);
+            }
+
+            // Time indicator
+            ctx.fillStyle = '#95a5a6'; ctx.font = '500 13px Fredoka'; ctx.textAlign = 'right';
+            ctx.fillText('t = ' + state.time.toFixed(1) + ' s', canvas.width - 55, 30);
+        }
+
+        function drawArrow(x1, y1, x2, y2, color, label) {
+            const head = 8, angle = Math.atan2(y2 - y1, x2 - x1);
+            ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = 3;
+            ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+            ctx.lineTo(x2 - head * Math.cos(angle - Math.PI / 6), y2 - head * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(x2 - head * Math.cos(angle + Math.PI / 6), y2 - head * Math.sin(angle + Math.PI / 6));
+            ctx.closePath(); ctx.fillStyle = color; ctx.fill(); ctx.stroke();
+            ctx.font = 'bold 13px Fredoka'; ctx.fillText(label, x2 + (x2 > x1 ? 6 : -50), y2 - 5);
+        }
+
+        bStart.onclick = () => {
+            state.isPlaying = !state.isPlaying;
+            bStart.textContent = state.isPlaying ? '暂停 Pause' : '开始 Start';
+            bStart.classList.toggle('start', !state.isPlaying);
+            bStart.classList.toggle('pause', state.isPlaying);
+        };
+
+        const DEFAULTS = { f: 2.0, lambda: 10, A: 2.5 };
+
+        function resetAllSliders() {
+            sF1.value = DEFAULTS.f; sL1.value = DEFAULTS.lambda; sA1.value = DEFAULTS.A;
+            sF2.value = DEFAULTS.f; sL2.value = DEFAULTS.lambda; sA2.value = DEFAULTS.A;
+            sMode.value = 1;
+            state.f1 = DEFAULTS.f; state.lambda1 = DEFAULTS.lambda; state.A1 = DEFAULTS.A;
+            state.f2 = DEFAULTS.f; state.lambda2 = DEFAULTS.lambda; state.A2 = DEFAULTS.A;
+            state.displayMode = 1;
+            bF1.textContent = DEFAULTS.f.toFixed(1) + ' Hz';
+            bL1.textContent = DEFAULTS.lambda.toFixed(1) + ' cm';
+            bA1.textContent = DEFAULTS.A.toFixed(1) + ' cm';
+            bF2.textContent = DEFAULTS.f.toFixed(1) + ' Hz';
+            bL2.textContent = DEFAULTS.lambda.toFixed(1) + ' cm';
+            bA2.textContent = DEFAULTS.A.toFixed(1) + ' cm';
+            updateFormulaUI();
+        }
+
+        bReset.onclick = () => {
+            state.time = 0;
+            state.isPlaying = false;
+            bStart.textContent = '开始 Start';
+            bStart.className = 'ctrl-btn start';
+            resetAllSliders();
+        };
+
+        resize();
+        update();
+    </script>
+</body>
+
+</html>

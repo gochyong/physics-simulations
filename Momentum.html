@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动量 / Momentum - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #FFF9F0;
+            --primary: #FF8c42;
+            --secondary: #FFC75F;
+            --accent: #FF5E5B;
+            --text-dark: #4A403A;
+            --card-bg: #FFFFFF;
+            --shadow: 0 6px 30px rgba(255, 140, 66, 0.18);
+            --radius: 30px;
+            --m-color: #3498db;
+            --v-color: #e74c3c;
+            --p-color: #9b59b6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px 40px;
+        }
+
+        .branding {
+            position: fixed;
+            top: 25px;
+            left: 30px;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.6rem;
+            color: #FFFFFF;
+            background: var(--primary);
+            padding: 10px 25px;
+            border-radius: 20px;
+            box-shadow: 4px 4px 15px rgba(255, 140, 66, 0.3);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin-top: 20px;
+            display: grid;
+            grid-template-areas:
+                "header header"
+                "formula formula"
+                "diagram controls";
+            grid-template-columns: 1fr 450px;
+            gap: 25px;
+        }
+
+        header {
+            grid-area: header;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+
+        .subtitle-text {
+            font-size: 1.4rem;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* Formula Section */
+        .formula-display {
+            grid-area: formula;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px solid #fff5eb;
+        }
+
+        .formula-container {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 15px;
+            height: 80px;
+        }
+
+        .result-row {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            gap: 25px;
+            justify-content: center;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+            width: 100%;
+        }
+
+        .legend-item {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .sym-key {
+            font-weight: 700;
+            margin-right: 5px;
+        }
+
+        /* Diagram Section */
+        .diagram-section {
+            grid-area: diagram;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        canvas {
+            width: 100%;
+            flex: 1;
+            display: block;
+        }
+
+        /* Controls Section */
+        .controls-section {
+            grid-area: controls;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .control-panel {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+
+        .val-badge {
+            background: #fff;
+            padding: 4px 12px;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            border: 2px solid #eee;
+        }
+
+        /* Sliders */
+        input[type=range] {
+            width: 100%;
+            appearance: none;
+            height: 10px;
+            background: #eee;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            appearance: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.1s;
+        }
+
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        #m-slider::-webkit-slider-thumb {
+            background: var(--m-color);
+        }
+
+        #v-slider::-webkit-slider-thumb {
+            background: var(--v-color);
+        }
+
+        .btn-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .ctrl-btn {
+            padding: 18px;
+            border: none;
+            border-radius: 18px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .start {
+            background-color: var(--primary);
+        }
+
+        .pause {
+            background-color: #2ecc71;
+        }
+
+        .reset {
+            background-color: #95a5a6;
+        }
+
+        .ctrl-btn:active {
+            transform: translateY(3px);
+            box-shadow: none;
+        }
+
+        /* Gauge Area */
+        .gauge-panel {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 1100px) {
+            .container {
+                grid-template-areas:
+                    "header"
+                    "formula"
+                    "diagram"
+                    "controls";
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="branding">
+        <div class="logo">Wuli布雷克</div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>动量 / Momentum</h1>
+            <p class="subtitle-text">
+                The product of an object's mass and velocity.<br>
+                物体的质量与速度的乘积。
+            </p>
+        </header>
+
+        <!-- Formula Section -->
+        <section class="formula-display">
+            <div class="formula-container" id="formula-root">
+                <!-- Symbols rendered via JS -->
+            </div>
+            <div class="result-row">
+                p = <span id="res-m" style="color:var(--m-color)">0</span> kg × <span id="res-v"
+                    style="color:var(--v-color)">0</span> m/s
+                = <span id="res-p" style="color:var(--p-color)">0.00</span> kg·m/s
+            </div>
+            <div class="legend">
+                <div class="legend-item"><span class="sym-key" style="color:var(--p-color)">p</span>: Momentum (动量)
+                </div>
+                <div class="legend-item"><span class="sym-key" style="color:var(--m-color)">m</span>: Mass (质量)</div>
+                <div class="legend-item"><span class="sym-key" style="color:var(--v-color)">v</span>: Velocity (速度)
+                </div>
+            </div>
+        </section>
+
+        <!-- Diagram Section -->
+        <section class="diagram-section">
+            <canvas id="simCanvas"></canvas>
+        </section>
+
+        <!-- Controls Section -->
+        <section class="controls-section">
+            <div class="control-panel">
+                <div class="control-group">
+                    <div class="label-row">
+                        <span>Mass (质量 m)</span>
+                        <span id="m-badge" class="val-badge">10 kg</span>
+                    </div>
+                    <input type="range" id="m-slider" min="1" max="100" value="20">
+                </div>
+
+                <div class="control-group">
+                    <div class="label-row">
+                        <span>Velocity (速度 v)</span>
+                        <span id="v-badge" class="val-badge">10 m/s</span>
+                    </div>
+                    <input type="range" id="v-slider" min="0" max="50" value="10">
+                </div>
+
+                <div class="btn-row">
+                    <button id="btn-start" class="ctrl-btn start">开始 Start</button>
+                    <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
+                </div>
+            </div>
+
+            <div class="gauge-panel">
+                <canvas id="gaugeCanvas" width="300" height="220"></canvas>
+                <div id="gauge-label" style="font-weight: 700; font-size: 1.4rem; color: #555; margin-top: -10px;">
+                    Momentum (动量 p)</div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas'), ctx = canvas.getContext('2d');
+        const gCanvas = document.getElementById('gaugeCanvas'), gCtx = gCanvas.getContext('2d');
+
+        const sM = document.getElementById('m-slider'), sV = document.getElementById('v-slider');
+        const bM = document.getElementById('m-badge'), bV = document.getElementById('v-badge');
+        const resP = document.getElementById('res-p'), resM = document.getElementById('res-m'), resV = document.getElementById('res-v');
+        const formulaRoot = document.getElementById('formula-root');
+        const btnStart = document.getElementById('btn-start'), btnReset = document.getElementById('btn-reset');
+
+        const state = {
+            m: 20, v: 10,
+            ballX: 100,
+            isPlaying: false
+        };
+
+        function resize() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            draw();
+        }
+        window.addEventListener('resize', resize);
+
+        function update() {
+            state.m = parseInt(sM.value);
+            state.v = parseInt(sV.value);
+
+            bM.textContent = state.m + ' kg';
+            bV.textContent = state.v + ' m/s';
+
+            if (state.isPlaying && state.v > 0) {
+                state.ballX += state.v * 0.2;
+                if (state.ballX > canvas.width + 100) {
+                    state.ballX = -100;
+                }
+            }
+
+            updateFormula();
+            draw();
+            drawGauge();
+            requestAnimationFrame(update);
+        }
+
+        function updateFormula() {
+            const p = state.m * state.v;
+            resM.textContent = state.m;
+            resV.textContent = state.v;
+            resP.textContent = p.toFixed(2);
+
+            const baseSize = 48;
+            const scaleM = 1 + (state.m / 100) * 0.3;
+            const scaleV = 1 + (state.v / 50) * 0.3;
+            const scaleP = 1 + (p / 5000) * 0.3;
+
+            const parts = [
+                { l: 'p', c: 'var(--p-color)', s: scaleP },
+                { l: '=', c: 'var(--text-dark)', s: 1 },
+                { l: 'm', c: 'var(--m-color)', s: scaleM },
+                { l: '·', c: 'var(--text-dark)', s: 1 },
+                { l: 'v', c: 'var(--v-color)', s: scaleV }
+            ];
+
+            const html = parts.map(p => `<span style="color:${p.c}; font-weight:700; font-size:${baseSize * p.s}px; display:inline-block; transition:all 0.2s;">${p.l}</span>`).join('<span style="width:15px; display:inline-block"></span>');
+            if (formulaRoot.innerHTML !== html) formulaRoot.innerHTML = html;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cy = canvas.height / 2;
+
+            // Floor
+            ctx.beginPath(); ctx.strokeStyle = '#eee'; ctx.lineWidth = 2;
+            ctx.moveTo(0, cy + 100); ctx.lineTo(canvas.width, cy + 100); ctx.stroke();
+
+            const r = 20 + (state.m / 100) * 60;
+            const ballY = cy + 100 - r;
+
+            // Ball
+            ctx.beginPath();
+            ctx.arc(state.ballX, ballY, r, 0, Math.PI * 2);
+            const grad = ctx.createRadialGradient(state.ballX - r * 0.3, ballY - r * 0.3, r * 0.1, state.ballX, ballY, r);
+            grad.addColorStop(0, '#5DADE2'); grad.addColorStop(1, '#2E86C1');
+            ctx.fillStyle = grad;
+            ctx.shadowBlur = 15; ctx.shadowColor = 'rgba(0,0,0,0.1)';
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Mass Label
+            ctx.fillStyle = 'white'; ctx.font = 'bold 16px Arial'; ctx.textAlign = 'center';
+            ctx.fillText(state.m + 'kg', state.ballX, ballY + 5);
+            // Vector
+            if (state.v > 0) {
+                const arrowLen = 60 + state.v * 5;
+                const arrowY = ballY - r - 30;
+                drawArrow(state.ballX, arrowY, state.ballX + arrowLen, arrowY, varColor('--v-color'), 6, `v = ${state.v} m/s`);
+            }
+        }
+
+        function drawArrow(x1, y1, x2, y2, color, width, label) {
+            const headlen = 12;
+            const dx = x2 - x1, dy = y2 - y1;
+            const angle = Math.atan2(dy, dx);
+            ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+            ctx.strokeStyle = color; ctx.lineWidth = width; ctx.lineCap = 'round'; ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x2, y2);
+            ctx.lineTo(x2 - headlen * Math.cos(angle - Math.PI / 6), y2 - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(x2 - headlen * Math.cos(angle + Math.PI / 6), y2 - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.closePath(); ctx.fillStyle = color; ctx.fill();
+            if (label) {
+                ctx.fillStyle = color; ctx.font = 'bold 18px Arial'; ctx.textAlign = 'center';
+                ctx.fillText(label, x1 + (x2 - x1) / 2, y1 - 15);
+            }
+        }
+
+        function drawGauge() {
+            gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
+            const cx = gCanvas.width / 2, cy = gCanvas.height * 0.75, r = 100;
+            const startAngle = Math.PI * 0.8, endAngle = Math.PI * 2.2;
+            const range = endAngle - startAngle;
+
+            const p = state.m * state.v;
+            const maxP = 100 * 50;
+
+            gCtx.beginPath(); gCtx.arc(cx, cy, r, startAngle, endAngle); gCtx.lineWidth = 12; gCtx.strokeStyle = '#f0f0f0'; gCtx.lineCap = 'round'; gCtx.stroke();
+
+            const normVal = Math.min(p / maxP, 1);
+            const currentAngle = startAngle + range * normVal;
+
+            gCtx.beginPath(); gCtx.arc(cx, cy, r, startAngle, currentAngle);
+            gCtx.strokeStyle = varColor('--p-color'); gCtx.lineWidth = 12; gCtx.stroke();
+
+            gCtx.beginPath(); gCtx.lineWidth = 4; gCtx.strokeStyle = '#333';
+            gCtx.moveTo(cx, cy); gCtx.lineTo(cx + (r - 15) * Math.cos(currentAngle), cy + (r - 15) * Math.sin(currentAngle));
+            gCtx.stroke();
+            gCtx.beginPath(); gCtx.arc(cx, cy, 7, 0, Math.PI * 2); gCtx.fillStyle = '#333'; gCtx.fill();
+
+            gCtx.font = 'bold 24px Fredoka'; gCtx.fillStyle = '#444'; gCtx.textAlign = 'center';
+            gCtx.fillText(p.toFixed(0) + ' kg·m/s', cx, cy + 40);
+        }
+
+        function varColor(name) {
+            return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        }
+
+        btnStart.onclick = () => {
+            state.isPlaying = !state.isPlaying;
+            btnStart.textContent = state.isPlaying ? '暂停 Pause' : '开始 Start';
+            btnStart.classList.toggle('start', !state.isPlaying);
+            btnStart.classList.toggle('pause', state.isPlaying);
+        };
+
+        btnReset.onclick = () => {
+            state.isPlaying = false; state.ballX = 100;
+            btnStart.textContent = '开始 Start'; btnStart.className = 'ctrl-btn start';
+        };
+
+        resize();
+        update();
+    </script>
+</body>
+
+</html>
