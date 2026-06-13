@@ -162,7 +162,7 @@
                             <span>夹角 θ / Angle</span>
                             <span id="theta-badge" class="val-badge">30°</span>
                         </div>
-                        <input type="range" id="theta-slider" min="0" max="180" step="1" value="30">
+                        <input type="range" id="theta-slider" min="0" max="360" step="1" value="30">
                     </div>
                 </div>
                 <div class="btn-row">
@@ -179,7 +179,7 @@
                     </div>
                     <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
                         <div style="width:32px;height:32px;background:rgba(85,85,85,0.08);border-radius:10px;display:flex;align-items:center;justify-content:center;">↔</div>
-                        <div><div style="font-weight:700;font-size:0.9rem;">θ=0°/180° 完全透过，θ=90° 完全消光</div><div style="font-size:0.78rem;color:#888;">θ=0°/180°: full transmission. θ=90°: complete extinction. Period = 180°.</div></div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">θ=0°/180°/360° 完全透过，θ=90°/270° 完全消光</div><div style="font-size:0.78rem;color:#888;">Full transmission at 0°/180°/360°. Extinction at 90°/270°. cos²θ period = 180°.</div></div>
                     </div>
                     <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
                         <div style="width:32px;height:32px;background:rgba(255,140,66,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;">⊿</div>
@@ -227,9 +227,9 @@
 
             if (state.isPlaying) {
                 state.time += 0.016;
-                // Auto-sweep θ 0→180→0
-                const sweep = (state.time * 25) % 360;
-                state.thetaDeg = sweep <= 180 ? Math.round(sweep) : Math.round(360 - sweep);
+                // Auto-sweep θ 0→360→0
+                const sweep = (state.time * 20) % 720;
+                state.thetaDeg = sweep <= 360 ? Math.round(sweep) : Math.round(720 - sweep);
                 sTheta.value = state.thetaDeg;
                 bTheta.textContent = state.thetaDeg + '°';
             }
