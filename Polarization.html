@@ -162,7 +162,7 @@
                             <span>夹角 θ / Angle</span>
                             <span id="theta-badge" class="val-badge">30°</span>
                         </div>
-                        <input type="range" id="theta-slider" min="0" max="90" step="1" value="30">
+                        <input type="range" id="theta-slider" min="0" max="180" step="1" value="30">
                     </div>
                 </div>
                 <div class="btn-row">
@@ -179,7 +179,7 @@
                     </div>
                     <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
                         <div style="width:32px;height:32px;background:rgba(85,85,85,0.08);border-radius:10px;display:flex;align-items:center;justify-content:center;">↔</div>
-                        <div><div style="font-weight:700;font-size:0.9rem;">θ=0° 时完全透过，θ=90° 时完全消光</div><div style="font-size:0.78rem;color:#888;">θ=0°: full transmission. θ=90°: complete extinction.</div></div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">θ=0°/180° 完全透过，θ=90° 完全消光</div><div style="font-size:0.78rem;color:#888;">θ=0°/180°: full transmission. θ=90°: complete extinction. Period = 180°.</div></div>
                     </div>
                     <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
                         <div style="width:32px;height:32px;background:rgba(255,140,66,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;">⊿</div>
@@ -204,7 +204,7 @@
         window.addEventListener('resize', resize);
 
         function updateFormulaUI() {
-            const base = 22, thetaRad = state.thetaDeg * Math.PI / 180;
+            const base = 28, thetaRad = state.thetaDeg * Math.PI / 180;
             fRoot.innerHTML = `
                 <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center;">
                     <span style="color:var(--transmitted-color);font-size:${base*1.1}px;font-weight:700;">I</span>
@@ -227,9 +227,9 @@
 
             if (state.isPlaying) {
                 state.time += 0.016;
-                // Auto-sweep θ when animating
-                const sweep = (state.time * 30) % 180;
-                state.thetaDeg = sweep <= 90 ? Math.round(sweep) : Math.round(180 - sweep);
+                // Auto-sweep θ 0→180→0
+                const sweep = (state.time * 25) % 360;
+                state.thetaDeg = sweep <= 180 ? Math.round(sweep) : Math.round(360 - sweep);
                 sTheta.value = state.thetaDeg;
                 bTheta.textContent = state.thetaDeg + '°';
             }
@@ -253,10 +253,10 @@
             const thetaRad = state.thetaDeg * Math.PI / 180;
             const I = state.I0 * Math.cos(thetaRad) ** 2;
 
-            // Layout
-            const srcX2 = w * 0.12;
-            const polX = w * 0.45;
-            const outX1 = w * 0.55;
+            // Layout — wider elements
+            const srcX2 = w * 0.16;
+            const polX = w * 0.46;
+            const outX1 = w * 0.58;
             const outX2 = w * 0.95;
 
             // Background subtle grid
@@ -265,135 +265,135 @@
             for (let y = 0; y < h; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
 
             // --- Incident light (left) ---
+            const srcW = srcX2;
+            const srcH = 90;
             const srcGrad = ctx.createLinearGradient(0, 0, srcX2, 0);
             srcGrad.addColorStop(0, '#fff8dc'); srcGrad.addColorStop(0.5, '#f0c040');
             srcGrad.addColorStop(1, '#f0c040');
             ctx.fillStyle = srcGrad;
-            ctx.fillRect(0, midY - 28, srcX2, 56);
-            ctx.fillStyle = '#333'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'center';
-            ctx.fillText('入射光', srcX2 / 2, midY - 36);
-            ctx.fillText('Incident', srcX2 / 2, midY + 44);
-            ctx.fillText('I₀=' + state.I0.toFixed(1), srcX2 / 2, midY + 56);
+            ctx.fillRect(0, midY - srcH / 2, srcW, srcH);
+            ctx.fillStyle = '#333'; ctx.font = 'bold 16px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillText('入射光', srcX2 / 2, midY - 44);
+            ctx.fillText('Incident Light', srcX2 / 2, midY + 48);
+            ctx.fillText('I₀ = ' + state.I0.toFixed(1), srcX2 / 2, midY + 66);
 
-            // Polarization direction of incident light (vertical, E-field oscillates vertically)
-            const eAmp = 20;
+            // E-field oscillation
+            const eAmp = 30;
             const oscPhase = state.time * 8;
 
-            // Draw E-field oscillation of incident light
-            ctx.strokeStyle = 'rgba(240,192,64,0.7)'; ctx.lineWidth = 2;
-            ctx.setLineDash([4, 4]);
+            // E-field axis line (dashed)
+            ctx.strokeStyle = 'rgba(240,192,64,0.5)'; ctx.lineWidth = 2;
+            ctx.setLineDash([6, 6]);
             ctx.beginPath();
-            ctx.moveTo(srcX2 + 25, midY - 15);
-            ctx.lineTo(srcX2 + 25, midY + 15);
+            ctx.moveTo(srcX2 + 30, midY - 22);
+            ctx.lineTo(srcX2 + 30, midY + 22);
             ctx.stroke();
             ctx.setLineDash([]);
 
-            // Oscillating arrow for E-field (vertical)
+            // Oscillating E arrow
             const eOsc = Math.sin(oscPhase) * eAmp;
-            drawDoubleArrow(srcX2 + 30, midY, 0, eOsc, '#f0c040', 'E');
+            drawDoubleArrow(srcX2 + 36, midY, 0, eOsc, '#f0c040', 'E⃗');
 
             // --- Polarizer ---
-            // Draw polarizer frame
-            ctx.fillStyle = '#666';
-            ctx.fillRect(polX - 4, midY - 55, 8, 110);
+            const polH = 150;
+            ctx.fillStyle = '#555';
+            ctx.fillRect(polX - 5, midY - polH / 2, 10, polH);
 
-            // Draw polarizer transmission lines (angled at θ)
-            const numLines = 15;
-            const lineLen = 42;
-            const polCx = polX;
+            // Transmission lines
+            const numLines = 20;
+            const lineLen = 55;
             ctx.save();
-            ctx.translate(polCx, midY);
-            ctx.rotate(-thetaRad); // lines perpendicular to E transmission direction
-            ctx.strokeStyle = '#999'; ctx.lineWidth = 1.5;
+            ctx.translate(polX, midY);
+            ctx.rotate(-thetaRad);
+            ctx.strokeStyle = '#bbb'; ctx.lineWidth = 2;
             for (let i = 0; i < numLines; i++) {
-                const y = -55 + i * (110 / (numLines - 1));
+                const y = -polH / 2 + 5 + i * ((polH - 10) / (numLines - 1));
                 ctx.beginPath();
                 ctx.moveTo(-lineLen, y);
                 ctx.lineTo(lineLen, y);
                 ctx.stroke();
             }
-            // Transmission axis arrow
-            ctx.strokeStyle = '#e74c3c'; ctx.lineWidth = 2;
-            ctx.setLineDash([5, 3]);
+            // Transmission axis
+            ctx.strokeStyle = '#e74c3c'; ctx.lineWidth = 3;
+            ctx.setLineDash([6, 4]);
             ctx.beginPath();
-            ctx.moveTo(0, -48); ctx.lineTo(0, 48);
+            ctx.moveTo(0, -polH / 2 - 4); ctx.lineTo(0, polH / 2 + 4);
             ctx.stroke();
             ctx.setLineDash([]);
-            // Arrowhead
+            // Arrowhead top
             ctx.fillStyle = '#e74c3c';
-            ctx.beginPath(); ctx.moveTo(0, -48); ctx.lineTo(-5, -40); ctx.lineTo(5, -40); ctx.fill();
-            ctx.fillStyle = '#e74c3c'; ctx.font = 'bold 11px Fredoka'; ctx.textAlign = 'center';
-            ctx.fillText('透振轴', 0, -52);
+            ctx.beginPath(); ctx.moveTo(0, -polH / 2 - 4); ctx.lineTo(-7, -polH / 2 + 6); ctx.lineTo(7, -polH / 2 + 6); ctx.fill();
+            ctx.fillStyle = '#e74c3c'; ctx.font = 'bold 13px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillText('透振轴', 0, -polH / 2 - 12);
             ctx.restore();
 
             // Polarizer label
-            ctx.fillStyle = '#333'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'center';
-            ctx.fillText('偏振片', polX, midY - 62);
-            ctx.fillText('Polarizer', polX, midY + 70);
+            ctx.fillStyle = '#333'; ctx.font = 'bold 16px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillText('偏振片', polX, midY - polH / 2 - 18);
+            ctx.fillText('Polarizer', polX, midY + polH / 2 + 26);
 
             // θ angle arc
-            ctx.strokeStyle = '#FF5E5B'; ctx.lineWidth = 2;
+            const arcR = 70;
+            ctx.strokeStyle = '#FF5E5B'; ctx.lineWidth = 3;
             ctx.beginPath();
-            const arcR = 55;
             ctx.arc(polX, midY, arcR, -Math.PI / 2, -Math.PI / 2 + thetaRad, thetaRad > 0);
             ctx.stroke();
             const labelAngle = -Math.PI / 2 + thetaRad / 2;
-            const labelX = polX + (arcR + 16) * Math.cos(labelAngle);
-            const labelY = midY + (arcR + 16) * Math.sin(labelAngle);
-            ctx.fillStyle = '#FF5E5B'; ctx.font = 'bold 13px Fredoka';
-            ctx.fillText('θ=' + state.thetaDeg + '°', labelX, labelY);
+            const labelX = polX + (arcR + 22) * Math.cos(labelAngle);
+            const labelY = midY + (arcR + 22) * Math.sin(labelAngle);
+            ctx.fillStyle = '#FF5E5B'; ctx.font = 'bold 16px Fredoka';
+            ctx.fillText('θ = ' + state.thetaDeg + '°', labelX, labelY);
 
             // --- Transmitted light (right side) ---
             const tAmp = eAmp * Math.cos(thetaRad);
-            const tIntensityAlpha = I / state.I0; // 0 to 1
+            const tAbs = Math.abs(Math.cos(thetaRad));
+            const tIntensityAlpha = I / state.I0;
 
-            // Transmitted light rays (fading with intensity)
-            const numRays = 7;
+            // Transmitted light rays
+            const numRays = 9;
             for (let i = 0; i < numRays; i++) {
-                const ry = midY - 18 + i * 6;
-                ctx.strokeStyle = `rgba(232,160,32,${0.15 + tIntensityAlpha * 0.7})`;
-                ctx.lineWidth = 1.5;
+                const ry = midY - 22 + i * 5.5;
+                ctx.strokeStyle = `rgba(232,160,32,${0.1 + tIntensityAlpha * 0.8})`;
+                ctx.lineWidth = Math.max(0.8, tIntensityAlpha * 2.5);
                 ctx.beginPath();
-                ctx.moveTo(outX1 + 5, ry);
-                ctx.lineTo(outX1 + 5 + 60 + tIntensityAlpha * 80, ry);
+                ctx.moveTo(outX1 + 8, ry);
+                const rayLen = 50 + tIntensityAlpha * 100;
+                ctx.lineTo(outX1 + 8 + rayLen, ry);
                 ctx.stroke();
             }
 
-            // Oscillating E-field in transmitted light (only component along polarizer axis survives)
+            // Oscillating E-field in transmitted light
             const tOsc = Math.sin(oscPhase) * tAmp;
-            const transCx = outX1 + 55;
-            // The transmitted oscillation is along the polarizer axis direction
+            const transCx = outX1 + 70;
             const tEy = tOsc * Math.cos(thetaRad);
             const tEx = tOsc * Math.sin(thetaRad);
             drawDoubleArrow(transCx, midY, tEx, tEy, '#e8a020', '');
 
-            // Transmitted intensity indicator (brightness bar on right)
-            const barX = outX2 - 30;
-            const barW = 22;
-            const barH = 80;
+            // Transmitted intensity bar (right)
+            const barX = outX2 - 40;
+            const barW = 26;
+            const barH = 110;
             const barY = midY - barH / 2;
 
-            // Bar background
-            ctx.strokeStyle = '#ddd'; ctx.lineWidth = 1;
+            ctx.strokeStyle = '#ccc'; ctx.lineWidth = 1.5;
             ctx.strokeRect(barX, barY, barW, barH);
 
-            // Bar fill (from top: bright → dim as I decreases, proportional to transmitted I)
             const fillH = barH * tIntensityAlpha;
             const grad = ctx.createLinearGradient(0, barY, 0, barY + barH);
             grad.addColorStop(0, '#f0c040');
-            grad.addColorStop(1, 'rgba(240,192,64,0.08)');
+            grad.addColorStop(1, 'rgba(240,192,64,0.05)');
             ctx.fillStyle = grad;
             ctx.fillRect(barX + 1, barY + barH - fillH, barW - 2, fillH);
 
             // Bar labels
-            ctx.fillStyle = '#666'; ctx.font = '10px Fredoka'; ctx.textAlign = 'left';
-            ctx.fillText('I=' + I.toFixed(2), barX - 4, midY + barH / 2 + 16);
-            ctx.fillText((tIntensityAlpha * 100).toFixed(0) + '%', barX - 4, midY + barH / 2 + 30);
+            ctx.fillStyle = '#333'; ctx.font = 'bold 13px Fredoka'; ctx.textAlign = 'left';
+            ctx.fillText('I = ' + I.toFixed(2), barX + barW + 8, midY - 4);
+            const ratioText = (tIntensityAlpha * 100).toFixed(0) + '%';
+            ctx.fillText(ratioText, barX + barW + 8, midY + 16);
 
-            // Section labels
-            ctx.fillStyle = '#888'; ctx.font = '600 13px Fredoka';
-            ctx.textAlign = 'center';
-            ctx.fillText('透射光 / Transmitted', (outX1 + outX2) / 2, midY + barH / 2 + 48);
+            // Section label
+            ctx.fillStyle = '#666'; ctx.font = 'bold 15px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillText('透射光 Transmitted', (outX1 + barX) / 2, midY + barH / 2 + 30);
         }
 
         function drawDoubleArrow(cx, cy, dx, dy, color, label) {
