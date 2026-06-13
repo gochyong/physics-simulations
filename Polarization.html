@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>偏振与马吕斯定律 / Polarization & Malus's Law - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #FFF9F0; --primary: #FF8c42; --secondary: #FFC75F;
+            --accent: #FF5E5B; --text-dark: #4A403A; --card-bg: #FFFFFF;
+            --shadow: 0 6px 30px rgba(255,140,66,0.18);
+            --light-color: #f0c040; --polarizer-color: #555;
+            --transmitted-color: #e8a020;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-color); color: var(--text-dark);
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh; padding: 5px 40px 10px;
+        }
+        .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
+        .logo {
+            font-weight: 700; font-size: 1.3rem; color: #fff;
+            background: var(--primary); padding: 6px 18px; border-radius: 16px;
+            box-shadow: 4px 4px 15px rgba(255,140,66,0.3);
+        }
+        .container {
+            width: 100%; max-width: 1400px; margin-top: 8px;
+            display: grid;
+            grid-template-areas:
+                "header header"
+                "formula formula"
+                "diagram controls";
+            grid-template-columns: 1fr 420px; gap: 12px;
+        }
+        header { grid-area: header; text-align: center; }
+        h1 { font-size: 2rem; color: var(--text-dark); margin-bottom: 2px; }
+        .formula-display {
+            grid-area: formula; background: var(--card-bg); border-radius: 20px;
+            box-shadow: var(--shadow); padding: 10px 20px;
+            display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb;
+        }
+        .formula-container {
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px; flex-wrap: wrap; min-height: 44px;
+        }
+        .result-row {
+            font-size: 0.95rem; font-weight: 600; color: var(--text-dark);
+            margin-top: 4px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;
+        }
+        .legend {
+            display: flex; gap: 16px; justify-content: center;
+            border-top: 1px solid #eee; padding-top: 6px; width: 100%; flex-wrap: wrap;
+        }
+        .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+        .diagram-section {
+            grid-area: diagram; background: var(--card-bg); border-radius: 20px;
+            box-shadow: var(--shadow); position: relative; overflow: hidden;
+            min-height: 380px; display: flex; flex-direction: column; border: 2px solid #fff;
+        }
+        canvas { width: 100%; flex: 1; display: block; }
+        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
+        .control-panel {
+            background: var(--card-bg); border-radius: 20px; box-shadow: var(--shadow);
+            padding: 14px 18px; display: flex; flex-direction: column; gap: 10px;
+        }
+        .param-section {
+            background: #fff; border-radius: 14px; padding: 10px 14px 8px; border: 2px solid #f5f0eb;
+        }
+        .param-section-header {
+            font-weight: 700; font-size: 0.95rem; margin-bottom: 6px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .control-group { display: flex; flex-direction: column; gap: 3px; margin-bottom: 1px; }
+        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
+        .val-badge {
+            background: #fff; padding: 1px 7px; border-radius: 7px;
+            font-size: 0.85rem; border: 2px solid #f0f0f0;
+        }
+        input[type=range] {
+            width: 100%; appearance: none; height: 6px;
+            background: #eee; border-radius: 3px; outline: none;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            appearance: none; width: 20px; height: 20px; border-radius: 50%;
+            cursor: pointer; background: var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px; }
+        .ctrl-btn {
+            padding: 10px; border: none; border-radius: 14px;
+            font-size: 1.05rem; font-weight: 700; cursor: pointer;
+            transition: all 0.2s; color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .start { background-color: var(--primary); }
+        .pause { background-color: #2ecc71; }
+        .reset { background-color: #95a5a6; }
+        .ctrl-btn:active { transform: translateY(2px); box-shadow: none; }
+        .info-card {
+            background: var(--card-bg); border-radius: 20px;
+            padding: 12px 16px; box-shadow: var(--shadow);
+            font-size: 0.9rem; line-height: 1.4; color: #5D6D7E;
+        }
+        @media (max-width: 1100px) {
+            .container {
+                grid-template-areas: "header" "formula" "diagram" "controls";
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="branding"><div class="logo">Wuli布雷克</div></div>
+
+    <div class="container">
+        <header>
+            <h1>偏振与马吕斯定律 / Polarization &amp; Malus's Law</h1>
+        </header>
+
+        <section class="formula-display">
+            <div class="formula-container" id="formula-root"></div>
+            <div class="result-row">
+                <span>透射光强 / Transmitted I = <strong style="color:var(--transmitted-color)" id="res-i">—</strong></span>
+                <span>透射率 / Ratio = <strong style="color:var(--primary)" id="res-ratio">—</strong></span>
+            </div>
+            <div class="legend">
+                <div class="legend-item"><span class="legend-dot" style="background:#f0c040"></span> 入射光 Incident</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#555"></span> 偏振片 Polarizer</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#e8a020"></span> 透射光 Transmitted</div>
+                <div class="legend-item"><span style="color:var(--accent);font-weight:700;">θ</span> 夹角 Angle</div>
+            </div>
+        </section>
+
+        <section class="diagram-section">
+            <canvas id="simCanvas"></canvas>
+        </section>
+
+        <section class="controls-section">
+            <div class="control-panel">
+                <div class="param-section" style="border-left:5px solid #f0c040;">
+                    <div class="param-section-header">入射光 / Incident Light</div>
+                    <div class="control-group">
+                        <div class="label-row">
+                            <span>光强 I₀ / Intensity</span>
+                            <span id="i0-badge" class="val-badge">3.0</span>
+                        </div>
+                        <input type="range" id="i0-slider" min="1.0" max="5.0" step="0.1" value="3.0">
+                    </div>
+                </div>
+                <div class="param-section" style="border-left:5px solid #555;">
+                    <div class="param-section-header">偏振片 / Polarizer</div>
+                    <div class="control-group">
+                        <div class="label-row">
+                            <span>夹角 θ / Angle</span>
+                            <span id="theta-badge" class="val-badge">30°</span>
+                        </div>
+                        <input type="range" id="theta-slider" min="0" max="90" step="1" value="30">
+                    </div>
+                </div>
+                <div class="btn-row">
+                    <button id="btn-start" class="ctrl-btn start">动画 / Animate</button>
+                    <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
+                </div>
+            </div>
+            <div class="info-card">
+                <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem;">演示要点 / Key points</div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;background:rgba(240,192,64,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;">🔆</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">马吕斯定律 I = I₀ cos²θ</div><div style="font-size:0.78rem;color:#888;">Malus's law: transmitted intensity equals incident intensity times cos²θ.</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;background:rgba(85,85,85,0.08);border-radius:10px;display:flex;align-items:center;justify-content:center;">↔</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">θ=0° 时完全透过，θ=90° 时完全消光</div><div style="font-size:0.78rem;color:#888;">θ=0°: full transmission. θ=90°: complete extinction.</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;background:rgba(255,140,66,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;">⊿</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">偏振片只允许沿透振轴方向的分量通过</div><div style="font-size:0.78rem;color:#888;">Only the E-field component parallel to the transmission axis passes.</div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas'), ctx = canvas.getContext('2d');
+        const sI0 = document.getElementById('i0-slider'), sTheta = document.getElementById('theta-slider');
+        const bI0 = document.getElementById('i0-badge'), bTheta = document.getElementById('theta-badge');
+        const resI = document.getElementById('res-i'), resRatio = document.getElementById('res-ratio');
+        const fRoot = document.getElementById('formula-root');
+        const bStart = document.getElementById('btn-start'), bReset = document.getElementById('btn-reset');
+
+        const state = { I0: 3.0, thetaDeg: 30, time: 0, isPlaying: false };
+
+        function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+        window.addEventListener('resize', resize);
+
+        function updateFormulaUI() {
+            const base = 22, thetaRad = state.thetaDeg * Math.PI / 180;
+            fRoot.innerHTML = `
+                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center;">
+                    <span style="color:var(--transmitted-color);font-size:${base*1.1}px;font-weight:700;">I</span>
+                    <span style="font-size:${base}px;">=</span>
+                    <span style="color:#f0c040;font-size:${base*1.1}px;font-weight:700;">I₀</span>
+                    <span style="font-size:${base}px;">·</span>
+                    <span style="color:var(--primary);font-size:${base*1.1}px;font-weight:700;">cos²θ</span>
+                </div>
+                <div style="font-size:0.82rem;color:#999;margin-top:4px;text-align:center;">
+                    I₀ = ${state.I0.toFixed(1)} &nbsp;|&nbsp; θ = ${state.thetaDeg}° &nbsp;|&nbsp;
+                    cos²θ = ${(Math.cos(thetaRad)**2).toFixed(3)}
+                </div>`;
+        }
+
+        function update() {
+            state.I0 = parseFloat(sI0.value);
+            state.thetaDeg = parseInt(sTheta.value);
+            bI0.textContent = state.I0.toFixed(1);
+            bTheta.textContent = state.thetaDeg + '°';
+
+            if (state.isPlaying) {
+                state.time += 0.016;
+                // Auto-sweep θ when animating
+                const sweep = (state.time * 30) % 180;
+                state.thetaDeg = sweep <= 90 ? Math.round(sweep) : Math.round(180 - sweep);
+                sTheta.value = state.thetaDeg;
+                bTheta.textContent = state.thetaDeg + '°';
+            }
+
+            updateFormulaUI();
+
+            const thetaRad = state.thetaDeg * Math.PI / 180;
+            const I = state.I0 * Math.cos(thetaRad) ** 2;
+            resI.textContent = I.toFixed(3);
+            resRatio.textContent = (I / state.I0 * 100).toFixed(1) + '%';
+
+            draw();
+            requestAnimationFrame(update);
+        }
+
+        function draw() {
+            const w = canvas.width, h = canvas.height;
+            ctx.clearRect(0, 0, w, h);
+
+            const midY = h * 0.5;
+            const thetaRad = state.thetaDeg * Math.PI / 180;
+            const I = state.I0 * Math.cos(thetaRad) ** 2;
+
+            // Layout
+            const srcX2 = w * 0.12;
+            const polX = w * 0.45;
+            const outX1 = w * 0.55;
+            const outX2 = w * 0.95;
+
+            // Background subtle grid
+            ctx.strokeStyle = '#fef5eb'; ctx.lineWidth = 1;
+            for (let x = 0; x < w; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
+            for (let y = 0; y < h; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+
+            // --- Incident light (left) ---
+            const srcGrad = ctx.createLinearGradient(0, 0, srcX2, 0);
+            srcGrad.addColorStop(0, '#fff8dc'); srcGrad.addColorStop(0.5, '#f0c040');
+            srcGrad.addColorStop(1, '#f0c040');
+            ctx.fillStyle = srcGrad;
+            ctx.fillRect(0, midY - 28, srcX2, 56);
+            ctx.fillStyle = '#333'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillText('入射光', srcX2 / 2, midY - 36);
+            ctx.fillText('Incident', srcX2 / 2, midY + 44);
+            ctx.fillText('I₀=' + state.I0.toFixed(1), srcX2 / 2, midY + 56);
+
+            // Polarization direction of incident light (vertical, E-field oscillates vertically)
+            const eAmp = 20;
+            const oscPhase = state.time * 8;
+
+            // Draw E-field oscillation of incident light
+            ctx.strokeStyle = 'rgba(240,192,64,0.7)'; ctx.lineWidth = 2;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(srcX2 + 25, midY - 15);
+            ctx.lineTo(srcX2 + 25, midY + 15);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Oscillating arrow for E-field (vertical)
+            const eOsc = Math.sin(oscPhase) * eAmp;
+            drawDoubleArrow(srcX2 + 30, midY, 0, eOsc, '#f0c040', 'E');
+
+            // --- Polarizer ---
+            // Draw polarizer frame
+            ctx.fillStyle = '#666';
+            ctx.fillRect(polX - 4, midY - 55, 8, 110);
+
+            // Draw polarizer transmission lines (angled at θ)
+            const numLines = 15;
+            const lineLen = 42;
+            const polCx = polX;
+            ctx.save();
+            ctx.translate(polCx, midY);
+            ctx.rotate(-thetaRad); // lines perpendicular to E transmission direction
+            ctx.strokeStyle = '#999'; ctx.lineWidth = 1.5;
+            for (let i = 0; i < numLines; i++) {
+                const y = -55 + i * (110 / (numLines - 1));
+                ctx.beginPath();
+                ctx.moveTo(-lineLen, y);
+                ctx.lineTo(lineLen, y);
+                ctx.stroke();
+            }
+            // Transmission axis arrow
+            ctx.strokeStyle = '#e74c3c'; ctx.lineWidth = 2;
+            ctx.setLineDash([5, 3]);
+            ctx.beginPath();
+            ctx.moveTo(0, -48); ctx.lineTo(0, 48);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            // Arrowhead
+            ctx.fillStyle = '#e74c3c';
+            ctx.beginPath(); ctx.moveTo(0, -48); ctx.lineTo(-5, -40); ctx.lineTo(5, -40); ctx.fill();
+            ctx.fillStyle = '#e74c3c'; ctx.font = 'bold 11px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillText('透振轴', 0, -52);
+            ctx.restore();
+
+            // Polarizer label
+            ctx.fillStyle = '#333'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillText('偏振片', polX, midY - 62);
+            ctx.fillText('Polarizer', polX, midY + 70);
+
+            // θ angle arc
+            ctx.strokeStyle = '#FF5E5B'; ctx.lineWidth = 2;
+            ctx.beginPath();
+            const arcR = 55;
+            ctx.arc(polX, midY, arcR, -Math.PI / 2, -Math.PI / 2 + thetaRad, thetaRad > 0);
+            ctx.stroke();
+            const labelAngle = -Math.PI / 2 + thetaRad / 2;
+            const labelX = polX + (arcR + 16) * Math.cos(labelAngle);
+            const labelY = midY + (arcR + 16) * Math.sin(labelAngle);
+            ctx.fillStyle = '#FF5E5B'; ctx.font = 'bold 13px Fredoka';
+            ctx.fillText('θ=' + state.thetaDeg + '°', labelX, labelY);
+
+            // --- Transmitted light (right side) ---
+            const tAmp = eAmp * Math.cos(thetaRad);
+            const tIntensityAlpha = I / state.I0; // 0 to 1
+
+            // Transmitted light rays (fading with intensity)
+            const numRays = 7;
+            for (let i = 0; i < numRays; i++) {
+                const ry = midY - 18 + i * 6;
+                ctx.strokeStyle = `rgba(232,160,32,${0.15 + tIntensityAlpha * 0.7})`;
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(outX1 + 5, ry);
+                ctx.lineTo(outX1 + 5 + 60 + tIntensityAlpha * 80, ry);
+                ctx.stroke();
+            }
+
+            // Oscillating E-field in transmitted light (only component along polarizer axis survives)
+            const tOsc = Math.sin(oscPhase) * tAmp;
+            const transCx = outX1 + 55;
+            // The transmitted oscillation is along the polarizer axis direction
+            const tEy = tOsc * Math.cos(thetaRad);
+            const tEx = tOsc * Math.sin(thetaRad);
+            drawDoubleArrow(transCx, midY, tEx, tEy, '#e8a020', '');
+
+            // Transmitted intensity indicator (brightness bar on right)
+            const barX = outX2 - 30;
+            const barW = 22;
+            const barH = 80;
+            const barY = midY - barH / 2;
+
+            // Bar background
+            ctx.strokeStyle = '#ddd'; ctx.lineWidth = 1;
+            ctx.strokeRect(barX, barY, barW, barH);
+
+            // Bar fill (from top: bright → dim as I decreases, proportional to transmitted I)
+            const fillH = barH * tIntensityAlpha;
+            const grad = ctx.createLinearGradient(0, barY, 0, barY + barH);
+            grad.addColorStop(0, '#f0c040');
+            grad.addColorStop(1, 'rgba(240,192,64,0.08)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(barX + 1, barY + barH - fillH, barW - 2, fillH);
+
+            // Bar labels
+            ctx.fillStyle = '#666'; ctx.font = '10px Fredoka'; ctx.textAlign = 'left';
+            ctx.fillText('I=' + I.toFixed(2), barX - 4, midY + barH / 2 + 16);
+            ctx.fillText((tIntensityAlpha * 100).toFixed(0) + '%', barX - 4, midY + barH / 2 + 30);
+
+            // Section labels
+            ctx.fillStyle = '#888'; ctx.font = '600 13px Fredoka';
+            ctx.textAlign = 'center';
+            ctx.fillText('透射光 / Transmitted', (outX1 + outX2) / 2, midY + barH / 2 + 48);
+        }
+
+        function drawDoubleArrow(cx, cy, dx, dy, color, label) {
+            const len = Math.sqrt(dx * dx + dy * dy);
+            if (len < 0.5) return;
+            const ux = dx / len, uy = dy / len;
+            const head = 6;
+            ctx.strokeStyle = color; ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(cx - dx, cy - dy);
+            ctx.lineTo(cx + dx, cy + dy);
+            ctx.stroke();
+            // Arrowhead +
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(cx + dx, cy + dy);
+            ctx.lineTo(cx + dx - head * ux + head * 0.5 * uy, cy + dy - head * uy - head * 0.5 * ux);
+            ctx.lineTo(cx + dx - head * ux - head * 0.5 * uy, cy + dy - head * uy + head * 0.5 * ux);
+            ctx.fill();
+            // Arrowhead -
+            ctx.beginPath();
+            ctx.moveTo(cx - dx, cy - dy);
+            ctx.lineTo(cx - dx + head * ux + head * 0.5 * uy, cy - dy + head * uy - head * 0.5 * ux);
+            ctx.lineTo(cx - dx + head * ux - head * 0.5 * uy, cy - dy + head * uy + head * 0.5 * ux);
+            ctx.fill();
+            if (label) {
+                ctx.fillStyle = color; ctx.font = 'bold 12px Fredoka';
+                ctx.textAlign = 'left'; ctx.fillText(label, cx + dx + 5, cy + dy - 3);
+            }
+        }
+
+        function resetAll() {
+            sI0.value = 3.0; sTheta.value = 30;
+            state.I0 = 3.0; state.thetaDeg = 30; state.time = 0; state.isPlaying = false;
+            bI0.textContent = '3.0'; bTheta.textContent = '30°';
+            bStart.textContent = '动画 / Animate'; bStart.className = 'ctrl-btn start';
+            updateFormulaUI();
+        }
+
+        bStart.onclick = () => {
+            state.isPlaying = !state.isPlaying;
+            if (!state.isPlaying) {
+                sTheta.value = state.thetaDeg;
+                bTheta.textContent = state.thetaDeg + '°';
+            }
+            bStart.textContent = state.isPlaying ? '暂停 Pause' : '动画 / Animate';
+            bStart.classList.toggle('start', !state.isPlaying);
+            bStart.classList.toggle('pause', state.isPlaying);
+        };
+
+        bReset.onclick = () => resetAll();
+
+        resize();
+        update();
+    </script>
+</body>
+
+</html>
