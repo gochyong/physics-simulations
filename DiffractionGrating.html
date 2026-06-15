@@ -151,10 +151,6 @@
                         光栅参数 / Grating Parameters
                     </div>
                     <div class="control-group">
-                        <div class="label-row"><span>缝间距 d / Slit spacing</span><span id="d-badge" class="val-badge">2.0 μm</span></div>
-                        <input type="range" id="d-slider" min="1.0" max="5.0" step="0.05" value="2.0">
-                    </div>
-                    <div class="control-group">
                         <div class="label-row"><span>缝数 N / Number of slits</span><span id="n-badge" class="val-badge">5</span></div>
                         <input type="range" id="n-slider" min="2" max="12" step="1" value="5">
                     </div>
@@ -191,16 +187,20 @@
 
     <script>
         const canvas = document.getElementById('simCanvas'), ctx = canvas.getContext('2d');
-        const sLambda = document.getElementById('lambda-slider'), sDgrating = document.getElementById('d-slider');
+        const sLambda = document.getElementById('lambda-slider');
         const sN = document.getElementById('n-slider'), sD = document.getElementById('D-slider');
-        const bLambda = document.getElementById('lambda-badge'), bDgrating = document.getElementById('d-badge');
+        const bLambda = document.getElementById('lambda-badge');
         const bN = document.getElementById('n-badge'), bD = document.getElementById('D-badge');
         const resOrders = document.getElementById('res-orders'), resN = document.getElementById('res-n');
         const fRoot = document.getElementById('formula-root');
         const swatchLight = document.getElementById('swatch-light'), swatchLegend = document.getElementById('swatch-legend');
         const bStart = document.getElementById('btn-start'), bReset = document.getElementById('btn-reset');
 
-        const state = { lambdaNm: 550, dUm: 2.0, N: 5, Dm: 2.0, time: 0, isPlaying: false };
+        // d is inversely proportional to N: base grating constant / N
+        const D_BASE = 10; // μm — grating constant × N, so d = D_BASE/N
+        const state = { lambdaNm: 550, N: 5, Dm: 2.0, time: 0, isPlaying: false };
+
+        function getD() { return D_BASE / state.N; } // d in μm
 
         function lambdaToRGB(nm) {
             let r, g, b;
@@ -221,23 +221,22 @@
         window.addEventListener('resize', resize);
 
         function updateFormulaUI() {
-            const base = 22, lc = lCSS(state.lambdaNm);
+            const base = 22;
+            const d = getD();
             fRoot.innerHTML = `
                 <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;justify-content:center;">
                     <span style="color:var(--primary);font-size:${base}px;font-weight:700;">d sinθ = nλ</span>
-                    <span style="font-size:${base*0.8}px;color:#aaa;">&nbsp; N = ${state.N} 条缝</span>
                 </div>
                 <div style="font-size:0.8rem;color:#999;margin-top:3px;">
-                    d=${state.dUm.toFixed(2)}μm | λ=${state.lambdaNm}nm | D=${state.Dm.toFixed(1)}m | 主极大半角宽≈λ/(Nd cosθ)
+                    d = ${d.toFixed(2)} μm &nbsp;|&nbsp; λ = ${state.lambdaNm} nm &nbsp;|&nbsp; D = ${state.Dm.toFixed(1)} m &nbsp;|&nbsp; N = ${state.N}
                 </div>`;
         }
 
         function update() {
-            state.lambdaNm = parseInt(sLambda.value); state.dUm = parseFloat(sDgrating.value);
+            state.lambdaNm = parseInt(sLambda.value);
             state.N = parseInt(sN.value); state.Dm = parseFloat(sD.value);
 
             bLambda.textContent = state.lambdaNm + ' nm';
-            bDgrating.textContent = state.dUm.toFixed(2) + ' μm';
             bN.textContent = state.N;
             bD.textContent = state.Dm.toFixed(1) + ' m';
             resN.textContent = state.N;
@@ -247,7 +246,7 @@
             if (state.isPlaying) state.time += 0.016;
 
             // Compute visible orders
-            const dM = state.dUm * 1e-6;
+            const dM = getD() * 1e-6;
             const lm = state.lambdaNm * 1e-9;
             const maxN = Math.floor(dM / lm);
             if (maxN <= 4) {
@@ -268,8 +267,9 @@
             const midY = h * 0.5;
             const lc = lCSS(state.lambdaNm);
             const lrgb = lambdaToRGB(state.lambdaNm);
+            const dUm = getD();
             const lm = state.lambdaNm * 1e-9;
-            const dM = state.dUm * 1e-6;
+            const dM = dUm * 1e-6;
 
             // Layout
             const srcX2 = w * 0.07;
@@ -329,7 +329,7 @@
                 ctx.lineTo(slitX + 12, slitPositions[1]); ctx.stroke();
                 ctx.setLineDash([]);
                 ctx.fillStyle = '#e74c3c'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'left';
-                ctx.fillText('d=' + state.dUm.toFixed(2) + 'μm', slitX + 16, (slitPositions[0] + slitPositions[1]) / 2 + 5);
+                ctx.fillText('d=' + dUm.toFixed(2) + 'μm', slitX + 16, (slitPositions[0] + slitPositions[1]) / 2 + 5);
             }
 
             // N label
@@ -361,29 +361,37 @@
             ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1;
             ctx.strokeRect(fieldX1, fieldY1, fieldW, fieldH);
 
-            // === Principal maxima angle lines (dark solid) ===
+            // === Principal maxima angle lines — pixel-space → match screen fringes ===
+            const Dpx = screenX - slitX;
+            const aPxForAngles = actualSpacing;
+            const lambdaPxForAngles = 10 * (state.lambdaNm / 550);
             const maxN = Math.floor(dM / lm);
             const maxDraw = Math.min(maxN, 6);
-            for (let n = -maxDraw; n <= maxDraw; n++) {
-                const sinTh = n * lm / dM;
-                if (Math.abs(sinTh) >= 0.98) continue;
-                const theta = Math.asin(sinTh);
-                const midSlitX = slitX;
-                const midSlitY = midY;
-                const len = fieldW + 20;
-                const endX = midSlitX + len * Math.cos(theta);
-                const endY = midSlitY + len * Math.sin(theta);
 
+            for (let n = -maxDraw; n <= maxDraw; n++) {
+                // Compute screen y position using same Newton method as order labels
+                let dyApprox = n * lambdaPxForAngles * Dpx / Math.max(aPxForAngles, 1);
+                for (let iter = 0; iter < 3; iter++) {
+                    const dd1 = Math.sqrt(Dpx * Dpx + (dyApprox - aPxForAngles / 2) * (dyApprox - aPxForAngles / 2));
+                    const dd2 = Math.sqrt(Dpx * Dpx + (dyApprox + aPxForAngles / 2) * (dyApprox + aPxForAngles / 2));
+                    const f = dd1 - dd2 - n * lambdaPxForAngles;
+                    const df = (dyApprox - aPxForAngles / 2) / dd1 - (dyApprox + aPxForAngles / 2) / dd2;
+                    if (Math.abs(df) > 1e-9) dyApprox -= f / df;
+                }
+                const screenY = midY + dyApprox;
+                if (screenY < fieldY1 + 4 || screenY > fieldY2 - 4) continue;
+
+                // Draw solid line from slit center to screen fringe position
                 ctx.beginPath();
-                ctx.moveTo(midSlitX, midSlitY);
-                ctx.lineTo(endX, endY);
-                ctx.strokeStyle = 'rgba(200,200,200,0.6)'; ctx.lineWidth = 1.8;
+                ctx.moveTo(slitX, midY);
+                ctx.lineTo(screenX, screenY);
+                ctx.strokeStyle = 'rgba(200,200,200,0.55)'; ctx.lineWidth = 1.8;
                 ctx.setLineDash([]);
                 ctx.stroke();
 
-                // Small n label at end of line
-                ctx.fillStyle = '#ddd'; ctx.font = 'bold 11px Fredoka'; ctx.textAlign = 'left';
-                ctx.fillText('n=' + n, endX + 4, endY + 4);
+                // n label at screen end
+                ctx.fillStyle = '#fff'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'left';
+                ctx.fillText('n=' + n, screenX + 6, screenY + 4);
             }
 
             // --- Screen ---
@@ -408,28 +416,25 @@
 
             // --- Fringe pattern using N-slit intensity formula ---
             const scrY1 = scrTop + 2, scrY2 = scrBot - 2, scrH = scrY2 - scrY1;
-            const Dpx = screenX - slitX;
-            const aPx = actualSpacing; // pixel slit spacing for path diff calculation
-            const lambdaPx = 10 * (state.lambdaNm / 550);
 
             for (let i = 0; i < Math.floor(scrH); i++) {
                 const yPx = scrY1 + i;
                 const dy = yPx - midY;
 
                 // Path difference between adjacent slits
-                const d1 = Math.sqrt(Dpx * Dpx + (dy - aPx / 2) * (dy - aPx / 2));
-                const d2 = Math.sqrt(Dpx * Dpx + (dy + aPx / 2) * (dy + aPx / 2));
+                const d1 = Math.sqrt(Dpx * Dpx + (dy - aPxForAngles / 2) * (dy - aPxForAngles / 2));
+                const d2 = Math.sqrt(Dpx * Dpx + (dy + aPxForAngles / 2) * (dy + aPxForAngles / 2));
                 const pathDiffPx = d1 - d2;
 
                 // N-slit intensity: I = I₀ (sin(Nβ)/sin(β))² where β = πd sinθ/λ
-                const beta = Math.PI * pathDiffPx / lambdaPx;
+                const beta = Math.PI * pathDiffPx / lambdaPxForAngles;
                 let I;
                 if (Math.abs(Math.sin(beta)) < 1e-6) {
-                    I = state.N * state.N; // principal maximum — normalized
+                    I = state.N * state.N;
                 } else {
                     I = (Math.sin(state.N * beta) / Math.sin(beta)) ** 2;
                 }
-                I = I / (state.N * state.N); // normalize to 0-1
+                I = I / (state.N * state.N);
 
                 ctx.fillStyle = `rgb(${Math.floor(lrgb.r * I)},${Math.floor(lrgb.g * I)},${Math.floor(lrgb.b * I)})`;
                 ctx.fillRect(screenX + 2, yPx, 5, 1.2);
@@ -442,15 +447,15 @@
                 }
             }
 
-            // Order labels on screen
+            // Order labels on screen (reuse same positions as angle lines)
             const maxLabel = Math.min(maxN, 8);
             for (let n = -maxLabel; n <= maxLabel; n++) {
-                let dyApprox = n * lambdaPx * Dpx / Math.max(aPx, 1);
+                let dyApprox = n * lambdaPxForAngles * Dpx / Math.max(aPxForAngles, 1);
                 for (let iter = 0; iter < 3; iter++) {
-                    const dd1 = Math.sqrt(Dpx * Dpx + (dyApprox - aPx / 2) * (dyApprox - aPx / 2));
-                    const dd2 = Math.sqrt(Dpx * Dpx + (dyApprox + aPx / 2) * (dyApprox + aPx / 2));
-                    const f = dd1 - dd2 - n * lambdaPx;
-                    const df = (dyApprox - aPx / 2) / dd1 - (dyApprox + aPx / 2) / dd2;
+                    const dd1 = Math.sqrt(Dpx * Dpx + (dyApprox - aPxForAngles / 2) * (dyApprox - aPxForAngles / 2));
+                    const dd2 = Math.sqrt(Dpx * Dpx + (dyApprox + aPxForAngles / 2) * (dyApprox + aPxForAngles / 2));
+                    const f = dd1 - dd2 - n * lambdaPxForAngles;
+                    const df = (dyApprox - aPxForAngles / 2) / dd1 - (dyApprox + aPxForAngles / 2) / dd2;
                     if (Math.abs(df) > 1e-9) dyApprox -= f / df;
                 }
                 const yPx = midY + dyApprox;
@@ -459,25 +464,21 @@
                 ctx.beginPath(); ctx.arc(screenX + 4, yPx, 3, 0, Math.PI * 2);
                 ctx.fillStyle = '#ffdd57'; ctx.fill();
                 ctx.strokeStyle = '#fff'; ctx.lineWidth = 0.8; ctx.stroke();
-                ctx.fillStyle = '#fff'; ctx.font = 'bold 9px Fredoka'; ctx.textAlign = 'left';
+                ctx.fillStyle = '#fff'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'left';
                 ctx.fillText(n === 0 ? '0' : (n > 0 ? '+' + n : '' + n), screenX + 34, yPx + 4);
             }
-
-            ctx.fillStyle = '#ffdd57'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'left';
-            ctx.fillText('N=' + state.N + ' 光栅', screenX + 34, midY + 4);
 
             ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.font = '500 12px Fredoka'; ctx.textAlign = 'right';
             ctx.fillText('t = ' + state.time.toFixed(1) + ' s', w - 12, 20);
         }
 
-        const DEFAULTS = { lambda: 550, d: 2.0, n: 5, D: 2.0 };
+        const DEFAULTS = { lambda: 550, n: 5, D: 2.0 };
         function resetAll() {
-            sLambda.value = DEFAULTS.lambda; sDgrating.value = DEFAULTS.d;
+            sLambda.value = DEFAULTS.lambda;
             sN.value = DEFAULTS.n; sD.value = DEFAULTS.D;
-            state.lambdaNm = DEFAULTS.lambda; state.dUm = DEFAULTS.d;
+            state.lambdaNm = DEFAULTS.lambda;
             state.N = DEFAULTS.n; state.Dm = DEFAULTS.D;
             bLambda.textContent = DEFAULTS.lambda + ' nm';
-            bDgrating.textContent = DEFAULTS.d.toFixed(2) + ' μm';
             bN.textContent = DEFAULTS.n; bD.textContent = DEFAULTS.D.toFixed(1) + ' m';
             const css = lCSS(DEFAULTS.lambda); swatchLight.style.backgroundColor = css; swatchLegend.style.backgroundColor = css;
             updateFormulaUI();
