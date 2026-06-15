@@ -381,7 +381,7 @@
                 ctx.strokeStyle = 'rgba(200,200,200,0.5)'; ctx.lineWidth = 1.6;
                 ctx.stroke();
                 ctx.fillStyle = '#fff'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'left';
-                ctx.fillText('n=' + n, screenX + 6, yPx + 4);
+                ctx.fillText(n === 0 ? '0' : (n > 0 ? '+' + n : '' + n), screenX + 6, yPx + 4);
             });
 
             // --- Screen ---
@@ -421,13 +421,14 @@
                     sumIm += Math.sin(phi);
                 }
                 const I = (sumRe * sumRe + sumIm * sumIm) / (state.N * state.N);
+                const Ib = Math.pow(I, 0.55); // boost perceived brightness
 
-                ctx.fillStyle = `rgb(${Math.floor(lrgb.r * I)},${Math.floor(lrgb.g * I)},${Math.floor(lrgb.b * I)})`;
+                ctx.fillStyle = `rgb(${Math.floor(lrgb.r * Ib)},${Math.floor(lrgb.g * Ib)},${Math.floor(lrgb.b * Ib)})`;
                 ctx.fillRect(screenX + 2, yPx, 5, 1.2);
-                if (I > 0.7) {
-                    ctx.fillStyle = `rgba(${lrgb.r},${lrgb.g},${lrgb.b},${0.1 + I * 0.55})`;
+                if (Ib > 0.55) {
+                    ctx.fillStyle = `rgba(${lrgb.r},${lrgb.g},${lrgb.b},${0.15 + Ib * 0.6})`;
                     ctx.fillRect(screenX + 8, yPx - 0.6, 22, 1.8);
-                } else if (I < 0.05) {
+                } else if (Ib < 0.08) {
                     ctx.fillStyle = 'rgba(0,0,0,0.5)';
                     ctx.fillRect(screenX + 8, yPx - 0.6, 22, 1.8);
                 }
