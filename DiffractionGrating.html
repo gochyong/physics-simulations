@@ -245,17 +245,6 @@
             updateFormulaUI();
             if (state.isPlaying) state.time += 0.016;
 
-            // Compute visible orders
-            const dM = getD() * 1e-6;
-            const lm = state.lambdaNm * 1e-9;
-            const maxN = Math.floor(dM / lm);
-            if (maxN <= 4) {
-                const ords = []; for (let n = -maxN; n <= maxN; n++) ords.push(n);
-                resOrders.textContent = 'n = ' + ords.join(', ');
-            } else {
-                resOrders.textContent = 'n = 0, ±1, …, ±' + maxN;
-            }
-
             draw(); requestAnimationFrame(update);
         }
 
@@ -364,42 +353,42 @@
             // Screen bounds (define early, used by angle lines + fringe)
             const scrTop = fieldY1 + 4, scrBot = fieldY2 - 4;
 
-            // === Principal maxima angle lines — pixel-space → match screen fringes ===
+            // === Shared params for angle lines + screen fringes ===
             const Dpx = screenX - slitX;
-            const aPxForAngles = actualSpacing;
-            const lambdaPxForAngles = 10 * (state.lambdaNm / 550);
-            const maxN = Math.floor(dM / lm);
+            const aPx2 = actualSpacing;
+            const lambdaPx2 = 10 * (state.lambdaNm / 550);
+            // Use pixel-space maxN so angle lines and fringes agree
+            const pxMaxN = Math.floor(aPx2 / Math.max(lambdaPx2, 0.5));
 
-            for (let n = -maxN; n <= maxN; n++) {
-                // Better initial guess using exact geometry
-                const sinThN = n * lambdaPxForAngles / Math.max(aPxForAngles, 0.01);
-                if (Math.abs(sinThN) >= 0.99) continue; // beyond visible range
+            // Pre-compute all screen order positions (used by both angle lines and labels)
+            const orderPositions = [];
+            for (let n = -pxMaxN; n <= pxMaxN; n++) {
+                const sinThN = n * lambdaPx2 / Math.max(aPx2, 0.01);
+                if (Math.abs(sinThN) >= 0.99) continue;
                 const thetaN = Math.asin(sinThN);
-                let dyApprox = Dpx * Math.tan(thetaN);
-                // Newton refine (5 iterations for high orders)
+                let dyN = Dpx * Math.tan(thetaN);
                 for (let iter = 0; iter < 5; iter++) {
-                    const dd1 = Math.sqrt(Dpx * Dpx + (dyApprox - aPxForAngles / 2) * (dyApprox - aPxForAngles / 2));
-                    const dd2 = Math.sqrt(Dpx * Dpx + (dyApprox + aPxForAngles / 2) * (dyApprox + aPxForAngles / 2));
-                    const f = dd1 - dd2 - n * lambdaPxForAngles;
-                    const df = (dyApprox - aPxForAngles / 2) / dd1 - (dyApprox + aPxForAngles / 2) / dd2;
-                    if (Math.abs(df) > 1e-9) dyApprox -= f / df;
+                    const dd1 = Math.sqrt(Dpx * Dpx + (dyN - aPx2 / 2) * (dyN - aPx2 / 2));
+                    const dd2 = Math.sqrt(Dpx * Dpx + (dyN + aPx2 / 2) * (dyN + aPx2 / 2));
+                    const f = dd1 - dd2 - n * lambdaPx2;
+                    const df = (dyN - aPx2 / 2) / dd1 - (dyN + aPx2 / 2) / dd2;
+                    if (Math.abs(df) > 1e-9) dyN -= f / df;
                 }
-                const screenY = midY + dyApprox;
-                // Use same bounds as screen
-                if (screenY < scrTop - 2 || screenY > scrBot + 2) continue;
+                const yPx = midY + dyN;
+                if (yPx < scrTop - 2 || yPx > scrBot + 2) continue;
+                orderPositions.push({ n, yPx });
+            }
 
-                // Draw solid line from slit center to screen fringe position
+            // Draw angle lines from slit center to each order on screen
+            orderPositions.forEach(({ n, yPx }) => {
                 ctx.beginPath();
                 ctx.moveTo(slitX, midY);
-                ctx.lineTo(screenX, screenY);
-                ctx.strokeStyle = 'rgba(200,200,200,0.55)'; ctx.lineWidth = 1.8;
-                ctx.setLineDash([]);
+                ctx.lineTo(screenX, yPx);
+                ctx.strokeStyle = 'rgba(200,200,200,0.5)'; ctx.lineWidth = 1.6;
                 ctx.stroke();
-
-                // n label at screen end
                 ctx.fillStyle = '#fff'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'left';
-                ctx.fillText('n=' + n, screenX + 6, screenY + 4);
-            }
+                ctx.fillText('n=' + n, screenX + 6, yPx + 4);
+            });
 
             // --- Screen ---
             ctx.strokeStyle = '#ccc'; ctx.lineWidth = 2.5;
@@ -427,13 +416,11 @@
                 const yPx = scrY1 + i;
                 const dy = yPx - midY;
 
-                // Path difference between adjacent slits
-                const d1 = Math.sqrt(Dpx * Dpx + (dy - aPxForAngles / 2) * (dy - aPxForAngles / 2));
-                const d2 = Math.sqrt(Dpx * Dpx + (dy + aPxForAngles / 2) * (dy + aPxForAngles / 2));
+                const d1 = Math.sqrt(Dpx * Dpx + (dy - aPx2 / 2) * (dy - aPx2 / 2));
+                const d2 = Math.sqrt(Dpx * Dpx + (dy + aPx2 / 2) * (dy + aPx2 / 2));
                 const pathDiffPx = d1 - d2;
 
-                // N-slit intensity: I = I₀ (sin(Nβ)/sin(β))² where β = πd sinθ/λ
-                const beta = Math.PI * pathDiffPx / lambdaPxForAngles;
+                const beta = Math.PI * pathDiffPx / lambdaPx2;
                 let I;
                 if (Math.abs(Math.sin(beta)) < 1e-6) {
                     I = state.N * state.N;
@@ -453,24 +440,21 @@
                 }
             }
 
-            // Order labels on screen (reuse same positions as angle lines)
-            for (let n = -maxN; n <= maxN; n++) {
-                let dyApprox = n * lambdaPxForAngles * Dpx / Math.max(aPxForAngles, 1);
-                for (let iter = 0; iter < 3; iter++) {
-                    const dd1 = Math.sqrt(Dpx * Dpx + (dyApprox - aPxForAngles / 2) * (dyApprox - aPxForAngles / 2));
-                    const dd2 = Math.sqrt(Dpx * Dpx + (dyApprox + aPxForAngles / 2) * (dyApprox + aPxForAngles / 2));
-                    const f = dd1 - dd2 - n * lambdaPxForAngles;
-                    const df = (dyApprox - aPxForAngles / 2) / dd1 - (dyApprox + aPxForAngles / 2) / dd2;
-                    if (Math.abs(df) > 1e-9) dyApprox -= f / df;
-                }
-                const yPx = midY + dyApprox;
-                if (yPx < scrY1 + 4 || yPx > scrY2 - 4) continue;
-
-                ctx.beginPath(); ctx.arc(screenX + 4, yPx, 3, 0, Math.PI * 2);
+            // Order labels (reuse pre-computed positions from angle lines)
+            orderPositions.forEach(({ n, yPx }) => {
+                ctx.beginPath(); ctx.arc(screenX + 4, yPx, 3.5, 0, Math.PI * 2);
                 ctx.fillStyle = '#ffdd57'; ctx.fill();
                 ctx.strokeStyle = '#fff'; ctx.lineWidth = 0.8; ctx.stroke();
                 ctx.fillStyle = '#fff'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'left';
                 ctx.fillText(n === 0 ? '0' : (n > 0 ? '+' + n : '' + n), screenX + 34, yPx + 4);
+            });
+
+            // Update result display with pixel-space maxN for consistency
+            if (pxMaxN <= 4) {
+                const ords = []; for (let n = -pxMaxN; n <= pxMaxN; n++) ords.push(n);
+                resOrders.textContent = 'n = ' + ords.join(', ');
+            } else {
+                resOrders.textContent = 'n = 0, ±1, …, ±' + pxMaxN;
             }
 
             ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.font = '500 12px Fredoka'; ctx.textAlign = 'right';
