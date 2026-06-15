@@ -366,9 +366,8 @@
             const aPxForAngles = actualSpacing;
             const lambdaPxForAngles = 10 * (state.lambdaNm / 550);
             const maxN = Math.floor(dM / lm);
-            const maxDraw = Math.min(maxN, 6);
 
-            for (let n = -maxDraw; n <= maxDraw; n++) {
+            for (let n = -maxN; n <= maxN; n++) {
                 // Compute screen y position using same Newton method as order labels
                 let dyApprox = n * lambdaPxForAngles * Dpx / Math.max(aPxForAngles, 1);
                 for (let iter = 0; iter < 3; iter++) {
@@ -448,8 +447,7 @@
             }
 
             // Order labels on screen (reuse same positions as angle lines)
-            const maxLabel = Math.min(maxN, 8);
-            for (let n = -maxLabel; n <= maxLabel; n++) {
+            for (let n = -maxN; n <= maxN; n++) {
                 let dyApprox = n * lambdaPxForAngles * Dpx / Math.max(aPxForAngles, 1);
                 for (let iter = 0; iter < 3; iter++) {
                     const dd1 = Math.sqrt(Dpx * Dpx + (dyApprox - aPxForAngles / 2) * (dyApprox - aPxForAngles / 2));
