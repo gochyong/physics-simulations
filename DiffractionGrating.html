@@ -282,35 +282,35 @@
             const screenX = slitX + 80 + ((state.Dm - dMinF) / (dMaxF - dMinF)) * (w * 0.94 - slitX - 80);
             const fieldW = screenX - fieldX1;
 
-            // N slit positions (evenly spaced)
-            const dPx = Math.max(state.dUm * 60, 12); // pixel spacing between slits
-            const totalHeight = (state.N - 1) * dPx;
-            // Cap total height to fit in field
-            const actualSpacing = totalHeight > fieldH * 0.7 ? (fieldH * 0.7) / (state.N - 1) : dPx;
-            const slitPositions = [];
+            // N slit positions — total grating width fixed, so spacing ∝ 1/N
+            const gratingHalfH = fieldH * 0.35;  // fixed half-height of grating
+            const actualSpacing = state.N > 1 ? (2 * gratingHalfH) / (state.N - 1) : 0;
             const actualTotal = (state.N - 1) * actualSpacing;
+            const slitPositions = [];
             for (let i = 0; i < state.N; i++) {
-                slitPositions.push(midY - actualTotal / 2 + i * actualSpacing);
+                slitPositions.push(i === 0 ? midY - gratingHalfH :
+                    (state.N === 1 ? midY : midY - gratingHalfH + i * actualSpacing));
             }
 
             // --- Light Source ---
             const grad = ctx.createLinearGradient(0, 0, srcX2, 0);
             grad.addColorStop(0, lc); grad.addColorStop(0.7, lc); grad.addColorStop(1, 'rgba(0,0,0,0)');
-            ctx.fillStyle = grad; ctx.fillRect(0, midY - 22, srcX2, 44);
-            ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Fredoka'; ctx.textAlign = 'center';
-            ctx.fillText('单色光源', srcX2 / 2, midY - 28);
-            ctx.fillText('λ=' + state.lambdaNm + 'nm', srcX2 / 2, midY + 36);
+            ctx.fillStyle = grad; ctx.fillRect(0, midY - 30, srcX2, 60);
+            ctx.fillStyle = '#fff'; ctx.font = 'bold 13px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillText('单色光源', srcX2 / 2, midY - 36);
+            ctx.fillText('Monochromatic', srcX2 / 2, midY - 20);
+            ctx.fillText('λ=' + state.lambdaNm + 'nm', srcX2 / 2, midY + 40);
 
             // --- Rays to slits ---
-            ctx.strokeStyle = lc; ctx.lineWidth = 0.8; ctx.globalAlpha = 0.25; ctx.setLineDash([3, 4]);
+            ctx.strokeStyle = lc; ctx.lineWidth = 0.8; ctx.globalAlpha = 0.2; ctx.setLineDash([3, 4]);
             slitPositions.forEach(sy => {
                 ctx.beginPath(); ctx.moveTo(srcX2, midY); ctx.lineTo(slitX - 2, sy); ctx.stroke();
             });
             ctx.setLineDash([]); ctx.globalAlpha = 1;
 
             // --- Slit Barrier ---
-            const barTop = slitPositions[0] - 14;
-            const barBot = slitPositions[state.N - 1] + 14;
+            const barTop = slitPositions[0] - 16;
+            const barBot = slitPositions[state.N - 1] + 16;
             ctx.fillStyle = '#2c3e50';
             ctx.fillRect(slitX - 2, barTop, 8, barBot - barTop);
 
@@ -319,24 +319,24 @@
                 const g = ctx.createRadialGradient(slitX, sy, 0, slitX, sy, 10);
                 g.addColorStop(0, '#fff'); g.addColorStop(0.3, lc); g.addColorStop(1, 'rgba(0,0,0,0)');
                 ctx.fillStyle = g; ctx.fillRect(slitX - 8, sy - 10, 16, 20);
-                ctx.fillStyle = '#fff'; ctx.fillRect(slitX - 1, sy - 2.5, 5, 5);
+                ctx.fillStyle = '#fff'; ctx.fillRect(slitX - 1, sy - 3, 5, 6);
             });
 
             // d label
             if (state.N >= 2) {
-                ctx.strokeStyle = '#e74c3c'; ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
+                ctx.strokeStyle = '#e74c3c'; ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]);
                 ctx.beginPath(); ctx.moveTo(slitX + 12, slitPositions[0]);
                 ctx.lineTo(slitX + 12, slitPositions[1]); ctx.stroke();
                 ctx.setLineDash([]);
-                ctx.fillStyle = '#e74c3c'; ctx.font = 'bold 10px Fredoka'; ctx.textAlign = 'left';
-                ctx.fillText('d=' + state.dUm.toFixed(2) + 'μm', slitX + 16, (slitPositions[0] + slitPositions[1]) / 2 + 4);
+                ctx.fillStyle = '#e74c3c'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'left';
+                ctx.fillText('d=' + state.dUm.toFixed(2) + 'μm', slitX + 16, (slitPositions[0] + slitPositions[1]) / 2 + 5);
             }
 
             // N label
-            ctx.fillStyle = '#e74c3c'; ctx.font = 'bold 10px Fredoka'; ctx.textAlign = 'right';
-            ctx.fillText('N=' + state.N, slitX - 7, barTop - 6);
+            ctx.fillStyle = '#e74c3c'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'right';
+            ctx.fillText('N=' + state.N, slitX - 8, barTop - 8);
 
-            // === Circular Wavefronts from ALL N slits ===
+            // === Circular Wavefronts — light-colored dashed lines from all slits ===
             const simLambda = 14 + (state.lambdaNm - 400) / 300 * 12;
             const maxR = Math.sqrt(fieldW * fieldW + (fieldH / 2) * (fieldH / 2)) + 20;
             const numRings = Math.floor(maxR / simLambda) + 2;
@@ -345,19 +345,12 @@
             ctx.save();
             ctx.beginPath(); ctx.rect(fieldX1, fieldY1, fieldW, fieldH); ctx.clip();
 
-            // Draw wavefronts from each slit
             slitPositions.forEach(sy => {
-                // Crests
                 for (let i = 0; i < numRings; i++) {
                     const r = i * simLambda + phase;
                     ctx.beginPath(); ctx.arc(slitX, sy, r, 0, Math.PI * 2);
-                    ctx.strokeStyle = lc; ctx.lineWidth = 1; ctx.globalAlpha = 0.5; ctx.stroke();
-                }
-                // Troughs (dashed, dimmer)
-                for (let i = 0; i < numRings; i++) {
-                    const r = i * simLambda + simLambda / 2 + phase;
-                    ctx.beginPath(); ctx.arc(slitX, sy, r, 0, Math.PI * 2);
-                    ctx.setLineDash([3, 5]); ctx.strokeStyle = lc; ctx.lineWidth = 0.6; ctx.globalAlpha = 0.2; ctx.stroke();
+                    ctx.setLineDash([2, 6]);
+                    ctx.strokeStyle = lc; ctx.lineWidth = 0.7; ctx.globalAlpha = 0.35; ctx.stroke();
                     ctx.setLineDash([]);
                 }
             });
@@ -368,23 +361,49 @@
             ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1;
             ctx.strokeRect(fieldX1, fieldY1, fieldW, fieldH);
 
+            // === Principal maxima angle lines (dark solid) ===
+            const maxN = Math.floor(dM / lm);
+            const maxDraw = Math.min(maxN, 6);
+            for (let n = -maxDraw; n <= maxDraw; n++) {
+                const sinTh = n * lm / dM;
+                if (Math.abs(sinTh) >= 0.98) continue;
+                const theta = Math.asin(sinTh);
+                const midSlitX = slitX;
+                const midSlitY = midY;
+                const len = fieldW + 20;
+                const endX = midSlitX + len * Math.cos(theta);
+                const endY = midSlitY + len * Math.sin(theta);
+
+                ctx.beginPath();
+                ctx.moveTo(midSlitX, midSlitY);
+                ctx.lineTo(endX, endY);
+                ctx.strokeStyle = 'rgba(200,200,200,0.6)'; ctx.lineWidth = 1.8;
+                ctx.setLineDash([]);
+                ctx.stroke();
+
+                // Small n label at end of line
+                ctx.fillStyle = '#ddd'; ctx.font = 'bold 11px Fredoka'; ctx.textAlign = 'left';
+                ctx.fillText('n=' + n, endX + 4, endY + 4);
+            }
+
             // --- Screen ---
             const scrTop = fieldY1 + 4, scrBot = fieldY2 - 4;
-            ctx.strokeStyle = '#aaa'; ctx.lineWidth = 2;
+            ctx.strokeStyle = '#ccc'; ctx.lineWidth = 2.5;
             ctx.beginPath(); ctx.moveTo(screenX, scrTop); ctx.lineTo(screenX, scrBot); ctx.stroke();
-            ctx.fillStyle = '#ddd'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'center';
-            ctx.fillText('屏 Screen', screenX, scrTop - 10);
+            ctx.fillStyle = '#ddd'; ctx.font = 'bold 14px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillText('屏 Screen', screenX, scrTop - 12);
 
             // D arrow
             const dY = fieldY2 + 10;
             if (dY < h - 8) {
-                ctx.strokeStyle = '#2ecc71'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 3]);
+                ctx.strokeStyle = '#2ecc71'; ctx.lineWidth = 2; ctx.setLineDash([4, 3]);
                 ctx.beginPath(); ctx.moveTo(slitX + 6, dY); ctx.lineTo(screenX - 3, dY); ctx.stroke();
                 ctx.setLineDash([]);
                 ctx.fillStyle = '#2ecc71';
                 ctx.beginPath(); ctx.moveTo(slitX + 6, dY); ctx.lineTo(slitX + 15, dY - 5); ctx.lineTo(slitX + 15, dY + 5); ctx.fill();
                 ctx.beginPath(); ctx.moveTo(screenX - 3, dY); ctx.lineTo(screenX - 13, dY - 5); ctx.lineTo(screenX - 13, dY + 5); ctx.fill();
-                ctx.fillText('D=' + state.Dm.toFixed(1) + 'm', (slitX + screenX) / 2, dY - 7);
+                ctx.fillStyle = '#2ecc71'; ctx.font = 'bold 13px Fredoka'; ctx.textAlign = 'center';
+                ctx.fillText('D = ' + state.Dm.toFixed(1) + ' m', (slitX + screenX) / 2, dY - 8);
             }
 
             // --- Fringe pattern using N-slit intensity formula ---
@@ -423,8 +442,7 @@
                 }
             }
 
-            // Order labels
-            const maxN = Math.floor(dM / lm);
+            // Order labels on screen
             const maxLabel = Math.min(maxN, 8);
             for (let n = -maxLabel; n <= maxLabel; n++) {
                 let dyApprox = n * lambdaPx * Dpx / Math.max(aPx, 1);
@@ -442,14 +460,14 @@
                 ctx.fillStyle = '#ffdd57'; ctx.fill();
                 ctx.strokeStyle = '#fff'; ctx.lineWidth = 0.8; ctx.stroke();
                 ctx.fillStyle = '#fff'; ctx.font = 'bold 9px Fredoka'; ctx.textAlign = 'left';
-                ctx.fillText(n === 0 ? '0' : (n > 0 ? '+' + n : '' + n), screenX + 32, yPx + 3);
+                ctx.fillText(n === 0 ? '0' : (n > 0 ? '+' + n : '' + n), screenX + 34, yPx + 4);
             }
 
-            ctx.fillStyle = '#ffdd57'; ctx.font = 'bold 10px Fredoka'; ctx.textAlign = 'left';
-            ctx.fillText('N=' + state.N, screenX + 32, midY + 3);
+            ctx.fillStyle = '#ffdd57'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'left';
+            ctx.fillText('N=' + state.N + ' 光栅', screenX + 34, midY + 4);
 
-            ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.font = '500 10px Fredoka'; ctx.textAlign = 'right';
-            ctx.fillText('t=' + state.time.toFixed(1) + 's', w - 12, 16);
+            ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.font = '500 12px Fredoka'; ctx.textAlign = 'right';
+            ctx.fillText('t = ' + state.time.toFixed(1) + ' s', w - 12, 20);
         }
 
         const DEFAULTS = { lambda: 550, d: 2.0, n: 5, D: 2.0 };
