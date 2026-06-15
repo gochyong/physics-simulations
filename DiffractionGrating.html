@@ -361,6 +361,9 @@
             ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1;
             ctx.strokeRect(fieldX1, fieldY1, fieldW, fieldH);
 
+            // Screen bounds (define early, used by angle lines + fringe)
+            const scrTop = fieldY1 + 4, scrBot = fieldY2 - 4;
+
             // === Principal maxima angle lines — pixel-space → match screen fringes ===
             const Dpx = screenX - slitX;
             const aPxForAngles = actualSpacing;
@@ -368,9 +371,13 @@
             const maxN = Math.floor(dM / lm);
 
             for (let n = -maxN; n <= maxN; n++) {
-                // Compute screen y position using same Newton method as order labels
-                let dyApprox = n * lambdaPxForAngles * Dpx / Math.max(aPxForAngles, 1);
-                for (let iter = 0; iter < 3; iter++) {
+                // Better initial guess using exact geometry
+                const sinThN = n * lambdaPxForAngles / Math.max(aPxForAngles, 0.01);
+                if (Math.abs(sinThN) >= 0.99) continue; // beyond visible range
+                const thetaN = Math.asin(sinThN);
+                let dyApprox = Dpx * Math.tan(thetaN);
+                // Newton refine (5 iterations for high orders)
+                for (let iter = 0; iter < 5; iter++) {
                     const dd1 = Math.sqrt(Dpx * Dpx + (dyApprox - aPxForAngles / 2) * (dyApprox - aPxForAngles / 2));
                     const dd2 = Math.sqrt(Dpx * Dpx + (dyApprox + aPxForAngles / 2) * (dyApprox + aPxForAngles / 2));
                     const f = dd1 - dd2 - n * lambdaPxForAngles;
@@ -378,7 +385,8 @@
                     if (Math.abs(df) > 1e-9) dyApprox -= f / df;
                 }
                 const screenY = midY + dyApprox;
-                if (screenY < fieldY1 + 4 || screenY > fieldY2 - 4) continue;
+                // Use same bounds as screen
+                if (screenY < scrTop - 2 || screenY > scrBot + 2) continue;
 
                 // Draw solid line from slit center to screen fringe position
                 ctx.beginPath();
@@ -394,7 +402,6 @@
             }
 
             // --- Screen ---
-            const scrTop = fieldY1 + 4, scrBot = fieldY2 - 4;
             ctx.strokeStyle = '#ccc'; ctx.lineWidth = 2.5;
             ctx.beginPath(); ctx.moveTo(screenX, scrTop); ctx.lineTo(screenX, scrBot); ctx.stroke();
             ctx.fillStyle = '#ddd'; ctx.font = 'bold 14px Fredoka'; ctx.textAlign = 'center';
