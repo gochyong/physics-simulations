@@ -357,26 +357,20 @@
             const Dpx = screenX - slitX;
             const aPx2 = actualSpacing;
             const lambdaPx2 = 10 * (state.lambdaNm / 550);
-            // Use pixel-space maxN so angle lines and fringes agree
+            // Use pixel-space maxN — computed from grating equation d sinθ = nλ
             const pxMaxN = Math.floor(aPx2 / Math.max(lambdaPx2, 0.5));
 
-            // Pre-compute all screen order positions (used by both angle lines and labels)
+            // Pre-compute all screen order positions from grating equation directly
+            // sinθ_n = nλ/a,  y_n = D tanθ_n  (exact, no slit-pair ambiguity)
             const orderPositions = [];
             for (let n = -pxMaxN; n <= pxMaxN; n++) {
-                const sinThN = n * lambdaPx2 / Math.max(aPx2, 0.01);
+                const sinThN = n * lambdaPx2 / aPx2;
                 if (Math.abs(sinThN) >= 0.99) continue;
                 const thetaN = Math.asin(sinThN);
-                let dyN = Dpx * Math.tan(thetaN);
-                for (let iter = 0; iter < 5; iter++) {
-                    const dd1 = Math.sqrt(Dpx * Dpx + (dyN - aPx2 / 2) * (dyN - aPx2 / 2));
-                    const dd2 = Math.sqrt(Dpx * Dpx + (dyN + aPx2 / 2) * (dyN + aPx2 / 2));
-                    const f = dd1 - dd2 - n * lambdaPx2;
-                    const df = (dyN - aPx2 / 2) / dd1 - (dyN + aPx2 / 2) / dd2;
-                    if (Math.abs(df) > 1e-9) dyN -= f / df;
-                }
+                const dyN = Dpx * Math.tan(thetaN);
                 const yPx = midY + dyN;
                 if (yPx < scrTop - 2 || yPx > scrBot + 2) continue;
-                orderPositions.push({ n, yPx });
+                orderPositions.push({ n, yPx, thetaN, sinThN });
             }
 
             // Draw angle lines from slit center to each order on screen
@@ -409,25 +403,24 @@
                 ctx.fillText('D = ' + state.Dm.toFixed(1) + ' m', (slitX + screenX) / 2, dY - 8);
             }
 
-            // --- Fringe pattern using N-slit intensity formula ---
+            // --- Fringe pattern via direct wave summation from all N slits ---
             const scrY1 = scrTop + 2, scrY2 = scrBot - 2, scrH = scrY2 - scrY1;
+            const kPx = 2 * Math.PI / lambdaPx2;
+            const wavePhase = state.time * 8;
 
             for (let i = 0; i < Math.floor(scrH); i++) {
                 const yPx = scrY1 + i;
-                const dy = yPx - midY;
 
-                const d1 = Math.sqrt(Dpx * Dpx + (dy - aPx2 / 2) * (dy - aPx2 / 2));
-                const d2 = Math.sqrt(Dpx * Dpx + (dy + aPx2 / 2) * (dy + aPx2 / 2));
-                const pathDiffPx = d1 - d2;
-
-                const beta = Math.PI * pathDiffPx / lambdaPx2;
-                let I;
-                if (Math.abs(Math.sin(beta)) < 1e-6) {
-                    I = state.N * state.N;
-                } else {
-                    I = (Math.sin(state.N * beta) / Math.sin(beta)) ** 2;
+                // Sum complex amplitudes from all N slits
+                let sumRe = 0, sumIm = 0;
+                for (let s = 0; s < state.N; s++) {
+                    const slitY = slitPositions[s];
+                    const dist = Math.sqrt(Dpx * Dpx + (yPx - slitY) * (yPx - slitY));
+                    const phi = kPx * dist - wavePhase;
+                    sumRe += Math.cos(phi);
+                    sumIm += Math.sin(phi);
                 }
-                I = I / (state.N * state.N);
+                const I = (sumRe * sumRe + sumIm * sumIm) / (state.N * state.N);
 
                 ctx.fillStyle = `rgb(${Math.floor(lrgb.r * I)},${Math.floor(lrgb.g * I)},${Math.floor(lrgb.b * I)})`;
                 ctx.fillRect(screenX + 2, yPx, 5, 1.2);
