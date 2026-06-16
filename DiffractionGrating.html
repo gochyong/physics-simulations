@@ -373,15 +373,18 @@
                 orderPositions.push({ n, yPx, thetaN, sinThN });
             }
 
-            // Draw angle lines from slit center to each order on screen
+            // Draw angle lines — all orders; labels — n≥0 only
             orderPositions.forEach(({ n, yPx }) => {
                 ctx.beginPath();
                 ctx.moveTo(slitX, midY);
                 ctx.lineTo(screenX, yPx);
                 ctx.strokeStyle = 'rgba(200,200,200,0.5)'; ctx.lineWidth = 1.6;
                 ctx.stroke();
-                ctx.fillStyle = '#fff'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'left';
-                ctx.fillText(n === 0 ? '0' : (n > 0 ? '+' + n : '' + n), screenX + 6, yPx + 4);
+                // Only label non-negative orders
+                if (n >= 0) {
+                    ctx.fillStyle = '#fff'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'left';
+                    ctx.fillText(n === 0 ? 'n=0' : 'n=+' + n, screenX + 6, yPx + 4);
+                }
             });
 
             // --- Screen ---
@@ -403,44 +406,24 @@
                 ctx.fillText('D = ' + state.Dm.toFixed(1) + ' m', (slitX + screenX) / 2, dY - 8);
             }
 
-            // --- Fringe pattern via direct wave summation from all N slits ---
-            const scrY1 = scrTop + 2, scrY2 = scrBot - 2, scrH = scrY2 - scrY1;
-            const kPx = 2 * Math.PI / lambdaPx2;
-            const wavePhase = state.time * 8;
-
-            for (let i = 0; i < Math.floor(scrH); i++) {
-                const yPx = scrY1 + i;
-
-                // Sum complex amplitudes from all N slits
-                let sumRe = 0, sumIm = 0;
-                for (let s = 0; s < state.N; s++) {
-                    const slitY = slitPositions[s];
-                    const dist = Math.sqrt(Dpx * Dpx + (yPx - slitY) * (yPx - slitY));
-                    const phi = kPx * dist - wavePhase;
-                    sumRe += Math.cos(phi);
-                    sumIm += Math.sin(phi);
-                }
-                const I = (sumRe * sumRe + sumIm * sumIm) / (state.N * state.N);
-                const Ib = Math.pow(I, 0.55); // boost perceived brightness
-
-                ctx.fillStyle = `rgb(${Math.floor(lrgb.r * Ib)},${Math.floor(lrgb.g * Ib)},${Math.floor(lrgb.b * Ib)})`;
-                ctx.fillRect(screenX + 2, yPx, 5, 1.2);
-                if (Ib > 0.55) {
-                    ctx.fillStyle = `rgba(${lrgb.r},${lrgb.g},${lrgb.b},${0.15 + Ib * 0.6})`;
-                    ctx.fillRect(screenX + 8, yPx - 0.6, 22, 1.8);
-                } else if (Ib < 0.08) {
-                    ctx.fillStyle = 'rgba(0,0,0,0.5)';
-                    ctx.fillRect(screenX + 8, yPx - 0.6, 22, 1.8);
-                }
-            }
-
-            // Order labels (reuse pre-computed positions from angle lines)
+            // --- Bright marks only at principal maxima positions ---
             orderPositions.forEach(({ n, yPx }) => {
+                // Bright fringe bar on screen
+                const barH = 3;
+                ctx.fillStyle = `rgb(${lrgb.r},${lrgb.g},${lrgb.b})`;
+                ctx.fillRect(screenX + 1, yPx - barH / 2, 7, barH);
+                // Extended glow
+                ctx.fillStyle = `rgba(${lrgb.r},${lrgb.g},${lrgb.b},0.7)`;
+                ctx.fillRect(screenX + 9, yPx - 1, 20, 2.5);
+            });
+
+            // Order labels — n≥0 only
+            orderPositions.filter(p => p.n >= 0).forEach(({ n, yPx }) => {
                 ctx.beginPath(); ctx.arc(screenX + 4, yPx, 3.5, 0, Math.PI * 2);
                 ctx.fillStyle = '#ffdd57'; ctx.fill();
                 ctx.strokeStyle = '#fff'; ctx.lineWidth = 0.8; ctx.stroke();
                 ctx.fillStyle = '#fff'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'left';
-                ctx.fillText(n === 0 ? '0' : (n > 0 ? '+' + n : '' + n), screenX + 34, yPx + 4);
+                ctx.fillText(n === 0 ? 'n=0' : 'n=+' + n, screenX + 34, yPx + 4);
             });
 
             // Update result display with pixel-space maxN for consistency
