@@ -228,7 +228,7 @@
                     <span style="color:var(--primary);font-size:${base}px;font-weight:700;">d sinθ = nλ</span>
                 </div>
                 <div style="font-size:0.8rem;color:#999;margin-top:3px;">
-                    d = ${d.toFixed(2)} μm &nbsp;|&nbsp; λ = ${state.lambdaNm} nm &nbsp;|&nbsp; D = ${state.Dm.toFixed(1)} m &nbsp;|&nbsp; N = ${state.N}
+                    d = ${d.toFixed(2)} μm &nbsp;|&nbsp; λ = ${state.lambdaNm} nm &nbsp;|&nbsp; D = ${state.Dm.toFixed(1)} m &nbsp;|&nbsp; 缝条数 N = ${state.N}
                 </div>`;
         }
 
@@ -418,17 +418,18 @@
                 ctx.fillStyle = '#ffdd57'; ctx.fill();
                 ctx.strokeStyle = '#fff'; ctx.lineWidth = 0.8; ctx.stroke();
                 ctx.fillStyle = '#fff'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'left';
-                const label = n === 0 ? 'n=0' : (n > 0 ? 'n=+' + n : 'n=' + n);
-                ctx.fillText(label, screenX + 34, yPx + 4);
+                const absN = Math.abs(n);
+                ctx.fillText(absN === 0 ? 'n=0' : 'n=' + absN, screenX + 34, yPx + 4);
             });
 
-            // Update result display with pixel-space maxN for consistency
+            // Update result display
             if (pxMaxN <= 4) {
-                const ords = []; for (let n = -pxMaxN; n <= pxMaxN; n++) ords.push(n);
+                const ords = []; for (let n = 0; n <= pxMaxN; n++) ords.push(n);
                 resOrders.textContent = 'n = ' + ords.join(', ');
             } else {
-                resOrders.textContent = 'n = 0, ±1, …, ±' + pxMaxN;
+                resOrders.textContent = 'n = 0, 1, 2, …, ' + pxMaxN;
             }
+            resN.textContent = '缝条数 N = ' + state.N;
 
             ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.font = '500 12px Fredoka'; ctx.textAlign = 'right';
             ctx.fillText('t = ' + state.time.toFixed(1) + ' s', w - 12, 20);
