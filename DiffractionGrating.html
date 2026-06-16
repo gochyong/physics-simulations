@@ -373,18 +373,13 @@
                 orderPositions.push({ n, yPx, thetaN, sinThN });
             }
 
-            // Draw angle lines — all orders; labels — n≥0 only
+            // Draw angle lines — all orders, no labels on lines
             orderPositions.forEach(({ n, yPx }) => {
                 ctx.beginPath();
                 ctx.moveTo(slitX, midY);
                 ctx.lineTo(screenX, yPx);
                 ctx.strokeStyle = 'rgba(200,200,200,0.5)'; ctx.lineWidth = 1.6;
                 ctx.stroke();
-                // Only label non-negative orders
-                if (n >= 0) {
-                    ctx.fillStyle = '#fff'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'left';
-                    ctx.fillText(n === 0 ? 'n=0' : 'n=+' + n, screenX + 6, yPx + 4);
-                }
             });
 
             // --- Screen ---
@@ -417,13 +412,14 @@
                 ctx.fillRect(screenX + 9, yPx - 1, 20, 2.5);
             });
 
-            // Order labels — n≥0 only
-            orderPositions.filter(p => p.n >= 0).forEach(({ n, yPx }) => {
+            // Order labels — all orders, right side only
+            orderPositions.forEach(({ n, yPx }) => {
                 ctx.beginPath(); ctx.arc(screenX + 4, yPx, 3.5, 0, Math.PI * 2);
                 ctx.fillStyle = '#ffdd57'; ctx.fill();
                 ctx.strokeStyle = '#fff'; ctx.lineWidth = 0.8; ctx.stroke();
                 ctx.fillStyle = '#fff'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'left';
-                ctx.fillText(n === 0 ? 'n=0' : 'n=+' + n, screenX + 34, yPx + 4);
+                const label = n === 0 ? 'n=0' : (n > 0 ? 'n=+' + n : 'n=' + n);
+                ctx.fillText(label, screenX + 34, yPx + 4);
             });
 
             // Update result display with pixel-space maxN for consistency
