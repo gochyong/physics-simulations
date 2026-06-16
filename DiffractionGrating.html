@@ -119,8 +119,7 @@
         <section class="formula-display">
             <div class="formula-container" id="formula-root"></div>
             <div class="result-row">
-                <span>亮纹位置 / Maxima: <strong style="color:var(--primary)" id="res-orders">—</strong></span>
-                <span>条数 N = <strong style="color:var(--accent)" id="res-n">5</strong></span>
+                <span>可见亮纹级数 / Visible orders: <strong style="color:var(--primary)" id="res-orders">—</strong></span>
             </div>
             <div class="legend">
                 <div class="legend-item"><span class="legend-dot" style="background:#ffdd57"></span> 主极大 / Principal Maxima</div>
@@ -191,7 +190,7 @@
         const sN = document.getElementById('n-slider'), sD = document.getElementById('D-slider');
         const bLambda = document.getElementById('lambda-badge');
         const bN = document.getElementById('n-badge'), bD = document.getElementById('D-badge');
-        const resOrders = document.getElementById('res-orders'), resN = document.getElementById('res-n');
+        const resOrders = document.getElementById('res-orders');
         const fRoot = document.getElementById('formula-root');
         const swatchLight = document.getElementById('swatch-light'), swatchLegend = document.getElementById('swatch-legend');
         const bStart = document.getElementById('btn-start'), bReset = document.getElementById('btn-reset');
@@ -227,8 +226,8 @@
                 <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;justify-content:center;">
                     <span style="color:var(--primary);font-size:${base}px;font-weight:700;">d sinθ = nλ</span>
                 </div>
-                <div style="font-size:0.8rem;color:#999;margin-top:3px;">
-                    d = ${d.toFixed(2)} μm &nbsp;|&nbsp; λ = ${state.lambdaNm} nm &nbsp;|&nbsp; D = ${state.Dm.toFixed(1)} m &nbsp;|&nbsp; 缝条数 N = ${state.N}
+                <div style="font-size:0.8rem;color:#999;margin-top:3px;text-align:center;">
+                    d: 缝间距 = ${d.toFixed(2)} μm &nbsp;|&nbsp; θ: n级亮纹与中心的夹角 &nbsp;|&nbsp; n: 亮纹级数 &nbsp;|&nbsp; N: 缝数 = ${state.N}
                 </div>`;
         }
 
@@ -239,7 +238,6 @@
             bLambda.textContent = state.lambdaNm + ' nm';
             bN.textContent = state.N;
             bD.textContent = state.Dm.toFixed(1) + ' m';
-            resN.textContent = state.N;
 
             const css = lCSS(state.lambdaNm); swatchLight.style.backgroundColor = css; swatchLegend.style.backgroundColor = css;
             updateFormulaUI();
@@ -429,8 +427,6 @@
             } else {
                 resOrders.textContent = 'n = 0, 1, 2, …, ' + pxMaxN;
             }
-            resN.textContent = '缝条数 N = ' + state.N;
-
             ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.font = '500 12px Fredoka'; ctx.textAlign = 'right';
             ctx.fillText('t = ' + state.time.toFixed(1) + ' s', w - 12, 20);
         }
