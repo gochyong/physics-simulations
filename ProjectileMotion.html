@@ -118,7 +118,7 @@ function draw(){
     const M=60,ox=M,oy=ch-M-10;
     const aW=cw-2*M,aH=ch-2*M-20;
     // FIXED scale — max range at v0=30, angle=45°
-    const sc=Math.min(aW/100,aH/24);
+    const sc=Math.min(aW/75,aH/18);
     const X=px=>ox+px*sc,Y=py=>oy-py*sc;
     const vx0=v0*cA,vy0=v0*sA;
 
