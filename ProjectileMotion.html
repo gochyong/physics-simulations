@@ -129,8 +129,14 @@
                 <canvas id="simCanvas"></canvas>
             </div>
             <div class="sub-canvases">
-                <div class="sub-wrap"><canvas id="canvasH"></canvas></div>
-                <div class="sub-wrap"><canvas id="canvasV"></canvas></div>
+                <div class="sub-wrap">
+                    <div style="background:#fff;padding:4px 10px;font-weight:700;font-size:0.85rem;color:#3498db;text-align:center;">水平方向 Horizontal (匀速)</div>
+                    <canvas id="canvasH"></canvas>
+                </div>
+                <div class="sub-wrap">
+                    <div style="background:#fff;padding:4px 10px;font-weight:700;font-size:0.85rem;color:#2ecc71;text-align:center;">竖直方向 Vertical (匀变速)</div>
+                    <canvas id="canvasV"></canvas>
+                </div>
             </div>
         </section>
 
@@ -167,6 +173,10 @@
                     <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
                         <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:var(--vh-color);font-weight:700;">↔</div>
                         <div><div style="font-weight:700;font-size:0.9rem;">水平匀速：Vh = v₀ cosθ（恒定）</div><div style="font-size:0.78rem;color:#888;">水平方向不受力，速度分量保持不变。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:var(--vv-color);font-weight:700;">↕</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">竖直匀变速：Vv = v₀ sinθ − gt</div><div style="font-size:0.78rem;color:#888;">竖直方向受重力，加速度 a = −g，速度线性减小后反向增大。</div></div>
                     </div>
                 </div>
             </div>
@@ -399,86 +409,87 @@
         }
 
         function drawSubGraphs() {
-            const { v0, angleRad, g, time, T } = state;
+            const { v0, angleRad, g, time, T, R, H } = state;
 
-            // --- Horizontal: x-t (linear) ---
+            // === Horizontal motion: ball moving at constant speed on a line ===
             const wh = canvasH.width, hh = canvasH.height;
             ctxH.clearRect(0, 0, wh, hh);
             ctxH.fillStyle = '#fdfcf8'; ctxH.fillRect(0, 0, wh, hh);
 
-            const margin = { l: 42, r: 18, t: 18, b: 28 };
-            const pw = wh - margin.l - margin.r, ph = hh - margin.t - margin.b;
-            const ox = margin.l, oy = margin.t + ph;
+            const hmargin = 30, hlineY = hh * 0.6;
+            const htrackW = wh - 2 * hmargin;
 
-            // Axes
-            ctxH.strokeStyle = '#ccc'; ctxH.lineWidth = 1;
-            ctxH.beginPath(); ctxH.moveTo(ox, margin.t); ctxH.lineTo(ox, oy); ctxH.lineTo(ox + pw, oy); ctxH.stroke();
+            // Ground line
+            ctxH.strokeStyle = '#ccc'; ctxH.lineWidth = 2;
+            ctxH.beginPath(); ctxH.moveTo(hmargin, hlineY); ctxH.lineTo(wh - hmargin, hlineY); ctxH.stroke();
+            // Tick marks
+            ctxH.fillStyle = '#999'; ctxH.font = '9px Fredoka'; ctxH.textAlign = 'center';
+            for (let i = 0; i <= 4; i++) {
+                const tx = hmargin + (i / 4) * htrackW;
+                ctxH.beginPath(); ctxH.moveTo(tx, hlineY - 5); ctxH.lineTo(tx, hlineY + 5); ctxH.strokeStyle = '#ccc';
+                ctxH.stroke();
+                ctxH.fillText((R * i / 4).toFixed(1), tx, hlineY + 16);
+            }
+            ctxH.fillText('x (m)', wh / 2, hlineY + 30);
 
-            // Curve: x(t) = v0 cosθ * t
+            // Ball position
             const vx0 = v0 * Math.cos(angleRad);
-            ctxH.strokeStyle = '#3498db'; ctxH.lineWidth = 2;
-            ctxH.beginPath();
-            for (let i = 0; i <= 100; i++) {
-                const t = (i / 100) * T;
-                const px = ox + (t / T) * pw;
-                const py = oy - (vx0 * t / (vx0 * T)) * ph;
-                if (i === 0) ctxH.moveTo(px, py); else ctxH.lineTo(px, py);
-            }
-            ctxH.stroke();
+            const xNow = vx0 * Math.min(time, T);
+            const bx = hmargin + (xNow / R) * htrackW;
 
-            // Current point
-            if (time <= T) {
-                const cx = ox + (time / T) * pw;
-                const cy = oy - (vx0 * time / (vx0 * T)) * ph;
-                ctxH.fillStyle = '#3498db'; ctxH.beginPath(); ctxH.arc(cx, cy, 4, 0, Math.PI * 2); ctxH.fill();
-            }
+            const bgH = ctxH.createRadialGradient(bx - 1, hlineY - 3, 2, bx, hlineY, 10);
+            bgH.addColorStop(0, '#85c1e9'); bgH.addColorStop(1, '#2471a3');
+            ctxH.fillStyle = bgH; ctxH.beginPath(); ctxH.arc(bx, hlineY, 10, 0, Math.PI * 2); ctxH.fill();
+            ctxH.strokeStyle = '#fff'; ctxH.lineWidth = 1.5; ctxH.stroke();
 
-            // Labels
-            ctxH.fillStyle = '#666'; ctxH.font = 'bold 11px Fredoka'; ctxH.textAlign = 'center';
-            ctxH.fillText('水平运动 x-t', wh / 2, margin.t - 4);
-            ctxH.fillText('t (s)', ox + pw / 2, hh - 4);
-            ctxH.save(); ctxH.translate(10, oy - ph / 2); ctxH.rotate(-Math.PI / 2);
-            ctxH.fillText('x (m)', 0, 0); ctxH.restore();
-            ctxH.fillStyle = '#3498db'; ctxH.font = '10px Fredoka'; ctxH.textAlign = 'left';
-            ctxH.fillText('Vh=' + vx0.toFixed(1) + ' m/s (恒定)', ox + 6, margin.t + 14);
+            // Vh arrow on ball
+            const hArrowLen = 35;
+            drawArrow(ctxH, bx, hlineY, hArrowLen, 0, '#3498db', 2.5);
 
-            // --- Vertical: y-t (parabolic) ---
+            ctxH.fillStyle = '#3498db'; ctxH.font = 'bold 11px Fredoka'; ctxH.textAlign = 'left';
+            ctxH.fillText('Vh = ' + vx0.toFixed(1) + ' m/s (恒定)', hmargin + 6, hh - 6);
+
+            // === Vertical motion: ball going up and down ===
             const wv = canvasV.width, hv = canvasV.height;
             ctxV.clearRect(0, 0, wv, hv);
             ctxV.fillStyle = '#fdfcf8'; ctxV.fillRect(0, 0, wv, hv);
 
-            ctxV.strokeStyle = '#ccc'; ctxV.lineWidth = 1;
-            ctxV.beginPath(); ctxV.moveTo(ox, margin.t); ctxV.lineTo(ox, oy); ctxV.lineTo(ox + pw, oy); ctxV.stroke();
+            const vmargin = 30, vlineX = wv * 0.4;
+            const vtrackH = hv - 2 * vmargin;
+            const vtop = vmargin, vbot = hv - vmargin;
 
-            ctxV.strokeStyle = '#2ecc71'; ctxV.lineWidth = 2;
-            ctxV.beginPath();
-            for (let i = 0; i <= 100; i++) {
-                const t = (i / 100) * T;
-                const vy0 = v0 * Math.sin(angleRad);
-                const yt = vy0 * t - 0.5 * g * t * t;
-                const maxY = state.H;
-                const px = ox + (t / T) * pw;
-                const py = oy - (yt / maxY) * ph;
-                if (i === 0) ctxV.moveTo(px, py); else ctxV.lineTo(px, py);
+            // Vertical axis
+            ctxV.strokeStyle = '#ccc'; ctxV.lineWidth = 2;
+            ctxV.beginPath(); ctxV.moveTo(vlineX, vtop); ctxV.lineTo(vlineX, vbot); ctxV.stroke();
+            // Tick marks
+            ctxV.fillStyle = '#999'; ctxV.font = '9px Fredoka'; ctxV.textAlign = 'right';
+            for (let i = 0; i <= 3; i++) {
+                const ty = vbot - (i / 3) * vtrackH;
+                ctxV.beginPath(); ctxV.moveTo(vlineX - 5, ty); ctxV.lineTo(vlineX + 5, ty); ctxV.strokeStyle = '#ccc';
+                ctxV.stroke();
+                ctxV.fillText((H * i / 3).toFixed(2), vlineX - 8, ty + 3);
             }
-            ctxV.stroke();
+            ctxV.fillText('y (m)', vlineX - 8, vtop - 6);
 
-            if (time <= T) {
-                const vyr = v0 * Math.sin(angleRad);
-                const yt = vyr * time - 0.5 * g * time * time;
-                const cx = ox + (time / T) * pw;
-                const cy = oy - (yt / state.H) * ph;
-                ctxV.fillStyle = '#2ecc71'; ctxV.beginPath(); ctxV.arc(cx, cy, 4, 0, Math.PI * 2); ctxV.fill();
-            }
+            // Ball position on vertical line
+            const vy0 = v0 * Math.sin(angleRad);
+            const yNow = Math.max(0, vy0 * Math.min(time, T) - 0.5 * g * Math.pow(Math.min(time, T), 2));
+            const by = vbot - (yNow / H) * vtrackH;
 
-            ctxV.fillStyle = '#666'; ctxV.font = 'bold 11px Fredoka'; ctxV.textAlign = 'center';
-            ctxV.fillText('竖直运动 y-t', wv / 2, margin.t - 4);
-            ctxV.fillText('t (s)', ox + pw / 2, hv - 4);
-            ctxV.save(); ctxV.translate(10, oy - ph / 2); ctxV.rotate(-Math.PI / 2);
-            ctxV.fillText('y (m)', 0, 0); ctxV.restore();
-            const vvy = v0 * Math.sin(angleRad) - g * time;
-            ctxV.fillStyle = '#2ecc71'; ctxV.font = '10px Fredoka'; ctxV.textAlign = 'left';
-            ctxV.fillText('Vv=' + vvy.toFixed(1) + ' m/s', ox + 6, margin.t + 14);
+            const bgV = ctxV.createRadialGradient(vlineX - 1, by - 3, 2, vlineX, by, 10);
+            bgV.addColorStop(0, '#82e0aa'); bgV.addColorStop(1, '#1e8449');
+            ctxV.fillStyle = bgV; ctxV.beginPath(); ctxV.arc(vlineX, by, 10, 0, Math.PI * 2); ctxV.fill();
+            ctxV.strokeStyle = '#fff'; ctxV.lineWidth = 1.5; ctxV.stroke();
+
+            // Vv arrow (up if rising, down if falling)
+            const vvy = vy0 - g * Math.min(time, T);
+            const vvLen = Math.abs(vvy) * 5;
+            const vvDir = vvy >= 0 ? -1 : 1; // up = negative in canvas
+            drawArrow(ctxV, vlineX, by, 0, vvDir * Math.min(vvLen, 60), '#2ecc71', 2.5);
+
+            ctxV.fillStyle = '#2ecc71'; ctxV.font = 'bold 11px Fredoka'; ctxV.textAlign = 'left';
+            ctxV.fillText('Vv = ' + vvy.toFixed(1) + ' m/s', vlineX + 10, vmargin + 14);
+            ctxV.fillText('a = -' + g.toFixed(1) + ' m/s²', vlineX + 10, vmargin + 28);
         }
 
         function animate(ts) {
@@ -494,18 +505,22 @@
             animId = requestAnimationFrame(animate);
         }
 
-        sV0.addEventListener('input', () => {
+        function onSliderChange() {
             state.v0 = parseFloat(sV0.value);
-            state.time = 0;
-            recompute();
-            draw();
-        });
-        sAngle.addEventListener('input', () => {
             state.angle = parseInt(sAngle.value);
             state.time = 0;
+            // Ensure canvas sizes are current
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            canvasH.width = canvasH.clientWidth;
+            canvasH.height = canvasH.clientHeight;
+            canvasV.width = canvasV.clientWidth;
+            canvasV.height = canvasV.clientHeight;
             recompute();
             draw();
-        });
+        }
+        sV0.addEventListener('input', onSliderChange);
+        sAngle.addEventListener('input', onSliderChange);
 
         bStart.onclick = () => {
             state.isPlaying = !state.isPlaying;
