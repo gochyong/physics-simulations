@@ -147,11 +147,11 @@ function draw(){
 
     // Angle arc
     const aR=28;ctx.strokeStyle='rgba(231,76,60,0.7)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(ox,oy,aR,-rad,0,false);ctx.stroke();
-    ctx.fillStyle='#e74c3c';ctx.font='bold 11px Fredoka';ctx.textAlign='center';ctx.fillText('θ='+S.angle+'°',ox+(aR+16)*Math.cos(-rad/2),oy+(aR+16)*Math.sin(-rad/2));
+    ctx.fillStyle='#333';ctx.font='bold 11px Fredoka';ctx.textAlign='center';ctx.fillText('θ='+S.angle+'°',ox+(aR+16)*Math.cos(-rad/2),oy+(aR+16)*Math.sin(-rad/2));
 
     // V0
     const vS=3.5;arrow(ctx,ox,oy,vx0*vS,-vy0*vS,'#e74c3c',2.5);
-    ctx.fillStyle='#e74c3c';ctx.font='bold 11px Fredoka';ctx.textAlign='left';ctx.fillText('v₀='+v0.toFixed(1),ox+vx0*vS+4,oy-vy0*vS-2);
+    ctx.fillStyle='#333';ctx.font='bold 11px Fredoka';ctx.textAlign='left';ctx.fillText('v₀='+v0.toFixed(1)+'m/s',ox+vx0*vS+4,oy-vy0*vS-2);
 
     // Ball
     const bPx=vx0*t,bPy=vy0*t-0.5*G*t*t,bx=X(bPx),by=Y(bPy);
@@ -172,10 +172,10 @@ function draw(){
     const tClamped=Math.min(t,TT);
     const vvy=vy0-G*tClamped,yNow=Math.max(0,vy0*tClamped-0.5*G*tClamped*tClamped);
 
-    // Vertical axis — left
+    // Vertical axis — left. Pixel offset = (oy - by) = bPy * sc
     const vx1=32,vtop=12,vbot=dh-28,vlen=vbot-vtop;
     ctxD.strokeStyle='#ddd';ctxD.lineWidth=2;ctxD.beginPath();ctxD.moveTo(vx1,vtop);ctxD.lineTo(vx1,vbot);ctxD.stroke();
-    const vFrac=yNow/HH,vby=vbot-vFrac*vlen;
+    const vby=vbot-Math.min(oy-by,vlen); // same pixel rise as main ball
     const vg=ctxD.createRadialGradient(vx1-1,vby-2,2,vx1,vby,9);vg.addColorStop(0,'#82e0aa');vg.addColorStop(1,'#1e8449');
     ctxD.fillStyle=vg;ctxD.beginPath();ctxD.arc(vx1,vby,8,0,Math.PI*2);ctxD.fill();ctxD.strokeStyle='#fff';ctxD.lineWidth=1.5;ctxD.stroke();
     const vvL=Math.min(Math.abs(vvy)*5,45);arrow(ctxD,vx1,vby,0,(vvy>=0?-1:1)*vvL,'#2ecc71',2.5);
