@@ -266,26 +266,18 @@
 
     </main>
 
-    <div class="visitor-counter">👁 访问量：<span id="visit-count">...</span></div>
+    <div class="visitor-counter">
+        👁 总访问 <span id="busuanzi_value_site_pv">—</span> 次 &nbsp;|&nbsp;
+        👤 访客 <span id="busuanzi_value_site_uv">—</span> 人
+    </div>
 
     <footer>
         © 2025 Wuli布雷克 | 由 HTML5 & CSS3 驱动
     </footer>
 
-    <script>
-        // Visitor counter via countapi.xyz
-        (async () => {
-            const ns = 'wuliblake';
-            const key = 'homepage';
-            try {
-                const res = await fetch(`https://api.countapi.xyz/hit/${ns}/${key}`);
-                const data = await res.json();
-                document.getElementById('visit-count').textContent = data.value.toLocaleString();
-            } catch (e) {
-                document.getElementById('visit-count').textContent = '—';
-            }
-        })();
-    </script>
+    <!-- 不蒜子 访问统计 -->
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</body>
 
 </body>
 
