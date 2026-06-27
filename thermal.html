@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>热学 / Thermal Physics - Wuli布雷克</title>
+    <style>
+        :root {
+            --bg-color: #fffaf5;
+            --primary-warm: #ff9800;
+            --accent-warm: #f57c00;
+            --text-main: #3e2723;
+            --card-bg: #ffffff;
+            --thermal-gradient: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', system-ui, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Back link */
+        .back-link {
+            position: absolute;
+            top: 24px;
+            left: 32px;
+            text-decoration: none;
+            color: var(--accent-warm);
+            font-weight: 600;
+            font-size: 1rem;
+            transition: opacity 0.2s ease;
+        }
+
+        .back-link:hover {
+            opacity: 0.7;
+        }
+
+        /* Header */
+        header {
+            width: 100%;
+            padding: 40px 0 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .brand-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-main {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent-warm), var(--primary-warm));
+            padding: 10px 25px;
+            border-radius: 15px 15px 15px 0;
+            box-shadow: 5px 5px 20px rgba(245, 124, 0, 0.2);
+        }
+
+        .logo-sub {
+            font-size: 0.9rem;
+            letter-spacing: 4px;
+            color: var(--accent-warm);
+            margin-top: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* Placeholder section */
+        .placeholder-section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .placeholder-card {
+            background: var(--card-bg);
+            border-radius: 28px;
+            padding: 60px 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+            max-width: 500px;
+            width: 85%;
+            border-top: 5px solid var(--accent-warm);
+        }
+
+        .placeholder-icon {
+            font-size: 6rem;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 4px 12px rgba(245, 124, 0, 0.3));
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        .placeholder-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+        }
+
+        .placeholder-subtitle {
+            font-size: 1.1rem;
+            color: var(--accent-warm);
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .placeholder-message {
+            font-size: 1rem;
+            color: #795548;
+            line-height: 1.8;
+            margin-top: 12px;
+        }
+
+        .placeholder-message .zh {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .placeholder-message .en {
+            display: block;
+            font-style: italic;
+            opacity: 0.7;
+            font-size: 0.95rem;
+        }
+
+        /* Decorative dots */
+        .dots {
+            display: flex;
+            gap: 10px;
+            margin-top: 28px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent-warm);
+            opacity: 0.4;
+            animation: bounce 1.4s ease-in-out infinite;
+        }
+
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+            40% { transform: translateY(-12px); opacity: 0.9; }
+        }
+
+        /* Footer */
+        footer {
+            margin-top: auto;
+            padding: 40px;
+            font-size: 0.85rem;
+            color: #a1887f;
+        }
+
+        @media (max-width: 600px) {
+            .placeholder-card {
+                padding: 40px 28px;
+            }
+
+            .placeholder-icon {
+                font-size: 4.5rem;
+            }
+
+            .placeholder-title {
+                font-size: 1.5rem;
+            }
+
+            .back-link {
+                top: 16px;
+                left: 18px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <a href="index.html" class="back-link">&larr; 返回首页</a>
+
+    <header>
+        <div class="brand-logo">
+            <div class="logo-main">Wuli布雷克</div>
+            <div class="logo-sub">Physics Simulation Lab</div>
+        </div>
+    </header>
+
+    <section class="placeholder-section">
+        <div class="placeholder-card">
+            <div class="placeholder-icon">🔥</div>
+            <div class="placeholder-title">热学</div>
+            <div class="placeholder-subtitle">Thermal Physics</div>
+            <div class="placeholder-message">
+                <span class="zh">内容开发中，敬请期待。</span>
+                <span class="en">New simulations coming soon.</span>
+            </div>
+            <div class="dots">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        &copy; 2025 Wuli布雷克 | 由 HTML5 &amp; CSS3 驱动
+    </footer>
+
+</body>
+
+</html>

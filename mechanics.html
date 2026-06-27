@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>力学 / Mechanics - Wuli布雷克</title>
+    <style>
+        :root {
+            --bg-color: #fffaf5;
+            --primary-warm: #ff9800;
+            --accent-warm: #f57c00;
+            --text-main: #3e2723;
+            --card-bg: #ffffff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', system-ui, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Back link */
+        .back-link {
+            position: fixed;
+            top: 20px;
+            left: 24px;
+            z-index: 1000;
+            text-decoration: none;
+            color: var(--accent-warm);
+            font-weight: 700;
+            font-size: 0.95rem;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 18px;
+            border-radius: 20px;
+            box-shadow: 0 2px 12px rgba(245, 124, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+        .back-link:hover {
+            background: #fff;
+            box-shadow: 0 4px 20px rgba(245, 124, 0, 0.3);
+            transform: translateX(-3px);
+        }
+
+        /* Header */
+        header {
+            width: 100%;
+            padding: 40px 0 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .brand-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-main {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent-warm), var(--primary-warm));
+            padding: 10px 25px;
+            border-radius: 15px 15px 15px 0;
+            box-shadow: 5px 5px 20px rgba(245, 124, 0, 0.2);
+        }
+
+        .logo-sub {
+            font-size: 0.9rem;
+            letter-spacing: 4px;
+            color: var(--accent-warm);
+            margin-top: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: 2px;
+            margin-top: 10px;
+        }
+        .page-subtitle {
+            font-size: 1rem;
+            color: #795548;
+            opacity: 0.8;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        /* Grid Container */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            width: 90%;
+            max-width: 1100px;
+            padding: 20px 0 50px;
+        }
+
+        /* Sim Card */
+        .sim-card {
+            text-decoration: none;
+            color: var(--text-main);
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 28px 24px 22px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            border: 2px solid #fff5eb;
+            position: relative;
+            overflow: hidden;
+        }
+        .sim-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(135deg, var(--accent-warm), var(--primary-warm));
+            border-radius: 0 0 4px 4px;
+        }
+        .sim-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 45px rgba(245, 124, 0, 0.18);
+            border-color: #ffe0c0;
+        }
+
+        .sim-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            width: 100%;
+        }
+        .sim-card-icon {
+            font-size: 1.6rem;
+            line-height: 1;
+        }
+        .sim-card-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1.3;
+        }
+        .sim-card-subtitle {
+            font-size: 0.85rem;
+            color: #8d6e63;
+            font-weight: 500;
+        }
+
+        .sim-card-desc {
+            font-size: 0.88rem;
+            color: #6d4c41;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            flex: 1;
+        }
+
+        /* Tag */
+        .tag {
+            display: inline-block;
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            color: var(--accent-warm);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 14px;
+            border-radius: 12px;
+            letter-spacing: 1px;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 40px;
+            font-size: 0.85rem;
+            color: #a1887f;
+        }
+
+        @media (max-width: 800px) {
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+            .sim-card {
+                padding: 22px 18px 18px;
+            }
+            .sim-card-title {
+                font-size: 1rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Back link -->
+    <a href="index.html" class="back-link">← 返回首页</a>
+
+    <!-- Header -->
+    <header>
+        <div class="brand-logo">
+            <div class="logo-main">Wuli布雷克</div>
+            <div class="logo-sub">Physics Simulation Lab</div>
+        </div>
+        <div class="page-title">力学 / Mechanics</div>
+        <div class="page-subtitle">16 个模拟</div>
+    </header>
+
+    <!-- Sim Card Grid -->
+    <main class="grid-container">
+
+        <!-- 1. 密度 / Density -->
+        <a href="density.html" class="sim-card">
+            <div class="sim-card-header">
+                <span class="sim-card-icon">⚖️</span>
+                <div>
+                    <div class="sim-card-title">密度</div>
+                    <div class="sim-card-subtitle">Density</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">动态演示质量和体积如何影响物体密度。Density = m / V</div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <!-- 2. 压强 / Pressure -->
+        <a href="pressure.html" class="sim-card">
+            <div class="sim-card-header">
+                <span class="sim-card-icon">📐</span>
+                <div>
+                    <div class="sim-card-title">压强</div>
+                    <div class="sim-card-subtitle">Pressure</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">动态演示压力和面积如何影响压强。P = F / S</div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <!-- 3. 液体压强 / Liquid Pressure -->
+        <a href="LiquidPressure.html" class="sim-card">
+            <div class="sim-card-header">
+                <span class="sim-card-icon">💧</span>
+                <div>
+                    <div class="sim-card-title">液体压强</div>
+                    <div class="sim-card-subtitle">Liquid Pressure</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">液体的深度、密度与压强的关系。P = ρgh</div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <!-- 4. 阿基米德原理 / Archimedes' Principle -->
+        <a href="upthrust.html" class="sim-card">
+            <div class="sim-card-header">
+                <span class="sim-card-icon">🚢</span>
+                <div>
+                    <div class="sim-card-title">阿基米德原理</div>
+                    <div class="sim-card-subtitle">Archimedes' Principle</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">探索浮力与排开液体重力的关系。F = ρgV</div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <!-- 5. 胡克定律 / Hooke's Law -->
+        <a href="HookesLaw.html" class="sim-card">
+            <div class="sim-card-header">
+                <span class="sim-card-icon">🪝</span>
+                <div>
+                    <div class="sim-card-title">胡克定律</div>
+                    <div class="sim-card-subtitle">Hooke's Law</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">弹力与伸长量的线性关系模拟。F = kx</div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <!-- 6. 力矩 / Torque -->
+        <a href="Torque.html" class="sim-card">
+            <div class="sim-card-header">
+                <span class="sim-card-icon">🔧</span>
+                <div>
+                    <div class="sim-card-title">力矩</div>
+                    <div class="sim-card-subtitle">Torque</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">动态演示力、臂及夹角如何影响合力矩。<br>Moment = F × r × sinθ</div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <!-- 7. 杠杆平衡 / Lever Balance -->
+        <a href="MomentBalance.html" class="sim-card">
+            <div class="sim-card-header">
+                <span class="sim-card-icon">⚖️</span>
+                <div>
+                    <div class="sim-card-title">杠杆平衡</div>
+                    <div class="sim-card-subtitle">Lever Balance</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">探索力矩平衡条件，模拟不同质量和位置下的杠杆平衡。</div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <!-- 8. 动量 / Momentum -->
+        <a href="Momentum.html" class="sim-card">
+            <div class="sim-card-header">
+                <span class="sim-card-icon">🏃</span>
+                <div>
+                    <div class="sim-card-title">动量</div>
+                    <div class="sim-card-subtitle">Momentum</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">动态演示动量公式，直观感受质量和速度对动量的影响。p = mv</div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <!-- 9. 冲量 / Impulse -->
+        <a href="Impulse.html" class="sim-card">
+            <div class="sim-card-header">
+                <span class="sim-card-icon">💥</span>
+                <div>
+                    <div class="sim-card-title">冲量</div>
+                    <div class="sim-card-subtitle">Impulse</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">演示力的时间累积效应，观察冲量如何改变物体的动量。I = Ft</div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <!-- 10. 动量守恒 / Momentum Conservation -->
+        <a href="MomentumConservation.html" class="sim-card">
+            <div class="sim-card-header">
+                <span class="sim-card-icon">🎱</span>
+                <div>
+                    <div class="sim-card-title">动量守恒</div>
+                    <div class="sim-card-subtitle">Momentum Conservation</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">模拟弹性与非弹性碰撞，验证动量守恒定律和能量转化。</div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <!-- 11. 功 / Work -->
+        <a href="Work.html" class="sim-card">
+            <div class="sim-card-header">
+                <span class="sim-card-icon">📦</span>
+                <div>
+                    <div class="sim-card-title">功</div>
+                    <div class="sim-card-subtitle">Work</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">研究力、位移与夹角对功的影响。W = Fs cosθ</div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <!-- 12. 动能 / Kinetic Energy -->
+        <a href="KineticEnergy.html" class="sim-card">
+            <div class="sim-card-header">
+                <span class="sim-card-icon">⚡</span>
+                <div>
+                    <div class="sim-card-title">动能</div>
+                    <div class="sim-card-subtitle">Kinetic Energy</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">探索质量与速度对动能的影响。Eₖ = ½mv²</div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <!-- 13. 重力势能 / Gravitational Potential Energy -->
+        <a href="PotentialEnergy.html" class="sim-card">
+            <div class="sim-card-header">
+                <span class="sim-card-icon">🏔️</span>
+                <div>
+                    <div class="sim-card-title">重力势能</div>
+                    <div class="sim-card-subtitle">Gravitational Potential Energy</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">实时观察质量、高度及重力常数对势能的影响。Eₚ = mgh</div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <!-- 14. 能量守恒 / Energy Conservation -->
+        <a href="EnergyConservation.html" class="sim-card">
+            <div class="sim-card-header">
+                <span class="sim-card-icon">🎢</span>
+                <div>
+                    <div class="sim-card-title">能量守恒</div>
+                    <div class="sim-card-subtitle">Energy Conservation</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">通过U型轨道演示动能与势能的实时转化，验证能量守恒定律。</div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <!-- 15. 功率 / Power -->
+        <a href="Power.html" class="sim-card">
+            <div class="sim-card-header">
+                <span class="sim-card-icon">⚙️</span>
+                <div>
+                    <div class="sim-card-title">功率</div>
+                    <div class="sim-card-subtitle">Power</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">通过电动机提升重物演示做功的快慢。P = W/t = Fv</div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+        <!-- 16. 牛顿定律 / Newton's Laws -->
+        <a href="NewtonLaw.html" class="sim-card">
+            <div class="sim-card-header">
+                <span class="sim-card-icon">🍎</span>
+                <div>
+                    <div class="sim-card-title">牛顿定律</div>
+                    <div class="sim-card-subtitle">Newton's Laws</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">综合演示惯性、F=ma及作用力与反作用力。</div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
+
+    </main>
+
+    <footer>
+        © 2025 Wuli布雷克 | 由 HTML5 & CSS3 驱动
+    </footer>
+
+</body>
+
+</html>

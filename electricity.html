@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wuli布雷克 - 物理模拟实验室</title>
+    <title>电学 / Electricity - Wuli布雷克 物理模拟实验室</title>
     <style>
         :root {
             --bg-color: #fffaf5;
@@ -12,6 +12,7 @@
             --accent-warm: #f57c00;
             --text-main: #3e2723;
             --card-bg: #ffffff;
+            --electricity-grad: linear-gradient(135deg, #f39c12, #e67e22);
         }
 
         body {
@@ -25,10 +26,26 @@
             min-height: 100vh;
         }
 
+        /* Back link */
+        .back-link {
+            align-self: flex-start;
+            margin: 18px 0 0 30px;
+            text-decoration: none;
+            color: var(--accent-warm);
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: color 0.2s ease;
+            letter-spacing: 1px;
+        }
+
+        .back-link:hover {
+            color: #e65100;
+        }
+
         /* Header */
         header {
             width: 100%;
-            padding: 40px 0 20px;
+            padding: 10px 0 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -68,19 +85,42 @@
             line-height: 1.6;
         }
 
-        /* Category Grid */
-        .category-grid {
+        /* Page heading */
+        .page-heading {
+            text-align: center;
+            margin: 10px 0 25px;
+        }
+
+        .page-heading h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin: 0;
+            letter-spacing: 2px;
+        }
+
+        .page-heading .heading-divider {
+            width: 60px;
+            height: 4px;
+            background: var(--electricity-grad);
+            border-radius: 2px;
+            margin: 12px auto 0;
+        }
+
+        /* Sim Card Grid */
+        .sim-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 25px;
             width: 90%;
             max-width: 1100px;
-            padding: 20px 0 50px;
+            padding: 10px 0 50px;
         }
 
-        .cat-card {
+        .sim-card {
             text-decoration: none;
             color: #fff;
+            background: var(--electricity-grad);
             border-radius: 24px;
             padding: 40px 30px 35px;
             display: flex;
@@ -93,59 +133,50 @@
             overflow: hidden;
         }
 
-        .cat-card:hover {
+        .sim-card:hover {
             transform: translateY(-8px);
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
         }
 
-        .cat-icon {
+        .sim-icon {
             font-size: 3.5rem;
             margin-bottom: 16px;
             filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
         }
 
-        .cat-title {
+        .sim-title {
             font-size: 1.8rem;
             font-weight: 800;
             margin-bottom: 4px;
             letter-spacing: 2px;
         }
 
-        .cat-subtitle {
+        .sim-subtitle {
             font-size: 0.95rem;
             opacity: 0.85;
             margin-bottom: 12px;
             font-weight: 500;
         }
 
-        .cat-count {
+        .sim-desc {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            margin-bottom: 18px;
+            line-height: 1.5;
+            max-width: 280px;
+        }
+
+        .tag {
+            display: inline-block;
             background: rgba(255, 255, 255, 0.25);
             padding: 4px 16px;
             border-radius: 20px;
             font-size: 0.85rem;
             font-weight: 600;
+            letter-spacing: 1px;
         }
 
-        /* Category gradients */
-        .cat-mechanics {
-            background: linear-gradient(135deg, #4a90d9, #357abd);
-        }
-        .cat-thermal {
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
-        }
-        .cat-electricity {
-            background: linear-gradient(135deg, #f39c12, #e67e22);
-        }
-        .cat-waves {
-            background: linear-gradient(135deg, #8e44ad, #6c3483);
-        }
-        .cat-modern {
-            background: linear-gradient(135deg, #2c3e50, #1a252f);
-        }
-        .cat-astronomy {
-            background: linear-gradient(135deg, #1a1a3e, #0d1b2a);
-        }
-
+        /* Footer */
         footer {
             margin-top: auto;
             padding: 40px;
@@ -154,30 +185,33 @@
         }
 
         @media (max-width: 800px) {
-            .category-grid {
-                grid-template-columns: repeat(2, 1fr);
+            .sim-grid {
+                grid-template-columns: 1fr;
                 gap: 16px;
             }
-            .cat-card {
+
+            .sim-card {
                 padding: 28px 18px 24px;
             }
-            .cat-title {
+
+            .sim-title {
                 font-size: 1.4rem;
             }
-            .cat-icon {
+
+            .sim-icon {
                 font-size: 2.5rem;
             }
-        }
 
-        @media (max-width: 480px) {
-            .category-grid {
-                grid-template-columns: 1fr;
+            .back-link {
+                margin-left: 16px;
             }
         }
     </style>
 </head>
 
 <body>
+
+    <a href="index.html" class="back-link">&larr; 返回首页</a>
 
     <header>
         <div class="brand-logo">
@@ -191,66 +225,41 @@
                     Blake's Physics Simulation Lab</span>
             </div>
             <div style="padding-top: 10px; border-top: 2px solid rgba(245, 124, 0, 0.1); display: inline-block;">
-                选择一个分类，探索对应的物理模拟。<br>
-                <span style="font-size: 0.9rem; opacity: 0.7;">Select a category to explore interactive physics simulations.</span>
+                选择一个模拟，开始交互式探索。<br>
+                <span style="font-size: 0.9rem; opacity: 0.7;">Select a simulation to begin interactive exploration.</span>
             </div>
         </div>
     </header>
 
-    <main class="category-grid">
+    <div class="page-heading">
+        <h2>电学 / Electricity</h2>
+        <div class="heading-divider"></div>
+    </div>
 
-        <!-- 力学 -->
-        <a href="mechanics.html" class="cat-card cat-mechanics">
-            <div class="cat-icon">⚙️</div>
-            <div class="cat-title">力学</div>
-            <div class="cat-subtitle">Mechanics</div>
-            <div class="cat-count">16 个模拟</div>
+    <main class="sim-grid">
+
+        <!-- 电阻 / Resistance -->
+        <a href="resistor.html" class="sim-card">
+            <div class="sim-icon">🔌</div>
+            <div class="sim-title">电阻</div>
+            <div class="sim-subtitle">Resistance</div>
+            <div class="sim-desc">演示电阻率、长度和截面积如何影响电阻。<br>R = ρL/A</div>
+            <span class="tag">电学 / Electricity</span>
         </a>
 
-        <!-- 热学 -->
-        <a href="thermal.html" class="cat-card cat-thermal">
-            <div class="cat-icon">🔥</div>
-            <div class="cat-title">热学</div>
-            <div class="cat-subtitle">Thermal Physics</div>
-            <div class="cat-count">开发中</div>
-        </a>
-
-        <!-- 电学 -->
-        <a href="electricity.html" class="cat-card cat-electricity">
-            <div class="cat-icon">⚡</div>
-            <div class="cat-title">电学</div>
-            <div class="cat-subtitle">Electricity</div>
-            <div class="cat-count">2 个模拟</div>
-        </a>
-
-        <!-- 波 -->
-        <a href="waves.html" class="cat-card cat-waves">
-            <div class="cat-icon">🌊</div>
-            <div class="cat-title">波</div>
-            <div class="cat-subtitle">Waves</div>
-            <div class="cat-count">8 个模拟</div>
-        </a>
-
-        <!-- 近代物理 -->
-        <a href="modern-physics.html" class="cat-card cat-modern">
-            <div class="cat-icon">⚛️</div>
-            <div class="cat-title">近代物理</div>
-            <div class="cat-subtitle">Modern Physics</div>
-            <div class="cat-count">1 个模拟</div>
-        </a>
-
-        <!-- 天文 -->
-        <a href="astronomy.html" class="cat-card cat-astronomy">
-            <div class="cat-icon">🌌</div>
-            <div class="cat-title">天文</div>
-            <div class="cat-subtitle">Astronomy</div>
-            <div class="cat-count">开发中</div>
+        <!-- 欧姆定律 / Ohm's Law -->
+        <a href="Ohm'sLaw.html" class="sim-card">
+            <div class="sim-icon">⚡</div>
+            <div class="sim-title">欧姆定律</div>
+            <div class="sim-subtitle">Ohm's Law</div>
+            <div class="sim-desc">探究电压、电流与电阻的关系。<br>I = V / R</div>
+            <span class="tag">电学 / Electricity</span>
         </a>
 
     </main>
 
     <footer>
-        © 2025 Wuli布雷克 | 由 HTML5 & CSS3 驱动
+        &copy; 2025 Wuli布雷克 | 由 HTML5 &amp; CSS3 驱动
     </footer>
 
 </body>
