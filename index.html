@@ -146,6 +146,23 @@
             background: #7888b8;  /* B deep — warm blue */
         }
 
+        .visitor-counter {
+            position: fixed;
+            bottom: 20px;
+            left: 24px;
+            z-index: 999;
+            background: rgba(255,255,255,0.85);
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #a1887f;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        .visitor-counter span {
+            color: var(--accent-warm);
+            font-weight: 700;
+        }
+
         footer {
             margin-top: auto;
             padding: 40px;
@@ -249,9 +266,26 @@
 
     </main>
 
+    <div class="visitor-counter">👁 访问量：<span id="visit-count">...</span></div>
+
     <footer>
         © 2025 Wuli布雷克 | 由 HTML5 & CSS3 驱动
     </footer>
+
+    <script>
+        // Visitor counter via countapi.xyz
+        (async () => {
+            const ns = 'wuliblake';
+            const key = 'homepage';
+            try {
+                const res = await fetch(`https://api.countapi.xyz/hit/${ns}/${key}`);
+                const data = await res.json();
+                document.getElementById('visit-count').textContent = data.value.toLocaleString();
+            } catch (e) {
+                document.getElementById('visit-count').textContent = '—';
+            }
+        })();
+    </script>
 
 </body>
 
