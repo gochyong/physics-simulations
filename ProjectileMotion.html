@@ -32,9 +32,9 @@
         .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
 
         .diagram-section { grid-area: diagram; display: flex; flex-direction: column; gap: 6px; }
-        .main-canvas-wrap { background: #fff; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; flex: 1; min-height: 200px; border: 2px solid #fff; }
+        .main-canvas-wrap { background: #fff; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; flex: 1; min-height: 220px; border: 2px solid #fff; }
         #simCanvas { width: 100%; height: 100%; display: block; }
-        .sub-canvases { display: flex; flex-direction: column; gap: 4px; flex: 1; min-height: 120px; }
+        .sub-canvases { display: flex; flex-direction: column; gap: 6px; flex: 1; min-height: 180px; }
         .sub-wrap { background: #fff; border-radius: 16px; box-shadow: var(--shadow); flex: 1; display: flex; flex-direction: column; border: 1px solid #fff5eb; overflow: hidden; }
         .sub-label { background: #fff; padding: 3px 10px; font-weight: 700; font-size: 0.8rem; text-align: center; }
         .sub-wrap canvas { width: 100%; flex: 1; display: block; }
@@ -149,7 +149,7 @@
             vC.width = vC.clientWidth; vC.height = vC.clientHeight;
         }
 
-        // Compute R, H, T from current state
+        // Compute physics from current state — always fresh
         function calc() {
             const r = state.angle * Math.PI / 180;
             const s = Math.sin(r), s2 = Math.sin(2 * r), cs = Math.cos(r);
@@ -159,6 +159,15 @@
                 H: state.v0 * state.v0 * s * s / (2 * G),
                 T: 2 * state.v0 * s / G
             };
+        }
+
+        // Map physical (px, py) meters to canvas coordinates
+        function toC(px, py) {
+            const p = calc();
+            const m = 60;
+            const aW = simC.width - 2 * m, aH = simC.height - 2 * m - 20;
+            const sc = Math.min(aW / Math.max(p.R, 0.01), aH / Math.max(p.H, 0.01));
+            return { x: m + px * sc, y: simC.height - m - 10 - py * sc, s: sc, ox: m, oy: simC.height - m - 10 };
         }
 
         function updateUI() {
@@ -185,18 +194,10 @@
         function draw() {
             ctx.clearRect(0, 0, simC.width, simC.height);
             if (simC.width < 10) return;
-            const p = calc();
+            const p = calc(), o = toC(0, 0);
+            const { ox, oy, s } = o;
             const w = simC.width, h = simC.height;
-            const m = 60;
-            // Compute scale directly from current R, H
-            const aW = w - 2 * m, aH = h - 2 * m - 20;
-            const sc = Math.min(aW / Math.max(p.R, 0.01), aH / Math.max(p.H, 0.01));
-            const ox = m, oy = h - m - 10;
-            // Helper: phys coords → canvas
-            const cx = (px) => ox + px * sc;
-            const cy = (py) => oy - py * sc;
             const t = state.time;
-            const vx0 = state.v0 * p.cs, vy0 = state.v0 * p.s;
 
             // Sky + ground
             ctx.fillStyle = '#f2f8ff'; ctx.fillRect(0, 0, w, oy);
@@ -204,35 +205,42 @@
             ctx.strokeStyle = '#c0b090'; ctx.lineWidth = 2;
             ctx.beginPath(); ctx.moveTo(ox - 20, oy); ctx.lineTo(w - 20, oy); ctx.stroke();
 
-            // Trajectory
+            // Y-axis
+            ctx.strokeStyle = 'rgba(0,0,0,0.08)'; ctx.setLineDash([4, 6]); ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(ox, oy + 18); ctx.lineTo(ox, 12); ctx.stroke(); ctx.setLineDash([]);
+
+            // Trajectory — computed directly from state every frame
             ctx.strokeStyle = '#FF8c42'; ctx.lineWidth = 3; ctx.lineCap = 'round';
             ctx.shadowColor = 'rgba(255,140,66,0.3)'; ctx.shadowBlur = 6;
             ctx.beginPath();
             for (let i = 0; i <= 200; i++) {
                 const ti = (i / 200) * p.T;
-                const px = vx0 * ti, py = vy0 * ti - 0.5 * G * ti * ti;
-                if (i === 0) ctx.moveTo(cx(px), cy(py)); else ctx.lineTo(cx(px), cy(py));
+                const px = state.v0 * p.cs * ti;
+                const py = state.v0 * p.s * ti - 0.5 * G * ti * ti;
+                const pt = toC(px, py);
+                if (i === 0) ctx.moveTo(pt.x, pt.y); else ctx.lineTo(pt.x, pt.y);
             }
             ctx.stroke(); ctx.shadowBlur = 0;
 
             // Range dimension
-            const dY = oy + 28;
+            const land = toC(p.R, 0);
+            const dY = oy + 30;
             ctx.strokeStyle = '#3498db'; ctx.lineWidth = 1.5; ctx.setLineDash([6, 4]);
-            ctx.beginPath(); ctx.moveTo(ox, dY); ctx.lineTo(cx(p.R), dY); ctx.stroke(); ctx.setLineDash([]);
+            ctx.beginPath(); ctx.moveTo(ox, dY); ctx.lineTo(land.x, dY); ctx.stroke(); ctx.setLineDash([]);
             arrow(ctx, ox, dY, 7, 0, '#3498db', 1.5);
-            arrow(ctx, cx(p.R), dY, -7, 0, '#3498db', 1.5);
+            arrow(ctx, land.x, dY, -7, 0, '#3498db', 1.5);
             ctx.fillStyle = '#3498db'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'center';
-            ctx.fillText('R=' + p.R.toFixed(2) + ' m', (ox + cx(p.R)) / 2, dY - 8);
+            ctx.fillText('R = ' + p.R.toFixed(2) + ' m', (ox + land.x) / 2, dY - 8);
 
             // Height dimension
-            const pkX = cx(p.R / 2), pkY = cy(p.H);
-            const dX = pkX + 40;
+            const peak = toC(p.R / 2, p.H);
+            const dX = peak.x + 40;
             ctx.strokeStyle = '#2ecc71'; ctx.lineWidth = 1.5; ctx.setLineDash([6, 4]);
-            ctx.beginPath(); ctx.moveTo(dX, pkY); ctx.lineTo(dX, oy); ctx.stroke(); ctx.setLineDash([]);
-            arrow(ctx, dX, pkY, 0, 7, '#2ecc71', 1.5);
+            ctx.beginPath(); ctx.moveTo(dX, peak.y); ctx.lineTo(dX, oy); ctx.stroke(); ctx.setLineDash([]);
+            arrow(ctx, dX, peak.y, 0, 7, '#2ecc71', 1.5);
             arrow(ctx, dX, oy, 0, -7, '#2ecc71', 1.5);
             ctx.fillStyle = '#2ecc71'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'left';
-            ctx.fillText('H=' + p.H.toFixed(2) + ' m', dX + 4, (pkY + oy) / 2 + 4);
+            ctx.fillText('H = ' + p.H.toFixed(2) + ' m', dX + 4, (peak.y + oy) / 2 + 4);
 
             // Angle arc
             const aR = 28;
@@ -244,37 +252,39 @@
 
             // V₀ arrow
             const vS = 3.5;
-            const vdx = vx0 * vS, vdy = -vy0 * vS;
+            const vdx = state.v0 * p.cs * vS, vdy = -state.v0 * p.s * vS;
             arrow(ctx, ox, oy, vdx, vdy, '#e74c3c', 2.5);
             ctx.fillStyle = '#e74c3c'; ctx.font = 'bold 11px Fredoka'; ctx.textAlign = 'left';
             ctx.fillText('v₀=' + state.v0.toFixed(1), ox + vdx + 4, oy + vdy - 2);
 
             // Ball
-            const bPx = vx0 * t, bPy = vy0 * t - 0.5 * G * t * t;
-            const bx = cx(bPx), by = cy(bPy);
+            const bPx = state.v0 * p.cs * t;
+            const bPy = state.v0 * p.s * t - 0.5 * G * t * t;
+            const ball = toC(bPx, bPy);
             if (bPy >= -0.1 && bPx >= 0 && bPx <= p.R) {
                 ctx.fillStyle = 'rgba(0,0,0,0.08)'; ctx.beginPath();
-                ctx.ellipse(cx(bPx), oy + 3, 8, 3, 0, 0, Math.PI * 2); ctx.fill();
+                ctx.ellipse(toC(bPx, 0).x, oy + 3, 8, 3, 0, 0, Math.PI * 2); ctx.fill();
             }
-            const bg = ctx.createRadialGradient(bx - 2, by - 3, 2, bx, by, 9);
+            const bg = ctx.createRadialGradient(ball.x - 2, ball.y - 3, 2, ball.x, ball.y, 9);
             bg.addColorStop(0, '#ff8a80'); bg.addColorStop(1, '#c62828');
-            ctx.fillStyle = bg; ctx.beginPath(); ctx.arc(bx, by, 8, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = bg; ctx.beginPath(); ctx.arc(ball.x, ball.y, 8, 0, Math.PI * 2); ctx.fill();
             ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
 
-            // Vh/Vv/V arrows
-            const curVX = vx0, curVY = vy0 - G * t;
+            // Vh / Vv / V arrows on ball
+            const curVX = state.v0 * p.cs;
+            const curVY = state.v0 * p.s - G * t;
             const spd = Math.sqrt(curVX * curVX + curVY * curVY);
             if (spd > 0.2) {
                 const hdx = curVX * vS, vdy2 = -curVY * vS;
-                arrow(ctx, bx, by, hdx, 0, '#3498db', 2);
+                arrow(ctx, ball.x, ball.y, hdx, 0, '#3498db', 2);
                 ctx.fillStyle = '#3498db'; ctx.font = 'bold 10px Fredoka';
-                ctx.fillText('Vh=' + curVX.toFixed(1), bx + hdx + 3, by + 4);
-                arrow(ctx, bx, by, 0, vdy2, '#2ecc71', 2);
+                ctx.fillText('Vh=' + curVX.toFixed(1), ball.x + hdx + 3, ball.y + 4);
+                arrow(ctx, ball.x, ball.y, 0, vdy2, '#2ecc71', 2);
                 ctx.fillStyle = '#2ecc71';
-                ctx.fillText('Vv=' + curVY.toFixed(1), bx + 5, by + vdy2 - 4);
-                arrow(ctx, bx, by, hdx, vdy2, 'rgba(231,76,60,0.55)', 1.8);
+                ctx.fillText('Vv=' + curVY.toFixed(1), ball.x + 5, ball.y + vdy2 - 4);
+                arrow(ctx, ball.x, ball.y, hdx, vdy2, 'rgba(231,76,60,0.55)', 1.8);
                 ctx.fillStyle = '#e74c3c';
-                ctx.fillText('V=' + spd.toFixed(1), bx + hdx + 3, by + vdy2 - 4);
+                ctx.fillText('V=' + spd.toFixed(1), ball.x + hdx + 3, ball.y + vdy2 - 4);
             }
 
             // Origin
