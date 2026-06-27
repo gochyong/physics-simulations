@@ -12,64 +12,42 @@
         rel="stylesheet">
     <style>
         :root {
-            --bg-color: #FFF9F0;
-            --primary: #FF8c42;
-            --secondary: #FFC75F;
-            --accent: #FF5E5B;
-            --text-dark: #4A403A;
-            --card-bg: #FFFFFF;
+            --bg-color: #FFF9F0; --primary: #FF8c42; --secondary: #FFC75F;
+            --accent: #FF5E5B; --text-dark: #4A403A; --card-bg: #FFFFFF;
             --shadow: 0 6px 30px rgba(255, 140, 66, 0.18);
-            --traj-color: #FF8c42;
-            --range-color: #3498db;
-            --height-color: #2ecc71;
-            --ball-color: #FF5E5B;
-            --vel-color: #e74c3c;
+            --traj-color: #FF8c42; --range-color: #3498db; --height-color: #2ecc71;
+            --ball-color: #FF5E5B; --vel-color: #e74c3c; --vh-color: #3498db; --vv-color: #2ecc71;
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
-
         body {
             font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-dark);
+            background-color: var(--bg-color); color: var(--text-dark);
             display: flex; flex-direction: column; align-items: center;
             min-height: 100vh; padding: 5px 40px 10px;
         }
-
         .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
         .logo {
             font-weight: 700; font-size: 1.3rem; color: #fff;
             background: var(--primary); padding: 6px 18px; border-radius: 16px;
             box-shadow: 4px 4px 15px rgba(255,140,66,0.3);
         }
-
         .container {
             width: 100%; max-width: 1400px; margin-top: 8px;
             display: grid;
-            grid-template-areas:
-                "header header"
-                "formula formula"
-                "diagram controls";
-            grid-template-columns: 1fr 420px; gap: 12px;
+            grid-template-areas:"header header" "formula formula" "diagram controls";
+            grid-template-columns: 1fr 400px; gap: 12px;
         }
-
         header { grid-area: header; text-align: center; }
         h1 { font-size: 2rem; color: var(--text-dark); margin-bottom: 2px; }
-        .subtitle { font-size: 0.85rem; color: #999; margin-bottom: 2px; }
+        .subtitle { font-size: 0.85rem; color: #999; }
 
         .formula-display {
             grid-area: formula; background: var(--card-bg);
             border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px;
             display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb;
         }
-        .formula-container {
-            display: flex; align-items: center; justify-content: center;
-            gap: 8px; flex-wrap: wrap; min-height: 44px;
-        }
-        .formula-item {
-            font-size: 0.92rem; font-weight: 600; white-space: nowrap;
-            padding: 3px 10px; border-radius: 10px; background: #fafaf7;
-        }
+        .formula-container { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; min-height: 44px; }
+        .formula-item { font-size: 0.92rem; font-weight: 600; padding: 3px 10px; border-radius: 10px; background: #fafaf7; }
         .result-row {
             font-size: 0.95rem; font-weight: 600; color: var(--text-dark);
             margin-top: 4px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;
@@ -80,63 +58,48 @@
         }
         .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
         .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
-        .legend-dash {
-            width: 16px; height: 2px; display: inline-block;
-            border-top: 2.5px dashed currentColor;
-        }
+        .legend-dash { width: 16px; height: 2px; display: inline-block; border-top: 2.5px dashed currentColor; }
 
         .diagram-section {
-            grid-area: diagram; background: var(--card-bg); border-radius: 20px;
-            box-shadow: var(--shadow); position: relative; overflow: hidden;
-            min-height: 420px; display: flex; flex-direction: column; border: 2px solid #fff;
+            grid-area: diagram; display: flex; flex-direction: column; gap: 6px;
         }
-        canvas { width: 100%; flex: 1; display: block; }
+        .main-canvas-wrap {
+            background: var(--card-bg); border-radius: 20px;
+            box-shadow: var(--shadow); position: relative; overflow: hidden;
+            flex: 2; display: flex; flex-direction: column; border: 2px solid #fff;
+            min-height: 280px;
+        }
+        #simCanvas { width: 100%; flex: 1; display: block; }
+        .sub-canvases {
+            display: flex; gap: 6px; flex: 1; min-height: 120px;
+        }
+        .sub-wrap {
+            flex: 1; background: var(--card-bg); border-radius: 16px;
+            box-shadow: var(--shadow); position: relative; overflow: hidden;
+            display: flex; flex-direction: column; border: 1px solid #fff5eb;
+        }
+        .sub-wrap canvas { width: 100%; flex: 1; display: block; }
 
         .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
         .control-panel {
             background: var(--card-bg); border-radius: 20px; box-shadow: var(--shadow);
             padding: 14px 18px; display: flex; flex-direction: column; gap: 10px;
         }
-
         .control-group { display: flex; flex-direction: column; gap: 3px; margin-bottom: 1px; }
         .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
-        .val-badge {
-            background: #fff; padding: 1px 7px; border-radius: 7px;
-            font-size: 0.85rem; border: 2px solid #f0f0f0;
-        }
-
-        input[type=range] {
-            width: 100%; appearance: none; height: 6px;
-            background: #eee; border-radius: 3px; outline: none;
-        }
-        input[type=range]::-webkit-slider-thumb {
-            appearance: none; width: 20px; height: 20px; border-radius: 50%;
-            cursor: pointer; background: var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-        }
+        .val-badge { background: #fff; padding: 1px 7px; border-radius: 7px; font-size: 0.85rem; border: 2px solid #f0f0f0; }
+        input[type=range] { width: 100%; appearance: none; height: 6px; background: #eee; border-radius: 3px; outline: none; }
+        input[type=range]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; cursor: pointer; background: var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
         #slider-angle::-webkit-slider-thumb { background: var(--secondary); }
-
         .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px; }
-        .ctrl-btn {
-            padding: 10px; border: none; border-radius: 14px;
-            font-size: 1.05rem; font-weight: 700; cursor: pointer;
-            transition: all 0.2s; color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
+        .ctrl-btn { padding: 10px; border: none; border-radius: 14px; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: all 0.2s; color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
         .start { background-color: var(--primary); }
         .pause { background-color: #2ecc71; }
         .reset { background-color: #95a5a6; }
         .ctrl-btn:active { transform: translateY(2px); box-shadow: none; }
-
-        .info-card {
-            background: var(--card-bg); border-radius: 20px;
-            padding: 12px 16px; box-shadow: var(--shadow);
-            font-size: 0.9rem; line-height: 1.4; color: #5D6D7E;
-        }
-
+        .info-card { background: var(--card-bg); border-radius: 20px; padding: 12px 16px; box-shadow: var(--shadow); font-size: 0.9rem; line-height: 1.4; color: #5D6D7E; }
         @media (max-width: 1100px) {
-            .container {
-                grid-template-areas: "header" "formula" "diagram" "controls";
-                grid-template-columns: 1fr;
-            }
+            .container { grid-template-areas: "header" "formula" "diagram" "controls"; grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -151,46 +114,34 @@
         </header>
 
         <section class="formula-display">
-            <div class="formula-container" id="formula-root">
-                <!-- Dynamic formula display -->
-            </div>
-            <div class="result-row" id="result-area">
-                <!-- Dynamic result summary -->
-            </div>
+            <div class="formula-container" id="formula-root"></div>
+            <div class="result-row" id="result-area"></div>
             <div class="legend">
-                <div class="legend-item">
-                    <span class="legend-dot" style="background:var(--traj-color);"></span> 轨迹 Trajectory
-                </div>
-                <div class="legend-item">
-                    <span class="legend-dash" style="color:var(--range-color);"></span> 射程 Range
-                </div>
-                <div class="legend-item">
-                    <span class="legend-dash" style="color:var(--height-color);"></span> 最大高度 Max Height
-                </div>
-                <div class="legend-item">
-                    <span class="legend-dot" style="background:var(--ball-color);"></span> 小球 Ball
-                </div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--traj-color);"></span> 轨迹 Trajectory</div>
+                <div class="legend-item"><span class="legend-dash" style="color:var(--range-color);"></span> 射程 Range</div>
+                <div class="legend-item"><span class="legend-dash" style="color:var(--height-color);"></span> 最大高度 Max Height</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--ball-color);"></span> 小球 Ball</div>
             </div>
         </section>
 
         <section class="diagram-section">
-            <canvas id="simCanvas"></canvas>
+            <div class="main-canvas-wrap">
+                <canvas id="simCanvas"></canvas>
+            </div>
+            <div class="sub-canvases">
+                <div class="sub-wrap"><canvas id="canvasH"></canvas></div>
+                <div class="sub-wrap"><canvas id="canvasV"></canvas></div>
+            </div>
         </section>
 
         <section class="controls-section">
             <div class="control-panel">
                 <div class="control-group">
-                    <div class="label-row">
-                        <span>初速度 v₀ (Initial Velocity)</span>
-                        <span id="badge-v0" class="val-badge">15 m/s</span>
-                    </div>
+                    <div class="label-row"><span>初速度 v₀ (Initial Velocity)</span><span id="badge-v0" class="val-badge">15 m/s</span></div>
                     <input type="range" id="slider-v0" min="5" max="25" step="0.5" value="15">
                 </div>
                 <div class="control-group">
-                    <div class="label-row">
-                        <span>发射角 θ (Launch Angle)</span>
-                        <span id="badge-angle" class="val-badge">45°</span>
-                    </div>
+                    <div class="label-row"><span>发射角 θ (Launch Angle)</span><span id="badge-angle" class="val-badge">45°</span></div>
                     <input type="range" id="slider-angle" min="10" max="80" step="1" value="45">
                 </div>
                 <div class="btn-row">
@@ -198,39 +149,24 @@
                     <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
                 </div>
             </div>
-
             <div class="info-card">
-                <div style="font-weight: 700; color: var(--primary); margin-bottom: 8px; font-size: 1.1rem;">
-                    演示要点 / Key Points
-                </div>
-                <div style="display: flex; flex-direction: column; gap: 6px;">
+                <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem;">演示要点 / Key Points</div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
                     <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
-                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:var(--range-color);font-weight:700;font-size:1rem;">R</div>
-                        <div>
-                            <div style="font-weight:700;font-size:0.9rem;">射程 Range</div>
-                            <div style="font-size:0.78rem;color:#888;">水平方向的最大飞行距离。最大水平距离。</div>
-                        </div>
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:var(--range-color);font-weight:700;">R</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">射程 R = v₀² sin(2θ) / g</div><div style="font-size:0.78rem;color:#888;">水平方向的最大飞行距离。45°时射程最大。</div></div>
                     </div>
                     <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
-                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:var(--height-color);font-weight:700;font-size:1rem;">H</div>
-                        <div>
-                            <div style="font-weight:700;font-size:0.9rem;">最大高度 Max Height</div>
-                            <div style="font-size:0.78rem;color:#888;">轨迹最高点的垂直高度。</div>
-                        </div>
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:var(--height-color);font-weight:700;">H</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">最大高度 H = v₀² sin²θ / (2g)</div><div style="font-size:0.78rem;color:#888;">轨迹最高点的垂直高度。</div></div>
                     </div>
                     <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
-                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;font-size:1rem;">T</div>
-                        <div>
-                            <div style="font-weight:700;font-size:0.9rem;">飞行时间 Time of Flight</div>
-                            <div style="font-size:0.78rem;color:#888;">从发射到落地经历的总时间。</div>
-                        </div>
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;">T</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">飞行时间 T = 2v₀ sinθ / g</div><div style="font-size:0.78rem;color:#888;">从发射到落地经历的总时间。</div></div>
                     </div>
                     <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
-                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,94,91,0.1);color:var(--accent);font-weight:700;font-size:1rem;">45°</div>
-                        <div>
-                            <div style="font-weight:700;font-size:0.9rem;">最优角度 Optimal Angle</div>
-                            <div style="font-size:0.78rem;color:#888;">初速度相同时，45°使射程达到最大值。</div>
-                        </div>
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:var(--vh-color);font-weight:700;">↔</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">水平匀速：Vh = v₀ cosθ（恒定）</div><div style="font-size:0.78rem;color:#888;">水平方向不受力，速度分量保持不变。</div></div>
                     </div>
                 </div>
             </div>
@@ -239,33 +175,26 @@
 
     <script>
         const canvas = document.getElementById('simCanvas'), ctx = canvas.getContext('2d');
+        const canvasH = document.getElementById('canvasH'), ctxH = canvasH.getContext('2d');
+        const canvasV = document.getElementById('canvasV'), ctxV = canvasV.getContext('2d');
         const sV0 = document.getElementById('slider-v0'), sAngle = document.getElementById('slider-angle');
         const bV0 = document.getElementById('badge-v0'), bAngle = document.getElementById('badge-angle');
         const bStart = document.getElementById('btn-start'), bReset = document.getElementById('btn-reset');
         const fRoot = document.getElementById('formula-root'), rArea = document.getElementById('result-area');
 
         const state = {
-            v0: 15,          // m/s
-            angle: 45,       // degrees
-            g: 9.8,          // m/s²
-            time: 0,         // seconds
-            isPlaying: false,
-            timeScale: 0.5,  // slow-motion factor
-            // Computed
-            angleRad: Math.PI / 4,
-            R: 0, H: 0, T: 0,
-            trajPoints: [],   // [{canvasX, canvasY}]
-            scale: 0,
-            originX: 80,
-            originY: 0
+            v0: 15, angle: 45, g: 9.8, time: 0, isPlaying: false, timeScale: 0.5,
+            angleRad: Math.PI / 4, R: 0, H: 0, T: 0,
+            trajPoints: [], scale: 0, originX: 80, originY: 0,
+            historyX: [], historyY: [], historyT: [] // for sub-graphs
         };
 
-        let lastTimestamp = 0;
-        let animId = null;
+        let lastTimestamp = 0, animId = null;
 
         function resize() {
-            canvas.width = canvas.clientWidth;
-            canvas.height = canvas.clientHeight;
+            canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight;
+            canvasH.width = canvasH.clientWidth; canvasH.height = canvasH.clientHeight;
+            canvasV.width = canvasV.clientWidth; canvasV.height = canvasV.clientHeight;
             recompute();
         }
         window.addEventListener('resize', resize);
@@ -274,24 +203,21 @@
             const rad = state.angle * Math.PI / 180;
             state.angleRad = rad;
             const v0 = state.v0, g = state.g;
-            const sinA = Math.sin(rad);
-            const sin2A = Math.sin(2 * rad);
+            const sinA = Math.sin(rad), sin2A = Math.sin(2 * rad);
 
             state.R = v0 * v0 * sin2A / g;
             state.H = v0 * v0 * sinA * sinA / (2 * g);
             state.T = 2 * v0 * sinA / g;
 
-            // Dynamic scale to fit trajectory in canvas
             const margin = 80;
             const availW = Math.max(canvas.width - 2 * margin, 1);
-            const availH = Math.max(canvas.height - 2 * margin, 1);
+            const availH = Math.max(canvas.height - 2 * margin - 60, 1);
             const scaleX = availW / Math.max(state.R, 0.01);
             const scaleY = availH / Math.max(state.H, 0.01);
             state.scale = Math.min(scaleX, scaleY);
             state.originX = margin;
-            state.originY = canvas.height - margin;
+            state.originY = canvas.height - margin - 50;
 
-            // Precompute trajectory points in canvas coordinates
             const n = 200;
             state.trajPoints = [];
             for (let i = 0; i <= n; i++) {
@@ -303,337 +229,298 @@
                     y: state.originY - py * state.scale
                 });
             }
-
-            // Clamp time if it exceeds new T
             if (state.time > state.T) state.time = 0;
-
+            state.historyX = []; state.historyY = []; state.historyT = [];
             updateUI();
         }
 
         function updateUI() {
             bV0.textContent = state.v0.toFixed(1) + ' m/s';
             bAngle.textContent = state.angle + '°';
+            const v0 = state.v0, ang = state.angle, g = state.g, R = state.R, H = state.H, T = state.T;
 
-            const v0 = state.v0, ang = state.angle, g = state.g;
-            const rad = state.angleRad;
-            const R = state.R, H = state.H, T = state.T;
-
-            // Formula container: show formulas with values plugged in
             fRoot.innerHTML = `
                 <span class="formula-item" style="color:var(--range-color);">
-                    R = ${v0}²·sin(${2*ang}°) / ${g} = <b>${R.toFixed(2)}</b> m
+                    R = v₀² sin(2θ) / g = ${v0}²·sin(${2*ang}°) / ${g} = <b>${R.toFixed(2)}</b> m
                 </span>
                 <span style="color:#ccc;font-size:1.1rem;">|</span>
                 <span class="formula-item" style="color:var(--height-color);">
-                    H = ${v0}²·sin²(${ang}°) / (2·${g}) = <b>${H.toFixed(2)}</b> m
+                    H = v₀² sin²θ / (2g) = ${v0}²·sin²(${ang}°) / (2·${g}) = <b>${H.toFixed(2)}</b> m
                 </span>
                 <span style="color:#ccc;font-size:1.1rem;">|</span>
                 <span class="formula-item">
-                    T = 2·${v0}·sin(${ang}°) / ${g} = <b>${T.toFixed(2)}</b> s
+                    T = 2v₀ sinθ / g = 2·${v0}·sin(${ang}°) / ${g} = <b>${T.toFixed(2)}</b> s
                 </span>
             `;
 
-            // Result row
             rArea.innerHTML = `
-                <span>射程 Range: <strong style="color:var(--range-color);">${R.toFixed(2)}</strong> m</span>
-                <span>最大高度 Max Height: <strong style="color:var(--height-color);">${H.toFixed(2)}</strong> m</span>
-                <span>飞行时间 Time: <strong>${T.toFixed(2)}</strong> s</span>
+                <span>射程 R: <strong style="color:var(--range-color);">${R.toFixed(2)}</strong> m</span>
+                <span>最大高度 H: <strong style="color:var(--height-color);">${H.toFixed(2)}</strong> m</span>
+                <span>飞行时间 T: <strong>${T.toFixed(2)}</strong> s</span>
             `;
         }
 
-        function drawArrow(cx, cy, dx, dy, color, lw) {
-            const headLen = 8;
+        function drawArrow(ctx2d, cx, cy, dx, dy, color, lw) {
+            const headLen = 7;
             const angle = Math.atan2(dy, dx);
             const tx = cx + dx, ty = cy + dy;
-
-            ctx.strokeStyle = color;
-            ctx.fillStyle = color;
-            ctx.lineWidth = lw || 2;
-            ctx.lineCap = 'round';
-
-            ctx.beginPath();
-            ctx.moveTo(cx, cy);
-            ctx.lineTo(tx, ty);
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.moveTo(tx, ty);
-            ctx.lineTo(
-                tx - headLen * Math.cos(angle - Math.PI / 6),
-                ty - headLen * Math.sin(angle - Math.PI / 6)
-            );
-            ctx.lineTo(
-                tx - headLen * Math.cos(angle + Math.PI / 6),
-                ty - headLen * Math.sin(angle + Math.PI / 6)
-            );
-            ctx.closePath();
-            ctx.fill();
+            ctx2d.strokeStyle = color; ctx2d.fillStyle = color;
+            ctx2d.lineWidth = lw || 2; ctx2d.lineCap = 'round';
+            ctx2d.beginPath(); ctx2d.moveTo(cx, cy); ctx2d.lineTo(tx, ty); ctx2d.stroke();
+            ctx2d.beginPath(); ctx2d.moveTo(tx, ty);
+            ctx2d.lineTo(tx - headLen * Math.cos(angle - Math.PI / 6), ty - headLen * Math.sin(angle - Math.PI / 6));
+            ctx2d.lineTo(tx - headLen * Math.cos(angle + Math.PI / 6), ty - headLen * Math.sin(angle + Math.PI / 6));
+            ctx2d.closePath(); ctx2d.fill();
         }
 
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const { v0, angleRad, g, time, R, H, T, scale, originX, originY, trajPoints } = state;
-
+            const { v0, angle, angleRad, g, time, R, H, T, scale, originX, originY, trajPoints } = state;
             if (R <= 0 || H <= 0) return;
 
             const w = canvas.width, h = canvas.height;
-
-            // ---- Sky gradient ----
             const skyGrad = ctx.createLinearGradient(0, 0, 0, originY);
-            skyGrad.addColorStop(0, '#f0f7ff');
-            skyGrad.addColorStop(1, '#ffffff');
-            ctx.fillStyle = skyGrad;
-            ctx.fillRect(0, 0, w, originY);
+            skyGrad.addColorStop(0, '#f0f7ff'); skyGrad.addColorStop(1, '#ffffff');
+            ctx.fillStyle = skyGrad; ctx.fillRect(0, 0, w, originY);
+            ctx.fillStyle = 'rgba(139,119,80,0.12)'; ctx.fillRect(0, originY, w, h - originY);
+            ctx.strokeStyle = '#b0a090'; ctx.lineWidth = 2.5;
+            ctx.beginPath(); ctx.moveTo(originX - 40, originY); ctx.lineTo(w - 40, originY); ctx.stroke();
 
-            // ---- Ground fill and line ----
-            ctx.fillStyle = 'rgba(139, 119, 80, 0.12)';
-            ctx.fillRect(0, originY, w, h - originY);
-
-            ctx.strokeStyle = '#b0a090';
-            ctx.lineWidth = 2.5;
-            ctx.beginPath();
-            ctx.moveTo(originX - 40, originY);
-            ctx.lineTo(w - 40, originY);
-            ctx.stroke();
-
-            // Ground hatching
-            ctx.strokeStyle = 'rgba(139, 119, 80, 0.18)';
-            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'rgba(139,119,80,0.15)'; ctx.lineWidth = 1;
             for (let gx = originX - 30; gx < w - 30; gx += 20) {
-                ctx.beginPath();
-                ctx.moveTo(gx, originY);
-                ctx.lineTo(gx + 8, originY + 10);
-                ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(gx, originY); ctx.lineTo(gx + 8, originY + 10); ctx.stroke();
             }
 
-            // ---- Dashed y-axis (through launch point) ----
-            ctx.strokeStyle = 'rgba(0,0,0,0.15)';
-            ctx.lineWidth = 1;
-            ctx.setLineDash([4, 6]);
-            ctx.beginPath();
-            ctx.moveTo(originX, originY + 25);
-            ctx.lineTo(originX, 30);
-            ctx.stroke();
+            ctx.strokeStyle = 'rgba(0,0,0,0.12)'; ctx.lineWidth = 1; ctx.setLineDash([4, 6]);
+            ctx.beginPath(); ctx.moveTo(originX, originY + 25); ctx.lineTo(originX, 20); ctx.stroke();
             ctx.setLineDash([]);
 
-            // ---- Trajectory curve ----
+            // Trajectory
             if (trajPoints.length > 1) {
-                ctx.strokeStyle = 'var(--traj-color)';
-                ctx.strokeStyle = '#FF8c42';
-                ctx.lineWidth = 3;
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-                ctx.shadowColor = 'rgba(255, 140, 66, 0.3)';
-                ctx.shadowBlur = 6;
-                ctx.beginPath();
-                ctx.moveTo(trajPoints[0].x, trajPoints[0].y);
-                for (let i = 1; i < trajPoints.length; i++) {
-                    ctx.lineTo(trajPoints[i].x, trajPoints[i].y);
-                }
-                ctx.stroke();
-                ctx.shadowBlur = 0;
+                ctx.strokeStyle = '#FF8c42'; ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+                ctx.shadowColor = 'rgba(255,140,66,0.3)'; ctx.shadowBlur = 6;
+                ctx.beginPath(); ctx.moveTo(trajPoints[0].x, trajPoints[0].y);
+                for (let i = 1; i < trajPoints.length; i++) ctx.lineTo(trajPoints[i].x, trajPoints[i].y);
+                ctx.stroke(); ctx.shadowBlur = 0;
             }
 
-            // ---- Range dimension line ----
+            // Range dimension line
             const landX = originX + R * scale;
             const dimY = originY + 40;
-            ctx.strokeStyle = '#3498db';
-            ctx.lineWidth = 1.5;
-            ctx.setLineDash([6, 4]);
-            ctx.beginPath();
-            ctx.moveTo(originX, dimY);
-            ctx.lineTo(landX, dimY);
-            ctx.stroke();
+            ctx.strokeStyle = '#3498db'; ctx.lineWidth = 1.5; ctx.setLineDash([6, 4]);
+            ctx.beginPath(); ctx.moveTo(originX, dimY); ctx.lineTo(landX, dimY); ctx.stroke();
             ctx.setLineDash([]);
-
-            // Range arrow heads
-            drawArrow(originX, dimY, 8, 0, '#3498db', 1.5);
-            drawArrow(landX, dimY, -8, 0, '#3498db', 1.5);
-
-            // Range tick marks
-            ctx.strokeStyle = '#3498db';
-            ctx.lineWidth = 1;
+            drawArrow(ctx, originX, dimY, 8, 0, '#3498db', 1.5);
+            drawArrow(ctx, landX, dimY, -8, 0, '#3498db', 1.5);
+            ctx.strokeStyle = '#3498db'; ctx.lineWidth = 1;
             ctx.beginPath(); ctx.moveTo(originX, dimY - 6); ctx.lineTo(originX, dimY + 6); ctx.stroke();
             ctx.beginPath(); ctx.moveTo(landX, dimY - 6); ctx.lineTo(landX, dimY + 6); ctx.stroke();
+            ctx.fillStyle = '#3498db'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillText('R = ' + R.toFixed(2) + ' m', (originX + landX) / 2, dimY - 10);
 
-            // Range label
-            const rMidX = (originX + landX) / 2;
-            ctx.fillStyle = '#3498db';
-            ctx.font = 'bold 13px Fredoka, "Noto Sans SC", sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('R = ' + R.toFixed(2) + ' m', rMidX, dimY - 10);
-
-            // ---- Max height dimension line ----
-            const peakCanvasX = originX + (R / 2) * scale;
-            const peakCanvasY = originY - H * scale;
-            const dimX = peakCanvasX + 50;
-
-            ctx.strokeStyle = '#2ecc71';
-            ctx.lineWidth = 1.5;
-            ctx.setLineDash([6, 4]);
-            ctx.beginPath();
-            ctx.moveTo(dimX, peakCanvasY);
-            ctx.lineTo(dimX, originY);
-            ctx.stroke();
+            // Height dimension line
+            const peakX = originX + (R / 2) * scale;
+            const peakY = originY - H * scale;
+            const dimX = peakX + 50;
+            ctx.strokeStyle = '#2ecc71'; ctx.lineWidth = 1.5; ctx.setLineDash([6, 4]);
+            ctx.beginPath(); ctx.moveTo(dimX, peakY); ctx.lineTo(dimX, originY); ctx.stroke();
             ctx.setLineDash([]);
-
-            // Height arrow heads
-            drawArrow(dimX, peakCanvasY, 0, 8, '#2ecc71', 1.5);
-            drawArrow(dimX, originY, 0, -8, '#2ecc71', 1.5);
-
-            // Height tick marks
-            ctx.strokeStyle = '#2ecc71';
-            ctx.lineWidth = 1;
-            ctx.beginPath(); ctx.moveTo(dimX - 6, peakCanvasY); ctx.lineTo(dimX + 6, peakCanvasY); ctx.stroke();
+            drawArrow(ctx, dimX, peakY, 0, 8, '#2ecc71', 1.5);
+            drawArrow(ctx, dimX, originY, 0, -8, '#2ecc71', 1.5);
+            ctx.strokeStyle = '#2ecc71'; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(dimX - 6, peakY); ctx.lineTo(dimX + 6, peakY); ctx.stroke();
             ctx.beginPath(); ctx.moveTo(dimX - 6, originY); ctx.lineTo(dimX + 6, originY); ctx.stroke();
+            ctx.fillStyle = '#2ecc71'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'left';
+            ctx.fillText('H = ' + H.toFixed(2) + ' m', dimX + 8, (peakY + originY) / 2 + 4);
 
-            // Height label
-            const hMidY = (peakCanvasY + originY) / 2;
-            ctx.fillStyle = '#2ecc71';
-            ctx.font = 'bold 13px Fredoka, "Noto Sans SC", sans-serif';
-            ctx.textAlign = 'left';
-            ctx.fillText('H = ' + H.toFixed(2) + ' m', dimX + 8, hMidY + 4);
+            // Angle arc
+            const arcR = 35;
+            ctx.strokeStyle = 'rgba(231,76,60,0.7)'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.arc(originX, originY, arcR, -angleRad, 0, false); ctx.stroke();
+            const la = -angleRad / 2;
+            ctx.fillStyle = '#e74c3c'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillText('θ=' + angle + '°', originX + (arcR + 18) * Math.cos(la), originY + (arcR + 18) * Math.sin(la));
 
-            // ---- Launch angle arc ----
-            const arcR = 38;
-            ctx.strokeStyle = 'rgba(231, 76, 60, 0.7)';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            // Canvas angle: 0 = right, positive = down. Launch is θ° above horizontal.
-            // In canvas terms: from angle 0 (right) counterclockwise to -angleRad (up-right)
-            ctx.arc(originX, originY, arcR, -angleRad, 0, false);
-            ctx.stroke();
-
-            // θ label
-            const labelAngle = -angleRad / 2;
-            const labelX = originX + (arcR + 16) * Math.cos(labelAngle);
-            const labelY = originY + (arcR + 16) * Math.sin(labelAngle);
-            ctx.fillStyle = '#e74c3c';
-            ctx.font = 'bold 13px Fredoka, "Noto Sans SC", sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('θ=' + state.angle + '°', labelX, labelY);
-
-            // ---- Initial velocity vector at launch ----
-            const vScale = 3.5; // px per m/s for velocity arrow
+            // Initial velocity vector
+            const vScale = 3.5;
             const v0dx = v0 * Math.cos(angleRad) * vScale;
-            const v0dy = -v0 * Math.sin(angleRad) * vScale; // negative = up in canvas
-            drawArrow(originX, originY, v0dx, v0dy, '#e74c3c', 2.5);
-            ctx.fillStyle = '#e74c3c';
-            ctx.font = 'bold 12px Fredoka, "Noto Sans SC", sans-serif';
-            ctx.textAlign = 'left';
+            const v0dy = -v0 * Math.sin(angleRad) * vScale;
+            drawArrow(ctx, originX, originY, v0dx, v0dy, '#e74c3c', 2.5);
+            ctx.fillStyle = '#e74c3c'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'left';
             ctx.fillText('v₀=' + v0.toFixed(1), originX + v0dx + 5, originY + v0dy - 2);
 
-            // ---- Ball at current position ----
+            // Ball
             const ballPX = v0 * Math.cos(angleRad) * time;
             const ballPY = v0 * Math.sin(angleRad) * time - 0.5 * g * time * time;
             const ballCX = originX + ballPX * scale;
             const ballCY = originY - ballPY * scale;
 
-            // Ball shadow on ground
             if (ballPY >= 0 && ballPX >= 0 && ballPX <= R) {
-                const shadowX = originX + ballPX * scale;
-                ctx.fillStyle = 'rgba(0,0,0,0.15)';
-                ctx.beginPath();
-                ctx.ellipse(shadowX, originY + 4, 9, 3.5, 0, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.fillStyle = 'rgba(0,0,0,0.12)'; ctx.beginPath();
+                ctx.ellipse(originX + ballPX * scale, originY + 4, 9, 3.5, 0, 0, Math.PI * 2); ctx.fill();
             }
 
-            // Ball body
-            const ballGrad = ctx.createRadialGradient(ballCX - 2, ballCY - 3, 2, ballCX, ballCY, 11);
-            ballGrad.addColorStop(0, '#ff8a80');
-            ballGrad.addColorStop(1, '#c62828');
-            ctx.fillStyle = ballGrad;
-            ctx.beginPath();
-            ctx.arc(ballCX, ballCY, 10, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
+            const bg = ctx.createRadialGradient(ballCX - 2, ballCY - 3, 2, ballCX, ballCY, 10);
+            bg.addColorStop(0, '#ff8a80'); bg.addColorStop(1, '#c62828');
+            ctx.fillStyle = bg; ctx.beginPath(); ctx.arc(ballCX, ballCY, 9, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
 
-            // ---- Current velocity vector at ball ----
+            // Velocity components on ball
             const curVX = v0 * Math.cos(angleRad);
             const curVY = v0 * Math.sin(angleRad) - g * time;
             const curSpeed = Math.sqrt(curVX * curVX + curVY * curVY);
-            if (curSpeed > 0.5) {
-                const curVDX = curVX * vScale;
-                const curVDY = -curVY * vScale;
-                drawArrow(ballCX, ballCY, curVDX, curVDY, 'rgba(231, 76, 60, 0.55)', 2);
+            if (curSpeed > 0.3) {
+                const vhDx = curVX * vScale;
+                const vvDy = -curVY * vScale;
+                // Vh (horizontal, blue)
+                drawArrow(ctx, ballCX, ballCY, vhDx, 0, '#3498db', 2.2);
+                ctx.fillStyle = '#3498db'; ctx.font = 'bold 11px Fredoka'; ctx.textAlign = 'left';
+                ctx.fillText('Vh=' + curVX.toFixed(1), ballCX + vhDx + 3, ballCY + 4);
+                // Vv (vertical, green)
+                drawArrow(ctx, ballCX, ballCY, 0, vvDy, '#2ecc71', 2.2);
+                ctx.fillStyle = '#2ecc71'; ctx.font = 'bold 11px Fredoka'; ctx.textAlign = 'left';
+                ctx.fillText('Vv=' + curVY.toFixed(1), ballCX + 5, ballCY + vvDy - 4);
+                // V (resultant, red)
+                drawArrow(ctx, ballCX, ballCY, vhDx, vvDy, 'rgba(231,76,60,0.6)', 1.8);
+                ctx.fillStyle = '#e74c3c'; ctx.font = 'bold 11px Fredoka';
+                ctx.fillText('V=' + curSpeed.toFixed(1), ballCX + vhDx + 3, ballCY + vvDy - 4);
             }
 
-            // ---- Launch point marker ----
-            ctx.fillStyle = '#4A403A';
-            ctx.beginPath();
-            ctx.arc(originX, originY, 4.5, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
-
-            // ---- Axis labels ----
-            ctx.fillStyle = '#888';
-            ctx.font = '11px Fredoka, "Noto Sans SC", sans-serif';
-            ctx.textAlign = 'center';
+            // Launch point
+            ctx.fillStyle = '#4A403A'; ctx.beginPath(); ctx.arc(originX, originY, 4, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+            ctx.fillStyle = '#888'; ctx.font = '11px Fredoka'; ctx.textAlign = 'center';
             ctx.fillText('O', originX - 12, originY + 13);
             ctx.fillText('x', w - 30, originY + 13);
-            ctx.fillText('y', originX + 10, 25);
+            ctx.fillText('y', originX + 10, 22);
+
+            // ---- Sub-graphs: x-t and y-t ----
+            drawSubGraphs();
+        }
+
+        function drawSubGraphs() {
+            const { v0, angleRad, g, time, T } = state;
+
+            // --- Horizontal: x-t (linear) ---
+            const wh = canvasH.width, hh = canvasH.height;
+            ctxH.clearRect(0, 0, wh, hh);
+            ctxH.fillStyle = '#fdfcf8'; ctxH.fillRect(0, 0, wh, hh);
+
+            const margin = { l: 42, r: 18, t: 18, b: 28 };
+            const pw = wh - margin.l - margin.r, ph = hh - margin.t - margin.b;
+            const ox = margin.l, oy = margin.t + ph;
+
+            // Axes
+            ctxH.strokeStyle = '#ccc'; ctxH.lineWidth = 1;
+            ctxH.beginPath(); ctxH.moveTo(ox, margin.t); ctxH.lineTo(ox, oy); ctxH.lineTo(ox + pw, oy); ctxH.stroke();
+
+            // Curve: x(t) = v0 cosθ * t
+            const vx0 = v0 * Math.cos(angleRad);
+            ctxH.strokeStyle = '#3498db'; ctxH.lineWidth = 2;
+            ctxH.beginPath();
+            for (let i = 0; i <= 100; i++) {
+                const t = (i / 100) * T;
+                const px = ox + (t / T) * pw;
+                const py = oy - (vx0 * t / (vx0 * T)) * ph;
+                if (i === 0) ctxH.moveTo(px, py); else ctxH.lineTo(px, py);
+            }
+            ctxH.stroke();
+
+            // Current point
+            if (time <= T) {
+                const cx = ox + (time / T) * pw;
+                const cy = oy - (vx0 * time / (vx0 * T)) * ph;
+                ctxH.fillStyle = '#3498db'; ctxH.beginPath(); ctxH.arc(cx, cy, 4, 0, Math.PI * 2); ctxH.fill();
+            }
+
+            // Labels
+            ctxH.fillStyle = '#666'; ctxH.font = 'bold 11px Fredoka'; ctxH.textAlign = 'center';
+            ctxH.fillText('水平运动 x-t', wh / 2, margin.t - 4);
+            ctxH.fillText('t (s)', ox + pw / 2, hh - 4);
+            ctxH.save(); ctxH.translate(10, oy - ph / 2); ctxH.rotate(-Math.PI / 2);
+            ctxH.fillText('x (m)', 0, 0); ctxH.restore();
+            ctxH.fillStyle = '#3498db'; ctxH.font = '10px Fredoka'; ctxH.textAlign = 'left';
+            ctxH.fillText('Vh=' + vx0.toFixed(1) + ' m/s (恒定)', ox + 6, margin.t + 14);
+
+            // --- Vertical: y-t (parabolic) ---
+            const wv = canvasV.width, hv = canvasV.height;
+            ctxV.clearRect(0, 0, wv, hv);
+            ctxV.fillStyle = '#fdfcf8'; ctxV.fillRect(0, 0, wv, hv);
+
+            ctxV.strokeStyle = '#ccc'; ctxV.lineWidth = 1;
+            ctxV.beginPath(); ctxV.moveTo(ox, margin.t); ctxV.lineTo(ox, oy); ctxV.lineTo(ox + pw, oy); ctxV.stroke();
+
+            ctxV.strokeStyle = '#2ecc71'; ctxV.lineWidth = 2;
+            ctxV.beginPath();
+            for (let i = 0; i <= 100; i++) {
+                const t = (i / 100) * T;
+                const vy0 = v0 * Math.sin(angleRad);
+                const yt = vy0 * t - 0.5 * g * t * t;
+                const maxY = state.H;
+                const px = ox + (t / T) * pw;
+                const py = oy - (yt / maxY) * ph;
+                if (i === 0) ctxV.moveTo(px, py); else ctxV.lineTo(px, py);
+            }
+            ctxV.stroke();
+
+            if (time <= T) {
+                const vyr = v0 * Math.sin(angleRad);
+                const yt = vyr * time - 0.5 * g * time * time;
+                const cx = ox + (time / T) * pw;
+                const cy = oy - (yt / state.H) * ph;
+                ctxV.fillStyle = '#2ecc71'; ctxV.beginPath(); ctxV.arc(cx, cy, 4, 0, Math.PI * 2); ctxV.fill();
+            }
+
+            ctxV.fillStyle = '#666'; ctxV.font = 'bold 11px Fredoka'; ctxV.textAlign = 'center';
+            ctxV.fillText('竖直运动 y-t', wv / 2, margin.t - 4);
+            ctxV.fillText('t (s)', ox + pw / 2, hv - 4);
+            ctxV.save(); ctxV.translate(10, oy - ph / 2); ctxV.rotate(-Math.PI / 2);
+            ctxV.fillText('y (m)', 0, 0); ctxV.restore();
+            const vvy = v0 * Math.sin(angleRad) - g * time;
+            ctxV.fillStyle = '#2ecc71'; ctxV.font = '10px Fredoka'; ctxV.textAlign = 'left';
+            ctxV.fillText('Vv=' + vvy.toFixed(1) + ' m/s', ox + 6, margin.t + 14);
         }
 
         function animate(ts) {
             if (lastTimestamp === 0) lastTimestamp = ts;
             let dt = (ts - lastTimestamp) / 1000;
             lastTimestamp = ts;
-            if (dt > 0.1) dt = 0.016; // clamp large gaps (tab switch)
-
+            if (dt > 0.1) dt = 0.016;
             if (state.isPlaying) {
                 state.time += dt * state.timeScale;
-                if (state.time >= state.T) {
-                    state.time = 0; // loop
-                }
+                if (state.time >= state.T) state.time = 0;
             }
-
             draw();
             animId = requestAnimationFrame(animate);
         }
 
-        // ---- Slider events ----
         sV0.addEventListener('input', () => {
             state.v0 = parseFloat(sV0.value);
-            recompute();
-            if (!state.isPlaying) draw();
-        });
-
-        sAngle.addEventListener('input', () => {
-            state.angle = parseInt(sAngle.value);
-            recompute();
-            if (!state.isPlaying) draw();
-        });
-
-        // ---- Button events ----
-        bStart.onclick = () => {
-            state.isPlaying = !state.isPlaying;
-            if (state.isPlaying) {
-                bStart.textContent = '暂停 Pause';
-                bStart.className = 'ctrl-btn pause';
-            } else {
-                bStart.textContent = '开始 Start';
-                bStart.className = 'ctrl-btn start';
-            }
-        };
-
-        bReset.onclick = () => {
             state.time = 0;
-            state.isPlaying = false;
-            bStart.textContent = '开始 Start';
-            bStart.className = 'ctrl-btn start';
             recompute();
             draw();
+        });
+        sAngle.addEventListener('input', () => {
+            state.angle = parseInt(sAngle.value);
+            state.time = 0;
+            recompute();
+            draw();
+        });
+
+        bStart.onclick = () => {
+            state.isPlaying = !state.isPlaying;
+            bStart.textContent = state.isPlaying ? '暂停 Pause' : '开始 Start';
+            bStart.className = 'ctrl-btn ' + (state.isPlaying ? 'pause' : 'start');
+        };
+        bReset.onclick = () => {
+            state.time = 0; state.isPlaying = false;
+            bStart.textContent = '开始 Start'; bStart.className = 'ctrl-btn start';
+            recompute(); draw();
         };
 
-        // ---- Initialization ----
         resize();
         lastTimestamp = 0;
         animId = requestAnimationFrame(animate);
     </script>
 </body>
-
 </html>
