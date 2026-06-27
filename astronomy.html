@@ -99,31 +99,34 @@
             font-weight: 500;
         }
 
-        /* Placeholder Container */
-        .placeholder-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex: 1;
+        /* Grid Container */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
             width: 90%;
             max-width: 1100px;
-            padding: 40px 0 50px;
+            padding: 20px 0 50px;
         }
 
-        .placeholder-card {
+        /* Sim Card */
+        .sim-card {
+            text-decoration: none;
+            color: var(--text-main);
             background: var(--card-bg);
             border-radius: 20px;
-            padding: 60px 80px;
+            padding: 28px 24px 22px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            text-align: center;
+            align-items: flex-start;
+            text-align: left;
+            transition: all 0.3s ease;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
             border: 2px solid #fff5eb;
             position: relative;
             overflow: hidden;
         }
-        .placeholder-card::before {
+        .sim-card::before {
             content: '';
             position: absolute;
             top: 0;
@@ -133,25 +136,41 @@
             background: linear-gradient(135deg, var(--accent-warm), var(--primary-warm));
             border-radius: 0 0 4px 4px;
         }
-
-        .placeholder-emoji {
-            font-size: 5rem;
-            line-height: 1;
-            margin-bottom: 24px;
+        .sim-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 45px rgba(245, 124, 0, 0.18);
+            border-color: #ffe0c0;
         }
 
-        .placeholder-text {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--text-main);
+        .sim-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             margin-bottom: 8px;
+            width: 100%;
         }
-
-        .placeholder-subtext {
-            font-size: 1rem;
+        .sim-card-icon {
+            font-size: 1.6rem;
+            line-height: 1;
+        }
+        .sim-card-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1.3;
+        }
+        .sim-card-subtitle {
+            font-size: 0.85rem;
             color: #8d6e63;
             font-weight: 500;
-            margin-bottom: 24px;
+        }
+
+        .sim-card-desc {
+            font-size: 0.88rem;
+            color: #6d4c41;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            flex: 1;
         }
 
         /* Tag */
@@ -174,25 +193,20 @@
         }
 
         @media (max-width: 800px) {
-            .placeholder-card {
-                padding: 40px 40px;
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
             }
-            .placeholder-emoji {
-                font-size: 4rem;
+            .sim-card {
+                padding: 22px 18px 18px;
             }
-            .placeholder-text {
-                font-size: 1.1rem;
+            .sim-card-title {
+                font-size: 1rem;
             }
         }
         @media (max-width: 480px) {
-            .placeholder-card {
-                padding: 30px 24px;
-            }
-            .placeholder-emoji {
-                font-size: 3rem;
-            }
-            .placeholder-text {
-                font-size: 1rem;
+            .grid-container {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -210,17 +224,25 @@
             <div class="logo-sub">Physics Simulation Lab</div>
         </div>
         <div class="page-title">天文 / Astronomy</div>
-        <div class="page-subtitle">开发中</div>
+        <div class="page-subtitle">1 个模拟</div>
     </header>
 
-    <!-- Placeholder Card -->
-    <main class="placeholder-container">
-        <div class="placeholder-card">
-            <div class="placeholder-emoji">🌌</div>
-            <div class="placeholder-text">内容开发中，敬请期待</div>
-            <div class="placeholder-subtext">New simulations coming soon.</div>
+    <!-- Sim Card Grid -->
+    <main class="grid-container">
+
+        <!-- 开普勒定律 / Kepler's Laws -->
+        <a href="KeplersLaw.html" class="sim-card">
+            <div class="sim-card-header">
+                <span class="sim-card-icon">🪐</span>
+                <div>
+                    <div class="sim-card-title">开普勒定律</div>
+                    <div class="sim-card-subtitle">Kepler's Laws</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">行星椭圆轨道模拟，太阳位于焦点，演示面积定律和周期定律T²∝a³。</div>
             <span class="tag">天文 / Astronomy</span>
-        </div>
+        </a>
+
     </main>
 
     <footer>

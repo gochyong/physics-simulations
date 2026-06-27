@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>库仑定律 / Coulomb's Law - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #FFF9F0;
+            --primary: #FF8c42;
+            --secondary: #FFC75F;
+            --accent: #FF5E5B;
+            --text-dark: #4A403A;
+            --card-bg: #FFFFFF;
+            --shadow: 0 6px 30px rgba(255, 140, 66, 0.18);
+            --pos-color: #FF5E5B;
+            --neg-color: #3498db;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh; padding: 15px 40px;
+        }
+
+        .branding { position: fixed; top: 25px; left: 30px; z-index: 1000; }
+        .logo {
+            font-weight: 700; font-size: 1.6rem; color: #FFFFFF;
+            background: var(--primary); padding: 10px 25px; border-radius: 20px;
+            box-shadow: 4px 4px 15px rgba(255, 140, 66, 0.3);
+        }
+
+        .container {
+            width: 100%; max-width: 1400px; margin-top: 15px;
+            display: grid;
+            grid-template-areas:
+                "header header"
+                "formula formula"
+                "diagram controls";
+            grid-template-columns: 1fr 450px; gap: 20px;
+        }
+
+        header { grid-area: header; text-align: center; }
+        h1 { font-size: 2.5rem; color: var(--text-dark); margin-bottom: 5px; }
+
+        .formula-display {
+            grid-area: formula; background: var(--card-bg);
+            border-radius: 30px; box-shadow: var(--shadow); padding: 20px;
+            display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb;
+        }
+        .formula-container {
+            display: flex; align-items: center; justify-content: center;
+            gap: 15px; width: 100%; flex-direction: column;
+        }
+        .result-row {
+            font-size: 1.4rem; font-weight: 600; color: var(--text-dark);
+            margin-top: 8px; display: flex; gap: 25px; flex-wrap: wrap; justify-content: center;
+        }
+        .legend {
+            display: flex; gap: 30px; justify-content: center;
+            border-top: 1px solid #eee; padding-top: 10px; width: 100%; flex-wrap: wrap;
+        }
+        .legend-item { font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .legend-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+
+        .diagram-section {
+            grid-area: diagram; background: var(--card-bg); border-radius: 30px;
+            box-shadow: var(--shadow); position: relative; overflow: hidden;
+            min-height: 500px; display: flex; flex-direction: column; border: 2px solid #fff;
+        }
+        canvas { width: 100%; flex: 1; display: block; }
+
+        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 15px; }
+        .control-panel {
+            background: var(--card-bg); border-radius: 30px; box-shadow: var(--shadow);
+            padding: 25px; display: flex; flex-direction: column; gap: 18px;
+        }
+        .param-section {
+            background: #fff; border-radius: 16px; padding: 14px 16px 10px; border: 2px solid #f5f0eb;
+        }
+        .param-section-header {
+            font-weight: 700; font-size: 1.05rem; margin-bottom: 8px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .control-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 2px; }
+        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 1.15rem; }
+        .val-badge {
+            background: #fff; padding: 3px 10px; border-radius: 8px;
+            font-size: 1.1rem; border: 2px solid #f0f0f0;
+        }
+
+        input[type=range] {
+            width: 100%; appearance: none; height: 8px;
+            background: #eee; border-radius: 4px; outline: none;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            appearance: none; width: 24px; height: 24px; border-radius: 50%;
+            cursor: pointer; background: var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        #q1-slider::-webkit-slider-thumb { background: var(--pos-color); }
+        #q2-slider::-webkit-slider-thumb { background: var(--pos-color); }
+        #r-slider::-webkit-slider-thumb { background: var(--primary); }
+
+        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+        .ctrl-btn {
+            padding: 14px; border: none; border-radius: 18px;
+            font-size: 1.2rem; font-weight: 700; cursor: pointer;
+            transition: all 0.2s; color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .start { background-color: var(--primary); }
+        .pause { background-color: #2ecc71; }
+        .reset { background-color: #95a5a6; }
+        .ctrl-btn:active { transform: translateY(2px); box-shadow: none; }
+
+        .info-card {
+            background: var(--card-bg); border-radius: 30px;
+            padding: 20px; box-shadow: var(--shadow);
+            font-size: 1.1rem; line-height: 1.5; color: #5D6D7E;
+        }
+
+        @media (max-width: 1100px) {
+            .container {
+                grid-template-areas: "header" "formula" "diagram" "controls";
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="branding"><div class="logo">Wuli布雷克</div></div>
+
+    <div class="container">
+        <header>
+            <h1>库仑定律 / Coulomb's Law</h1>
+        </header>
+
+        <section class="formula-display">
+            <div class="formula-container" id="formula-root"></div>
+            <div class="result-row">
+                <span>静电力: <strong id="res-force" style="color:var(--primary);">—</strong></span>
+                <span id="res-type" style="font-weight:700;">—</span>
+            </div>
+            <div class="legend">
+                <div class="legend-item"><span class="legend-dot" style="background:var(--pos-color)"></span> 正电荷 Positive (+)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--neg-color)"></span> 负电荷 Negative (&minus;)</div>
+                <div class="legend-item"><span style="color:var(--primary);font-weight:700;font-size:1.2rem;">&#8594;</span> 力方向 Force</div>
+            </div>
+        </section>
+
+        <section class="diagram-section">
+            <canvas id="simCanvas"></canvas>
+        </section>
+
+        <section class="controls-section">
+            <div class="control-panel">
+                <div class="param-section" style="border-left: 5px solid var(--pos-color);">
+                    <div class="param-section-header">
+                        <span style="color:var(--pos-color);">&#9679;</span> 电荷 q&#8321; (左侧 / Left)
+                    </div>
+                    <div class="control-group">
+                        <div class="label-row">
+                            <span>电荷量 Charge q&#8321;</span>
+                            <span id="q1-badge" class="val-badge">+3 μC</span>
+                        </div>
+                        <input type="range" id="q1-slider" min="-5" max="5" step="0.1" value="3">
+                    </div>
+                </div>
+
+                <div class="param-section" style="border-left: 5px solid var(--neg-color);">
+                    <div class="param-section-header">
+                        <span style="color:var(--neg-color);">&#9679;</span> 电荷 q&#8322; (右侧 / Right)
+                    </div>
+                    <div class="control-group">
+                        <div class="label-row">
+                            <span>电荷量 Charge q&#8322;</span>
+                            <span id="q2-badge" class="val-badge">+2 μC</span>
+                        </div>
+                        <input type="range" id="q2-slider" min="-5" max="5" step="0.1" value="2">
+                    </div>
+                </div>
+
+                <div class="param-section" style="border-left: 5px solid var(--primary);">
+                    <div class="param-section-header">
+                        <span style="color:var(--primary);">&#9679;</span> 距离 Distance
+                    </div>
+                    <div class="control-group">
+                        <div class="label-row">
+                            <span>距离 Distance r</span>
+                            <span id="r-badge" class="val-badge">5.0 cm</span>
+                        </div>
+                        <input type="range" id="r-slider" min="2" max="10" step="0.1" value="5">
+                    </div>
+                </div>
+
+                <div class="btn-row">
+                    <button id="btn-start" class="ctrl-btn start">开始 Start</button>
+                    <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div style="font-weight: 700; color: var(--primary); margin-bottom: 12px; font-size: 1.25rem;">
+                    演示要点 / Key points
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="background:white;padding:12px;border:1px solid #eee;border-radius:15px;display:grid;grid-template-columns:45px 1fr;gap:10px;align-items:center;">
+                        <div style="width:40px;height:40px;background:rgba(255,94,91,0.1);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--pos-color);font-weight:700;font-size:1.2rem;">F</div>
+                        <div>
+                            <div style="font-weight:700;font-size:1rem;">同号相斥，异号相吸</div>
+                            <div style="font-size:0.85rem;color:#888;">Like charges repel, opposite charges attract.</div>
+                        </div>
+                    </div>
+                    <div style="background:white;padding:12px;border:1px solid #eee;border-radius:15px;display:grid;grid-template-columns:45px 1fr;gap:10px;align-items:center;">
+                        <div style="width:40px;height:40px;background:rgba(255,140,66,0.1);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--primary);font-weight:700;font-size:1.2rem;">r</div>
+                        <div>
+                            <div style="font-weight:700;font-size:1rem;">平方反比定律</div>
+                            <div style="font-size:0.85rem;color:#888;">Force is inversely proportional to r&sup2;.</div>
+                        </div>
+                    </div>
+                    <div style="background:white;padding:12px;border:1px solid #eee;border-radius:15px;display:grid;grid-template-columns:45px 1fr;gap:10px;align-items:center;">
+                        <div style="width:40px;height:40px;background:rgba(52,152,219,0.1);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--neg-color);font-weight:700;font-size:1.2rem;">q</div>
+                        <div>
+                            <div style="font-weight:700;font-size:1rem;">力与电荷量成正比</div>
+                            <div style="font-size:0.85rem;color:#888;">Force proportional to product of charges.</div>
+                        </div>
+                    </div>
+                    <div style="background:white;padding:12px;border:1px solid #eee;border-radius:15px;display:grid;grid-template-columns:45px 1fr;gap:10px;align-items:center;">
+                        <div style="width:40px;height:40px;background:rgba(46,204,113,0.1);border-radius:12px;display:flex;align-items:center;justify-content:center;color:#2ecc71;font-weight:700;font-size:1.2rem;">&#9654;</div>
+                        <div>
+                            <div style="font-weight:700;font-size:1rem;">电场线可视化</div>
+                            <div style="font-size:0.85rem;color:#888;">Click Start to animate electric field lines.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas'), ctx = canvas.getContext('2d');
+        const sQ1 = document.getElementById('q1-slider'), sQ2 = document.getElementById('q2-slider'), sR = document.getElementById('r-slider');
+        const bQ1 = document.getElementById('q1-badge'), bQ2 = document.getElementById('q2-badge'), bR = document.getElementById('r-badge');
+        const bStart = document.getElementById('btn-start'), bReset = document.getElementById('btn-reset');
+        const fRoot = document.getElementById('formula-root');
+        const resForce = document.getElementById('res-force'), resType = document.getElementById('res-type');
+
+        const POS_COLOR = '#FF5E5B';
+        const NEG_COLOR = '#3498db';
+        const K_CONST = 8.99e9;
+
+        const state = {
+            q1: 3,
+            q2: 2,
+            r: 5,
+            isPlaying: false,
+            time: 0
+        };
+
+        const defaults = { q1: 3, q2: 2, r: 5 };
+
+        function resize() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+        }
+        window.addEventListener('resize', resize);
+
+        // ---- Physics ----
+        function calcForce() {
+            const q1_C = Math.abs(state.q1) * 1e-6;
+            const q2_C = Math.abs(state.q2) * 1e-6;
+            const r_m = state.r * 0.01;
+            if (r_m < 1e-6 || q1_C < 1e-12 || q2_C < 1e-12) {
+                return { F: 0, isRepulsive: false, isValid: false };
+            }
+            const F = K_CONST * q1_C * q2_C / (r_m * r_m);
+            const isRepulsive = state.q1 * state.q2 > 0;
+            return { F, isRepulsive, isValid: true };
+        }
+
+        function formatForce(F) {
+            if (F === 0) return '0 N';
+            if (F < 0.01) return F.toExponential(2) + ' N';
+            if (F < 100) return F.toFixed(2) + ' N';
+            if (F < 1000) return F.toFixed(1) + ' N';
+            return F.toExponential(2) + ' N';
+        }
+
+        // ---- Color helpers ----
+        function lightenColor(hex, factor) {
+            const r = parseInt(hex.slice(1,3), 16);
+            const g = parseInt(hex.slice(3,5), 16);
+            const b = parseInt(hex.slice(5,7), 16);
+            const lr = Math.min(255, Math.round(r + (255 - r) * factor));
+            const lg = Math.min(255, Math.round(g + (255 - g) * factor));
+            const lb = Math.min(255, Math.round(b + (255 - b) * factor));
+            return `rgb(${lr},${lg},${lb})`;
+        }
+
+        function darkenColor(hex, factor) {
+            const r = parseInt(hex.slice(1,3), 16);
+            const g = parseInt(hex.slice(3,5), 16);
+            const b = parseInt(hex.slice(5,7), 16);
+            const dr = Math.round(r * (1 - factor));
+            const dg = Math.round(g * (1 - factor));
+            const db = Math.round(b * (1 - factor));
+            return `rgb(${dr},${dg},${db})`;
+        }
+
+        // ---- Field line generation ----
+        function getFieldLines(q1x, q1y, q2x, q2y, sphereR, isRepulsive, q1Sign, q2Sign) {
+            const lines = [];
+            const midX = (q1x + q2x) / 2;
+            const midY = (q1y + q2y) / 2;
+
+            if (!isRepulsive && q1Sign !== 0 && q2Sign !== 0) {
+                // Attraction: field lines from positive to negative
+                const posX = q1Sign > 0 ? q1x : q2x;
+                const posY = q1Sign > 0 ? q1y : q2y;
+                const negX = q1Sign > 0 ? q2x : q1x;
+                const negY = q1Sign > 0 ? q2y : q1y;
+                const sep = Math.abs(q2x - q1x);
+                const numLines = 7;
+
+                for (let i = 1; i < numLines; i++) {
+                    const t = i / numLines;
+                    const angle = 0.25 + t * (Math.PI - 0.5); // ~15° to ~165°
+
+                    // Upper half
+                    const sx_u = posX + sphereR * Math.cos(angle);
+                    const sy_u = posY - sphereR * Math.sin(angle);
+                    const ex_u = negX + sphereR * Math.cos(Math.PI - angle);
+                    const ey_u = negY - sphereR * Math.sin(Math.PI - angle);
+                    const bulge = sep * 0.45 * Math.sin(angle);
+                    const cpx_u = midX;
+                    const cpy_u = midY - bulge;
+                    lines.push({ sx: sx_u, sy: sy_u, cpx: cpx_u, cpy: cpy_u, ex: ex_u, ey: ey_u });
+
+                    // Lower half
+                    const sx_l = posX + sphereR * Math.cos(-angle);
+                    const sy_l = posY - sphereR * Math.sin(-angle);
+                    const ex_l = negX + sphereR * Math.cos(Math.PI + angle);
+                    const ey_l = negY - sphereR * Math.sin(Math.PI + angle);
+                    const cpx_l = midX;
+                    const cpy_l = midY + bulge;
+                    lines.push({ sx: sx_l, sy: sy_l, cpx: cpx_l, cpy: cpy_l, ex: ex_l, ey: ey_l });
+                }
+            } else if (isRepulsive && q1Sign !== 0 && q2Sign !== 0) {
+                // Repulsion: field lines from each charge bending outward
+                const sep = Math.abs(q2x - q1x);
+                // From q1 (left sphere): gap around 0° (rightward, toward q2)
+                for (let i = 0; i < 13; i++) {
+                    const angleDeg = 30 + i * 300 / 12; // 30° to 330°, skipping 60° gap around 0°
+                    const angle = angleDeg * Math.PI / 180;
+                    const sx = q1x + sphereR * Math.cos(angle);
+                    const sy = q1y + sphereR * Math.sin(angle);
+                    const facing = Math.max(0, Math.cos(angle)); // 1 towards q2, 0 perpendicular/away
+                    const lineLen = 130 + facing * 50;
+                    const perpSign = Math.sin(angle) > 0 ? 1 : -1; // below axis: +, above: -
+                    const perpOffset = facing * sep * 0.45;
+                    const cpx = sx + lineLen * 0.45 * Math.cos(angle);
+                    const cpy = sy + lineLen * 0.45 * Math.sin(angle) + perpOffset * perpSign;
+                    const ex = sx + lineLen * 0.9 * Math.cos(angle);
+                    const ey = sy + lineLen * 0.9 * Math.sin(angle) + perpOffset * 0.65 * perpSign;
+                    lines.push({ sx, sy, cpx, cpy, ex, ey });
+                }
+                // From q2 (right sphere): gap around 180° (leftward, toward q1)
+                for (let i = 0; i < 13; i++) {
+                    const angleDeg = -150 + i * 300 / 12; // -150° to +150°, skipping 60° gap around 180°
+                    const angle = angleDeg * Math.PI / 180;
+                    const sx = q2x + sphereR * Math.cos(angle);
+                    const sy = q2y + sphereR * Math.sin(angle);
+                    const facing = Math.max(0, -Math.cos(angle)); // 1 towards q1 (180°), 0 away
+                    const lineLen = 130 + facing * 50;
+                    const perpSign = Math.sin(angle) > 0 ? 1 : -1;
+                    const perpOffset = facing * sep * 0.45;
+                    const cpx = sx + lineLen * 0.45 * Math.cos(angle);
+                    const cpy = sy + lineLen * 0.45 * Math.sin(angle) + perpOffset * perpSign;
+                    const ex = sx + lineLen * 0.9 * Math.cos(angle);
+                    const ey = sy + lineLen * 0.9 * Math.sin(angle) + perpOffset * 0.65 * perpSign;
+                    lines.push({ sx, sy, cpx, cpy, ex, ey });
+                }
+            }
+
+            // Monopole radial lines when only one charge is non-zero
+            if (q1Sign !== 0 && q2Sign === 0) {
+                for (let i = 0; i < 16; i++) {
+                    const angle = i * Math.PI * 2 / 16;
+                    const sx = q1x + sphereR * Math.cos(angle);
+                    const sy = q1y + sphereR * Math.sin(angle);
+                    const ex = q1x + (sphereR + 180) * Math.cos(angle);
+                    const ey = q1y + (sphereR + 180) * Math.sin(angle);
+                    const cpx = (sx + ex) / 2;
+                    const cpy = (sy + ey) / 2;
+                    lines.push({ sx, sy, cpx, cpy, ex, ey });
+                }
+            }
+            if (q2Sign !== 0 && q1Sign === 0) {
+                for (let i = 0; i < 16; i++) {
+                    const angle = i * Math.PI * 2 / 16;
+                    const sx = q2x + sphereR * Math.cos(angle);
+                    const sy = q2y + sphereR * Math.sin(angle);
+                    const ex = q2x + (sphereR + 180) * Math.cos(angle);
+                    const ey = q2y + (sphereR + 180) * Math.sin(angle);
+                    const cpx = (sx + ex) / 2;
+                    const cpy = (sy + ey) / 2;
+                    lines.push({ sx, sy, cpx, cpy, ex, ey });
+                }
+            }
+
+            return lines;
+        }
+
+        // ---- Drawing functions ----
+        function drawBackground() {
+            ctx.strokeStyle = '#fef5eb';
+            ctx.lineWidth = 1;
+            const gs = 40;
+            for (let x = gs; x < canvas.width; x += gs) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+            }
+            for (let y = gs; y < canvas.height; y += gs) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+            }
+        }
+
+        function drawSphere(x, y, r, chargeVal) {
+            if (chargeVal === 0) {
+                // Neutral: gray
+                const grad = ctx.createRadialGradient(x - r*0.3, y - r*0.3, r*0.05, x, y, r);
+                grad.addColorStop(0, '#ffffff');
+                grad.addColorStop(0.15, '#e0e0e0');
+                grad.addColorStop(0.7, '#b0b0b0');
+                grad.addColorStop(1, '#808080');
+                ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2);
+                ctx.fillStyle = grad; ctx.fill();
+                ctx.strokeStyle = '#707070'; ctx.lineWidth = 2; ctx.stroke();
+                return;
+            }
+
+            const isPos = chargeVal > 0;
+            const color = isPos ? POS_COLOR : NEG_COLOR;
+
+            // Glow aura
+            const pulseR = state.isPlaying ? (2 + 2 * Math.sin(state.time * 2.5)) : 2;
+            const glowGrad = ctx.createRadialGradient(x, y, r * 0.85, x, y, r + pulseR + 4);
+            glowGrad.addColorStop(0, 'rgba(255,255,255,0)');
+            glowGrad.addColorStop(1, color + '55');
+            ctx.beginPath(); ctx.arc(x, y, r + pulseR + 4, 0, Math.PI * 2);
+            ctx.fillStyle = glowGrad; ctx.fill();
+
+            // 3D sphere gradient
+            const grad = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.05, x, y, r);
+            grad.addColorStop(0, '#ffffff');
+            grad.addColorStop(0.12, lightenColor(color, 0.5));
+            grad.addColorStop(0.55, color);
+            grad.addColorStop(1, darkenColor(color, 0.35));
+            ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+            ctx.fillStyle = grad; ctx.fill();
+            ctx.strokeStyle = darkenColor(color, 0.45);
+            ctx.lineWidth = 2.5; ctx.stroke();
+
+            // Sign symbol
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 22px Fredoka, Noto Sans SC';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(isPos ? '+' : '−', x, y + 1);
+        }
+
+        function drawForceArrow(x, y, direction, magnitude) {
+            if (magnitude < 1e-9) return;
+            const pulse = state.isPlaying ? (1 + 0.06 * Math.sin(state.time * 3)) : 1;
+            const baseLen = Math.sqrt(Math.max(0, magnitude)) * 18;
+            const len = Math.max(12, Math.min(140, baseLen)) * pulse;
+
+            const startX = x + direction * (32 + 4);
+            const endX = startX + direction * len;
+            const headSize = 11;
+
+            // Arrow shaft
+            ctx.beginPath();
+            ctx.strokeStyle = '#FF8c42';
+            ctx.lineWidth = 3.5;
+            ctx.lineCap = 'round';
+            ctx.moveTo(startX, y);
+            ctx.lineTo(endX - direction * headSize * 0.8, y);
+            ctx.stroke();
+
+            // Arrowhead
+            ctx.beginPath();
+            ctx.moveTo(endX, y);
+            ctx.lineTo(endX - direction * headSize, y - headSize * 0.55);
+            ctx.lineTo(endX - direction * headSize, y + headSize * 0.55);
+            ctx.closePath();
+            ctx.fillStyle = '#FF8c42';
+            ctx.fill();
+        }
+
+        function drawFieldLines(lines) {
+            if (lines.length === 0) return;
+            ctx.strokeStyle = 'rgba(180, 160, 140, 0.7)';
+            ctx.lineWidth = 1.4;
+            ctx.lineCap = 'round';
+
+            if (state.isPlaying) {
+                ctx.setLineDash([5, 10]);
+                ctx.lineDashOffset = -state.time * 45;
+            } else {
+                ctx.setLineDash([]);
+            }
+
+            lines.forEach(l => {
+                ctx.beginPath();
+                ctx.moveTo(l.sx, l.sy);
+                ctx.quadraticCurveTo(l.cpx, l.cpy, l.ex, l.ey);
+                ctx.stroke();
+            });
+            ctx.setLineDash([]);
+        }
+
+        function drawDistanceLine(x1, x2, midY) {
+            const lineY = midY + 55;
+            const spR = 32;
+
+            // Vertical ticks from sphere bottoms
+            ctx.strokeStyle = '#bbb';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath(); ctx.moveTo(x1, midY + spR + 6); ctx.lineTo(x1, lineY); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x2, midY + spR + 6); ctx.lineTo(x2, lineY); ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Main measurement line
+            ctx.strokeStyle = '#777';
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(x1, lineY); ctx.lineTo(x2, lineY); ctx.stroke();
+
+            // Arrowheads
+            drawSmallArrow(x1 + 10, lineY, -1);
+            drawSmallArrow(x2 - 10, lineY, 1);
+
+            // Label
+            ctx.fillStyle = '#4A403A';
+            ctx.font = '600 15px Fredoka, Noto Sans SC';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            ctx.fillText('r = ' + state.r.toFixed(1) + ' cm', (x1 + x2) / 2, lineY - 7);
+        }
+
+        function drawSmallArrow(x, y, dir) {
+            const s = 7;
+            ctx.beginPath();
+            ctx.strokeStyle = '#777';
+            ctx.lineWidth = 1.8;
+            ctx.moveTo(x - dir * s, y - s * 0.5);
+            ctx.lineTo(x, y);
+            ctx.lineTo(x - dir * s, y + s * 0.5);
+            ctx.stroke();
+        }
+
+        // ---- Main draw ----
+        function draw(forceData) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBackground();
+
+            const pxPerCm = 52;
+            const rPx = state.r * pxPerCm;
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2 - 10;
+            const spR = 32;
+
+            const q1x = centerX - rPx / 2;
+            const q1y = centerY;
+            const q2x = centerX + rPx / 2;
+            const q2y = centerY;
+
+            // Determine field line scenario
+            const q1Sign = state.q1 === 0 ? 0 : (state.q1 > 0 ? 1 : -1);
+            const q2Sign = state.q2 === 0 ? 0 : (state.q2 > 0 ? 1 : -1);
+            const bothNonZero = q1Sign !== 0 && q2Sign !== 0;
+            const isRepulsive = bothNonZero && (q1Sign * q2Sign > 0);
+
+            // Field lines (drawn behind spheres)
+            const fieldLines = getFieldLines(q1x, q1y, q2x, q2y, spR, isRepulsive, q1Sign, q2Sign);
+            drawFieldLines(fieldLines);
+
+            // Distance measurement line
+            if (bothNonZero) {
+                drawDistanceLine(q1x, q2x, centerY);
+            }
+
+            // Spheres
+            drawSphere(q1x, q1y, spR, state.q1);
+            drawSphere(q2x, q2y, spR, state.q2);
+
+            // Force arrows
+            if (forceData.isValid) {
+                const dirQ1 = forceData.isRepulsive ? -1 : 1;
+                const dirQ2 = forceData.isRepulsive ? 1 : -1;
+                drawForceArrow(q1x, q1y, dirQ1, forceData.F);
+                drawForceArrow(q2x, q2y, dirQ2, forceData.F);
+            }
+
+            // Labels
+            ctx.fillStyle = '#4A403A';
+            ctx.font = '700 18px Fredoka, Noto Sans SC';
+            ctx.textAlign = 'center';
+
+            // q1 label
+            ctx.fillText('q₁', q1x, q1y - spR - 16);
+            ctx.font = '600 13px Fredoka, Noto Sans SC';
+            const q1SignStr = state.q1 >= 0 ? '+' : '';
+            ctx.fillText(q1SignStr + state.q1.toFixed(1) + ' μC', q1x, q1y - spR - 34);
+
+            // q2 label
+            ctx.font = '700 18px Fredoka, Noto Sans SC';
+            ctx.fillText('q₂', q2x, q2y - spR - 16);
+            ctx.font = '600 13px Fredoka, Noto Sans SC';
+            const q2SignStr = state.q2 >= 0 ? '+' : '';
+            ctx.fillText(q2SignStr + state.q2.toFixed(1) + ' μC', q2x, q2y - spR - 34);
+        }
+
+        // ---- Formula display ----
+        function updateFormula(forceData) {
+            const absQ1 = Math.abs(state.q1);
+            const absQ2 = Math.abs(state.q2);
+            const q1Color = state.q1 > 0 ? POS_COLOR : (state.q1 < 0 ? NEG_COLOR : '#999');
+            const q2Color = state.q2 > 0 ? POS_COLOR : (state.q2 < 0 ? NEG_COLOR : '#999');
+
+            const sQ1 = 30 + absQ1 * 4;
+            const sQ2 = 30 + absQ2 * 4;
+            const sR = 30 + state.r * 3;
+
+            fRoot.innerHTML = `
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;">
+                    <span style="font-size:40px;font-weight:700;color:var(--primary);">F</span>
+                    <span style="font-size:26px;color:#ccc;">=</span>
+                    <span style="font-size:28px;font-weight:700;color:#888;">k</span>
+                    <span style="font-size:26px;color:#ccc;">&middot;</span>
+                    <span style="font-size:${sQ1}px;font-weight:700;color:${q1Color};">q₁</span>
+                    <span style="font-size:26px;color:#ccc;">&middot;</span>
+                    <span style="font-size:${sQ2}px;font-weight:700;color:${q2Color};">q₂</span>
+                    <span style="font-size:26px;color:#ccc;">/</span>
+                    <span style="font-size:${sR}px;font-weight:700;color:#666;">r²</span>
+                </div>
+                <div style="font-size:0.85rem;color:#999;margin-top:4px;">
+                    k = 8.99 &times; 10⁹ N&middot;m²/C²
+                </div>
+            `;
+
+            if (forceData.isValid) {
+                resForce.textContent = formatForce(forceData.F);
+                resType.textContent = forceData.isRepulsive ? '← → 排斥力 / Repulsion' : '→ ← 吸引力 / Attraction';
+                resType.style.color = forceData.isRepulsive ? POS_COLOR : NEG_COLOR;
+            } else {
+                resForce.textContent = '—';
+                resType.textContent = '电荷为零 / Zero charge';
+                resType.style.color = '#999';
+            }
+        }
+
+        function updateBadges() {
+            const q1SignStr = state.q1 >= 0 ? '+' : '';
+            const q2SignStr = state.q2 >= 0 ? '+' : '';
+            bQ1.textContent = q1SignStr + state.q1.toFixed(1) + ' μC';
+            bQ2.textContent = q2SignStr + state.q2.toFixed(1) + ' μC';
+            bR.textContent = state.r.toFixed(1) + ' cm';
+
+            // Update badge colors based on charge sign
+            bQ1.style.color = state.q1 > 0 ? POS_COLOR : (state.q1 < 0 ? NEG_COLOR : '#999');
+            bQ2.style.color = state.q2 > 0 ? POS_COLOR : (state.q2 < 0 ? NEG_COLOR : '#999');
+
+            // Update slider thumb colors
+            const q1ThumbColor = state.q1 >= 0 ? POS_COLOR : NEG_COLOR;
+            const q2ThumbColor = state.q2 >= 0 ? POS_COLOR : NEG_COLOR;
+            sQ1.style.setProperty('--thumb-color', q1ThumbColor);
+            sQ2.style.setProperty('--thumb-color', q2ThumbColor);
+        }
+
+        // ---- Animation loop ----
+        function update() {
+            state.q1 = parseFloat(sQ1.value);
+            state.q2 = parseFloat(sQ2.value);
+            state.r = parseFloat(sR.value);
+
+            updateBadges();
+
+            if (state.isPlaying) {
+                state.time += 0.016;
+            }
+
+            const forceData = calcForce();
+            updateFormula(forceData);
+            draw(forceData);
+            requestAnimationFrame(update);
+        }
+
+        // ---- Button handlers ----
+        bStart.onclick = () => {
+            state.isPlaying = !state.isPlaying;
+            bStart.textContent = state.isPlaying ? '暂停 Pause' : '开始 Start';
+            bStart.classList.toggle('start', !state.isPlaying);
+            bStart.classList.toggle('pause', state.isPlaying);
+        };
+
+        bReset.onclick = () => {
+            state.q1 = defaults.q1;
+            state.q2 = defaults.q2;
+            state.r = defaults.r;
+            state.isPlaying = false;
+            state.time = 0;
+            sQ1.value = defaults.q1;
+            sQ2.value = defaults.q2;
+            sR.value = defaults.r;
+            bStart.textContent = '开始 Start';
+            bStart.className = 'ctrl-btn start';
+        };
+
+        // Dynamic slider thumb colors via CSS custom properties and inline style updates
+        const styleSheet = document.createElement('style');
+        styleSheet.textContent = `
+            #q1-slider::-webkit-slider-thumb { background: var(--thumb-color-q1, var(--pos-color)); }
+            #q2-slider::-webkit-slider-thumb { background: var(--thumb-color-q2, var(--pos-color)); }
+        `;
+        document.head.appendChild(styleSheet);
+
+        // Override updateBadges to also set slider thumb colors dynamically
+        const origUpdateBadges = updateBadges;
+        updateBadges = function() {
+            origUpdateBadges();
+            const q1c = state.q1 > 0 ? POS_COLOR : (state.q1 < 0 ? NEG_COLOR : '#999');
+            const q2c = state.q2 > 0 ? POS_COLOR : (state.q2 < 0 ? NEG_COLOR : '#999');
+            document.documentElement.style.setProperty('--thumb-color-q1', q1c);
+            document.documentElement.style.setProperty('--thumb-color-q2', q2c);
+        };
+
+        resize();
+        update();
+    </script>
+</body>
+
+</html>

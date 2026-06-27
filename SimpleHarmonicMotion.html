@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简谐运动 / Simple Harmonic Motion - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #FFF9F0;
+            --primary: #FF8c42;
+            --secondary: #FFC75F;
+            --accent: #FF5E5B;
+            --text-dark: #4A403A;
+            --card-bg: #FFFFFF;
+            --shadow: 0 6px 30px rgba(255, 140, 66, 0.18);
+            --disp-color: #3498db;
+            --vel-color: #e74c3c;
+            --ke-color: #2ecc71;
+            --pe-color: #3498db;
+            --spring-color: #FF8c42;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh; padding: 5px 40px 10px;
+        }
+
+        .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
+        .logo {
+            font-weight: 700; font-size: 1.3rem; color: #fff;
+            background: var(--primary); padding: 6px 18px; border-radius: 16px;
+            box-shadow: 4px 4px 15px rgba(255,140,66,0.3);
+        }
+
+        .container {
+            width: 100%; max-width: 1400px; margin-top: 8px;
+            display: grid;
+            grid-template-areas:
+                "header header"
+                "formula formula"
+                "diagram controls";
+            grid-template-columns: 1fr 420px; gap: 12px;
+        }
+
+        header { grid-area: header; text-align: center; }
+        h1 { font-size: 2rem; color: var(--text-dark); margin-bottom: 2px; }
+
+        .formula-display {
+            grid-area: formula; background: var(--card-bg);
+            border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px;
+            display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb;
+        }
+        .formula-container {
+            display: flex; align-items: center; justify-content: center;
+            gap: 20px; flex-wrap: wrap; min-height: 44px;
+        }
+        .formula-item {
+            font-size: 0.95rem; font-weight: 600; color: var(--text-dark);
+            background: #fff9f0; padding: 6px 14px; border-radius: 10px;
+        }
+        .formula-item .val { color: var(--primary); }
+        .result-row {
+            font-size: 0.95rem; font-weight: 600; color: var(--text-dark);
+            margin-top: 4px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;
+        }
+        .legend {
+            display: flex; gap: 16px; justify-content: center;
+            border-top: 1px solid #eee; padding-top: 6px; width: 100%; flex-wrap: wrap;
+        }
+        .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+
+        .diagram-section {
+            grid-area: diagram; background: var(--card-bg); border-radius: 20px;
+            box-shadow: var(--shadow); position: relative; overflow: hidden;
+            min-height: 520px; display: flex; flex-direction: column; border: 2px solid #fff;
+        }
+        canvas { width: 100%; flex: 1; display: block; }
+
+        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
+        .control-panel {
+            background: var(--card-bg); border-radius: 20px; box-shadow: var(--shadow);
+            padding: 14px 18px; display: flex; flex-direction: column; gap: 10px;
+        }
+
+        .param-section {
+            background: #fff; border-radius: 14px; padding: 10px 14px 8px; border: 2px solid #f5f0eb;
+        }
+        .param-section-header {
+            font-weight: 700; font-size: 0.95rem; margin-bottom: 6px;
+            display: flex; align-items: center; gap: 6px;
+        }
+
+        .control-group { display: flex; flex-direction: column; gap: 3px; margin-bottom: 1px; }
+        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
+        .val-badge {
+            background: #fff; padding: 1px 7px; border-radius: 7px;
+            font-size: 0.85rem; border: 2px solid #f0f0f0;
+        }
+
+        input[type=range] {
+            width: 100%; appearance: none; height: 6px;
+            background: #eee; border-radius: 3px; outline: none;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            appearance: none; width: 20px; height: 20px; border-radius: 50%;
+            cursor: pointer; background: var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        #k-slider::-webkit-slider-thumb { background: var(--spring-color); }
+        #m-slider::-webkit-slider-thumb { background: var(--accent); }
+        #a-slider::-webkit-slider-thumb { background: var(--disp-color); }
+
+        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px; }
+        .ctrl-btn {
+            padding: 10px; border: none; border-radius: 14px;
+            font-size: 1.05rem; font-weight: 700; cursor: pointer;
+            transition: all 0.2s; color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .start { background-color: var(--primary); }
+        .pause { background-color: #2ecc71; }
+        .reset { background-color: #95a5a6; }
+        .ctrl-btn:active { transform: translateY(2px); box-shadow: none; }
+
+        .info-card {
+            background: var(--card-bg); border-radius: 20px;
+            padding: 12px 16px; box-shadow: var(--shadow);
+            font-size: 0.9rem; line-height: 1.4; color: #5D6D7E;
+        }
+
+        @media (max-width: 1100px) {
+            .container {
+                grid-template-areas: "header" "formula" "diagram" "controls";
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="branding"><div class="logo">Wuli布雷克</div></div>
+
+    <div class="container">
+        <header>
+            <h1>简谐运动 / Simple Harmonic Motion</h1>
+        </header>
+
+        <section class="formula-display">
+            <div class="formula-container" id="formula-root">
+                <div class="formula-item">&omega; = &radic;(k/m) = <span class="val" id="f-omega">6.32</span> rad/s</div>
+                <div class="formula-item">T = 2&pi;&radic;(m/k) = <span class="val" id="f-T">0.99</span> s</div>
+                <div class="formula-item">f = 1/T = <span class="val" id="f-freq">1.01</span> Hz</div>
+            </div>
+            <div class="result-row">
+                <span>周期 T = <strong id="res-T">0.99</strong> s</span>
+                <span>频率 f = <strong id="res-f">1.01</strong> Hz</span>
+                <span>角频率 &omega; = <strong id="res-omega">6.32</strong> rad/s</span>
+            </div>
+            <div class="legend">
+                <div class="legend-item"><span class="legend-dot" style="background:var(--disp-color)"></span> 位移 x(t)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--vel-color)"></span> 速度 v(t)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--ke-color)"></span> 动能 KE</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--pe-color)"></span> 势能 PE</div>
+            </div>
+        </section>
+
+        <section class="diagram-section">
+            <canvas id="simCanvas"></canvas>
+        </section>
+
+        <section class="controls-section">
+            <div class="control-panel">
+                <div class="param-section" style="border-left: 5px solid var(--spring-color);">
+                    <div class="param-section-header">
+                        <span style="color:var(--spring-color);font-size:1.2rem;">&#9702;</span> 弹簧参数 / Spring
+                    </div>
+                    <div class="control-group">
+                        <div class="label-row"><span>劲度系数 k (N/m)</span><span id="k-badge" class="val-badge">40</span></div>
+                        <input type="range" id="k-slider" min="10" max="100" step="1" value="40">
+                    </div>
+                    <div class="control-group">
+                        <div class="label-row"><span>质量 m (kg)</span><span id="m-badge" class="val-badge">1.0</span></div>
+                        <input type="range" id="m-slider" min="0.2" max="2.0" step="0.1" value="1.0">
+                    </div>
+                </div>
+
+                <div class="param-section" style="border-left: 5px solid var(--disp-color);">
+                    <div class="param-section-header">
+                        <span style="color:var(--disp-color);font-size:1.2rem;">&#9702;</span> 运动参数 / Motion
+                    </div>
+                    <div class="control-group">
+                        <div class="label-row"><span>振幅 A (cm)</span><span id="a-badge" class="val-badge">5.0</span></div>
+                        <input type="range" id="a-slider" min="2" max="10" step="0.1" value="5.0">
+                    </div>
+                </div>
+
+                <div class="btn-row">
+                    <button id="btn-start" class="ctrl-btn start">开始 Start</button>
+                    <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div style="font-weight: 700; color: var(--primary); margin-bottom: 8px; font-size: 1.1rem;">
+                    演示要点 / Key points
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;background:rgba(52,152,219,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--disp-color);font-weight:700;font-size:1rem;">x</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">位移是余弦函数</div><div style="font-size:0.78rem;color:#888;">x(t) = A&middot;cos(&omega;t), starting from max displacement</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;background:rgba(231,76,60,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--vel-color);font-weight:700;font-size:1rem;">v</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">速度领先位移90&deg;</div><div style="font-size:0.78rem;color:#888;">v(t) = -A&omega;&middot;sin(&omega;t), velocity leads displacement by &pi;/2</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;background:rgba(46,204,113,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--ke-color);font-weight:700;font-size:1rem;">E</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">机械能守恒</div><div style="font-size:0.78rem;color:#888;">KE + PE = &frac12;kA&sup2; = constant, energy converts back and forth</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;background:rgba(255,140,66,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--primary);font-weight:700;font-size:1rem;">T</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">等时性 / Isochronism</div><div style="font-size:0.78rem;color:#888;">Period T is independent of amplitude A (for ideal spring)</div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas'), ctx = canvas.getContext('2d');
+
+        // DOM refs
+        const sK = document.getElementById('k-slider'), sM = document.getElementById('m-slider'), sA = document.getElementById('a-slider');
+        const bK = document.getElementById('k-badge'), bM = document.getElementById('m-badge'), bA = document.getElementById('a-badge');
+        const resT = document.getElementById('res-T'), resF = document.getElementById('res-f'), resOmega = document.getElementById('res-omega');
+        const fOmega = document.getElementById('f-omega'), fT = document.getElementById('f-T'), fFreq = document.getElementById('f-freq');
+        const bStart = document.getElementById('btn-start'), bReset = document.getElementById('btn-reset');
+
+        const state = {
+            k: 40,
+            m: 1.0,
+            A: 5.0,
+            phase: 0,
+            graphTime: 0,
+            isPlaying: false,
+            history: []
+        };
+
+        const HISTORY_WINDOW = 4.0; // seconds of graph visible
+        let lastTimestamp = null;
+
+        function omega() { return Math.sqrt(state.k / state.m); }
+        function period() { return 2 * Math.PI / omega(); }
+        function freq() { return 1 / period(); }
+        function displacement() { return state.A * Math.cos(state.phase); }
+        function velocity() { return -state.A * omega() * Math.sin(state.phase); }
+
+        function resize() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+        }
+        window.addEventListener('resize', resize);
+
+        function update(timestamp) {
+            if (lastTimestamp === null) lastTimestamp = timestamp;
+            let dt = (timestamp - lastTimestamp) / 1000;
+            lastTimestamp = timestamp;
+            dt = Math.min(dt, 0.05);
+
+            // Read sliders
+            state.k = parseFloat(sK.value);
+            state.m = parseFloat(sM.value);
+            state.A = parseFloat(sA.value);
+
+            // Update badges
+            bK.textContent = state.k;
+            bM.textContent = state.m.toFixed(1);
+            bA.textContent = state.A.toFixed(1);
+
+            if (state.isPlaying) {
+                state.phase += omega() * dt;
+                state.phase = state.phase % (2 * Math.PI);
+                state.graphTime += dt;
+
+                const x = displacement();
+                const v = velocity();
+                state.history.push({ t: state.graphTime, x: x, v: v });
+
+                // Trim old entries
+                while (state.history.length > 0 && state.graphTime - state.history[0].t > HISTORY_WINDOW) {
+                    state.history.shift();
+                }
+            }
+
+            updateUI();
+            draw();
+            requestAnimationFrame(update);
+        }
+
+        function updateUI() {
+            const w = omega(), T = period(), f = freq();
+            resT.textContent = T.toFixed(3);
+            resF.textContent = f.toFixed(2);
+            resOmega.textContent = w.toFixed(2);
+            fOmega.textContent = w.toFixed(2);
+            fT.textContent = T.toFixed(3);
+            fFreq.textContent = f.toFixed(2);
+        }
+
+        function roundRect(ctx, x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+        }
+
+        function draw() {
+            const W = canvas.width, H = canvas.height;
+            ctx.clearRect(0, 0, W, H);
+
+            const springAreaH = H * 0.52;
+            drawSpringScene(W, springAreaH);
+            drawGraphs(W, H, springAreaH);
+        }
+
+        function drawSpringScene(W, areaH) {
+            const padTop = areaH * 0.08;
+            const padBot = areaH * 0.08;
+            const centerY = padTop + (areaH - padTop - padBot) / 2;
+
+            const anchorX = W * 0.08;
+            const eqX = W * 0.40;
+            const pxPerCm = Math.min((eqX - anchorX) / 8, 18);
+            const minSpringLen = 16;
+
+            const disp = displacement();
+            let massX = eqX + disp * pxPerCm;
+            massX = Math.max(anchorX + minSpringLen, Math.min(massX, W - 30));
+
+            // Background grid (subtle)
+            ctx.strokeStyle = '#fef5eb';
+            ctx.lineWidth = 1;
+            for (let gx = 0; gx < W; gx += 40) {
+                ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, areaH); ctx.stroke();
+            }
+            for (let gy = 0; gy < areaH; gy += 40) {
+                ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(W, gy); ctx.stroke();
+            }
+
+            // Wall
+            const wallW = 14, wallH = 110;
+            const wallX = anchorX - wallW / 2;
+            const wallY = centerY - wallH / 2;
+            ctx.fillStyle = '#7f8c8d';
+            ctx.fillRect(wallX, wallY, wallW, wallH);
+            // Wall hatching
+            ctx.strokeStyle = '#95a5a6';
+            ctx.lineWidth = 1.5;
+            for (let i = 0; i < 7; i++) {
+                const hy = wallY + 10 + i * 15;
+                ctx.beginPath();
+                ctx.moveTo(wallX - 2, hy);
+                ctx.lineTo(wallX + wallW + 2, hy - 8);
+                ctx.stroke();
+            }
+            // Wall border
+            ctx.strokeStyle = '#5d6d7e';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(wallX, wallY, wallW, wallH);
+
+            // Equilibrium dashed line
+            ctx.setLineDash([8, 6]);
+            ctx.strokeStyle = '#bdc3c7';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(eqX, centerY - 52);
+            ctx.lineTo(eqX, centerY + 52);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Equilibrium label
+            ctx.fillStyle = '#95a5a6';
+            ctx.font = '500 11px Fredoka, Noto Sans SC';
+            ctx.textAlign = 'center';
+            ctx.fillText('平衡位置', eqX, centerY - 58);
+
+            // Spring
+            const numCoils = 12;
+            const coilAmp = 15;
+            const springWidth = massX - anchorX;
+            ctx.strokeStyle = '#FF8c42';
+            ctx.lineWidth = 3.5;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+            ctx.moveTo(anchorX, centerY);
+            // Draw zigzag spring
+            const segments = numCoils * 2;
+            for (let i = 0; i < segments; i++) {
+                const sx = anchorX + ((i + 1) / segments) * springWidth;
+                const sy = centerY + ((i % 2 === 0) ? -coilAmp : coilAmp);
+                ctx.lineTo(sx, sy);
+            }
+            ctx.lineTo(massX, centerY);
+            ctx.stroke();
+
+            // Mass block
+            const blockW = 44, blockH = 70;
+            const bx = massX - blockW / 2, by = centerY - blockH / 2;
+            // Shadow
+            ctx.fillStyle = 'rgba(0,0,0,0.12)';
+            roundRect(ctx, bx + 3, by + 3, blockW, blockH, 9);
+            ctx.fill();
+            // Block
+            const blockGrad = ctx.createLinearGradient(bx, by, bx + blockW, by + blockH);
+            blockGrad.addColorStop(0, '#FF6B6B');
+            blockGrad.addColorStop(1, '#c0392b');
+            ctx.fillStyle = blockGrad;
+            roundRect(ctx, bx, by, blockW, blockH, 9);
+            ctx.fill();
+            ctx.strokeStyle = '#a93226';
+            ctx.lineWidth = 2;
+            roundRect(ctx, bx, by, blockW, blockH, 9);
+            ctx.stroke();
+            // Mass label
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 15px Fredoka';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('m', massX, centerY);
+
+            // Displacement arrow (from equilibrium to current position)
+            if (Math.abs(disp) > 0.05) {
+                const arrowY = centerY + 40;
+                ctx.strokeStyle = '#3498db';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([4, 3]);
+                ctx.beginPath();
+                ctx.moveTo(eqX, arrowY);
+                ctx.lineTo(massX, arrowY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Arrow heads
+                const arrowDir = disp > 0 ? 1 : -1;
+                const arrowTip = massX;
+                const arrowBase = arrowTip - arrowDir * 10;
+                ctx.fillStyle = '#3498db';
+                ctx.beginPath();
+                ctx.moveTo(arrowTip, arrowY);
+                ctx.lineTo(arrowBase, arrowY - 5);
+                ctx.lineTo(arrowBase, arrowY + 5);
+                ctx.closePath();
+                ctx.fill();
+
+                // x label
+                ctx.fillStyle = '#3498db';
+                ctx.font = 'bold 12px Fredoka';
+                ctx.textAlign = 'center';
+                ctx.fillText('x = ' + disp.toFixed(2) + ' cm', (eqX + massX) / 2, arrowY - 10);
+            }
+
+            // Anchor label
+            ctx.fillStyle = '#7f8c8d';
+            ctx.font = '500 11px Fredoka, Noto Sans SC';
+            ctx.textAlign = 'center';
+            ctx.fillText('固定端', anchorX, wallY - 12);
+
+            // k label near spring
+            ctx.fillStyle = '#FF8c42';
+            ctx.font = 'italic 12px Fredoka';
+            ctx.textAlign = 'center';
+            ctx.fillText('k=' + state.k + ' N/m', (anchorX + eqX) / 2, centerY - 32);
+        }
+
+        function drawGraphs(W, H, graphTop) {
+            const graphH = H - graphTop;
+            if (graphH < 80) return;
+
+            // Divider line
+            ctx.strokeStyle = '#e8ddd0';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(30, graphTop);
+            ctx.lineTo(W - 30, graphTop);
+            ctx.stroke();
+
+            const margin = { left: 55, right: 20, top: 20, bottom: 18 };
+            const usableW = W - margin.left - margin.right;
+            const usableH = graphH - margin.top - margin.bottom;
+
+            // Split into: x-t (top 37%), v-t (middle 37%), energy bar (bottom 26%)
+            const xtH = usableH * 0.37;
+            const vtH = usableH * 0.37;
+            const energyH = usableH - xtH - vtH;
+
+            const xtTop = graphTop + margin.top;
+            const vtTop = xtTop + xtH;
+            const energyTop = vtTop + vtH;
+
+            drawXTGraph(margin.left, xtTop, usableW, xtH);
+            drawVTGraph(margin.left, vtTop, usableW, vtH);
+            drawEnergyBar(margin.left, energyTop, usableW, energyH);
+        }
+
+        function drawTimeSeriesGraph(left, top, w, h, title, getY, yLabel, color, yMin, yMax) {
+            // Background
+            ctx.fillStyle = '#fefdf9';
+            ctx.fillRect(left, top, w, h);
+            ctx.strokeStyle = '#e8ddd0';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(left, top, w, h);
+
+            // Title
+            ctx.fillStyle = color;
+            ctx.font = 'bold 12px Fredoka, Noto Sans SC';
+            ctx.textAlign = 'left';
+            ctx.fillText(title, left + 6, top + 14);
+
+            const plotLeft = left + 5;
+            const plotRight = left + w - 5;
+            const plotTop = top + 18;
+            const plotBottom = top + h - 5;
+            const plotW = plotRight - plotLeft;
+            const plotH = plotBottom - plotTop;
+            const midY = (plotTop + plotBottom) / 2;
+
+            if (plotW <= 0 || plotH <= 0) return;
+
+            // Clip
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(plotLeft, plotTop, plotW, plotH);
+            ctx.clip();
+
+            // Zero line
+            ctx.strokeStyle = '#e0d8cc';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([3, 4]);
+            ctx.beginPath();
+            ctx.moveTo(plotLeft, midY);
+            ctx.lineTo(plotRight, midY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Y-axis label
+            ctx.fillStyle = '#aaa';
+            ctx.font = '9px Fredoka';
+            ctx.textAlign = 'right';
+            ctx.fillText(yMax.toFixed(1), plotLeft - 4, plotTop + 10);
+            ctx.fillText('0', plotLeft - 4, midY + 4);
+            ctx.fillText((-yMax).toFixed(1), plotLeft - 4, plotBottom - 2);
+
+            // Data curve
+            const hist = state.history;
+            if (hist.length < 2) {
+                ctx.restore();
+                return;
+            }
+
+            const latestT = state.graphTime;
+            const oldestT = Math.max(0, latestT - HISTORY_WINDOW);
+
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+            let firstPoint = true;
+            for (let i = 0; i < hist.length; i++) {
+                const pt = hist[i];
+                if (pt.t < oldestT) continue;
+                const sx = plotLeft + ((pt.t - oldestT) / HISTORY_WINDOW) * plotW;
+                const val = getY(pt);
+                const sy = midY - (val / yMax) * (plotH / 2);
+                if (firstPoint) { ctx.moveTo(sx, sy); firstPoint = false; }
+                else ctx.lineTo(sx, sy);
+            }
+            ctx.stroke();
+
+            // Current value dot
+            if (hist.length > 0) {
+                const last = hist[hist.length - 1];
+                const dotX = plotLeft + ((last.t - oldestT) / HISTORY_WINDOW) * plotW;
+                const dotVal = getY(last);
+                const dotY = midY - (dotVal / yMax) * (plotH / 2);
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(dotX, dotY, 4, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                // Value label
+                ctx.fillStyle = color;
+                ctx.font = 'bold 10px Fredoka';
+                ctx.textAlign = 'left';
+                const labelX = Math.min(dotX + 8, plotRight - 55);
+                ctx.fillText(yLabel + '=' + dotVal.toFixed(2), labelX, dotY - 6);
+            }
+
+            ctx.restore();
+        }
+
+        function drawXTGraph(left, top, w, h) {
+            const yMax = Math.max(state.A * 1.3, 3);
+            drawTimeSeriesGraph(left, top, w, h,
+                '位移 x(t) / Displacement',
+                function(pt) { return pt.x; },
+                'x', '#3498db', -yMax, yMax);
+        }
+
+        function drawVTGraph(left, top, w, h) {
+            const vMax = Math.max(state.A * omega() * 1.3, 10);
+            drawTimeSeriesGraph(left, top, w, h,
+                '速度 v(t) / Velocity',
+                function(pt) { return pt.v; },
+                'v', '#e74c3c', -vMax, vMax);
+        }
+
+        function drawEnergyBar(left, top, w, h) {
+            const barH = Math.min(h * 0.5, 28);
+            const barY = top + (h - barH) / 2;
+            const barW = w - 20;
+            const barX = left + 10;
+
+            // Background
+            ctx.fillStyle = '#fefdf9';
+            ctx.fillRect(left, top, w, h);
+            ctx.strokeStyle = '#e8ddd0';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(left, top, w, h);
+
+            // Title
+            ctx.fillStyle = '#4A403A';
+            ctx.font = 'bold 12px Fredoka, Noto Sans SC';
+            ctx.textAlign = 'left';
+            ctx.fillText('能量 / Energy', left + 6, top + 14);
+
+            if (barW <= 0) return;
+
+            const x_cm = displacement();
+            const v_cm_s = velocity();
+            const x_m = x_cm / 100;
+            const v_m_s = v_cm_s / 100;
+            const ke = 0.5 * state.m * v_m_s * v_m_s;
+            const pe = 0.5 * state.k * x_m * x_m;
+            const total = ke + pe;
+            const maxE = 0.5 * state.k * (state.A / 100) * (state.A / 100);
+
+            const keFrac = total > 0 ? ke / Math.max(total, maxE) : 0;
+            const peFrac = total > 0 ? pe / Math.max(total, maxE) : 0;
+
+            // Total energy reference outline
+            const totalW = (total / Math.max(maxE, 0.0001)) * barW;
+            ctx.strokeStyle = '#ccc';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([4, 4]);
+            ctx.strokeRect(barX, barY, Math.min(totalW, barW), barH);
+            ctx.setLineDash([]);
+
+            // KE bar
+            const keW = keFrac * barW;
+            if (keW > 0.5) {
+                const keGrad = ctx.createLinearGradient(barX, barY, barX, barY + barH);
+                keGrad.addColorStop(0, '#2ecc71');
+                keGrad.addColorStop(1, '#27ae60');
+                ctx.fillStyle = keGrad;
+                roundRect(ctx, barX, barY, keW, barH, 6);
+                ctx.fill();
+            }
+
+            // PE bar (stacked after KE)
+            const peW = peFrac * barW;
+            if (peW > 0.5) {
+                const peGrad = ctx.createLinearGradient(barX + keW, barY, barX + keW, barY + barH);
+                peGrad.addColorStop(0, '#3498db');
+                peGrad.addColorStop(1, '#2980b9');
+                ctx.fillStyle = peGrad;
+                roundRect(ctx, barX + keW, barY, peW, barH, 6);
+                ctx.fill();
+            }
+
+            // Bar border
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            roundRect(ctx, barX, barY, barW, barH, 6);
+            ctx.stroke();
+
+            // Labels inside/outside the bar
+            ctx.font = 'bold 10px Fredoka';
+            ctx.textBaseline = 'middle';
+            if (keFrac > 0.25) {
+                ctx.fillStyle = '#fff';
+                ctx.textAlign = 'center';
+                ctx.fillText('KE: ' + (ke * 1000).toFixed(2) + ' mJ', barX + keW / 2, barY + barH / 2);
+            }
+            if (peFrac > 0.2 && peW > 30) {
+                ctx.fillStyle = '#fff';
+                ctx.textAlign = 'center';
+                ctx.fillText('PE: ' + (pe * 1000).toFixed(2) + ' mJ', barX + keW + peW / 2, barY + barH / 2);
+            }
+
+            // Legend below bar
+            ctx.font = '10px Fredoka, Noto Sans SC';
+            ctx.fillStyle = '#2ecc71';
+            ctx.textAlign = 'left';
+            ctx.fillText('KE ' + (ke * 1000).toFixed(2) + ' mJ', barX, barY + barH + 14);
+            ctx.fillStyle = '#3498db';
+            ctx.fillText('PE ' + (pe * 1000).toFixed(2) + ' mJ', barX + 120, barY + barH + 14);
+            ctx.fillStyle = '#4A403A';
+            ctx.fillText('Total ' + (total * 1000).toFixed(2) + ' mJ', barX + 240, barY + barH + 14);
+        }
+
+        // Button handlers
+        bStart.onclick = function() {
+            state.isPlaying = !state.isPlaying;
+            if (state.isPlaying) {
+                bStart.textContent = '暂停 Pause';
+                bStart.className = 'ctrl-btn pause';
+                lastTimestamp = null;
+            } else {
+                bStart.textContent = '开始 Start';
+                bStart.className = 'ctrl-btn start';
+            }
+        };
+
+        bReset.onclick = function() {
+            state.isPlaying = false;
+            state.phase = 0;
+            state.graphTime = 0;
+            state.history = [];
+            lastTimestamp = null;
+            bStart.textContent = '开始 Start';
+            bStart.className = 'ctrl-btn start';
+            // Add one data point at t=0
+            state.history.push({ t: 0, x: state.A, v: 0 });
+            updateUI();
+            draw();
+        };
+
+        // Initialize: add starting point
+        state.history.push({ t: 0, x: state.A, v: 0 });
+
+        resize();
+        updateUI();
+        draw();
+        requestAnimationFrame(update);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>光电效应 / Photoelectric Effect - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #FFF9F0;
+            --primary: #FF8c42;
+            --secondary: #FFC75F;
+            --accent: #FF5E5B;
+            --text-dark: #4A403A;
+            --card-bg: #FFFFFF;
+            --shadow: 0 6px 30px rgba(255, 140, 66, 0.18);
+            --photon-color: #FFC75F;
+            --electron-color: #2ecc71;
+            --metal-color: #7f8c8d;
+            --uv-color: #9b59b6;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh; padding: 5px 40px 10px;
+        }
+
+        .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
+        .logo {
+            font-weight: 700; font-size: 1.3rem; color: #fff;
+            background: var(--primary); padding: 6px 18px; border-radius: 16px;
+            box-shadow: 4px 4px 15px rgba(255,140,66,0.3);
+        }
+
+        .container {
+            width: 100%; max-width: 1400px; margin-top: 8px;
+            display: grid;
+            grid-template-areas:
+                "header header"
+                "formula formula"
+                "diagram controls";
+            grid-template-columns: 1fr 420px; gap: 12px;
+        }
+
+        header { grid-area: header; text-align: center; }
+        h1 { font-size: 2rem; color: var(--text-dark); margin-bottom: 2px; }
+
+        .formula-display {
+            grid-area: formula; background: var(--card-bg);
+            border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px;
+            display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb;
+        }
+        .formula-container {
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px; flex-wrap: wrap; min-height: 44px;
+        }
+        .result-row {
+            font-size: 0.95rem; font-weight: 600; color: var(--text-dark);
+            margin-top: 4px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;
+        }
+        .legend {
+            display: flex; gap: 16px; justify-content: center;
+            border-top: 1px solid #eee; padding-top: 6px; width: 100%; flex-wrap: wrap;
+        }
+        .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+
+        .diagram-section {
+            grid-area: diagram; background: #1a1a2e; border-radius: 20px;
+            box-shadow: var(--shadow); position: relative; overflow: hidden;
+            min-height: 420px; display: flex; flex-direction: column; border: 2px solid #fff;
+        }
+        canvas { width: 100%; flex: 1; display: block; }
+
+        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
+        .control-panel {
+            background: var(--card-bg); border-radius: 20px; box-shadow: var(--shadow);
+            padding: 14px 18px; display: flex; flex-direction: column; gap: 10px;
+        }
+
+        .param-section {
+            background: #fff; border-radius: 14px; padding: 10px 14px 8px; border: 2px solid #f5f0eb;
+        }
+        .param-section-header {
+            font-weight: 700; font-size: 0.95rem; margin-bottom: 6px;
+            display: flex; align-items: center; gap: 6px;
+        }
+
+        .control-group { display: flex; flex-direction: column; gap: 3px; margin-bottom: 4px; }
+        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
+        .val-badge {
+            background: #fff; padding: 1px 7px; border-radius: 7px;
+            font-size: 0.85rem; border: 2px solid #f0f0f0;
+        }
+
+        input[type=range] {
+            width: 100%; appearance: none; height: 6px;
+            background: #eee; border-radius: 3px; outline: none;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            appearance: none; width: 20px; height: 20px; border-radius: 50%;
+            cursor: pointer; background: var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        select {
+            width: 100%; padding: 8px 12px; border-radius: 10px;
+            border: 2px solid #f0f0f0; font-family: inherit; font-size: 0.9rem;
+            font-weight: 600; color: var(--text-dark); background: #fff;
+            cursor: pointer; outline: none;
+        }
+        select:focus { border-color: var(--primary); }
+
+        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px; }
+        .ctrl-btn {
+            padding: 10px; border: none; border-radius: 14px;
+            font-size: 1.05rem; font-weight: 700; cursor: pointer;
+            transition: all 0.2s; color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .start { background-color: var(--primary); }
+        .pause { background-color: #2ecc71; }
+        .reset { background-color: #95a5a6; }
+        .ctrl-btn:active { transform: translateY(2px); box-shadow: none; }
+
+        .info-card {
+            background: var(--card-bg); border-radius: 20px;
+            padding: 12px 16px; box-shadow: var(--shadow);
+            font-size: 0.9rem; line-height: 1.4; color: #5D6D7E;
+        }
+
+        @media (max-width: 1100px) {
+            .container {
+                grid-template-areas: "header" "formula" "diagram" "controls";
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="branding"><div class="logo">Wuli布雷克</div></div>
+
+    <div class="container">
+        <header>
+            <h1>光电效应 / Photoelectric Effect</h1>
+        </header>
+
+        <section class="formula-display">
+            <div class="formula-container" id="formula-root"></div>
+            <div class="result-row" id="result-area">
+                <span>光子能量 E = <strong id="res-E">--</strong> eV</span>
+                <span>逸出功 &phi; = <strong id="res-phi">--</strong> eV</span>
+                <span>动能 K = <strong id="res-K">--</strong> eV</span>
+                <span>遏止电压 V&#8320; = <strong id="res-V0">--</strong> V</span>
+            </div>
+            <div class="legend">
+                <div class="legend-item"><span class="legend-dot" style="background:var(--secondary)"></span> 光子 Photon</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--electron-color)"></span> 电子 Electron</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--metal-color)"></span> 金属板 Metal Plate</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> 集电极 Collector</div>
+            </div>
+        </section>
+
+        <section class="diagram-section">
+            <canvas id="simCanvas"></canvas>
+        </section>
+
+        <section class="controls-section">
+            <div class="control-panel">
+                <div class="param-section" style="border-left: 5px solid var(--secondary);">
+                    <div class="param-section-header">&#9728; 光源设置 / Light Source</div>
+                    <div class="control-group">
+                        <div class="label-row">
+                            <span>波长 Wavelength &lambda; (nm)</span>
+                            <span id="wl-badge" class="val-badge">400 nm</span>
+                        </div>
+                        <input type="range" id="wl-slider" min="200" max="700" step="5" value="400">
+                    </div>
+                    <div class="control-group">
+                        <div class="label-row">
+                            <span>光强 Intensity</span>
+                            <span id="int-badge" class="val-badge">5</span>
+                        </div>
+                        <input type="range" id="int-slider" min="1" max="10" step="1" value="5">
+                    </div>
+                </div>
+
+                <div class="param-section" style="border-left: 5px solid var(--metal-color);">
+                    <div class="param-section-header">&#9874; 金属选择 / Metal Selection</div>
+                    <select id="metal-select">
+                        <option value="sodium">钠 Sodium (Na) &mdash; &phi; = 2.3 eV</option>
+                        <option value="potassium">钾 Potassium (K) &mdash; &phi; = 2.0 eV</option>
+                        <option value="cesium">铯 Cesium (Cs) &mdash; &phi; = 1.9 eV</option>
+                    </select>
+                </div>
+
+                <div class="btn-row">
+                    <button id="btn-start" class="ctrl-btn start">开始 Start</button>
+                    <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div style="font-weight: 700; color: var(--primary); margin-bottom: 8px; font-size: 1.1rem;">
+                    演示要点 / Key points
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,199,95,0.15);color:var(--secondary);font-weight:700;">hf</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">光子能量取决于频率</div><div style="font-size:0.78rem;color:#888;">Photon energy depends on frequency, not intensity.</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,94,91,0.15);color:var(--accent);font-weight:700;">&phi;</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">存在截止频率（红限）</div><div style="font-size:0.78rem;color:#888;">Threshold frequency exists. Below it, no electrons are emitted.</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.15);color:var(--electron-color);font-weight:700;">K</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">光强影响电子数量非动能</div><div style="font-size:0.78rem;color:#888;">Intensity affects number of electrons, not their kinetic energy.</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(155,89,182,0.15);color:var(--uv-color);font-weight:700;">V&#8320;</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">遏止电压测最大动能</div><div style="font-size:0.78rem;color:#888;">Stopping voltage measures max kinetic energy: K = eV&#8320;.</div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas'), ctx = canvas.getContext('2d');
+        const sWl = document.getElementById('wl-slider'), sInt = document.getElementById('int-slider');
+        const bWl = document.getElementById('wl-badge'), bInt = document.getElementById('int-badge');
+        const selMetal = document.getElementById('metal-select');
+        const resE = document.getElementById('res-E'), resPhi = document.getElementById('res-phi');
+        const resK = document.getElementById('res-K'), resV0 = document.getElementById('res-V0');
+        const fRoot = document.getElementById('formula-root');
+        const bStart = document.getElementById('btn-start'), bReset = document.getElementById('btn-reset');
+
+        // Physics constants
+        const h = 6.63e-34;       // Planck's constant (J·s)
+        const c = 3e8;            // Speed of light (m/s)
+        const e = 1.602e-19;      // Electron charge (C)
+        const hc_eVnm = 1241.6;   // hc in eV·nm (hc/e * 1e9)
+
+        // Metal work functions (eV)
+        const metals = {
+            sodium:    { name: 'Sodium (Na)', phi: 2.3, color: '#bdc3c7' },
+            potassium: { name: 'Potassium (K)', phi: 2.0, color: '#d5d8dc' },
+            cesium:    { name: 'Cesium (Cs)', phi: 1.9, color: '#f0e68c' }
+        };
+
+        // State
+        const state = {
+            wavelength: 400,   // nm
+            intensity: 5,      // 1-10
+            metal: 'sodium',
+            isPlaying: false,
+            frameCount: 0,
+            photons: [],
+            electrons: [],
+            absorbedFlashes: []  // [{x, y, life}]
+        };
+
+        // --- Wavelength to RGB color ---
+        function wavelengthToColor(wl) {
+            let r, g, b;
+            if (wl >= 380 && wl < 440) {
+                r = -(wl - 440) / (440 - 380);
+                g = 0;
+                b = 1;
+            } else if (wl >= 440 && wl < 490) {
+                r = 0;
+                g = (wl - 440) / (490 - 440);
+                b = 1;
+            } else if (wl >= 490 && wl < 510) {
+                r = 0;
+                g = 1;
+                b = -(wl - 510) / (510 - 490);
+            } else if (wl >= 510 && wl < 580) {
+                r = (wl - 510) / (580 - 510);
+                g = 1;
+                b = 0;
+            } else if (wl >= 580 && wl < 645) {
+                r = 1;
+                g = -(wl - 645) / (645 - 580);
+                b = 0;
+            } else if (wl >= 645 && wl <= 700) {
+                r = 1;
+                g = 0;
+                b = 0;
+            } else if (wl < 380) {
+                r = 0.55; g = 0.1; b = 0.85;
+            } else {
+                r = 0.5; g = 0; b = 0;
+            }
+
+            let factor = 1;
+            if (wl >= 380 && wl < 420) factor = 0.3 + 0.7 * (wl - 380) / 40;
+            else if (wl > 645 && wl <= 700) factor = 0.3 + 0.7 * (700 - wl) / 55;
+            else if (wl < 380) factor = 0.55;
+            else if (wl > 700) factor = 0.3;
+
+            r = Math.round(255 * Math.min(1, r * factor));
+            g = Math.round(255 * Math.min(1, g * factor));
+            b = Math.round(255 * Math.min(1, b * factor));
+            return { r, g, b, str: `rgb(${r},${g},${b})` };
+        }
+
+        function resize() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+        }
+        window.addEventListener('resize', resize);
+
+        function update() {
+            // Read controls
+            state.wavelength = parseInt(sWl.value);
+            state.intensity = parseInt(sInt.value);
+            state.metal = selMetal.value;
+
+            bWl.textContent = state.wavelength + ' nm';
+            bInt.textContent = state.intensity;
+
+            // Physics
+            const phi = metals[state.metal].phi;
+            const E_photon = hc_eVnm / state.wavelength;
+            const K = Math.max(0, E_photon - phi);
+            const V0 = K; // V0 = K/e, numerically equal when K is in eV
+            const aboveThreshold = E_photon > phi;
+
+            updateUI(E_photon, phi, K, V0, aboveThreshold);
+
+            if (state.isPlaying) {
+                state.frameCount++;
+
+                // Spawn photons based on intensity
+                const spawnInterval = Math.max(1, 13 - state.intensity);
+                if (state.frameCount % spawnInterval === 0) {
+                    spawnPhoton();
+                }
+
+                // Update photons
+                for (let i = state.photons.length - 1; i >= 0; i--) {
+                    const p = state.photons[i];
+                    p.x += p.vx;
+
+                    const plateX = canvas.width * 0.43;
+                    if (p.x >= plateX) {
+                        // Photon hits metal plate
+                        if (aboveThreshold) {
+                            // Emit electron from right side of plate
+                            spawnElectron(plateX + 18, p.y, K);
+                        } else {
+                            // Absorbed - brief flash
+                            state.absorbedFlashes.push({ x: plateX, y: p.y, life: 1.0 });
+                            if (state.absorbedFlashes.length > 30) state.absorbedFlashes.shift();
+                        }
+                        state.photons.splice(i, 1);
+                    }
+                }
+
+                // Update electrons
+                for (let i = state.electrons.length - 1; i >= 0; i--) {
+                    const el = state.electrons[i];
+                    el.x += el.vx;
+                    el.y += el.vy;
+
+                    const collectorX = canvas.width * 0.82;
+                    if (el.x >= collectorX) {
+                        state.electrons.splice(i, 1);
+                    }
+                }
+
+                // Update absorbed flashes
+                for (let i = state.absorbedFlashes.length - 1; i >= 0; i--) {
+                    state.absorbedFlashes[i].life -= 0.05;
+                    if (state.absorbedFlashes[i].life <= 0) {
+                        state.absorbedFlashes.splice(i, 1);
+                    }
+                }
+
+                // Limit particles
+                if (state.photons.length > 60) state.photons.splice(0, state.photons.length - 60);
+                if (state.electrons.length > 60) state.electrons.splice(0, state.electrons.length - 60);
+            }
+
+            draw();
+            requestAnimationFrame(update);
+        }
+
+        function spawnPhoton() {
+            const color = wavelengthToColor(state.wavelength);
+            const y = canvas.height * (0.2 + Math.random() * 0.6);
+            state.photons.push({
+                x: 65,
+                y: y,
+                vx: 1.8 + Math.random() * 0.5,
+                color: color,
+                radius: 4 + Math.random() * 3
+            });
+        }
+
+        function spawnElectron(x, y, K) {
+            const speed = 1.0 + K * 1.8;
+            state.electrons.push({
+                x: x,
+                y: y,
+                vx: speed * (0.8 + Math.random() * 0.4),
+                vy: (Math.random() - 0.5) * 1.2,
+                life: 1.0
+            });
+        }
+
+        function updateUI(E_photon, phi, K, V0, aboveThreshold) {
+            resE.textContent = E_photon.toFixed(2);
+            resE.style.color = aboveThreshold ? '#2ecc71' : '#e74c3c';
+            resPhi.textContent = phi.toFixed(1);
+            resK.textContent = K > 0.005 ? K.toFixed(2) : '0';
+            resK.style.color = aboveThreshold ? '#2ecc71' : '#e74c3c';
+            resV0.textContent = K > 0.005 ? V0.toFixed(2) : '0';
+
+            const E_str = E_photon.toFixed(2);
+            const phi_str = phi.toFixed(1);
+            const K_str = K > 0.005 ? K.toFixed(2) : '0';
+            const statusIcon = aboveThreshold ? '&#9889;' : '&#9940;';
+            const statusText = aboveThreshold ? '发射电子!' : '无电子发射';
+
+            fRoot.innerHTML = `
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;">
+                    <span style="font-size:1.3rem;font-weight:700;color:var(--text-dark);">K = hf - &phi;</span>
+                    <span style="font-size:0.9rem;color:#888;">=</span>
+                    <span style="font-weight:700;color:var(--secondary);">${E_str} eV</span>
+                    <span style="font-size:0.9rem;color:#888;">&minus;</span>
+                    <span style="font-weight:700;color:var(--accent);">${phi_str} eV</span>
+                    <span style="font-size:0.9rem;color:#888;">=</span>
+                    <span style="font-weight:700;color:${aboveThreshold ? '#2ecc71' : '#e74c3c'};">${K_str} eV</span>
+                    <span style="font-size:0.85rem;margin-left:6px;color:${aboveThreshold ? '#2ecc71' : '#e74c3c'};">${statusIcon} ${statusText}</span>
+                </div>
+            `;
+        }
+
+        function draw() {
+            const W = canvas.width, H = canvas.height;
+            ctx.clearRect(0, 0, W, H);
+
+            // Dark background gradient
+            const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
+            bgGrad.addColorStop(0, '#1a1a2e');
+            bgGrad.addColorStop(0.5, '#16213e');
+            bgGrad.addColorStop(1, '#1a1a2e');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, W, H);
+
+            // Subtle grid
+            ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+            ctx.lineWidth = 1;
+            for (let gx = 0; gx < W; gx += 40) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke(); }
+            for (let gy = 0; gy < H; gy += 40) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(W, gy); ctx.stroke(); }
+
+            const plateX = W * 0.43;
+            const collectorX = W * 0.82;
+
+            // --- Draw light source (lamp on left) ---
+            drawLightSource(50, H / 2);
+
+            // --- Draw metal plate ---
+            drawMetalPlate(plateX, H, state.metal);
+
+            // --- Draw collector electrode ---
+            drawCollector(collectorX, H);
+
+            // --- Draw threshold indicator line ---
+            drawThresholdLine(plateX, collectorX, H);
+
+            // --- Draw absorbed flashes ---
+            for (const f of state.absorbedFlashes) {
+                const alpha = f.life;
+                const r = 12 * (1 - f.life) + 4;
+                ctx.beginPath();
+                ctx.arc(f.x, f.y, r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255,200,100,${alpha * 0.5})`;
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(f.x, f.y, r * 0.5, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255,255,255,${alpha * 0.7})`;
+                ctx.fill();
+            }
+
+            // --- Draw photons ---
+            for (const p of state.photons) {
+                // Outer glow
+                const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius * 2.5);
+                glow.addColorStop(0, `rgba(${p.color.r},${p.color.g},${p.color.b},0.6)`);
+                glow.addColorStop(0.5, `rgba(${p.color.r},${p.color.g},${p.color.b},0.2)`);
+                glow.addColorStop(1, `rgba(${p.color.r},${p.color.g},${p.color.b},0)`);
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius * 2.5, 0, Math.PI * 2);
+                ctx.fillStyle = glow;
+                ctx.fill();
+
+                // Core
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = p.color.str;
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+                ctx.lineWidth = 0.5;
+                ctx.stroke();
+            }
+
+            // --- Draw electrons ---
+            for (const el of state.electrons) {
+                // Electron trail
+                ctx.beginPath();
+                ctx.moveTo(el.x, el.y);
+                ctx.lineTo(el.x - 8, el.y);
+                ctx.strokeStyle = 'rgba(46, 204, 113, 0.3)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Electron body
+                ctx.beginPath();
+                ctx.arc(el.x, el.y, 3.5, 0, Math.PI * 2);
+                ctx.fillStyle = '#2ecc71';
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Minus sign
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 5px Fredoka';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('–', el.x, el.y);
+            }
+
+            // --- Labels ---
+            ctx.fillStyle = 'rgba(255,255,255,0.7)';
+            ctx.font = '600 13px "Noto Sans SC", Fredoka, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('光源', 50, H * 0.12);
+            ctx.fillText('Light Source', 50, H * 0.12 + 16);
+
+            ctx.fillText('集电极', collectorX, H * 0.12);
+            ctx.fillText('Collector', collectorX, H * 0.12 + 16);
+
+            // Metal name label above plate
+            const metalName = metals[state.metal].name;
+            ctx.fillStyle = '#ecf0f1';
+            ctx.font = '600 12px "Noto Sans SC", Fredoka, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(metalName, plateX, H * 0.12);
+
+            // Work function label below plate
+            ctx.fillStyle = 'rgba(255,255,255,0.5)';
+            ctx.font = '11px Fredoka';
+            ctx.fillText('φ=' + metals[state.metal].phi.toFixed(1) + 'eV', plateX, H * 0.88);
+
+            // Title annotation
+            const phi = metals[state.metal].phi;
+            const E_photon = hc_eVnm / state.wavelength;
+            const aboveThreshold = E_photon > phi;
+            ctx.fillStyle = aboveThreshold ? 'rgba(46,204,113,0.8)' : 'rgba(231,76,60,0.8)';
+            ctx.font = '600 14px "Noto Sans SC", Fredoka, sans-serif';
+            ctx.textAlign = 'left';
+            const statusLabel = aboveThreshold ? '光电效应发生  Photoelectric Effect' : '低于截止频率  Below Threshold';
+            ctx.fillText(statusLabel, 15, H - 15);
+        }
+
+        function drawLightSource(x, y) {
+            // Outer glow
+            const glow = ctx.createRadialGradient(x, y, 5, x, y, 35);
+            const color = wavelengthToColor(state.wavelength);
+            glow.addColorStop(0, `rgba(${color.r},${color.g},${color.b},0.5)`);
+            glow.addColorStop(0.5, `rgba(${color.r},${color.g},${color.b},0.15)`);
+            glow.addColorStop(1, `rgba(${color.r},${color.g},${color.b},0)`);
+            ctx.beginPath();
+            ctx.arc(x, y, 35, 0, Math.PI * 2);
+            ctx.fillStyle = glow;
+            ctx.fill();
+
+            // Lamp body
+            ctx.beginPath();
+            ctx.arc(x, y, 14, 0, Math.PI * 2);
+            const lampGrad = ctx.createRadialGradient(x - 3, y - 3, 2, x, y, 14);
+            lampGrad.addColorStop(0, '#ffffff');
+            lampGrad.addColorStop(0.3, color.str);
+            lampGrad.addColorStop(1, '#333');
+            ctx.fillStyle = lampGrad;
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Rays
+            ctx.strokeStyle = `rgba(${color.r},${color.g},${color.b},0.3)`;
+            ctx.lineWidth = 1;
+            for (let i = 0; i < 8; i++) {
+                const angle = (i / 8) * Math.PI * 2 - Math.PI / 2;
+                const sx = x + Math.cos(angle) * 16;
+                const sy = y + Math.sin(angle) * 16;
+                const ex = x + Math.cos(angle) * 30;
+                const ey = y + Math.sin(angle) * 30;
+                ctx.beginPath();
+                ctx.moveTo(sx, sy);
+                ctx.lineTo(ex, ey);
+                ctx.stroke();
+            }
+        }
+
+        function drawMetalPlate(x, H, metalKey) {
+            const topY = H * 0.18;
+            const botY = H * 0.82;
+            const w = 16;
+
+            // Plate body
+            const plateGrad = ctx.createLinearGradient(x - w/2, 0, x + w/2, 0);
+            plateGrad.addColorStop(0, '#5d6d7e');
+            plateGrad.addColorStop(0.3, '#bdc3c7');
+            plateGrad.addColorStop(0.5, '#ecf0f1');
+            plateGrad.addColorStop(0.7, '#bdc3c7');
+            plateGrad.addColorStop(1, '#5d6d7e');
+            ctx.fillStyle = plateGrad;
+            ctx.fillRect(x - w/2, topY, w, botY - topY);
+
+            // Plate edge highlights
+            ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x - w/2, topY, w, botY - topY);
+
+            // Front face highlight
+            ctx.fillStyle = 'rgba(255,255,255,0.08)';
+            ctx.fillRect(x - 2, topY, 4, botY - topY);
+
+            // Base
+            ctx.fillStyle = '#3d3d3d';
+            ctx.fillRect(x - 30, botY, 60, 8);
+            ctx.fillStyle = '#5d6d7e';
+            ctx.fillRect(x - 40, botY + 8, 80, 6);
+        }
+
+        function drawCollector(x, H) {
+            const topY = H * 0.18;
+            const botY = H * 0.82;
+            const w = 8;
+
+            const grad = ctx.createLinearGradient(x - w/2, 0, x + w/2, 0);
+            grad.addColorStop(0, '#c0392b');
+            grad.addColorStop(0.4, '#e74c3c');
+            grad.addColorStop(0.6, '#e74c3c');
+            grad.addColorStop(1, '#922b21');
+            ctx.fillStyle = grad;
+            ctx.fillRect(x - w/2, topY, w, botY - topY);
+
+            ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(x - w/2, topY, w, botY - topY);
+
+            // "+" label
+            ctx.fillStyle = '#e74c3c';
+            ctx.font = 'bold 16px Fredoka';
+            ctx.textAlign = 'center';
+            ctx.fillText('+', x, topY - 8);
+
+            // Base
+            ctx.fillStyle = '#3d3d3d';
+            ctx.fillRect(x - 20, botY, 40, 8);
+            ctx.fillStyle = '#555';
+            ctx.fillRect(x - 26, botY + 8, 52, 6);
+        }
+
+        function drawThresholdLine(plateX, collectorX, H) {
+            const phi = metals[state.metal].phi;
+            const E_photon = hc_eVnm / state.wavelength;
+            const aboveThreshold = E_photon > phi;
+
+            if (!aboveThreshold) {
+                // Draw a dashed "barrier" line near the plate to indicate blocking
+                const barrierX = plateX + 22;
+                ctx.setLineDash([4, 6]);
+                ctx.strokeStyle = 'rgba(255, 94, 91, 0.5)';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(barrierX, H * 0.22);
+                ctx.lineTo(barrierX, H * 0.78);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                ctx.fillStyle = 'rgba(255, 94, 91, 0.7)';
+                ctx.font = '10px Fredoka';
+                ctx.textAlign = 'left';
+                ctx.fillText('BLOCKED', barrierX + 4, H * 0.5);
+            } else {
+                // Draw a faint arrow region showing electron flow
+                const midX = (plateX + 25 + collectorX) / 2;
+                ctx.fillStyle = 'rgba(46, 204, 113, 0.06)';
+                ctx.fillRect(plateX + 22, H * 0.22, collectorX - plateX - 22, H * 0.56);
+
+                // Flow arrow
+                ctx.strokeStyle = 'rgba(46, 204, 113, 0.3)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([6, 8]);
+                ctx.beginPath();
+                ctx.moveTo(plateX + 28, H * 0.5);
+                ctx.lineTo(collectorX - 14, H * 0.5);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Arrowhead
+                ctx.fillStyle = 'rgba(46, 204, 113, 0.3)';
+                ctx.beginPath();
+                const ax = collectorX - 10, ay = H * 0.5;
+                ctx.moveTo(ax, ay);
+                ctx.lineTo(ax - 8, ay - 5);
+                ctx.lineTo(ax - 8, ay + 5);
+                ctx.closePath();
+                ctx.fill();
+            }
+        }
+
+        bStart.onclick = () => {
+            state.isPlaying = !state.isPlaying;
+            bStart.textContent = state.isPlaying ? '暂停 Pause' : '开始 Start';
+            bStart.classList.toggle('start', !state.isPlaying);
+            bStart.classList.toggle('pause', state.isPlaying);
+        };
+
+        bReset.onclick = () => {
+            state.isPlaying = false;
+            state.frameCount = 0;
+            state.photons = [];
+            state.electrons = [];
+            state.absorbedFlashes = [];
+            bStart.textContent = '开始 Start';
+            bStart.className = 'ctrl-btn start';
+        };
+
+        resize();
+        update();
+    </script>
+</body>
+
+</html>
