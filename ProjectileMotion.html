@@ -25,7 +25,6 @@
         .diagram-section { grid-area: diagram; display: flex; flex-direction: column; gap: 6px; }
         .main-canvas-wrap { background: #fff; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; flex: 1; min-height: 200px; border: 2px solid #fff; }
         #simCanvas { width: 100%; height: 100%; display: block; }
-        .sub-canvases { display: flex; flex-direction: column; gap: 4px; flex: 1; min-height: 120px; }
         .sub-wrap { background: #fff; border-radius: 16px; box-shadow: var(--shadow); flex: 1; display: flex; flex-direction: column; border: 1px solid #fff5eb; overflow: hidden; }
         .sub-label { background: #fff; padding: 3px 10px; font-weight: 700; font-size: 0.8rem; text-align: center; }
         .sub-wrap canvas { width: 100%; flex: 1; display: block; }
@@ -60,9 +59,9 @@
 </section>
 <section class="diagram-section">
     <div class="main-canvas-wrap"><canvas id="simCanvas"></canvas></div>
-    <div class="sub-canvases">
-        <div class="sub-wrap"><div class="sub-label" style="color:#3498db;">水平方向 Horizontal（匀速：Vh = v₀cosθ）</div><canvas id="canvasH"></canvas></div>
-        <div class="sub-wrap"><div class="sub-label" style="color:#2ecc71;">竖直方向 Vertical（匀变速：Vv = v₀sinθ−gt）</div><canvas id="canvasV"></canvas></div>
+    <div class="sub-wrap" style="flex:1;min-height:140px;">
+        <div class="sub-label">分解运动 Decomposed Motion</div>
+        <canvas id="canvasDecomp"></canvas>
     </div>
 </section>
 <section class="controls-section">
@@ -87,8 +86,7 @@
 <script>
 const G=9.8;
 const simC=document.getElementById('simCanvas'),ctx=simC.getContext('2d');
-const hC=document.getElementById('canvasH'),ctxH=hC.getContext('2d');
-const vC=document.getElementById('canvasV'),ctxV=vC.getContext('2d');
+const dC=document.getElementById('canvasDecomp'),ctxD=dC.getContext('2d');
 const sV0=document.getElementById('slider-v0'),sAng=document.getElementById('slider-angle');
 const bV0=document.getElementById('badge-v0'),bAng=document.getElementById('badge-angle');
 const bStart=document.getElementById('btn-start'),bReset=document.getElementById('btn-reset');
@@ -97,7 +95,7 @@ const fRoot=document.getElementById('formula-root'),rArea=document.getElementByI
 const S={v0:15,angle:45,time:0,playing:false,ts:0.5};
 let lt=0;
 
-function resize(){simC.width=simC.clientWidth;simC.height=simC.clientHeight;hC.width=hC.clientWidth;hC.height=hC.clientHeight;vC.width=vC.clientWidth;vC.height=vC.clientHeight;}
+function resize(){simC.width=simC.clientWidth;simC.height=simC.clientHeight;dC.width=dC.clientWidth;dC.height=dC.clientHeight;}
 window.addEventListener('resize',resize);
 
 function arrow(c,x,y,dx,dy,clr,lw){
@@ -119,7 +117,8 @@ function draw(){
 
     const M=60,ox=M,oy=ch-M-10;
     const aW=cw-2*M,aH=ch-2*M-20;
-    const sc=Math.min(aW/Math.max(RR,0.01),aH/Math.max(HH,0.01));
+    // FIXED scale — max range at v0=30, angle=45°
+    const sc=Math.min(aW/100,aH/24);
     const X=px=>ox+px*sc,Y=py=>oy-py*sc;
     const vx0=v0*cA,vy0=v0*sA;
 
@@ -168,21 +167,29 @@ function draw(){
     ctx.fillStyle='#4A403A';ctx.beginPath();ctx.arc(ox,oy,3.5,0,Math.PI*2);ctx.fill();
     ctx.fillStyle='#888';ctx.font='10px Fredoka';ctx.textAlign='center';ctx.fillText('O',ox-8,oy+11);ctx.fillText('x',cw-14,oy+11);ctx.fillText('y',ox+6,14);
 
-    // === Sub ===
-    const hw=hC.width,hh=hC.height;ctxH.clearRect(0,0,hw,hh);ctxH.fillStyle='#fdfcf8';ctxH.fillRect(0,0,hw,hh);
-    const hm=30,hy=hh*.55,hlen=hw-2*hm;ctxH.strokeStyle='#ddd';ctxH.lineWidth=2;ctxH.beginPath();ctxH.moveTo(hm,hy);ctxH.lineTo(hw-hm,hy);ctxH.stroke();
-    const hx=hm+(vx0*Math.min(t,TT)/RR)*hlen;
-    const hg=ctxH.createRadialGradient(hx-1,hy-2,2,hx,hy,9);hg.addColorStop(0,'#85c1e9');hg.addColorStop(1,'#2471a3');
-    ctxH.fillStyle=hg;ctxH.beginPath();ctxH.arc(hx,hy,8,0,Math.PI*2);ctxH.fill();ctxH.strokeStyle='#fff';ctxH.lineWidth=1.5;ctxH.stroke();
-    arrow(ctxH,hx,hy,30,0,'#3498db',2.5);ctxH.fillStyle='#3498db';ctxH.font='bold 10px Fredoka';ctxH.textAlign='left';ctxH.fillText('Vh='+vx0.toFixed(1)+' m/s（恒定）',hm+4,hh-4);
+    // === Decomp window: vert-left, horiz-bottom ===
+    const dw=dC.width,dh=dC.height;ctxD.clearRect(0,0,dw,dh);ctxD.fillStyle='#fdfcf8';ctxD.fillRect(0,0,dw,dh);
+    const vvy=vy0-G*Math.min(t,TT),yNow=Math.max(0,vy0*Math.min(t,TT)-0.5*G*Math.pow(Math.min(t,TT),2));
 
-    const vw=vC.width,vh2=vC.height;ctxV.clearRect(0,0,vw,vh2);ctxV.fillStyle='#fdfcf8';ctxV.fillRect(0,0,vw,vh2);
-    const vm=20,vx1=vw*.35,vlen=vh2-2*vm,vtop=vm,vbot=vh2-vm;ctxV.strokeStyle='#ddd';ctxV.lineWidth=2;ctxV.beginPath();ctxV.moveTo(vx1,vtop);ctxV.lineTo(vx1,vbot);ctxV.stroke();
-    const yNow=Math.max(0,vy0*Math.min(t,TT)-0.5*G*Math.pow(Math.min(t,TT),2)),vby=vbot-(yNow/HH)*vlen;
-    const vg=ctxV.createRadialGradient(vx1-1,vby-2,2,vx1,vby,9);vg.addColorStop(0,'#82e0aa');vg.addColorStop(1,'#1e8449');
-    ctxV.fillStyle=vg;ctxV.beginPath();ctxV.arc(vx1,vby,8,0,Math.PI*2);ctxV.fill();ctxV.strokeStyle='#fff';ctxV.lineWidth=1.5;ctxV.stroke();
-    const vvy=vy0-G*Math.min(t,TT),vvL=Math.min(Math.abs(vvy)*5,50);arrow(ctxV,vx1,vby,0,(vvy>=0?-1:1)*vvL,'#2ecc71',2.5);
-    ctxV.fillStyle='#2ecc71';ctxV.font='bold 10px Fredoka';ctxV.textAlign='left';ctxV.fillText('Vv='+vvy.toFixed(1)+' m/s',vx1+10,vm+12);ctxV.fillText('a=-9.8 m/s²',vx1+10,vm+24);
+    // Vertical axis — left side, aligned with launch
+    const vx1=32,vtop=12,vbot=dh-28,vlen=vbot-vtop;
+    ctxD.strokeStyle='#ddd';ctxD.lineWidth=2;ctxD.beginPath();ctxD.moveTo(vx1,vtop);ctxD.lineTo(vx1,vbot);ctxD.stroke();
+    const vby=vbot-(yNow/HH)*vlen;
+    const vg=ctxD.createRadialGradient(vx1-1,vby-2,2,vx1,vby,9);vg.addColorStop(0,'#82e0aa');vg.addColorStop(1,'#1e8449');
+    ctxD.fillStyle=vg;ctxD.beginPath();ctxD.arc(vx1,vby,8,0,Math.PI*2);ctxD.fill();ctxD.strokeStyle='#fff';ctxD.lineWidth=1.5;ctxD.stroke();
+    const vvL=Math.min(Math.abs(vvy)*5,45);arrow(ctxD,vx1,vby,0,(vvy>=0?-1:1)*vvL,'#2ecc71',2.5);
+    ctxD.fillStyle='#2ecc71';ctxD.font='bold 10px Fredoka';ctxD.textAlign='left';
+    ctxD.fillText('竖直 Vv='+vvy.toFixed(1),vx1+10,vtop+14);ctxD.fillText('a=-9.8 m/s²',vx1+10,vtop+28);
+
+    // Horizontal axis — bottom
+    const hm2=26,hx2=hm2,hlen2=dw-2*hm2,hy2=dh-20;
+    ctxD.strokeStyle='#ddd';ctxD.lineWidth=2;ctxD.beginPath();ctxD.moveTo(hx2,hy2);ctxD.lineTo(hx2+hlen2,hy2);ctxD.stroke();
+    const hxP=hx2+(vx0*Math.min(t,TT)/RR)*hlen2;
+    const hg=ctxD.createRadialGradient(hxP-1,hy2-2,2,hxP,hy2,9);hg.addColorStop(0,'#85c1e9');hg.addColorStop(1,'#2471a3');
+    ctxD.fillStyle=hg;ctxD.beginPath();ctxD.arc(hxP,hy2,8,0,Math.PI*2);ctxD.fill();ctxD.strokeStyle='#fff';ctxD.lineWidth=1.5;ctxD.stroke();
+    arrow(ctxD,hxP,hy2,30,0,'#3498db',2.5);
+    ctxD.fillStyle='#3498db';ctxD.font='bold 10px Fredoka';ctxD.textAlign='left';
+    ctxD.fillText('水平 Vh='+vx0.toFixed(1)+'（恒定）',hx2+4,hy2-8);
 
     // Update UI each frame too
     bV0.textContent=v0.toFixed(1)+' m/s';bAng.textContent=S.angle+'°';
