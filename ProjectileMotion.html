@@ -71,7 +71,7 @@
         }
         #simCanvas { width: 100%; flex: 1; display: block; }
         .sub-canvases {
-            display: flex; gap: 6px; flex: 1; min-height: 120px;
+            display: flex; flex-direction: column; gap: 6px; flex: 1; min-height: 200px;
         }
         .sub-wrap {
             flex: 1; background: var(--card-bg); border-radius: 16px;
@@ -195,7 +195,7 @@
         const state = {
             v0: 15, angle: 45, g: 9.8, time: 0, isPlaying: false, timeScale: 0.5,
             angleRad: Math.PI / 4, R: 0, H: 0, T: 0,
-            trajPoints: [], scale: 0, originX: 80, originY: 0,
+            scale: 0, originX: 80, originY: 0,
             historyX: [], historyY: [], historyT: [] // for sub-graphs
         };
 
@@ -226,19 +226,8 @@
             const scaleY = availH / Math.max(state.H, 0.01);
             state.scale = Math.min(scaleX, scaleY);
             state.originX = margin;
-            state.originY = canvas.height - margin - 50;
+            state.originY = canvas.height - margin - 25;  // reduced ground
 
-            const n = 200;
-            state.trajPoints = [];
-            for (let i = 0; i <= n; i++) {
-                const t = (i / n) * state.T;
-                const px = v0 * Math.cos(rad) * t;
-                const py = v0 * sinA * t - 0.5 * g * t * t;
-                state.trajPoints.push({
-                    x: state.originX + px * state.scale,
-                    y: state.originY - py * state.scale
-                });
-            }
             if (state.time > state.T) state.time = 0;
             state.historyX = []; state.historyY = []; state.historyT = [];
             updateUI();
@@ -285,7 +274,7 @@
 
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const { v0, angle, angleRad, g, time, R, H, T, scale, originX, originY, trajPoints } = state;
+            const { v0, angle, angleRad, g, time, R, H, T, scale, originX, originY } = state;
             if (R <= 0 || H <= 0) return;
 
             const w = canvas.width, h = canvas.height;
@@ -305,14 +294,19 @@
             ctx.beginPath(); ctx.moveTo(originX, originY + 25); ctx.lineTo(originX, 20); ctx.stroke();
             ctx.setLineDash([]);
 
-            // Trajectory
-            if (trajPoints.length > 1) {
-                ctx.strokeStyle = '#FF8c42'; ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-                ctx.shadowColor = 'rgba(255,140,66,0.3)'; ctx.shadowBlur = 6;
-                ctx.beginPath(); ctx.moveTo(trajPoints[0].x, trajPoints[0].y);
-                for (let i = 1; i < trajPoints.length; i++) ctx.lineTo(trajPoints[i].x, trajPoints[i].y);
-                ctx.stroke(); ctx.shadowBlur = 0;
+            // Trajectory — computed directly each frame from current state
+            ctx.strokeStyle = '#FF8c42'; ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+            ctx.shadowColor = 'rgba(255,140,66,0.3)'; ctx.shadowBlur = 6;
+            ctx.beginPath();
+            for (let i = 0; i <= 200; i++) {
+                const t = (i / 200) * T;
+                const px = v0 * Math.cos(angleRad) * t;
+                const py = v0 * Math.sin(angleRad) * t - 0.5 * g * t * t;
+                const cx = originX + px * scale;
+                const cy = originY - py * scale;
+                if (i === 0) ctx.moveTo(cx, cy); else ctx.lineTo(cx, cy);
             }
+            ctx.stroke(); ctx.shadowBlur = 0;
 
             // Range dimension line
             const landX = originX + R * scale;
