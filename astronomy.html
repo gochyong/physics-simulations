@@ -14,6 +14,8 @@
             --card-bg: #ffffff;
         }
 
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
             font-family: 'Segoe UI', 'PingFang SC', system-ui, sans-serif;
             background-color: var(--bg-color);
@@ -27,18 +29,24 @@
 
         /* Back link */
         .back-link {
-            position: absolute;
+            position: fixed;
             top: 20px;
-            left: 30px;
+            left: 24px;
+            z-index: 1000;
             text-decoration: none;
             color: var(--accent-warm);
-            font-weight: 600;
+            font-weight: 700;
             font-size: 0.95rem;
-            transition: color 0.2s ease;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 18px;
+            border-radius: 20px;
+            box-shadow: 0 2px 12px rgba(245, 124, 0, 0.15);
+            transition: all 0.3s ease;
         }
-
         .back-link:hover {
-            color: var(--primary-warm);
+            background: #fff;
+            box-shadow: 0 4px 20px rgba(245, 124, 0, 0.3);
+            transform: translateX(-3px);
         }
 
         /* Header */
@@ -76,79 +84,86 @@
             text-transform: uppercase;
         }
 
-        /* Placeholder section */
-        .placeholder-section {
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: 2px;
+            margin-top: 10px;
+        }
+        .page-subtitle {
+            font-size: 1rem;
+            color: #795548;
+            opacity: 0.8;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        /* Placeholder Container */
+        .placeholder-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
             flex: 1;
+            width: 90%;
+            max-width: 1100px;
+            padding: 40px 0 50px;
+        }
+
+        .placeholder-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 60px 80px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             text-align: center;
-            padding: 60px 20px;
-            max-width: 600px;
-            width: 90%;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            border: 2px solid #fff5eb;
+            position: relative;
+            overflow: hidden;
+        }
+        .placeholder-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(135deg, var(--accent-warm), var(--primary-warm));
+            border-radius: 0 0 4px 4px;
         }
 
         .placeholder-emoji {
-            font-size: 6rem;
+            font-size: 5rem;
+            line-height: 1;
             margin-bottom: 24px;
-            animation: float 3s ease-in-out infinite;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-12px); }
-        }
-
-        .placeholder-heading {
-            font-size: 2.2rem;
-            font-weight: 800;
+        .placeholder-text {
+            font-size: 1.3rem;
+            font-weight: 700;
             color: var(--text-main);
-            margin-bottom: 12px;
-            letter-spacing: 2px;
+            margin-bottom: 8px;
         }
 
-        .placeholder-divider {
-            width: 60px;
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary-warm), var(--accent-warm));
-            border-radius: 2px;
-            margin: 16px 0 20px;
-        }
-
-        .placeholder-message {
-            font-size: 1.1rem;
-            color: #795548;
-            line-height: 1.8;
-        }
-
-        .placeholder-message .en {
-            display: block;
-            font-size: 0.9rem;
-            opacity: 0.7;
-            margin-top: 6px;
-            font-style: italic;
-        }
-
-        /* Card hint */
-        .card-hint {
-            margin-top: 40px;
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 24px 30px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-            border: 1px solid rgba(245, 124, 0, 0.1);
-        }
-
-        .card-hint p {
-            margin: 0;
+        .placeholder-subtext {
+            font-size: 1rem;
             color: #8d6e63;
-            font-size: 0.95rem;
-            line-height: 1.7;
+            font-weight: 500;
+            margin-bottom: 24px;
         }
 
-        .card-hint strong {
+        /* Tag */
+        .tag {
+            display: inline-block;
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
             color: var(--accent-warm);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 14px;
+            border-radius: 12px;
+            letter-spacing: 1px;
         }
 
         footer {
@@ -158,27 +173,26 @@
             color: #a1887f;
         }
 
-        @media (max-width: 480px) {
-            .back-link {
-                top: 12px;
-                left: 16px;
-                font-size: 0.85rem;
-            }
-            .logo-main {
-                font-size: 1.6rem;
-                padding: 8px 18px;
+        @media (max-width: 800px) {
+            .placeholder-card {
+                padding: 40px 40px;
             }
             .placeholder-emoji {
                 font-size: 4rem;
             }
-            .placeholder-heading {
-                font-size: 1.6rem;
+            .placeholder-text {
+                font-size: 1.1rem;
             }
-            .placeholder-message {
+        }
+        @media (max-width: 480px) {
+            .placeholder-card {
+                padding: 30px 24px;
+            }
+            .placeholder-emoji {
+                font-size: 3rem;
+            }
+            .placeholder-text {
                 font-size: 1rem;
-            }
-            .card-hint {
-                padding: 18px 20px;
             }
         }
     </style>
@@ -186,34 +200,28 @@
 
 <body>
 
+    <!-- Back link -->
     <a href="index.html" class="back-link">← 返回首页</a>
 
+    <!-- Header -->
     <header>
         <div class="brand-logo">
             <div class="logo-main">Wuli布雷克</div>
             <div class="logo-sub">Physics Simulation Lab</div>
         </div>
+        <div class="page-title">天文 / Astronomy</div>
+        <div class="page-subtitle">开发中</div>
     </header>
 
-    <section class="placeholder-section">
-        <div class="placeholder-emoji">🌌</div>
-        <h1 class="placeholder-heading">天文 / Astronomy</h1>
-        <div class="placeholder-divider"></div>
-        <div class="placeholder-message">
-            内容开发中，敬请期待。
-            <span class="en">New simulations coming soon.</span>
+    <!-- Placeholder Card -->
+    <main class="placeholder-container">
+        <div class="placeholder-card">
+            <div class="placeholder-emoji">🌌</div>
+            <div class="placeholder-text">内容开发中，敬请期待</div>
+            <div class="placeholder-subtext">New simulations coming soon.</div>
+            <span class="tag">天文 / Astronomy</span>
         </div>
-
-        <div class="card-hint">
-            <p>
-                正在准备 <strong>天体力学、轨道模拟、太阳系探索</strong> 等交互式天文模拟。<br>
-                <span style="font-size: 0.85rem; opacity: 0.7;">
-                    Interactive astronomy simulations on celestial mechanics,
-                    orbital dynamics, and solar system exploration are in the works.
-                </span>
-            </p>
-        </div>
-    </section>
+    </main>
 
     <footer>
         © 2025 Wuli布雷克 | 由 HTML5 & CSS3 驱动

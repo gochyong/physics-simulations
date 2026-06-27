@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>波 / Waves — Wuli布雷克 物理模拟实验室</title>
+    <title>波 / Waves - Wuli布雷克</title>
     <style>
         :root {
             --bg-color: #fffaf5;
@@ -12,8 +12,9 @@
             --accent-warm: #f57c00;
             --text-main: #3e2723;
             --card-bg: #ffffff;
-            --wave-color: #8e44ad;
         }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: 'Segoe UI', 'PingFang SC', system-ui, sans-serif;
@@ -28,23 +29,30 @@
 
         /* Back link */
         .back-link {
-            align-self: flex-start;
-            margin: 20px 0 0 30px;
+            position: fixed;
+            top: 20px;
+            left: 24px;
+            z-index: 1000;
             text-decoration: none;
             color: var(--accent-warm);
-            font-weight: 600;
+            font-weight: 700;
             font-size: 0.95rem;
-            transition: color 0.2s;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 18px;
+            border-radius: 20px;
+            box-shadow: 0 2px 12px rgba(245, 124, 0, 0.15);
+            transition: all 0.3s ease;
         }
-
         .back-link:hover {
-            color: #e65100;
+            background: #fff;
+            box-shadow: 0 4px 20px rgba(245, 124, 0, 0.3);
+            transform: translateX(-3px);
         }
 
         /* Header */
         header {
             width: 100%;
-            padding: 20px 0 0px;
+            padding: 40px 0 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -76,85 +84,104 @@
             text-transform: uppercase;
         }
 
-        .page-heading {
-            font-size: 2rem;
+        .page-title {
+            font-size: 1.8rem;
             font-weight: 800;
-            color: var(--wave-color);
-            margin: 10px 0 30px;
+            color: var(--text-main);
             letter-spacing: 2px;
-            text-align: center;
+            margin-top: 10px;
+        }
+        .page-subtitle {
+            font-size: 1rem;
+            color: #795548;
+            opacity: 0.8;
+            margin-top: 4px;
+            font-weight: 500;
         }
 
-        .page-heading span {
-            font-size: 1.2rem;
-            font-weight: 400;
-            opacity: 0.7;
-            letter-spacing: 1px;
-        }
-
-        /* Sim Card Grid */
-        .sim-grid {
+        /* Grid Container */
+        .grid-container {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 25px;
             width: 90%;
             max-width: 1100px;
-            padding: 0 0 50px;
+            padding: 20px 0 50px;
         }
 
+        /* Sim Card */
         .sim-card {
             text-decoration: none;
             color: var(--text-main);
             background: var(--card-bg);
             border-radius: 20px;
-            padding: 30px 28px 28px;
+            padding: 28px 24px 22px;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            align-items: flex-start;
+            text-align: left;
             transition: all 0.3s ease;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            border: 2px solid #fff5eb;
             position: relative;
-            border-left: 5px solid var(--wave-color);
+            overflow: hidden;
         }
-
+        .sim-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(135deg, var(--accent-warm), var(--primary-warm));
+            border-radius: 0 0 4px 4px;
+        }
         .sim-card:hover {
             transform: translateY(-6px);
-            box-shadow: 0 16px 45px rgba(142, 68, 173, 0.2);
-            border-left-color: #6c3483;
+            box-shadow: 0 16px 45px rgba(245, 124, 0, 0.18);
+            border-color: #ffe0c0;
         }
 
-        .sim-title {
-            font-size: 1.3rem;
+        .sim-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            width: 100%;
+        }
+        .sim-card-icon {
+            font-size: 1.6rem;
+            line-height: 1;
+        }
+        .sim-card-title {
+            font-size: 1.15rem;
             font-weight: 800;
             color: var(--text-main);
-            margin-bottom: 2px;
-            letter-spacing: 1px;
+            line-height: 1.3;
         }
-
-        .sim-subtitle {
+        .sim-card-subtitle {
             font-size: 0.85rem;
-            color: var(--wave-color);
+            color: #8d6e63;
             font-weight: 500;
-            margin-bottom: 10px;
-            opacity: 0.8;
         }
 
-        .sim-desc {
-            font-size: 0.92rem;
-            color: #795548;
-            line-height: 1.6;
-            margin-bottom: 14px;
-            flex-grow: 1;
+        .sim-card-desc {
+            font-size: 0.88rem;
+            color: #6d4c41;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            flex: 1;
         }
 
+        /* Tag */
         .tag {
             display: inline-block;
-            align-self: flex-start;
-            background: linear-gradient(135deg, #8e44ad, #6c3483);
-            color: #fff;
-            padding: 3px 14px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: 600;
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            color: var(--accent-warm);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 14px;
+            border-radius: 12px;
             letter-spacing: 1px;
         }
 
@@ -166,21 +193,20 @@
         }
 
         @media (max-width: 800px) {
-            .sim-grid {
-                grid-template-columns: 1fr;
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr);
                 gap: 16px;
             }
             .sim-card {
-                padding: 24px 20px 22px;
+                padding: 22px 18px 18px;
             }
-            .sim-title {
-                font-size: 1.15rem;
+            .sim-card-title {
+                font-size: 1rem;
             }
-            .page-heading {
-                font-size: 1.6rem;
-            }
-            .back-link {
-                margin-left: 16px;
+        }
+        @media (max-width: 480px) {
+            .grid-container {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -188,81 +214,123 @@
 
 <body>
 
+    <!-- Back link -->
     <a href="index.html" class="back-link">← 返回首页</a>
 
+    <!-- Header -->
     <header>
         <div class="brand-logo">
             <div class="logo-main">Wuli布雷克</div>
             <div class="logo-sub">Physics Simulation Lab</div>
         </div>
-        <div class="page-heading">
-            波 <span>/ Waves</span>
-        </div>
+        <div class="page-title">波 / Waves</div>
+        <div class="page-subtitle">8 个模拟</div>
     </header>
 
-    <main class="sim-grid">
+    <!-- Sim Card Grid -->
+    <main class="grid-container">
 
-        <!-- 多普勒效应 -->
+        <!-- 1. 多普勒效应 / Doppler Effect -->
         <a href="DopplerEffect.html" class="sim-card">
-            <div class="sim-title">多普勒效应</div>
-            <div class="sim-subtitle">Doppler Effect</div>
-            <div class="sim-desc">演示波源移动导致的频率变化，直观观察波前压缩与拉伸现象。</div>
+            <div class="sim-card-header">
+                <span class="sim-card-icon">⚡</span>
+                <div>
+                    <div class="sim-card-title">多普勒效应</div>
+                    <div class="sim-card-subtitle">Doppler Effect</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">演示波源移动导致的频率变化，直观观察波前压缩与拉伸现象。</div>
             <span class="tag">波 / Wave</span>
         </a>
 
-        <!-- 波形产生 -->
+        <!-- 2. 波形产生 / Wave Generation -->
         <a href="WaveGeneration.html" class="sim-card">
-            <div class="sim-title">波形产生</div>
-            <div class="sim-subtitle">Wave Generation</div>
-            <div class="sim-desc">演示波在空间与时间维度的产生，理解波长、频率与周期的物理意义。</div>
+            <div class="sim-card-header">
+                <span class="sim-card-icon">🌊</span>
+                <div>
+                    <div class="sim-card-title">波形产生</div>
+                    <div class="sim-card-subtitle">Wave Generation</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">演示波在空间与时间维度的产生，理解波长、频率与周期的物理意义。</div>
             <span class="tag">波 / Wave</span>
         </a>
 
-        <!-- 波速 -->
+        <!-- 3. 波速 / Wave Speed -->
         <a href="WaveSpeed.html" class="sim-card">
-            <div class="sim-title">波速</div>
-            <div class="sim-subtitle">Wave Speed</div>
-            <div class="sim-desc">直观演示 v = fλ 关系，观察波长与频率如何共同决定波的传播速度。</div>
+            <div class="sim-card-header">
+                <span class="sim-card-icon">🚀</span>
+                <div>
+                    <div class="sim-card-title">波速</div>
+                    <div class="sim-card-subtitle">Wave Speed</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">直观演示 v = fλ 关系，观察波长与频率如何共同决定波的传播速度。</div>
             <span class="tag">波 / Wave</span>
         </a>
 
-        <!-- 横波与纵波 -->
+        <!-- 4. 横波与纵波 / Transverse & Longitudinal Waves -->
         <a href="TransverseLongitudinalWave.html" class="sim-card">
-            <div class="sim-title">横波与纵波</div>
-            <div class="sim-subtitle">Transverse &amp; Longitudinal Waves</div>
-            <div class="sim-desc">对比横波与纵波的质点振动方式。</div>
+            <div class="sim-card-header">
+                <span class="sim-card-icon">〰️</span>
+                <div>
+                    <div class="sim-card-title">横波与纵波</div>
+                    <div class="sim-card-subtitle">Transverse &amp; Longitudinal Waves</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">对比横波与纵波的质点振动方式。</div>
             <span class="tag">波 / Wave</span>
         </a>
 
-        <!-- 驻波形成 -->
+        <!-- 5. 驻波形成 / Standing Wave -->
         <a href="StandingWave.html" class="sim-card">
-            <div class="sim-title">驻波形成</div>
-            <div class="sim-subtitle">Standing Wave Formation</div>
-            <div class="sim-desc">演示两列反向传播的波叠加形成驻波，观察波节与波腹的分布规律。</div>
+            <div class="sim-card-header">
+                <span class="sim-card-icon">🔄</span>
+                <div>
+                    <div class="sim-card-title">驻波形成</div>
+                    <div class="sim-card-subtitle">Standing Wave</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">演示两列反向传播的波叠加形成驻波，观察波节与波腹的分布规律。</div>
             <span class="tag">波 / Wave</span>
         </a>
 
-        <!-- 偏振与马吕斯定律 -->
+        <!-- 6. 偏振与马吕斯定律 / Polarization & Malus's Law -->
         <a href="Polarization.html" class="sim-card">
-            <div class="sim-title">偏振与马吕斯定律</div>
-            <div class="sim-subtitle">Polarization &amp; Malus's Law</div>
-            <div class="sim-desc">演示线偏振光通过偏振片后的强度变化，直观验证 I = I₀ cos²θ 规律。</div>
+            <div class="sim-card-header">
+                <span class="sim-card-icon">🕶️</span>
+                <div>
+                    <div class="sim-card-title">偏振与马吕斯定律</div>
+                    <div class="sim-card-subtitle">Polarization &amp; Malus's Law</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">演示线偏振光通过偏振片后的强度变化，直观验证 I = I₀ cos²θ 规律。</div>
             <span class="tag">波 / Wave</span>
         </a>
 
-        <!-- 双缝干涉 -->
+        <!-- 7. 双缝干涉 / Double-Slit Interference -->
         <a href="DoubleSlitInterference.html" class="sim-card">
-            <div class="sim-title">双缝干涉</div>
-            <div class="sim-subtitle">Double-Slit Interference</div>
-            <div class="sim-desc">模拟双缝干涉的二维波动场与强度分布，验证 d sinθ = nλ 亮暗纹条件。</div>
+            <div class="sim-card-header">
+                <span class="sim-card-icon">🎯</span>
+                <div>
+                    <div class="sim-card-title">双缝干涉</div>
+                    <div class="sim-card-subtitle">Double-Slit Interference</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">模拟双缝干涉的二维波动场与强度分布，验证 d sinθ = nλ 亮暗纹条件。</div>
             <span class="tag">波 / Wave</span>
         </a>
 
-        <!-- 衍射光栅 -->
+        <!-- 8. 衍射光栅 / Diffraction Grating -->
         <a href="DiffractionGrating.html" class="sim-card">
-            <div class="sim-title">衍射光栅</div>
-            <div class="sim-subtitle">Diffraction Grating</div>
-            <div class="sim-desc">N 条缝的多光束干涉，主极大遵循 d sinθ = nλ，N 越大条纹越锐利。</div>
+            <div class="sim-card-header">
+                <span class="sim-card-icon">🔬</span>
+                <div>
+                    <div class="sim-card-title">衍射光栅</div>
+                    <div class="sim-card-subtitle">Diffraction Grating</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">N 条缝的多光束干涉，主极大遵循 d sinθ = nλ，N 越大条纹越锐利。</div>
             <span class="tag">波 / Wave</span>
         </a>
 

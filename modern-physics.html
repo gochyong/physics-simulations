@@ -14,6 +14,8 @@
             --card-bg: #ffffff;
         }
 
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
             font-family: 'Segoe UI', 'PingFang SC', system-ui, sans-serif;
             background-color: var(--bg-color);
@@ -27,21 +29,23 @@
 
         /* Back link */
         .back-link {
-            position: absolute;
+            position: fixed;
             top: 20px;
-            left: 30px;
+            left: 24px;
+            z-index: 1000;
             text-decoration: none;
             color: var(--accent-warm);
-            font-weight: 600;
+            font-weight: 700;
             font-size: 0.95rem;
-            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 18px;
             border-radius: 20px;
-            background: rgba(245, 124, 0, 0.08);
-            transition: all 0.25s ease;
+            box-shadow: 0 2px 12px rgba(245, 124, 0, 0.15);
+            transition: all 0.3s ease;
         }
-
         .back-link:hover {
-            background: rgba(245, 124, 0, 0.18);
+            background: #fff;
+            box-shadow: 0 4px 20px rgba(245, 124, 0, 0.3);
             transform: translateX(-3px);
         }
 
@@ -80,28 +84,23 @@
             text-transform: uppercase;
         }
 
-        .page-heading {
-            text-align: center;
-            margin: 10px 0 30px;
-        }
-
-        .page-heading h1 {
-            font-size: 2rem;
+        .page-title {
+            font-size: 1.8rem;
             font-weight: 800;
             color: var(--text-main);
-            margin: 0;
             letter-spacing: 2px;
+            margin-top: 10px;
         }
-
-        .page-heading .heading-sub {
+        .page-subtitle {
             font-size: 1rem;
             color: #795548;
-            margin-top: 6px;
-            font-style: italic;
+            opacity: 0.8;
+            margin-top: 4px;
+            font-weight: 500;
         }
 
-        /* Sim Card Grid */
-        .sim-grid {
+        /* Grid Container */
+        .grid-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 25px;
@@ -110,78 +109,82 @@
             padding: 20px 0 50px;
         }
 
+        /* Sim Card */
         .sim-card {
             text-decoration: none;
             color: var(--text-main);
             background: var(--card-bg);
-            border-radius: 24px;
-            padding: 35px 30px 30px;
+            border-radius: 20px;
+            padding: 28px 24px 22px;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
+            text-align: left;
             transition: all 0.3s ease;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-            border: 2px solid transparent;
+            border: 2px solid #fff5eb;
             position: relative;
             overflow: hidden;
         }
-
         .sim-card::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            height: 5px;
-            background: linear-gradient(135deg, #2c3e50, #1a252f);
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(135deg, var(--accent-warm), var(--primary-warm));
             border-radius: 0 0 4px 4px;
         }
-
         .sim-card:hover {
             transform: translateY(-6px);
-            box-shadow: 0 16px 45px rgba(0, 0, 0, 0.15);
-            border-color: rgba(245, 124, 0, 0.3);
+            box-shadow: 0 16px 45px rgba(245, 124, 0, 0.18);
+            border-color: #ffe0c0;
         }
 
-        .sim-icon {
-            font-size: 3rem;
-            margin-bottom: 14px;
-            filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.1));
+        .sim-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            width: 100%;
         }
-
-        .sim-title {
-            font-size: 1.3rem;
+        .sim-card-icon {
+            font-size: 1.6rem;
+            line-height: 1;
+        }
+        .sim-card-title {
+            font-size: 1.15rem;
             font-weight: 800;
-            margin-bottom: 2px;
-            color: #3e2723;
+            color: var(--text-main);
+            line-height: 1.3;
         }
-
-        .sim-subtitle {
+        .sim-card-subtitle {
             font-size: 0.85rem;
             color: #8d6e63;
-            margin-bottom: 10px;
             font-weight: 500;
         }
 
-        .sim-desc {
-            font-size: 0.9rem;
-            color: #795548;
+        .sim-card-desc {
+            font-size: 0.88rem;
+            color: #6d4c41;
             line-height: 1.5;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
+            flex: 1;
         }
 
+        /* Tag */
         .tag {
             display: inline-block;
-            background: linear-gradient(135deg, #2c3e50, #1a252f);
-            color: #fff;
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            color: var(--accent-warm);
+            font-size: 0.75rem;
+            font-weight: 700;
             padding: 4px 14px;
-            border-radius: 14px;
-            font-size: 0.78rem;
-            font-weight: 600;
+            border-radius: 12px;
             letter-spacing: 1px;
         }
 
-        /* Footer */
         footer {
             margin-top: auto;
             padding: 40px;
@@ -190,33 +193,20 @@
         }
 
         @media (max-width: 800px) {
-            .sim-grid {
+            .grid-container {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 16px;
             }
-
             .sim-card {
-                padding: 28px 18px 24px;
+                padding: 22px 18px 18px;
             }
-
-            .sim-title {
-                font-size: 1.15rem;
-            }
-
-            .sim-icon {
-                font-size: 2.5rem;
+            .sim-card-title {
+                font-size: 1rem;
             }
         }
-
         @media (max-width: 480px) {
-            .sim-grid {
+            .grid-container {
                 grid-template-columns: 1fr;
-            }
-
-            .back-link {
-                top: 12px;
-                left: 12px;
-                font-size: 0.85rem;
             }
         }
     </style>
@@ -224,33 +214,39 @@
 
 <body>
 
-    <a href="index.html" class="back-link">&#8592; 返回首页</a>
+    <!-- Back link -->
+    <a href="index.html" class="back-link">← 返回首页</a>
 
+    <!-- Header -->
     <header>
         <div class="brand-logo">
             <div class="logo-main">Wuli布雷克</div>
             <div class="logo-sub">Physics Simulation Lab</div>
         </div>
-        <div class="page-heading">
-            <h1>近代物理 / Modern Physics</h1>
-            <div class="heading-sub">探索原子核与量子世界的奥秘</div>
-        </div>
+        <div class="page-title">近代物理 / Modern Physics</div>
+        <div class="page-subtitle">1 个模拟</div>
     </header>
 
-    <main class="sim-grid">
+    <!-- Sim Card Grid -->
+    <main class="grid-container">
 
+        <!-- 1. 卢瑟福散射 / Rutherford Scattering -->
         <a href="AlphaScattering.html" class="sim-card">
-            <div class="sim-icon">🔬</div>
-            <div class="sim-title">卢瑟福散射</div>
-            <div class="sim-subtitle">Rutherford Scattering</div>
-            <div class="sim-desc">α粒子散射实验模拟，探索原子核结构。</div>
+            <div class="sim-card-header">
+                <span class="sim-card-icon">⚛️</span>
+                <div>
+                    <div class="sim-card-title">卢瑟福散射</div>
+                    <div class="sim-card-subtitle">Rutherford Scattering</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">α粒子散射实验模拟，探索原子核结构。</div>
             <span class="tag">近代物理 / Modern Physics</span>
         </a>
 
     </main>
 
     <footer>
-        &copy; 2025 Wuli布雷克 | 由 HTML5 &amp; CSS3 驱动
+        © 2025 Wuli布雷克 | 由 HTML5 & CSS3 驱动
     </footer>
 
 </body>

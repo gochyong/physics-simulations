@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>电学 / Electricity - Wuli布雷克 物理模拟实验室</title>
+    <title>电学 / Electricity - Wuli布雷克</title>
     <style>
         :root {
             --bg-color: #fffaf5;
@@ -12,8 +12,9 @@
             --accent-warm: #f57c00;
             --text-main: #3e2723;
             --card-bg: #ffffff;
-            --electricity-grad: linear-gradient(135deg, #f39c12, #e67e22);
         }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: 'Segoe UI', 'PingFang SC', system-ui, sans-serif;
@@ -28,24 +29,30 @@
 
         /* Back link */
         .back-link {
-            align-self: flex-start;
-            margin: 18px 0 0 30px;
+            position: fixed;
+            top: 20px;
+            left: 24px;
+            z-index: 1000;
             text-decoration: none;
             color: var(--accent-warm);
-            font-weight: 600;
+            font-weight: 700;
             font-size: 0.95rem;
-            transition: color 0.2s ease;
-            letter-spacing: 1px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 18px;
+            border-radius: 20px;
+            box-shadow: 0 2px 12px rgba(245, 124, 0, 0.15);
+            transition: all 0.3s ease;
         }
-
         .back-link:hover {
-            color: #e65100;
+            background: #fff;
+            box-shadow: 0 4px 20px rgba(245, 124, 0, 0.3);
+            transform: translateX(-3px);
         }
 
         /* Header */
         header {
             width: 100%;
-            padding: 10px 0 20px;
+            padding: 40px 0 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -77,106 +84,107 @@
             text-transform: uppercase;
         }
 
-        .intro {
-            text-align: center;
-            max-width: 600px;
-            padding: 0 20px;
-            color: #795548;
-            line-height: 1.6;
-        }
-
-        /* Page heading */
-        .page-heading {
-            text-align: center;
-            margin: 10px 0 25px;
-        }
-
-        .page-heading h2 {
+        .page-title {
             font-size: 1.8rem;
             font-weight: 800;
             color: var(--text-main);
-            margin: 0;
             letter-spacing: 2px;
+            margin-top: 10px;
         }
-
-        .page-heading .heading-divider {
-            width: 60px;
-            height: 4px;
-            background: var(--electricity-grad);
-            border-radius: 2px;
-            margin: 12px auto 0;
-        }
-
-        /* Sim Card Grid */
-        .sim-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 25px;
-            width: 90%;
-            max-width: 1100px;
-            padding: 10px 0 50px;
-        }
-
-        .sim-card {
-            text-decoration: none;
-            color: #fff;
-            background: var(--electricity-grad);
-            border-radius: 24px;
-            padding: 40px 30px 35px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .sim-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
-        }
-
-        .sim-icon {
-            font-size: 3.5rem;
-            margin-bottom: 16px;
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
-        }
-
-        .sim-title {
-            font-size: 1.8rem;
-            font-weight: 800;
-            margin-bottom: 4px;
-            letter-spacing: 2px;
-        }
-
-        .sim-subtitle {
-            font-size: 0.95rem;
-            opacity: 0.85;
-            margin-bottom: 12px;
+        .page-subtitle {
+            font-size: 1rem;
+            color: #795548;
+            opacity: 0.8;
+            margin-top: 4px;
             font-weight: 500;
         }
 
-        .sim-desc {
-            font-size: 0.85rem;
-            opacity: 0.8;
-            margin-bottom: 18px;
-            line-height: 1.5;
-            max-width: 280px;
+        /* Grid Container */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            width: 90%;
+            max-width: 1100px;
+            padding: 20px 0 50px;
         }
 
+        /* Sim Card */
+        .sim-card {
+            text-decoration: none;
+            color: var(--text-main);
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 28px 24px 22px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            border: 2px solid #fff5eb;
+            position: relative;
+            overflow: hidden;
+        }
+        .sim-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(135deg, var(--accent-warm), var(--primary-warm));
+            border-radius: 0 0 4px 4px;
+        }
+        .sim-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 45px rgba(245, 124, 0, 0.18);
+            border-color: #ffe0c0;
+        }
+
+        .sim-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            width: 100%;
+        }
+        .sim-card-icon {
+            font-size: 1.6rem;
+            line-height: 1;
+        }
+        .sim-card-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1.3;
+        }
+        .sim-card-subtitle {
+            font-size: 0.85rem;
+            color: #8d6e63;
+            font-weight: 500;
+        }
+
+        .sim-card-desc {
+            font-size: 0.88rem;
+            color: #6d4c41;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            flex: 1;
+        }
+
+        /* Tag */
         .tag {
             display: inline-block;
-            background: rgba(255, 255, 255, 0.25);
-            padding: 4px 16px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            color: var(--accent-warm);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 14px;
+            border-radius: 12px;
             letter-spacing: 1px;
         }
 
-        /* Footer */
         footer {
             margin-top: auto;
             padding: 40px;
@@ -185,25 +193,20 @@
         }
 
         @media (max-width: 800px) {
-            .sim-grid {
-                grid-template-columns: 1fr;
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr);
                 gap: 16px;
             }
-
             .sim-card {
-                padding: 28px 18px 24px;
+                padding: 22px 18px 18px;
             }
-
-            .sim-title {
-                font-size: 1.4rem;
+            .sim-card-title {
+                font-size: 1rem;
             }
-
-            .sim-icon {
-                font-size: 2.5rem;
-            }
-
-            .back-link {
-                margin-left: 16px;
+        }
+        @media (max-width: 480px) {
+            .grid-container {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -211,55 +214,52 @@
 
 <body>
 
-    <a href="index.html" class="back-link">&larr; 返回首页</a>
+    <!-- Back link -->
+    <a href="index.html" class="back-link">← 返回首页</a>
 
+    <!-- Header -->
     <header>
         <div class="brand-logo">
             <div class="logo-main">Wuli布雷克</div>
             <div class="logo-sub">Physics Simulation Lab</div>
         </div>
-        <div class="intro">
-            <div style="font-size: 1.6rem; font-weight: 700; color: var(--accent-warm); margin-bottom: 12px; letter-spacing: 1px;">
-                欢迎来到Wuli布雷克的物理模拟实验室<br>
-                <span style="font-size: 1.1rem; font-weight: 400; opacity: 0.8; font-style: italic;">Welcome to Wuli
-                    Blake's Physics Simulation Lab</span>
-            </div>
-            <div style="padding-top: 10px; border-top: 2px solid rgba(245, 124, 0, 0.1); display: inline-block;">
-                选择一个模拟，开始交互式探索。<br>
-                <span style="font-size: 0.9rem; opacity: 0.7;">Select a simulation to begin interactive exploration.</span>
-            </div>
-        </div>
+        <div class="page-title">电学 / Electricity</div>
+        <div class="page-subtitle">2 个模拟</div>
     </header>
 
-    <div class="page-heading">
-        <h2>电学 / Electricity</h2>
-        <div class="heading-divider"></div>
-    </div>
+    <!-- Sim Card Grid -->
+    <main class="grid-container">
 
-    <main class="sim-grid">
-
-        <!-- 电阻 / Resistance -->
+        <!-- 1. 电阻 / Resistance -->
         <a href="resistor.html" class="sim-card">
-            <div class="sim-icon">🔌</div>
-            <div class="sim-title">电阻</div>
-            <div class="sim-subtitle">Resistance</div>
-            <div class="sim-desc">演示电阻率、长度和截面积如何影响电阻。<br>R = ρL/A</div>
+            <div class="sim-card-header">
+                <span class="sim-card-icon">🔌</span>
+                <div>
+                    <div class="sim-card-title">电阻</div>
+                    <div class="sim-card-subtitle">Resistance</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">演示电阻率、长度和截面积如何影响电阻。R = ρL/A</div>
             <span class="tag">电学 / Electricity</span>
         </a>
 
-        <!-- 欧姆定律 / Ohm's Law -->
+        <!-- 2. 欧姆定律 / Ohm's Law -->
         <a href="Ohm'sLaw.html" class="sim-card">
-            <div class="sim-icon">⚡</div>
-            <div class="sim-title">欧姆定律</div>
-            <div class="sim-subtitle">Ohm's Law</div>
-            <div class="sim-desc">探究电压、电流与电阻的关系。<br>I = V / R</div>
+            <div class="sim-card-header">
+                <span class="sim-card-icon">⚡</span>
+                <div>
+                    <div class="sim-card-title">欧姆定律</div>
+                    <div class="sim-card-subtitle">Ohm's Law</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">探究电压、电流与电阻的关系。I = V / R</div>
             <span class="tag">电学 / Electricity</span>
         </a>
 
     </main>
 
     <footer>
-        &copy; 2025 Wuli布雷克 | 由 HTML5 &amp; CSS3 驱动
+        © 2025 Wuli布雷克 | 由 HTML5 & CSS3 驱动
     </footer>
 
 </body>

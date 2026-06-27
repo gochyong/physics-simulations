@@ -12,8 +12,9 @@
             --accent-warm: #f57c00;
             --text-main: #3e2723;
             --card-bg: #ffffff;
-            --thermal-gradient: linear-gradient(135deg, #e74c3c, #c0392b);
         }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: 'Segoe UI', 'PingFang SC', system-ui, sans-serif;
@@ -28,18 +29,24 @@
 
         /* Back link */
         .back-link {
-            position: absolute;
-            top: 24px;
-            left: 32px;
+            position: fixed;
+            top: 20px;
+            left: 24px;
+            z-index: 1000;
             text-decoration: none;
             color: var(--accent-warm);
-            font-weight: 600;
-            font-size: 1rem;
-            transition: opacity 0.2s ease;
+            font-weight: 700;
+            font-size: 0.95rem;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 18px;
+            border-radius: 20px;
+            box-shadow: 0 2px 12px rgba(245, 124, 0, 0.15);
+            transition: all 0.3s ease;
         }
-
         .back-link:hover {
-            opacity: 0.7;
+            background: #fff;
+            box-shadow: 0 4px 20px rgba(245, 124, 0, 0.3);
+            transform: translateX(-3px);
         }
 
         /* Header */
@@ -77,100 +84,88 @@
             text-transform: uppercase;
         }
 
-        /* Placeholder section */
-        .placeholder-section {
-            flex: 1;
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: 2px;
+            margin-top: 10px;
+        }
+        .page-subtitle {
+            font-size: 1rem;
+            color: #795548;
+            opacity: 0.8;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        /* Placeholder Container */
+        .placeholder-container {
             display: flex;
-            align-items: center;
             justify-content: center;
-            width: 100%;
+            align-items: center;
+            flex: 1;
+            width: 90%;
+            max-width: 1100px;
+            padding: 40px 0 50px;
         }
 
         .placeholder-card {
             background: var(--card-bg);
-            border-radius: 28px;
-            padding: 60px 50px;
+            border-radius: 20px;
+            padding: 60px 80px;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
-            max-width: 500px;
-            width: 85%;
-            border-top: 5px solid var(--accent-warm);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            border: 2px solid #fff5eb;
+            position: relative;
+            overflow: hidden;
+        }
+        .placeholder-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(135deg, var(--accent-warm), var(--primary-warm));
+            border-radius: 0 0 4px 4px;
         }
 
-        .placeholder-icon {
-            font-size: 6rem;
-            margin-bottom: 20px;
-            filter: drop-shadow(0 4px 12px rgba(245, 124, 0, 0.3));
-            animation: pulse 2s ease-in-out infinite;
+        .placeholder-emoji {
+            font-size: 5rem;
+            line-height: 1;
+            margin-bottom: 24px;
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.08); }
-        }
-
-        .placeholder-title {
-            font-size: 2rem;
-            font-weight: 800;
+        .placeholder-text {
+            font-size: 1.3rem;
+            font-weight: 700;
             color: var(--text-main);
             margin-bottom: 8px;
-            letter-spacing: 2px;
         }
 
-        .placeholder-subtitle {
-            font-size: 1.1rem;
-            color: var(--accent-warm);
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        .placeholder-message {
+        .placeholder-subtext {
             font-size: 1rem;
-            color: #795548;
-            line-height: 1.8;
-            margin-top: 12px;
+            color: #8d6e63;
+            font-weight: 500;
+            margin-bottom: 24px;
         }
 
-        .placeholder-message .zh {
-            display: block;
-            margin-bottom: 4px;
+        /* Tag */
+        .tag {
+            display: inline-block;
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            color: var(--accent-warm);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 14px;
+            border-radius: 12px;
+            letter-spacing: 1px;
         }
 
-        .placeholder-message .en {
-            display: block;
-            font-style: italic;
-            opacity: 0.7;
-            font-size: 0.95rem;
-        }
-
-        /* Decorative dots */
-        .dots {
-            display: flex;
-            gap: 10px;
-            margin-top: 28px;
-        }
-
-        .dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--accent-warm);
-            opacity: 0.4;
-            animation: bounce 1.4s ease-in-out infinite;
-        }
-
-        .dot:nth-child(2) { animation-delay: 0.2s; }
-        .dot:nth-child(3) { animation-delay: 0.4s; }
-
-        @keyframes bounce {
-            0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
-            40% { transform: translateY(-12px); opacity: 0.9; }
-        }
-
-        /* Footer */
         footer {
             margin-top: auto;
             padding: 40px;
@@ -178,23 +173,26 @@
             color: #a1887f;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 800px) {
             .placeholder-card {
-                padding: 40px 28px;
+                padding: 40px 40px;
             }
-
-            .placeholder-icon {
-                font-size: 4.5rem;
+            .placeholder-emoji {
+                font-size: 4rem;
             }
-
-            .placeholder-title {
-                font-size: 1.5rem;
+            .placeholder-text {
+                font-size: 1.1rem;
             }
-
-            .back-link {
-                top: 16px;
-                left: 18px;
-                font-size: 0.9rem;
+        }
+        @media (max-width: 480px) {
+            .placeholder-card {
+                padding: 30px 24px;
+            }
+            .placeholder-emoji {
+                font-size: 3rem;
+            }
+            .placeholder-text {
+                font-size: 1rem;
             }
         }
     </style>
@@ -202,34 +200,31 @@
 
 <body>
 
-    <a href="index.html" class="back-link">&larr; 返回首页</a>
+    <!-- Back link -->
+    <a href="index.html" class="back-link">← 返回首页</a>
 
+    <!-- Header -->
     <header>
         <div class="brand-logo">
             <div class="logo-main">Wuli布雷克</div>
             <div class="logo-sub">Physics Simulation Lab</div>
         </div>
+        <div class="page-title">热学 / Thermal Physics</div>
+        <div class="page-subtitle">开发中</div>
     </header>
 
-    <section class="placeholder-section">
+    <!-- Placeholder Card -->
+    <main class="placeholder-container">
         <div class="placeholder-card">
-            <div class="placeholder-icon">🔥</div>
-            <div class="placeholder-title">热学</div>
-            <div class="placeholder-subtitle">Thermal Physics</div>
-            <div class="placeholder-message">
-                <span class="zh">内容开发中，敬请期待。</span>
-                <span class="en">New simulations coming soon.</span>
-            </div>
-            <div class="dots">
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-            </div>
+            <div class="placeholder-emoji">🔥</div>
+            <div class="placeholder-text">内容开发中，敬请期待</div>
+            <div class="placeholder-subtext">New simulations coming soon.</div>
+            <span class="tag">热学 / Thermal Physics</span>
         </div>
-    </section>
+    </main>
 
     <footer>
-        &copy; 2025 Wuli布雷克 | 由 HTML5 &amp; CSS3 驱动
+        © 2025 Wuli布雷克 | 由 HTML5 & CSS3 驱动
     </footer>
 
 </body>
