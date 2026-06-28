@@ -295,18 +295,17 @@ function draw() {
 
     const tClamped = Math.min(t, tFall);
 
-    // Vertical axis — left side: ball falls from top to bottom
-    const vx1 = 32, vtop = 12, vbot = dh - 28, vlen = vbot - vtop;
-    ctxD.strokeStyle = '#ddd';
-    ctxD.lineWidth = 2;
-    ctxD.beginPath();
-    ctxD.moveTo(vx1, vtop);
-    ctxD.lineTo(vx1, vbot);
-    ctxD.stroke();
+    // Vertical axis — proportionally aligned to main canvas launch/ground
+    const vx1 = 32;
+    const vtop = dh * (Y(h0) / ch);   // same relative position as main launch height
+    const vbot = dh * (oy / ch);       // same relative position as main ground
+    const vlen = vbot - vtop;
+    ctxD.strokeStyle = '#ddd'; ctxD.lineWidth = 2;
+    ctxD.beginPath(); ctxD.moveTo(vx1, vtop); ctxD.lineTo(vx1, vbot); ctxD.stroke();
 
-    // Pixel-offset sync: (by - Y(h0)) pixels below launch point
+    // Pixel-offset sync
     const launchY = Y(h0);
-    const vby = vtop + Math.min(by - launchY, vlen); // fall distance = pixel offset from launch
+    const vby = vtop + Math.min(by - launchY, vlen);
 
     // Vertical ball
     const vg = ctxD.createRadialGradient(vx1 - 1, vby - 2, 2, vx1, vby, 9);
@@ -336,14 +335,13 @@ function draw() {
     ctxD.fillText('h₀=' + h0.toFixed(1), vx1 + 10, vtop + 4);
     ctxD.fillText('地面', vx1 + 10, vbot - 2);
 
-    // Horizontal axis — bottom: ball moves right at constant speed
-    const hm2 = 26, hx2 = hm2 + 10, hlen2 = dw - 2 * hm2 - 20, hy2 = dh - 20;
-    ctxD.strokeStyle = '#ddd';
-    ctxD.lineWidth = 2;
-    ctxD.beginPath();
-    ctxD.moveTo(hx2, hy2);
-    ctxD.lineTo(hx2 + hlen2, hy2);
-    ctxD.stroke();
+    // Horizontal axis — proportionally aligned to main canvas origin/range
+    const hx2 = dw * (ox / cw);          // same relative x as main origin
+    const hEnd = dw * (X(R) / cw);       // same relative x as main landing
+    const hlen2 = Math.max(hEnd - hx2, 20);
+    const hy2 = dh - 20;
+    ctxD.strokeStyle = '#ddd'; ctxD.lineWidth = 2;
+    ctxD.beginPath(); ctxD.moveTo(hx2, hy2); ctxD.lineTo(hx2 + hlen2, hy2); ctxD.stroke();
 
     // Tick marks along horizontal axis
     ctxD.fillStyle = '#aaa';
