@@ -49,7 +49,6 @@
 <header><h1>斜抛运动 / Angled Projection</h1><p class="subtitle">v₀: 初速度 &nbsp; θ: 发射角 &nbsp; g = 9.8 m/s²</p></header>
 <section class="formula-display">
     <div class="formula-container" id="formula-root"></div>
-    <div class="result-row" id="result-area"></div>
     <div class="legend">
         <div class="legend-item"><span class="legend-dot" style="background:var(--primary)"></span> 轨迹</div>
         <div class="legend-item"><span style="color:#3498db">--</span> 射程 R</div>
@@ -90,7 +89,7 @@ const dC=document.getElementById('canvasDecomp'),ctxD=dC.getContext('2d');
 const sV0=document.getElementById('slider-v0'),sAng=document.getElementById('slider-angle');
 const bV0=document.getElementById('badge-v0'),bAng=document.getElementById('badge-angle');
 const bStart=document.getElementById('btn-start'),bReset=document.getElementById('btn-reset');
-const fRoot=document.getElementById('formula-root'),rArea=document.getElementById('result-area');
+const fRoot=document.getElementById('formula-root');
 
 const S={v0:15,angle:45,time:0,playing:false,ts:0.5};
 let lt=0;
@@ -202,7 +201,6 @@ function draw(){
     // Update UI each frame too
     bV0.textContent=v0.toFixed(1)+' m/s';bAng.textContent=S.angle+'°';
     fRoot.innerHTML=`<span class="formula-item" style="color:#3498db">R=v₀²sin(2θ)/g=${v0}²·sin(${2*S.angle}°)/${G}=<b>${RR.toFixed(2)}</b> m</span><span class="formula-item" style="color:#2ecc71">H=v₀²sin²θ/(2g)=${v0}²·sin²(${S.angle}°)/(2·${G})=<b>${HH.toFixed(2)}</b> m</span><span class="formula-item">T=2v₀sinθ/g=2·${v0}·sin(${S.angle}°)/${G}=<b>${TT.toFixed(2)}</b> s</span>`;
-    rArea.innerHTML=`R:<b style="color:#3498db">${RR.toFixed(2)}</b> m &nbsp; H:<b style="color:#2ecc71">${HH.toFixed(2)}</b> m &nbsp; T:<b>${TT.toFixed(2)}</b> s`;
 }
 
 function loop(ts){if(!lt)lt=ts;let dt=(ts-lt)/1000;lt=ts;if(dt>0.1)dt=0.016;if(S.playing){S.time+=dt*S.ts;if(S.time>=2*S.v0*Math.sin(S.angle*Math.PI/180)/G)S.time=0;}draw();requestAnimationFrame(loop);}
