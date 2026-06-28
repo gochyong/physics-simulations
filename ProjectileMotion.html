@@ -1,219 +1,262 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>抛体运动 / Projectile Motion - Wuli布雷克</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg-color: #FFF9F0; --primary: #FF8c42; --secondary: #FFC75F; --accent: #FF5E5B; --text-dark: #4A403A; --card-bg: #FFFFFF; --shadow: 0 6px 30px rgba(255,140,66,0.18); }
+        :root {
+            --bg-color: #fffaf5;
+            --primary-warm: #ff9800;
+            --accent-warm: #f57c00;
+            --text-main: #3e2723;
+            --card-bg: #ffffff;
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Fredoka','Noto Sans SC',sans-serif; background: var(--bg-color); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 5px 40px 10px; }
-        .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
-        .logo { font-weight: 700; font-size: 1.3rem; color: #fff; background: var(--primary); padding: 6px 18px; border-radius: 16px; box-shadow: 4px 4px 15px rgba(255,140,66,0.3); }
-        .container { width: 100%; max-width: 1400px; margin-top: 8px; display: grid; grid-template-areas:"header header" "formula formula" "diagram controls"; grid-template-columns: 1fr 400px; gap: 12px; }
-        header { grid-area: header; text-align: center; } h1 { font-size: 2rem; margin-bottom: 2px; } .subtitle { font-size: 0.85rem; color: #999; }
-        .formula-display { grid-area: formula; background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb; }
-        .formula-container { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; min-height: 40px; }
-        .formula-item { font-size: 0.9rem; font-weight: 600; padding: 3px 10px; border-radius: 10px; background: #fafaf7; }
-        .result-row { font-size: 0.95rem; font-weight: 600; margin-top: 4px; display: flex; gap: 20px; justify-content: center; }
-        .legend { display: flex; gap: 16px; justify-content: center; border-top: 1px solid #eee; padding-top: 6px; width: 100%; }
-        .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
-        .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
-        .diagram-section { grid-area: diagram; display: flex; flex-direction: column; gap: 6px; }
-        .main-canvas-wrap { background: #fff; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; flex: 1; min-height: 200px; border: 2px solid #fff; }
-        #simCanvas { width: 100%; height: 100%; display: block; }
-        .sub-wrap { background: #fff; border-radius: 16px; box-shadow: var(--shadow); flex: 1; display: flex; flex-direction: column; border: 1px solid #fff5eb; overflow: hidden; }
-        .sub-label { background: #fff; padding: 3px 10px; font-weight: 700; font-size: 0.8rem; text-align: center; }
-        .sub-wrap canvas { width: 100%; flex: 1; display: block; }
-        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
-        .control-panel { background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
-        .control-group { display: flex; flex-direction: column; gap: 3px; }
-        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
-        .val-badge { background: #fff; padding: 1px 7px; border-radius: 7px; font-size: 0.85rem; border: 2px solid #f0f0f0; }
-        input[type=range] { width: 100%; appearance: none; height: 6px; background: #eee; border-radius: 3px; }
-        input[type=range]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; cursor: pointer; background: var(--primary); }
-        #slider-angle::-webkit-slider-thumb { background: var(--secondary); }
-        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px; }
-        .ctrl-btn { padding: 10px; border: none; border-radius: 14px; font-size: 1.05rem; font-weight: 700; cursor: pointer; color: white; }
-        .start { background: var(--primary); } .pause { background: #2ecc71; } .reset { background: #95a5a6; }
-        .info-card { background: #fff; border-radius: 20px; padding: 12px 16px; box-shadow: var(--shadow); font-size: 0.9rem; line-height: 1.4; color: #5D6D7E; }
-        @media (max-width: 1100px) { .container { grid-template-areas: "header" "formula" "diagram" "controls"; grid-template-columns: 1fr; } }
+
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', system-ui, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Back link */
+        .back-link {
+            position: fixed;
+            top: 20px;
+            left: 24px;
+            z-index: 1000;
+            text-decoration: none;
+            color: var(--accent-warm);
+            font-weight: 700;
+            font-size: 0.95rem;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 18px;
+            border-radius: 20px;
+            box-shadow: 0 2px 12px rgba(245, 124, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+        .back-link:hover {
+            background: #fff;
+            box-shadow: 0 4px 20px rgba(245, 124, 0, 0.3);
+            transform: translateX(-3px);
+        }
+
+        /* Header */
+        header {
+            width: 100%;
+            padding: 40px 0 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .brand-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-main {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent-warm), var(--primary-warm));
+            padding: 10px 25px;
+            border-radius: 15px 15px 15px 0;
+            box-shadow: 5px 5px 20px rgba(245, 124, 0, 0.2);
+        }
+
+        .logo-sub {
+            font-size: 0.9rem;
+            letter-spacing: 4px;
+            color: var(--accent-warm);
+            margin-top: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: 2px;
+            margin-top: 10px;
+        }
+        .page-subtitle {
+            font-size: 1rem;
+            color: #795548;
+            opacity: 0.8;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        /* Grid Container */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            width: 90%;
+            max-width: 800px;
+            padding: 20px 0 50px;
+        }
+
+        /* Sim Card */
+        .sim-card {
+            text-decoration: none;
+            color: var(--text-main);
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 28px 24px 22px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            border: 2px solid #fff5eb;
+            position: relative;
+            overflow: hidden;
+        }
+        .sim-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(135deg, var(--accent-warm), var(--primary-warm));
+            border-radius: 0 0 4px 4px;
+        }
+        .sim-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 45px rgba(245, 124, 0, 0.18);
+            border-color: #ffe0c0;
+        }
+
+        .sim-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            width: 100%;
+        }
+        .sim-card-icon {
+            font-size: 1.6rem;
+            line-height: 1;
+        }
+        .sim-card-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1.3;
+        }
+        .sim-card-subtitle {
+            font-size: 0.85rem;
+            color: #8d6e63;
+            font-weight: 500;
+        }
+
+        .sim-card-desc {
+            font-size: 0.88rem;
+            color: #6d4c41;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            flex: 1;
+        }
+
+        /* Tag */
+        .tag {
+            display: inline-block;
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            color: var(--accent-warm);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 14px;
+            border-radius: 12px;
+            letter-spacing: 1px;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 40px;
+            font-size: 0.85rem;
+            color: #a1887f;
+        }
+
+        @media (max-width: 600px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .sim-card {
+                padding: 22px 18px 18px;
+            }
+            .sim-card-title {
+                font-size: 1rem;
+            }
+        }
     </style>
 </head>
+
 <body>
-<div class="branding"><div class="logo">Wuli布雷克</div></div>
-<div class="container">
-<header><h1>抛体运动 / Projectile Motion</h1><p class="subtitle">v₀: 初速度 &nbsp; θ: 发射角 &nbsp; g = 9.8 m/s²</p></header>
-<section class="formula-display">
-    <div class="formula-container" id="formula-root"></div>
-    <div class="result-row" id="result-area"></div>
-    <div class="legend">
-        <div class="legend-item"><span class="legend-dot" style="background:var(--primary)"></span> 轨迹</div>
-        <div class="legend-item"><span style="color:#3498db">--</span> 射程 R</div>
-        <div class="legend-item"><span style="color:#2ecc71">--</span> 最大高度 H</div>
-        <div class="legend-item"><span class="legend-dot" style="background:#FF5E5B"></span> 小球</div>
-    </div>
-</section>
-<section class="diagram-section">
-    <div class="main-canvas-wrap"><canvas id="simCanvas"></canvas></div>
-    <div class="sub-wrap" style="flex:1;min-height:140px;">
-        <div class="sub-label">分解运动 Decomposed Motion</div>
-        <canvas id="canvasDecomp"></canvas>
-    </div>
-</section>
-<section class="controls-section">
-    <div class="control-panel">
-        <div class="control-group"><div class="label-row"><span>初速度 v₀</span><span id="badge-v0" class="val-badge">15 m/s</span></div><input type="range" id="slider-v0" min="5" max="25" step="0.5" value="15"></div>
-        <div class="control-group"><div class="label-row"><span>发射角 θ</span><span id="badge-angle" class="val-badge">45°</span></div><input type="range" id="slider-angle" min="10" max="80" step="1" value="45"></div>
-        <div class="btn-row"><button id="btn-start" class="ctrl-btn start">开始 Start</button><button id="btn-reset" class="ctrl-btn reset">重置 Reset</button></div>
-    </div>
-    <div class="info-card">
-        <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem;">演示要点 / Key Points</div>
-        <div style="display:flex;flex-direction:column;gap:6px;">
-            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:#3498db;font-weight:700;">R</div><div><div style="font-weight:700;font-size:0.9rem;">R=v₀²sin(2θ)/g</div><div style="font-size:0.78rem;color:#888;">水平射程，45°时最大。</div></div></div>
-            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:#2ecc71;font-weight:700;">H</div><div><div style="font-weight:700;font-size:0.9rem;">H=v₀²sin²θ/(2g)</div><div style="font-size:0.78rem;color:#888;">最高点垂直高度。</div></div></div>
-            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;">T</div><div><div style="font-weight:700;font-size:0.9rem;">T=2v₀sinθ/g</div><div style="font-size:0.78rem;color:#888;">飞行总时间。</div></div></div>
-            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:#3498db;font-weight:700;">↔</div><div><div style="font-weight:700;font-size:0.9rem;">水平匀速：Vh=v₀cosθ</div><div style="font-size:0.78rem;color:#888;">水平不受力，速度恒定。</div></div></div>
-            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:#2ecc71;font-weight:700;">↕</div><div><div style="font-weight:700;font-size:0.9rem;">竖直匀变速：Vv=v₀sinθ−gt</div><div style="font-size:0.78rem;color:#888;">受重力a=−g，速度线性减小后反向。</div></div></div>
+
+    <!-- Back link -->
+    <a href="index.html" class="back-link">← 返回首页</a>
+
+    <!-- Header -->
+    <header>
+        <div class="brand-logo">
+            <div class="logo-main">Wuli布雷克</div>
+            <div class="logo-sub">Physics Simulation Lab</div>
         </div>
-    </div>
-</section>
-</div>
+        <div class="page-title">抛体运动 / Projectile Motion</div>
+        <div class="page-subtitle">2 个模拟</div>
+    </header>
 
-<script>
-const G=9.8;
-const simC=document.getElementById('simCanvas'),ctx=simC.getContext('2d');
-const dC=document.getElementById('canvasDecomp'),ctxD=dC.getContext('2d');
-const sV0=document.getElementById('slider-v0'),sAng=document.getElementById('slider-angle');
-const bV0=document.getElementById('badge-v0'),bAng=document.getElementById('badge-angle');
-const bStart=document.getElementById('btn-start'),bReset=document.getElementById('btn-reset');
-const fRoot=document.getElementById('formula-root'),rArea=document.getElementById('result-area');
+    <!-- Sim Card Grid -->
+    <main class="grid-container">
 
-const S={v0:15,angle:45,time:0,playing:false,ts:0.5};
-let lt=0;
+        <!-- 1. 斜抛运动 / Angled Projection -->
+        <a href="AngledProjection.html" class="sim-card">
+            <div class="sim-card-header">
+                <span class="sim-card-icon">🎯</span>
+                <div>
+                    <div class="sim-card-title">斜抛运动</div>
+                    <div class="sim-card-subtitle">Angled Projection</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">有初速度 v₀ 和发射角 θ 的抛体，展示抛物线轨迹、射程与最大高度。</div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
 
-function resize(){simC.width=simC.clientWidth;simC.height=simC.clientHeight;dC.width=dC.clientWidth;dC.height=dC.clientHeight;}
-window.addEventListener('resize',resize);
+        <!-- 2. 平抛运动 / Horizontal Projection -->
+        <a href="HorizontalProjection.html" class="sim-card">
+            <div class="sim-card-header">
+                <span class="sim-card-icon">📐</span>
+                <div>
+                    <div class="sim-card-title">平抛运动</div>
+                    <div class="sim-card-subtitle">Horizontal Projection</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">从一定高度水平抛出的物体，展示下落时间、水平射程与落地速度。</div>
+            <span class="tag">力学 / Mechanics</span>
+        </a>
 
-function arrow(c,x,y,dx,dy,clr,lw){
-    const a=Math.atan2(dy,dx),h=7,tx=x+dx,ty=y+dy;
-    c.strokeStyle=clr;c.fillStyle=clr;c.lineWidth=lw||2;c.lineCap='round';
-    c.beginPath();c.moveTo(x,y);c.lineTo(tx,ty);c.stroke();
-    c.beginPath();c.moveTo(tx,ty);
-    c.lineTo(tx-h*Math.cos(a-Math.PI/6),ty-h*Math.sin(a-Math.PI/6));
-    c.lineTo(tx-h*Math.cos(a+Math.PI/6),ty-h*Math.sin(a+Math.PI/6));
-    c.closePath();c.fill();
-}
+    </main>
 
-function draw(){
-    ctx.clearRect(0,0,simC.width,simC.height);
-    const cw=simC.width,ch=simC.height;if(cw<10)return;
-    const v0=S.v0,t=S.time;
-    const rad=S.angle*Math.PI/180,sA=Math.sin(rad),cA=Math.cos(rad);
-    const RR=v0*v0*Math.sin(2*rad)/G,HH=v0*v0*sA*sA/(2*G),TT=2*v0*sA/G;
+    <footer>
+        © 2025 Wuli布雷克 | 由 HTML5 & CSS3 驱动
+    </footer>
 
-    const M=60,ox=M,oy=ch-M-10;
-    const aW=cw-2*M,aH=ch-2*M-20;
-    // FIXED scale — max range at v0=30, angle=45°
-    const sc=Math.min(aW/28,aH/7);
-    const X=px=>ox+px*sc,Y=py=>oy-py*sc;
-    const vx0=v0*cA,vy0=v0*sA;
-
-    // BG
-    ctx.fillStyle='#f2f8ff';ctx.fillRect(0,0,cw,oy);
-    ctx.fillStyle='rgba(139,119,80,0.08)';ctx.fillRect(0,oy,cw,ch-oy);
-    ctx.strokeStyle='#c0b090';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(ox-20,oy);ctx.lineTo(cw-20,oy);ctx.stroke();
-
-    // Trajectory
-    ctx.strokeStyle='#FF8c42';ctx.lineWidth=3;ctx.lineCap='round';
-    ctx.shadowColor='rgba(255,140,66,0.3)';ctx.shadowBlur=6;ctx.beginPath();
-    for(let i=0;i<=200;i++){const ti=(i/200)*TT,px=vx0*ti,py=vy0*ti-0.5*G*ti*ti;i===0?ctx.moveTo(X(px),Y(py)):ctx.lineTo(X(px),Y(py));}
-    ctx.stroke();ctx.shadowBlur=0;
-
-    // Range
-    const lx=X(RR),dY=oy+28;
-    ctx.strokeStyle='#3498db';ctx.lineWidth=1.5;ctx.setLineDash([6,4]);ctx.beginPath();ctx.moveTo(ox,dY);ctx.lineTo(lx,dY);ctx.stroke();ctx.setLineDash([]);
-    arrow(ctx,ox,dY,7,0,'#3498db',1.5);arrow(ctx,lx,dY,-7,0,'#3498db',1.5);
-    ctx.fillStyle='#3498db';ctx.font='bold 12px Fredoka';ctx.textAlign='center';ctx.fillText('R='+RR.toFixed(2)+' m',(ox+lx)/2,dY-8);
-
-    // Height
-    const pkX=X(RR/2),pkY=Y(HH),dX=pkX+38;
-    ctx.strokeStyle='#2ecc71';ctx.lineWidth=1.5;ctx.setLineDash([6,4]);ctx.beginPath();ctx.moveTo(dX,pkY);ctx.lineTo(dX,oy);ctx.stroke();ctx.setLineDash([]);
-    arrow(ctx,dX,pkY,0,7,'#2ecc71',1.5);arrow(ctx,dX,oy,0,-7,'#2ecc71',1.5);
-    ctx.fillStyle='#2ecc71';ctx.font='bold 12px Fredoka';ctx.textAlign='left';ctx.fillText('H='+HH.toFixed(2)+' m',dX+4,(pkY+oy)/2+4);
-
-    // Angle arc
-    const aR=28;ctx.strokeStyle='rgba(231,76,60,0.7)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(ox,oy,aR,-rad,0,false);ctx.stroke();
-    ctx.fillStyle='#333';ctx.font='bold 11px Fredoka';ctx.textAlign='center';ctx.fillText('θ='+S.angle+'°',ox+(aR+16)*Math.cos(-rad/2),oy+(aR+16)*Math.sin(-rad/2));
-
-    // V0
-    const vS=3.5;arrow(ctx,ox,oy,vx0*vS,-vy0*vS,'#e74c3c',2.5);
-    ctx.fillStyle='#333';ctx.font='bold 11px Fredoka';ctx.textAlign='left';ctx.fillText('v₀='+v0.toFixed(1)+'m/s',ox+vx0*vS+4,oy-vy0*vS-2);
-
-    // Ball
-    const bPx=vx0*t,bPy=vy0*t-0.5*G*t*t,bx=X(bPx),by=Y(bPy);
-    if(bPy>=-0.1&&bPx>=0&&bPx<=RR){ctx.fillStyle='rgba(0,0,0,0.08)';ctx.beginPath();ctx.ellipse(X(bPx),oy+3,8,3,0,0,Math.PI*2);ctx.fill();}
-    const bg=ctx.createRadialGradient(bx-2,by-3,2,bx,by,9);bg.addColorStop(0,'#ff8a80');bg.addColorStop(1,'#c62828');
-    ctx.fillStyle=bg;ctx.beginPath();ctx.arc(bx,by,8,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
-
-    // Vh/Vv/V
-    const cVX=vx0,cVY=vy0-G*t,spd=Math.sqrt(cVX*cVX+cVY*cVY);
-    if(spd>0.2){const hdx=cVX*vS,vdy=-cVY*vS;arrow(ctx,bx,by,hdx,0,'#3498db',2);ctx.fillStyle='#3498db';ctx.font='bold 10px Fredoka';ctx.textAlign='left';ctx.fillText('Vh='+cVX.toFixed(1),bx+hdx+3,by+4);arrow(ctx,bx,by,0,vdy,'#2ecc71',2);ctx.fillStyle='#2ecc71';ctx.fillText('Vv='+cVY.toFixed(1),bx+5,by+vdy-4);arrow(ctx,bx,by,hdx,vdy,'rgba(231,76,60,0.55)',1.8);ctx.fillStyle='#e74c3c';ctx.fillText('V='+spd.toFixed(1),bx+hdx+3,by+vdy-4);}
-
-    // Origin
-    ctx.fillStyle='#4A403A';ctx.beginPath();ctx.arc(ox,oy,3.5,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#888';ctx.font='10px Fredoka';ctx.textAlign='center';ctx.fillText('O',ox-8,oy+11);ctx.fillText('x',cw-14,oy+11);ctx.fillText('y',ox+6,14);
-
-    // === Decomp window: vert-left, horiz-bottom ===
-    const dw=dC.width,dh=dC.height;ctxD.clearRect(0,0,dw,dh);ctxD.fillStyle='#fdfcf8';ctxD.fillRect(0,0,dw,dh);
-    const tClamped=Math.min(t,TT);
-    const vvy=vy0-G*tClamped,yNow=Math.max(0,vy0*tClamped-0.5*G*tClamped*tClamped);
-
-    // Vertical axis — left. Pixel offset = (oy - by) = bPy * sc
-    const vx1=32,vtop=12,vbot=dh-28,vlen=vbot-vtop;
-    ctxD.strokeStyle='#ddd';ctxD.lineWidth=2;ctxD.beginPath();ctxD.moveTo(vx1,vtop);ctxD.lineTo(vx1,vbot);ctxD.stroke();
-    const vby=vbot-Math.min(oy-by,vlen); // same pixel rise as main ball
-    const vg=ctxD.createRadialGradient(vx1-1,vby-2,2,vx1,vby,9);vg.addColorStop(0,'#82e0aa');vg.addColorStop(1,'#1e8449');
-    ctxD.fillStyle=vg;ctxD.beginPath();ctxD.arc(vx1,vby,8,0,Math.PI*2);ctxD.fill();ctxD.strokeStyle='#fff';ctxD.lineWidth=1.5;ctxD.stroke();
-    const vvL=Math.min(Math.abs(vvy)*5,45);arrow(ctxD,vx1,vby,0,(vvy>=0?-1:1)*vvL,'#2ecc71',2.5);
-    ctxD.fillStyle='#2ecc71';ctxD.font='bold 10px Fredoka';ctxD.textAlign='left';
-    ctxD.fillText('Vv='+vvy.toFixed(1),vx1+10,vtop+14);ctxD.fillText('a=-9.8 m/s²',vx1+10,vtop+28);
-
-    // Horizontal — same pixel offset as main ball
-    const hm2=26,hx2=hm2,hlen2=dw-2*hm2,hy2=dh-20;
-    ctxD.strokeStyle='#ddd';ctxD.lineWidth=2;ctxD.beginPath();ctxD.moveTo(hx2,hy2);ctxD.lineTo(hx2+hlen2,hy2);ctxD.stroke();
-    ctxD.fillStyle='#aaa';ctxD.font='9px Fredoka';ctxD.textAlign='center';
-    for(let tick=0;tick<=4;tick++){
-        const tx=hx2+(tick/4)*hlen2;
-        ctxD.beginPath();ctxD.moveTo(tx,hy2-6);ctxD.lineTo(tx,hy2+6);ctxD.stroke();
-        ctxD.fillText((RR*tick/4).toFixed(1)+'m',tx,hy2+18);
-    }
-    // Pixel offset = main ball offset, capped to track length
-    const hxP=hx2+Math.min(bx-ox,hlen2);
-    const hg=ctxD.createRadialGradient(hxP-1,hy2-2,2,hxP,hy2,9);hg.addColorStop(0,'#85c1e9');hg.addColorStop(1,'#2471a3');
-    ctxD.fillStyle=hg;ctxD.beginPath();ctxD.arc(hxP,hy2,8,0,Math.PI*2);ctxD.fill();ctxD.strokeStyle='#fff';ctxD.lineWidth=1.5;ctxD.stroke();
-    arrow(ctxD,hxP,hy2,30,0,'#3498db',2.5);
-    ctxD.fillStyle='#3498db';ctxD.font='bold 10px Fredoka';ctxD.textAlign='left';
-    ctxD.fillText('Vh='+vx0.toFixed(1)+'（恒定）',hx2+4,hy2-8);
-
-    // Update UI each frame too
-    bV0.textContent=v0.toFixed(1)+' m/s';bAng.textContent=S.angle+'°';
-    fRoot.innerHTML=`<span class="formula-item" style="color:#3498db">R=v₀²sin(2θ)/g=${v0}²·sin(${2*S.angle}°)/${G}=<b>${RR.toFixed(2)}</b> m</span><span class="formula-item" style="color:#2ecc71">H=v₀²sin²θ/(2g)=${v0}²·sin²(${S.angle}°)/(2·${G})=<b>${HH.toFixed(2)}</b> m</span><span class="formula-item">T=2v₀sinθ/g=2·${v0}·sin(${S.angle}°)/${G}=<b>${TT.toFixed(2)}</b> s</span>`;
-    rArea.innerHTML=`R:<b style="color:#3498db">${RR.toFixed(2)}</b> m &nbsp; H:<b style="color:#2ecc71">${HH.toFixed(2)}</b> m &nbsp; T:<b>${TT.toFixed(2)}</b> s`;
-}
-
-function loop(ts){if(!lt)lt=ts;let dt=(ts-lt)/1000;lt=ts;if(dt>0.1)dt=0.016;if(S.playing){S.time+=dt*S.ts;if(S.time>=2*S.v0*Math.sin(S.angle*Math.PI/180)/G)S.time=0;}draw();requestAnimationFrame(loop);}
-
-function onChg(){S.v0=parseFloat(sV0.value);S.angle=parseInt(sAng.value);S.time=0;lt=0;resize();draw();}
-sV0.addEventListener('input',onChg);sAng.addEventListener('input',onChg);
-bStart.onclick=()=>{S.playing=!S.playing;bStart.textContent=S.playing?'暂停 Pause':'开始 Start';bStart.className='ctrl-btn '+(S.playing?'pause':'start');};
-bReset.onclick=()=>{S.time=0;S.playing=false;bStart.textContent='开始 Start';bStart.className='ctrl-btn start';draw();};
-
-resize();draw();
-requestAnimationFrame(loop);
-</script>
 </body>
+
 </html>
