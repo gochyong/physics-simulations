@@ -172,18 +172,18 @@ function draw(){
     const tClamped=Math.min(t,TT);
     const vvy=vy0-G*tClamped,yNow=Math.max(0,vy0*tClamped-0.5*G*tClamped*tClamped);
 
-    // Vertical axis — left. Pixel offset = (oy - by) = bPy * sc
-    const vx1=32,vtop=12,vbot=dh-28,vlen=vbot-vtop;
+    // Vertical axis — proportional to main canvas
+    const vx1=dw*(ox/cw),vtop=dh*(Y(HH)/ch),vbot=dh*(oy/ch),vlen=Math.max(vbot-vtop,2);
     ctxD.strokeStyle='#ddd';ctxD.lineWidth=2;ctxD.beginPath();ctxD.moveTo(vx1,vtop);ctxD.lineTo(vx1,vbot);ctxD.stroke();
-    const vby=vbot-Math.min(oy-by,vlen); // same pixel rise as main ball
+    const vby=vbot-Math.min(oy-by,vlen);
     const vg=ctxD.createRadialGradient(vx1-1,vby-2,2,vx1,vby,9);vg.addColorStop(0,'#82e0aa');vg.addColorStop(1,'#1e8449');
     ctxD.fillStyle=vg;ctxD.beginPath();ctxD.arc(vx1,vby,8,0,Math.PI*2);ctxD.fill();ctxD.strokeStyle='#fff';ctxD.lineWidth=1.5;ctxD.stroke();
     const vvL=Math.min(Math.abs(vvy)*5,45);arrow(ctxD,vx1,vby,0,(vvy>=0?-1:1)*vvL,'#2ecc71',2.5);
     ctxD.fillStyle='#2ecc71';ctxD.font='bold 10px Fredoka';ctxD.textAlign='left';
     ctxD.fillText('Vv='+vvy.toFixed(1),vx1+10,vtop+14);ctxD.fillText('a=-9.8 m/s²',vx1+10,vtop+28);
 
-    // Horizontal — same pixel offset as main ball
-    const hm2=26,hx2=hm2,hlen2=dw-2*hm2,hy2=dh-20;
+    // Horizontal — proportional to main canvas
+    const hx2=dw*(ox/cw),hEnd=dw*(lx/cw),hlen2=Math.max(hEnd-hx2,20),hy2=dh*(oy/ch);
     ctxD.strokeStyle='#ddd';ctxD.lineWidth=2;ctxD.beginPath();ctxD.moveTo(hx2,hy2);ctxD.lineTo(hx2+hlen2,hy2);ctxD.stroke();
     ctxD.fillStyle='#aaa';ctxD.font='9px Fredoka';ctxD.textAlign='center';
     for(let tick=0;tick<=4;tick++){
