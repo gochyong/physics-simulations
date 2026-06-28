@@ -175,7 +175,7 @@ function draw(){
     // Vertical axis — proportional to main canvas
     const vx1=dw*(ox/cw),vtop=dh*(Y(HH)/ch),vbot=dh*(oy/ch),vlen=Math.max(vbot-vtop,2);
     ctxD.strokeStyle='#ddd';ctxD.lineWidth=2;ctxD.beginPath();ctxD.moveTo(vx1,vtop);ctxD.lineTo(vx1,vbot);ctxD.stroke();
-    const vby=vbot-Math.min(oy-by,vlen);
+    const vby=vbot-(oy-by)*(dh/ch); // scale main px → decomp px
     const vg=ctxD.createRadialGradient(vx1-1,vby-2,2,vx1,vby,9);vg.addColorStop(0,'#82e0aa');vg.addColorStop(1,'#1e8449');
     ctxD.fillStyle=vg;ctxD.beginPath();ctxD.arc(vx1,vby,8,0,Math.PI*2);ctxD.fill();ctxD.strokeStyle='#fff';ctxD.lineWidth=1.5;ctxD.stroke();
     const vvL=Math.min(Math.abs(vvy)*5,45);arrow(ctxD,vx1,vby,0,(vvy>=0?-1:1)*vvL,'#2ecc71',2.5);
@@ -192,7 +192,7 @@ function draw(){
         ctxD.fillText((RR*tick/4).toFixed(1)+'m',tx,hy2+18);
     }
     // Pixel offset = main ball offset, capped to track length
-    const hxP=hx2+Math.min(bx-ox,hlen2);
+    const hxP=hx2+(bx-ox)*(dw/cw); // scale main px → decomp px
     const hg=ctxD.createRadialGradient(hxP-1,hy2-2,2,hxP,hy2,9);hg.addColorStop(0,'#85c1e9');hg.addColorStop(1,'#2471a3');
     ctxD.fillStyle=hg;ctxD.beginPath();ctxD.arc(hxP,hy2,8,0,Math.PI*2);ctxD.fill();ctxD.strokeStyle='#fff';ctxD.lineWidth=1.5;ctxD.stroke();
     arrow(ctxD,hxP,hy2,30,0,'#3498db',2.5);

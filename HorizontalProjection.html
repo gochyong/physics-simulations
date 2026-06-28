@@ -304,7 +304,7 @@ function draw() {
     ctxD.beginPath(); ctxD.moveTo(vx1, vtop); ctxD.lineTo(vx1, vbot); ctxD.stroke();
 
     const launchY = Y(h0);
-    const vby = vtop + Math.min(by - launchY, vlen);
+    const vby = vtop + (by - launchY) * (dh / ch); // scale main px → decomp px
 
     // Vertical ball
     const vg = ctxD.createRadialGradient(vx1 - 1, vby - 2, 2, vx1, vby, 9);
@@ -356,7 +356,7 @@ function draw() {
     }
 
     // Horizontal ball — pixel offset same as main ball
-    const hxP = hx2 + Math.min(bx - ox, hlen2);
+    const hxP = hx2 + (bx - ox) * (dw / cw); // scale main px → decomp px
 
     const hg = ctxD.createRadialGradient(hxP - 1, hy2 - 2, 2, hxP, hy2, 9);
     hg.addColorStop(0, '#85c1e9');
