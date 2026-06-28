@@ -158,20 +158,15 @@
 
         <section class="formula-display">
             <div class="formula-container" id="formula-root">
-                <div class="formula-item">&omega; = &radic;(k/m) = <span class="val" id="f-omega">6.32</span> rad/s</div>
-                <div class="formula-item">T = 2&pi;&radic;(m/k) = <span class="val" id="f-T">0.99</span> s</div>
-                <div class="formula-item">f = 1/T = <span class="val" id="f-freq">1.01</span> Hz</div>
-            </div>
-            <div class="result-row">
-                <span>周期 T = <strong id="res-T">0.99</strong> s</span>
-                <span>频率 f = <strong id="res-f">1.01</strong> Hz</span>
-                <span>角频率 &omega; = <strong id="res-omega">6.32</strong> rad/s</span>
+                <div class="formula-item">a = −ω²x &nbsp;（定义式）</div>
+                <div class="formula-item">ω = √(k/m) = <span class="val" id="f-omega">6.32</span> rad/s</div>
+                <div class="formula-item">T = 2π√(m/k) = <span class="val" id="f-T">0.99</span> s</div>
             </div>
             <div class="legend">
-                <div class="legend-item"><span class="legend-dot" style="background:var(--disp-color)"></span> 位移 x(t)</div>
-                <div class="legend-item"><span class="legend-dot" style="background:var(--vel-color)"></span> 速度 v(t)</div>
-                <div class="legend-item"><span class="legend-dot" style="background:var(--ke-color)"></span> 动能 KE</div>
-                <div class="legend-item"><span class="legend-dot" style="background:var(--pe-color)"></span> 势能 PE</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--disp-color)"></span> 位移 x</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--vel-color)"></span> 速度 v</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#9b59b6"></span> 加速度 a</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--spring-color)"></span> a = −ω²x</div>
             </div>
         </section>
 
@@ -295,7 +290,8 @@
 
                 const x = displacement();
                 const v = velocity();
-                state.history.push({ t: state.graphTime, x: x, v: v });
+                const acc = -omega() * omega() * x;  // a = -ω²x
+                state.history.push({ t: state.graphTime, x: x, v: v, a: acc });
 
                 // Trim old entries
                 while (state.history.length > 0 && state.graphTime - state.history[0].t > HISTORY_WINDOW) {
@@ -336,9 +332,13 @@
             const W = canvas.width, H = canvas.height;
             ctx.clearRect(0, 0, W, H);
 
-            const springAreaH = H * 0.52;
-            drawSpringScene(W, springAreaH);
-            drawGraphs(W, H, springAreaH);
+            const topH = H * 0.52;  // spring scene + v-x graph
+            const springW = W * 0.60;  // left 60%: spring
+            const vxW = W - springW;   // right 40%: v-x phase
+
+            drawSpringScene(springW, topH);
+            drawVXGraph(springW, 0, vxW, topH);  // v-x on the right
+            drawGraphs(W, H, topH);  // x-t, v-t, a-t below
         }
 
         function drawSpringScene(W, areaH) {
@@ -495,30 +495,15 @@
             const graphH = H - graphTop;
             if (graphH < 80) return;
 
-            // Divider line
-            ctx.strokeStyle = '#e8ddd0';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(30, graphTop);
-            ctx.lineTo(W - 30, graphTop);
-            ctx.stroke();
+            ctx.strokeStyle = '#e8ddd0'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(30, graphTop); ctx.lineTo(W - 30, graphTop); ctx.stroke();
 
-            const margin = { left: 55, right: 20, top: 20, bottom: 18 };
-            const usableW = W - margin.left - margin.right;
-            const usableH = graphH - margin.top - margin.bottom;
-
-            // Split into: x-t (top 37%), v-t (middle 37%), energy bar (bottom 26%)
-            const xtH = usableH * 0.37;
-            const vtH = usableH * 0.37;
-            const energyH = usableH - xtH - vtH;
-
-            const xtTop = graphTop + margin.top;
-            const vtTop = xtTop + xtH;
-            const energyTop = vtTop + vtH;
-
-            drawXTGraph(margin.left, xtTop, usableW, xtH);
-            drawVTGraph(margin.left, vtTop, usableW, vtH);
-            drawEnergyBar(margin.left, energyTop, usableW, energyH);
+            const ml = 55, mr = 20, mt = 20, mb = 18;
+            const uw = W - ml - mr, uh = graphH - mt - mb;
+            const eachH = uh / 3;
+            drawXTGraph(ml, graphTop + mt, uw, eachH);
+            drawVTGraph(ml, graphTop + mt + eachH, uw, eachH);
+            drawATGraph(ml, graphTop + mt + 2 * eachH, uw, eachH);
         }
 
         function drawTimeSeriesGraph(left, top, w, h, title, getY, yLabel, color, yMin, yMax) {
@@ -731,6 +716,65 @@
             ctx.fillText('Total ' + (total * 1000).toFixed(2) + ' mJ', barX + 240, barY + barH + 14);
         }
 
+        function drawVXGraph(left, top, w, h) {
+            // Background
+            ctx.fillStyle = '#fefdf9'; ctx.fillRect(left, top, w, h);
+            ctx.strokeStyle = '#e8ddd0'; ctx.lineWidth = 1; ctx.strokeRect(left, top, w, h);
+
+            const pad = 16, pl = left + pad, pr = left + w - pad, pw = pr - pl;
+            const pt = top + pad + 14, pb = top + h - pad, ph = pb - pt;
+            const midX = pl + pw / 2, midY = pt + ph / 2;
+            if (pw <= 0 || ph <= 0) return;
+
+            // Title
+            ctx.fillStyle = '#9b59b6'; ctx.font = 'bold 11px Fredoka'; ctx.textAlign = 'left';
+            ctx.fillText('v-x 相图 Phase', left + 6, top + 14);
+
+            // Axes
+            ctx.strokeStyle = '#e0d8cc'; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(pl, midY); ctx.lineTo(pr, midY); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(midX, pt); ctx.lineTo(midX, pb); ctx.stroke();
+
+            // Axis labels
+            ctx.fillStyle = '#aaa'; ctx.font = '9px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillText('x', pr, midY + 12); ctx.fillText('v', midX + 8, pt - 2);
+
+            // Plot history as v vs x (ellipse)
+            const hist = state.history;
+            if (hist.length < 2) return;
+            const xMax = state.A * 1.2;
+            const vMax = state.A * omega() * 1.2;
+
+            ctx.strokeStyle = '#9b59b6'; ctx.lineWidth = 2; ctx.lineJoin = 'round';
+            ctx.beginPath();
+            let first = true;
+            for (let i = Math.max(0, hist.length - 200); i < hist.length; i++) {
+                const pt2 = hist[i];
+                const sx = midX + (pt2.x / xMax) * (pw / 2);
+                const sy = midY - (pt2.v / vMax) * (ph / 2);
+                if (first) { ctx.moveTo(sx, sy); first = false; }
+                else ctx.lineTo(sx, sy);
+            }
+            ctx.stroke();
+
+            // Current point dot
+            if (hist.length > 0) {
+                const last = hist[hist.length - 1];
+                const dx = midX + (last.x / xMax) * (pw / 2);
+                const dy = midY - (last.v / vMax) * (ph / 2);
+                ctx.fillStyle = '#9b59b6'; ctx.beginPath(); ctx.arc(dx, dy, 4, 0, Math.PI * 2); ctx.fill();
+                ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+            }
+        }
+
+        function drawATGraph(left, top, w, h) {
+            const yMax = Math.max(state.A * omega() * omega() * 1.3, 15);
+            drawTimeSeriesGraph(left, top, w, h,
+                '加速度 a(t) / Acceleration (a = −ω²x)',
+                function(pt) { return pt.a; },
+                'a', '#9b59b6', -yMax, yMax);
+        }
+
         // Button handlers
         bStart.onclick = function() {
             state.isPlaying = !state.isPlaying;
@@ -753,13 +797,13 @@
             bStart.textContent = '开始 Start';
             bStart.className = 'ctrl-btn start';
             // Add one data point at t=0
-            state.history.push({ t: 0, x: state.A, v: 0 });
+            state.history.push({ t: 0, x: state.A, v: 0, a: -omega()*omega()*state.A });
             updateUI();
             draw();
         };
 
         // Initialize: add starting point
-        state.history.push({ t: 0, x: state.A, v: 0 });
+        state.history.push({ t: 0, x: state.A, v: 0, a: -omega()*omega()*state.A });
 
         resize();
         updateUI();
