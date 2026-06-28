@@ -49,7 +49,6 @@
 <header><h1>平抛运动 / Horizontal Projection</h1><p class="subtitle">h₀: 初始高度 &nbsp; v₀: 水平初速度 &nbsp; g = 9.8 m/s²</p></header>
 <section class="formula-display">
     <div class="formula-container" id="formula-root"></div>
-    <div class="result-row" id="result-area"></div>
     <div class="legend">
         <div class="legend-item"><span class="legend-dot" style="background:var(--primary)"></span> 轨迹</div>
         <div class="legend-item"><span style="color:#3498db">--</span> 射程 R</div>
@@ -90,7 +89,7 @@ const dC = document.getElementById('canvasDecomp'), ctxD = dC.getContext('2d');
 const sH0 = document.getElementById('slider-h0'), sV0 = document.getElementById('slider-v0');
 const bH0 = document.getElementById('badge-h0'), bV0 = document.getElementById('badge-v0');
 const bStart = document.getElementById('btn-start'), bReset = document.getElementById('btn-reset');
-const fRoot = document.getElementById('formula-root'), rArea = document.getElementById('result-area');
+const fRoot = document.getElementById('formula-root');
 
 const S = { h0: 15, v0: 15, time: 0, playing: false, ts: 0.5 };
 let lt = 0;
@@ -305,10 +304,9 @@ function draw() {
     ctxD.lineTo(vx1, vbot);
     ctxD.stroke();
 
-    // Map physics y fraction to vertical axis: y_phys/h0 goes from 1 (top) to 0 (bottom)
-    const yPhys = Math.max(0, h0 - 0.5 * G * tClamped * tClamped);
-    const fracY = yPhys / h0; // 1 at launch, 0 at ground
-    const vby = vtop + (1 - fracY) * vlen;
+    // Pixel-offset sync: (by - Y(h0)) pixels below launch point
+    const launchY = Y(h0);
+    const vby = vtop + Math.min(by - launchY, vlen); // fall distance = pixel offset from launch
 
     // Vertical ball
     const vg = ctxD.createRadialGradient(vx1 - 1, vby - 2, 2, vx1, vby, 9);
@@ -360,9 +358,8 @@ function draw() {
         ctxD.fillText((R * tick / 4).toFixed(1) + 'm', tx, hy2 + 18);
     }
 
-    // Horizontal ball — sync fraction with main ball x position
-    const fracX = tClamped / tFall; // 0 at launch, 1 at impact
-    const hxP = hx2 + fracX * hlen2;
+    // Horizontal ball — pixel offset same as main ball
+    const hxP = hx2 + Math.min(bx - ox, hlen2);
 
     const hg = ctxD.createRadialGradient(hxP - 1, hy2 - 2, 2, hxP, hy2, 9);
     hg.addColorStop(0, '#85c1e9');
@@ -392,10 +389,6 @@ function draw() {
         `<span class="formula-item" style="color:#3498db">R=v₀·t=${v0.toFixed(1)}·${tFall.toFixed(2)}=<b>${R.toFixed(2)}</b> m</span>` +
         `<span class="formula-item" style="color:#e74c3c">v<sub>y</sub>=√(2gh₀)=√(2·${G}·${h0.toFixed(1)})=<b>${vyImpact.toFixed(2)}</b> m/s</span>`;
 
-    rArea.innerHTML =
-        `t:<b style="color:#8e44ad">${tFall.toFixed(2)}</b> s &nbsp; ` +
-        `R:<b style="color:#3498db">${R.toFixed(2)}</b> m &nbsp; ` +
-        `v<sub>y</sub>(落地):<b style="color:#e74c3c">${vyImpact.toFixed(2)}</b> m/s`;
 }
 
 function loop(ts) {
