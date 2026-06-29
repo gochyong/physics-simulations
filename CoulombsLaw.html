@@ -1,753 +1,276 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>库仑定律 / Coulomb's Law - Wuli布雷克</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #FFF9F0;
-            --primary: #FF8c42;
-            --secondary: #FFC75F;
-            --accent: #FF5E5B;
-            --text-dark: #4A403A;
-            --card-bg: #FFFFFF;
-            --shadow: 0 6px 30px rgba(255, 140, 66, 0.18);
-            --pos-color: #FF5E5B;
-            --neg-color: #3498db;
+            --bg-color:#FFF9F0;--primary:#FF8c42;--secondary:#FFC75F;--accent:#FF5E5B;
+            --text-dark:#4A403A;--card-bg:#FFFFFF;--shadow:0 6px 30px rgba(255,140,66,0.18);
+            --pos-color:#FF5E5B;--neg-color:#3498db;
         }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-dark);
-            display: flex; flex-direction: column; align-items: center;
-            min-height: 100vh; padding: 15px 40px;
-        }
-
-        .branding { position: fixed; top: 25px; left: 30px; z-index: 1000; }
-        .logo {
-            font-weight: 700; font-size: 1.6rem; color: #FFFFFF;
-            background: var(--primary); padding: 10px 25px; border-radius: 20px;
-            box-shadow: 4px 4px 15px rgba(255, 140, 66, 0.3);
-        }
-
-        .container {
-            width: 100%; max-width: 1400px; margin-top: 15px;
-            display: grid;
-            grid-template-areas:
-                "header header"
-                "formula formula"
-                "diagram controls";
-            grid-template-columns: 1fr 450px; gap: 20px;
-        }
-
-        header { grid-area: header; text-align: center; }
-        h1 { font-size: 2.5rem; color: var(--text-dark); margin-bottom: 5px; }
-
-        .formula-display {
-            grid-area: formula; background: var(--card-bg);
-            border-radius: 30px; box-shadow: var(--shadow); padding: 20px;
-            display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb;
-        }
-        .formula-container {
-            display: flex; align-items: center; justify-content: center;
-            gap: 15px; width: 100%; flex-direction: column;
-        }
-        .result-row {
-            font-size: 1.4rem; font-weight: 600; color: var(--text-dark);
-            margin-top: 8px; display: flex; gap: 25px; flex-wrap: wrap; justify-content: center;
-        }
-        .legend {
-            display: flex; gap: 30px; justify-content: center;
-            border-top: 1px solid #eee; padding-top: 10px; width: 100%; flex-wrap: wrap;
-        }
-        .legend-item { font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
-        .legend-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
-
-        .diagram-section {
-            grid-area: diagram; background: var(--card-bg); border-radius: 30px;
-            box-shadow: var(--shadow); position: relative; overflow: hidden;
-            min-height: 500px; display: flex; flex-direction: column; border: 2px solid #fff;
-        }
-        canvas { width: 100%; flex: 1; display: block; }
-
-        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 15px; }
-        .control-panel {
-            background: var(--card-bg); border-radius: 30px; box-shadow: var(--shadow);
-            padding: 25px; display: flex; flex-direction: column; gap: 18px;
-        }
-        .param-section {
-            background: #fff; border-radius: 16px; padding: 14px 16px 10px; border: 2px solid #f5f0eb;
-        }
-        .param-section-header {
-            font-weight: 700; font-size: 1.05rem; margin-bottom: 8px;
-            display: flex; align-items: center; gap: 6px;
-        }
-        .control-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 2px; }
-        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 1.15rem; }
-        .val-badge {
-            background: #fff; padding: 3px 10px; border-radius: 8px;
-            font-size: 1.1rem; border: 2px solid #f0f0f0;
-        }
-
-        input[type=range] {
-            width: 100%; appearance: none; height: 8px;
-            background: #eee; border-radius: 4px; outline: none;
-        }
-        input[type=range]::-webkit-slider-thumb {
-            appearance: none; width: 24px; height: 24px; border-radius: 50%;
-            cursor: pointer; background: var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-        }
-        #q1-slider::-webkit-slider-thumb { background: var(--pos-color); }
-        #q2-slider::-webkit-slider-thumb { background: var(--pos-color); }
-        #r-slider::-webkit-slider-thumb { background: var(--primary); }
-
-        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
-        .ctrl-btn {
-            padding: 14px; border: none; border-radius: 18px;
-            font-size: 1.2rem; font-weight: 700; cursor: pointer;
-            transition: all 0.2s; color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .start { background-color: var(--primary); }
-        .pause { background-color: #2ecc71; }
-        .reset { background-color: #95a5a6; }
-        .ctrl-btn:active { transform: translateY(2px); box-shadow: none; }
-
-        .info-card {
-            background: var(--card-bg); border-radius: 30px;
-            padding: 20px; box-shadow: var(--shadow);
-            font-size: 1.1rem; line-height: 1.5; color: #5D6D7E;
-        }
-
-        @media (max-width: 1100px) {
-            .container {
-                grid-template-areas: "header" "formula" "diagram" "controls";
-                grid-template-columns: 1fr;
-            }
-        }
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Fredoka','Noto Sans SC',sans-serif;background:var(--bg-color);color:var(--text-dark);display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:5px 40px 10px}
+        .branding{position:fixed;top:10px;left:20px;z-index:1000}
+        .logo{font-weight:700;font-size:1.3rem;color:#fff;background:var(--primary);padding:6px 18px;border-radius:16px;box-shadow:4px 4px 15px rgba(255,140,66,0.3)}
+        .container{width:100%;max-width:1400px;margin-top:8px;display:grid;grid-template-areas:"header header" "formula formula" "diagram controls";grid-template-columns:1fr 400px;gap:12px}
+        header{grid-area:header;text-align:center}
+        h1{font-size:2rem;color:var(--text-dark);margin-bottom:2px}
+        .formula-display{grid-area:formula;background:#fff;border-radius:20px;box-shadow:var(--shadow);padding:10px 20px;display:flex;flex-direction:column;align-items:center;border:2px solid #fff5eb}
+        .formula-container{display:flex;align-items:center;justify-content:center;gap:15px;width:100%;flex-direction:column}
+        .result-row{font-size:1.1rem;font-weight:600;margin-top:6px;display:flex;gap:25px;justify-content:center}
+        .legend{display:flex;gap:20px;justify-content:center;border-top:1px solid #eee;padding-top:6px;width:100%}
+        .legend-item{font-size:0.9rem;font-weight:600;display:flex;align-items:center;gap:5px}
+        .legend-dot{width:11px;height:11px;border-radius:50%;display:inline-block}
+        .diagram-section{grid-area:diagram;display:flex;flex-direction:column;gap:6px}
+        .main-canvas-wrap{background:#fff;border-radius:20px;box-shadow:var(--shadow);overflow:hidden;flex:2;min-height:280px;border:2px solid #fff}
+        .graph-canvas-wrap{background:#fff;border-radius:16px;box-shadow:var(--shadow);overflow:hidden;flex:1;min-height:140px;border:1px solid #fff5eb;display:flex}
+        .graph-canvas-wrap canvas{width:50%;height:100%;display:block}
+        canvas{display:block}
+        .controls-section{grid-area:controls;display:flex;flex-direction:column;gap:10px}
+        .control-panel{background:#fff;border-radius:20px;box-shadow:var(--shadow);padding:14px 18px;display:flex;flex-direction:column;gap:10px}
+        .param-section{background:#fff;border-radius:14px;padding:10px 14px 8px;border:2px solid #f5f0eb}
+        .param-section-header{font-weight:700;font-size:0.95rem;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+        .control-group{display:flex;flex-direction:column;gap:3px;margin-bottom:1px}
+        .label-row{display:flex;justify-content:space-between;font-weight:600;font-size:0.9rem}
+        .val-badge{background:#fff;padding:1px 7px;border-radius:7px;font-size:0.85rem;border:2px solid #f0f0f0}
+        input[type=range]{width:100%;appearance:none;height:6px;background:#eee;border-radius:3px;outline:none}
+        input[type=range]::-webkit-slider-thumb{appearance:none;width:20px;height:20px;border-radius:50%;cursor:pointer;background:var(--primary);box-shadow:0 2px 6px rgba(0,0,0,0.2)}
+        .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px}
+        .ctrl-btn{padding:10px;border:none;border-radius:14px;font-size:1.05rem;font-weight:700;cursor:pointer;color:white}
+        .start{background:var(--primary)}.pause{background:#2ecc71}.reset{background:#95a5a6}
+        .info-card{background:#fff;border-radius:20px;padding:12px 16px;box-shadow:var(--shadow);font-size:0.9rem;line-height:1.4;color:#5D6D7E}
+        @media(max-width:1100px){.container{grid-template-areas:"header" "formula" "diagram" "controls";grid-template-columns:1fr}}
     </style>
 </head>
-
 <body>
-    <div class="branding"><div class="logo">Wuli布雷克</div></div>
+<div class="branding"><div class="logo">Wuli布雷克</div></div>
+<div class="container">
+    <header><h1>库仑定律 / Coulomb's Law</h1></header>
 
-    <div class="container">
-        <header>
-            <h1>库仑定律 / Coulomb's Law</h1>
-        </header>
+    <section class="formula-display">
+        <div class="formula-container" id="formula-root"></div>
+        <div class="result-row">
+            <span>静电力: <strong id="res-force" style="color:var(--primary)">—</strong></span>
+            <span id="res-type" style="font-weight:700">—</span>
+        </div>
+        <div class="legend">
+            <div class="legend-item"><span class="legend-dot" style="background:var(--pos-color)"></span> 正电荷 +</div>
+            <div class="legend-item"><span class="legend-dot" style="background:var(--neg-color)"></span> 负电荷 −</div>
+            <div class="legend-item"><span style="color:var(--primary);font-weight:700">→</span> 力方向</div>
+        </div>
+    </section>
 
-        <section class="formula-display">
-            <div class="formula-container" id="formula-root"></div>
-            <div class="result-row">
-                <span>静电力: <strong id="res-force" style="color:var(--primary);">—</strong></span>
-                <span id="res-type" style="font-weight:700;">—</span>
+    <section class="diagram-section">
+        <div class="main-canvas-wrap"><canvas id="simCanvas"></canvas></div>
+        <div class="graph-canvas-wrap"><canvas id="canvasE"></canvas><canvas id="canvasV"></canvas></div>
+    </section>
+
+    <section class="controls-section">
+        <div class="control-panel">
+            <div class="param-section" style="border-left:5px solid var(--pos-color)">
+                <div class="param-section-header">电荷 q₁ (左侧)</div>
+                <div class="control-group"><div class="label-row"><span>电荷量 q₁</span><span id="q1-badge" class="val-badge">+3 μC</span></div><input type="range" id="q1-slider" min="-5" max="5" step="0.1" value="3"></div>
             </div>
-            <div class="legend">
-                <div class="legend-item"><span class="legend-dot" style="background:var(--pos-color)"></span> 正电荷 Positive (+)</div>
-                <div class="legend-item"><span class="legend-dot" style="background:var(--neg-color)"></span> 负电荷 Negative (&minus;)</div>
-                <div class="legend-item"><span style="color:var(--primary);font-weight:700;font-size:1.2rem;">&#8594;</span> 力方向 Force</div>
+            <div class="param-section" style="border-left:5px solid var(--neg-color)">
+                <div class="param-section-header">电荷 q₂ (右侧)</div>
+                <div class="control-group"><div class="label-row"><span>电荷量 q₂</span><span id="q2-badge" class="val-badge">+2 μC</span></div><input type="range" id="q2-slider" min="-5" max="5" step="0.1" value="2"></div>
             </div>
-        </section>
-
-        <section class="diagram-section">
-            <canvas id="simCanvas"></canvas>
-        </section>
-
-        <section class="controls-section">
-            <div class="control-panel">
-                <div class="param-section" style="border-left: 5px solid var(--pos-color);">
-                    <div class="param-section-header">
-                        <span style="color:var(--pos-color);">&#9679;</span> 电荷 q&#8321; (左侧 / Left)
-                    </div>
-                    <div class="control-group">
-                        <div class="label-row">
-                            <span>电荷量 Charge q&#8321;</span>
-                            <span id="q1-badge" class="val-badge">+3 μC</span>
-                        </div>
-                        <input type="range" id="q1-slider" min="-5" max="5" step="0.1" value="3">
-                    </div>
-                </div>
-
-                <div class="param-section" style="border-left: 5px solid var(--neg-color);">
-                    <div class="param-section-header">
-                        <span style="color:var(--neg-color);">&#9679;</span> 电荷 q&#8322; (右侧 / Right)
-                    </div>
-                    <div class="control-group">
-                        <div class="label-row">
-                            <span>电荷量 Charge q&#8322;</span>
-                            <span id="q2-badge" class="val-badge">+2 μC</span>
-                        </div>
-                        <input type="range" id="q2-slider" min="-5" max="5" step="0.1" value="2">
-                    </div>
-                </div>
-
-                <div class="param-section" style="border-left: 5px solid var(--primary);">
-                    <div class="param-section-header">
-                        <span style="color:var(--primary);">&#9679;</span> 距离 Distance
-                    </div>
-                    <div class="control-group">
-                        <div class="label-row">
-                            <span>距离 Distance r</span>
-                            <span id="r-badge" class="val-badge">5.0 cm</span>
-                        </div>
-                        <input type="range" id="r-slider" min="2" max="10" step="0.1" value="5">
-                    </div>
-                </div>
-
-                <div class="btn-row">
-                    <button id="btn-start" class="ctrl-btn start">开始 Start</button>
-                    <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
-                </div>
+            <div class="param-section" style="border-left:5px solid var(--primary)">
+                <div class="param-section-header">距离与半径</div>
+                <div class="control-group"><div class="label-row"><span>距离 r (cm)</span><span id="r-badge" class="val-badge">5.0</span></div><input type="range" id="r-slider" min="2" max="10" step="0.1" value="5"></div>
+                <div class="control-group"><div class="label-row"><span>球半径 R (cm)</span><span id="rad-badge" class="val-badge">1.5</span></div><input type="range" id="rad-slider" min="0.5" max="3.0" step="0.1" value="1.5"></div>
             </div>
-
-            <div class="info-card">
-                <div style="font-weight: 700; color: var(--primary); margin-bottom: 12px; font-size: 1.25rem;">
-                    演示要点 / Key points
-                </div>
-                <div style="display: flex; flex-direction: column; gap: 8px;">
-                    <div style="background:white;padding:12px;border:1px solid #eee;border-radius:15px;display:grid;grid-template-columns:45px 1fr;gap:10px;align-items:center;">
-                        <div style="width:40px;height:40px;background:rgba(255,94,91,0.1);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--pos-color);font-weight:700;font-size:1.2rem;">F</div>
-                        <div>
-                            <div style="font-weight:700;font-size:1rem;">同号相斥，异号相吸</div>
-                            <div style="font-size:0.85rem;color:#888;">Like charges repel, opposite charges attract.</div>
-                        </div>
-                    </div>
-                    <div style="background:white;padding:12px;border:1px solid #eee;border-radius:15px;display:grid;grid-template-columns:45px 1fr;gap:10px;align-items:center;">
-                        <div style="width:40px;height:40px;background:rgba(255,140,66,0.1);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--primary);font-weight:700;font-size:1.2rem;">r</div>
-                        <div>
-                            <div style="font-weight:700;font-size:1rem;">平方反比定律</div>
-                            <div style="font-size:0.85rem;color:#888;">Force is inversely proportional to r&sup2;.</div>
-                        </div>
-                    </div>
-                    <div style="background:white;padding:12px;border:1px solid #eee;border-radius:15px;display:grid;grid-template-columns:45px 1fr;gap:10px;align-items:center;">
-                        <div style="width:40px;height:40px;background:rgba(52,152,219,0.1);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--neg-color);font-weight:700;font-size:1.2rem;">q</div>
-                        <div>
-                            <div style="font-weight:700;font-size:1rem;">力与电荷量成正比</div>
-                            <div style="font-size:0.85rem;color:#888;">Force proportional to product of charges.</div>
-                        </div>
-                    </div>
-                    <div style="background:white;padding:12px;border:1px solid #eee;border-radius:15px;display:grid;grid-template-columns:45px 1fr;gap:10px;align-items:center;">
-                        <div style="width:40px;height:40px;background:rgba(46,204,113,0.1);border-radius:12px;display:flex;align-items:center;justify-content:center;color:#2ecc71;font-weight:700;font-size:1.2rem;">&#9654;</div>
-                        <div>
-                            <div style="font-weight:700;font-size:1rem;">电场线可视化</div>
-                            <div style="font-size:0.85rem;color:#888;">Click Start to animate electric field lines.</div>
-                        </div>
-                    </div>
-                </div>
+            <div class="btn-row">
+                <button id="btn-start" class="ctrl-btn start">开始 Start</button>
+                <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
             </div>
-        </section>
-    </div>
+        </div>
+        <div class="info-card">
+            <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem">演示要点 / Key Points</div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px"><div style="width:32px;height:32px;background:rgba(255,94,91,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--pos-color);font-weight:700">F</div><div><div style="font-weight:700;font-size:0.9rem">同号相斥，异号相吸</div><div style="font-size:0.78rem;color:#888">Like charges repel, opposites attract.</div></div></div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px"><div style="width:32px;height:32px;background:rgba(255,140,66,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--primary);font-weight:700">r²</div><div><div style="font-weight:700;font-size:0.9rem">平方反比 F ∝ 1/r²</div><div style="font-size:0.78rem;color:#888">Force inversely proportional to distance squared.</div></div></div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px"><div style="width:32px;height:32px;background:rgba(155,89,182,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#9b59b6;font-weight:700">E</div><div><div style="font-weight:700;font-size:0.9rem">电场线从正到负，永不相交</div><div style="font-size:0.78rem;color:#888">Field lines start at +, end at −, never cross.</div></div></div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px"><div style="width:32px;height:32px;background:rgba(46,204,113,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#2ecc71;font-weight:700">R</div><div><div style="font-weight:700;font-size:0.9rem">带电金属球，内部E=0</div><div style="font-size:0.78rem;color:#888">Conducting spheres — field starts at surface.</div></div></div>
+            </div>
+        </div>
+    </section>
+</div>
 
-    <script>
-        const canvas = document.getElementById('simCanvas'), ctx = canvas.getContext('2d');
-        const sQ1 = document.getElementById('q1-slider'), sQ2 = document.getElementById('q2-slider'), sR = document.getElementById('r-slider');
-        const bQ1 = document.getElementById('q1-badge'), bQ2 = document.getElementById('q2-badge'), bR = document.getElementById('r-badge');
-        const bStart = document.getElementById('btn-start'), bReset = document.getElementById('btn-reset');
-        const fRoot = document.getElementById('formula-root');
-        const resForce = document.getElementById('res-force'), resType = document.getElementById('res-type');
+<script>
+const simC=document.getElementById('simCanvas'),ctx=simC.getContext('2d');
+const eC=document.getElementById('canvasE'),ctxE=eC.getContext('2d');
+const vC=document.getElementById('canvasV'),ctxV=vC.getContext('2d');
+const sQ1=document.getElementById('q1-slider'),sQ2=document.getElementById('q2-slider'),sR=document.getElementById('r-slider'),sRad=document.getElementById('rad-slider');
+const bQ1=document.getElementById('q1-badge'),bQ2=document.getElementById('q2-badge'),bR=document.getElementById('r-badge'),bRad=document.getElementById('rad-badge');
+const bStart=document.getElementById('btn-start'),bReset=document.getElementById('btn-reset');
+const fRoot=document.getElementById('formula-root'),resForce=document.getElementById('res-force'),resType=document.getElementById('res-type');
 
-        const POS_COLOR = '#FF5E5B';
-        const NEG_COLOR = '#3498db';
-        const K_CONST = 8.99e9;
+const PC='#FF5E5B',NC='#3498db',K=8.99e9;
+const S={q1:3,q2:2,r:5,rad:1.5,playing:false,time:0};
+const D={q1:3,q2:2,r:5,rad:1.5};
 
-        const state = {
-            q1: 3,
-            q2: 2,
-            r: 5,
-            isPlaying: false,
-            time: 0
-        };
+function resize(){simC.width=simC.clientWidth;simC.height=simC.clientHeight;eC.width=eC.clientWidth;eC.height=eC.clientHeight;vC.width=vC.clientWidth;vC.height=vC.clientHeight}
+window.addEventListener('resize',resize);
 
-        const defaults = { q1: 3, q2: 2, r: 5 };
+function calcForce(){const a1=Math.abs(S.q1)*1e-6,a2=Math.abs(S.q2)*1e-6,rm=S.r*0.01;if(rm<1e-6||a1<1e-12||a2<1e-12)return{F:0,repulse:false,ok:false};return{F:K*a1*a2/(rm*rm),repulse:S.q1*S.q2>0,ok:true}}
+function fmtF(F){if(F===0)return'0 N';if(F<0.01)return F.toExponential(2)+' N';if(F<100)return F.toFixed(2)+' N';return F.toExponential(2)+' N'}
+function lt(c,f){const r=parseInt(c.slice(1,3),16),g=parseInt(c.slice(3,5),16),b=parseInt(c.slice(5,7),16);return`rgb(${Math.min(255,Math.round(r+(255-r)*f))},${Math.min(255,Math.round(g+(255-g)*f))},${Math.min(255,Math.round(b+(255-b)*f))})`}
+function dk(c,f){const r=parseInt(c.slice(1,3),16),g=parseInt(c.slice(3,5),16),b=parseInt(c.slice(5,7),16);return`rgb(${Math.round(r*(1-f))},${Math.round(g*(1-f))},${Math.round(b*(1-f))})`}
 
-        function resize() {
-            canvas.width = canvas.clientWidth;
-            canvas.height = canvas.clientHeight;
-        }
-        window.addEventListener('resize', resize);
-
-        // ---- Physics ----
-        function calcForce() {
-            const q1_C = Math.abs(state.q1) * 1e-6;
-            const q2_C = Math.abs(state.q2) * 1e-6;
-            const r_m = state.r * 0.01;
-            if (r_m < 1e-6 || q1_C < 1e-12 || q2_C < 1e-12) {
-                return { F: 0, isRepulsive: false, isValid: false };
+// Field lines: radial from each sphere. Repulsion: gap toward other. Attraction: lines from + to -.
+function getLines(q1x,q1y,q2x,q2y,sR2,q1s,q2s){
+    const lines=[],both=q1s!==0&&q2s!==0;
+    if(!both&&q1s===0&&q2s===0)return lines;
+    if(!both){// monopole
+        const cx=q1s!==0?q1x:q2x,cy=q1s!==0?q1y:q2y;
+        for(let i=0;i<18;i++){const a=i*Math.PI*2/18;lines.push({sx:cx+sR2*Math.cos(a),sy:cy+sR2*Math.sin(a),ex:cx+(sR2+170)*Math.cos(a),ey:cy+(sR2+170)*Math.sin(a),cpx:0,cpy:0,bezier:false})}
+        return lines
+    }
+    const sep=Math.abs(q2x-q1x);
+    if(q1s*q2s>0){// repulsion: radial lines from each, gap toward the other
+        const gaps=Math.PI*0.3;// 54°
+        [0,1].forEach(idx=>{
+            const cx=idx===0?q1x:q2x,cy=idx===0?q1y:q2y;
+            const dir=idx===0?0:Math.PI;// gap direction = toward other sphere
+            for(let i=0;i<16;i++){
+                const a=i*Math.PI*2/16;
+                let da=a-dir;while(da<-Math.PI)da+=2*Math.PI;while(da>Math.PI)da-=2*Math.PI;
+                if(Math.abs(da)<gaps/2)continue;
+                const sx=cx+sR2*Math.cos(a),sy=cy+sR2*Math.sin(a);
+                const len=130+sR2;
+                lines.push({sx,sy,ex:sx+len*Math.cos(a),ey:sy+len*Math.sin(a),cpx:0,cpy:0,bezier:false})
             }
-            const F = K_CONST * q1_C * q2_C / (r_m * r_m);
-            const isRepulsive = state.q1 * state.q2 > 0;
-            return { F, isRepulsive, isValid: true };
+        })
+    }else{// attraction: bezier curves from positive to negative
+        const px=q1s>0?q1x:q2x,py=q1s>0?q1y:q2y;
+        const nx=q1s>0?q2x:q1x,ny=q1s>0?q2y:q1y;
+        const mid=(px+nx)/2,midY=(py+ny)/2;
+        for(let i=1;i<11;i++){
+            const t=i/11,a=0.2+t*(Math.PI-0.4);// 36° to 162°
+            const sx=px+sR2*Math.cos(a),sy=py-sR2*Math.sin(a);
+            const ex=nx+sR2*Math.cos(Math.PI-a),ey=ny-sR2*Math.sin(Math.PI-a);
+            const bulge=sep*0.55*Math.sin(a);
+            lines.push({sx,sy,cpx:mid,cpy:midY-bulge,ex,ey,bezier:true});
+            // lower half
+            lines.push({sx:px+sR2*Math.cos(-a),sy:py-sR2*Math.sin(-a),cpx:mid,cpy:midY+bulge,ex:nx+sR2*Math.cos(Math.PI+a),ey:ny-sR2*Math.sin(Math.PI+a),bezier:true})
         }
+    }
+    return lines
+}
 
-        function formatForce(F) {
-            if (F === 0) return '0 N';
-            if (F < 0.01) return F.toExponential(2) + ' N';
-            if (F < 100) return F.toFixed(2) + ' N';
-            if (F < 1000) return F.toFixed(1) + ' N';
-            return F.toExponential(2) + ' N';
-        }
+function drawBg(){ctx.strokeStyle='#fef5eb';ctx.lineWidth=1;for(let x=0;x<simC.width;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,simC.height);ctx.stroke()}for(let y=0;y<simC.height;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(simC.width,y);ctx.stroke()}}
 
-        // ---- Color helpers ----
-        function lightenColor(hex, factor) {
-            const r = parseInt(hex.slice(1,3), 16);
-            const g = parseInt(hex.slice(3,5), 16);
-            const b = parseInt(hex.slice(5,7), 16);
-            const lr = Math.min(255, Math.round(r + (255 - r) * factor));
-            const lg = Math.min(255, Math.round(g + (255 - g) * factor));
-            const lb = Math.min(255, Math.round(b + (255 - b) * factor));
-            return `rgb(${lr},${lg},${lb})`;
-        }
+function drawSphere(x,y,r2,val){
+    if(val===0){const g=ctx.createRadialGradient(x-r2*.3,y-r2*.3,r2*.05,x,y,r2);g.addColorStop(0,'#fff');g.addColorStop(0.15,'#e0e0e0');g.addColorStop(0.7,'#b0b0b0');g.addColorStop(1,'#808080');ctx.beginPath();ctx.arc(x,y,r2,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();ctx.strokeStyle='#707070';ctx.lineWidth=2;ctx.stroke();return}
+    const isPos=val>0,clr=isPos?PC:NC;
+    const pulse=S.playing?(2+2*Math.sin(S.time*2.5)):2;
+    const glow=ctx.createRadialGradient(x,y,r2*.85,x,y,r2+pulse+4);glow.addColorStop(0,'rgba(255,255,255,0)');glow.addColorStop(1,clr+'55');
+    ctx.beginPath();ctx.arc(x,y,r2+pulse+4,0,Math.PI*2);ctx.fillStyle=glow;ctx.fill();
+    const g=ctx.createRadialGradient(x-r2*.3,y-r2*.3,r2*.05,x,y,r2);g.addColorStop(0,'#fff');g.addColorStop(0.12,lt(clr,0.5));g.addColorStop(0.55,clr);g.addColorStop(1,dk(clr,0.35));
+    ctx.beginPath();ctx.arc(x,y,r2,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();ctx.strokeStyle=dk(clr,0.45);ctx.lineWidth=2.5;ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font='bold '+Math.round(r2*.6)+'px Fredoka';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(isPos?'+':'−',x,y+1)
+}
 
-        function darkenColor(hex, factor) {
-            const r = parseInt(hex.slice(1,3), 16);
-            const g = parseInt(hex.slice(3,5), 16);
-            const b = parseInt(hex.slice(5,7), 16);
-            const dr = Math.round(r * (1 - factor));
-            const dg = Math.round(g * (1 - factor));
-            const db = Math.round(b * (1 - factor));
-            return `rgb(${dr},${dg},${db})`;
-        }
+function arrow(x,y,dir,mag){
+    if(mag<1e-9)return;const pulse=S.playing?(1+.06*Math.sin(S.time*3)):1;
+    const len=Math.max(12,Math.min(140,Math.sqrt(Math.max(0,mag))*18))*pulse;
+    const sx=x+dir*(S.rad*pxPerCm+4),ex=sx+dir*len,h=11;ctx.beginPath();ctx.strokeStyle='#FF8c42';ctx.lineWidth=3.5;ctx.lineCap='round';ctx.moveTo(sx,y);ctx.lineTo(ex-dir*h*.8,y);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(ex,y);ctx.lineTo(ex-dir*h,y-h*.55);ctx.lineTo(ex-dir*h,y+h*.55);ctx.closePath();ctx.fillStyle='#FF8c42';ctx.fill()
+}
 
-        // ---- Field line generation ----
-        function getFieldLines(q1x, q1y, q2x, q2y, sphereR, isRepulsive, q1Sign, q2Sign) {
-            const lines = [];
-            const midX = (q1x + q2x) / 2;
-            const midY = (q1y + q2y) / 2;
+let pxPerCm=48;
+function draw(forceData){
+    ctx.clearRect(0,0,simC.width,simC.height);drawBg();
+    pxPerCm=Math.min(52,simC.width/(S.r+4));
+    const rPx=S.r*pxPerCm,sR2=S.rad*pxPerCm;
+    const cx=simC.width/2,cy=simC.height/2-5;
+    const q1x=cx-rPx/2,q1y=cy,q2x=cx+rPx/2,q2y=cy;
+    const q1s=S.q1===0?0:(S.q1>0?1:-1),q2s=S.q2===0?0:(S.q2>0?1:-1);
 
-            if (!isRepulsive && q1Sign !== 0 && q2Sign !== 0) {
-                // Attraction: field lines from positive to negative
-                const posX = q1Sign > 0 ? q1x : q2x;
-                const posY = q1Sign > 0 ? q1y : q2y;
-                const negX = q1Sign > 0 ? q2x : q1x;
-                const negY = q1Sign > 0 ? q2y : q1y;
-                const sep = Math.abs(q2x - q1x);
-                const numLines = 7;
+    const lines=getLines(q1x,q1y,q2x,q2y,sR2,q1s,q2s);
+    ctx.strokeStyle='rgba(180,160,140,0.65)';ctx.lineWidth=1.3;ctx.lineCap='round';
+    if(S.playing){ctx.setLineDash([5,10]);ctx.lineDashOffset=-S.time*45}else ctx.setLineDash([]);
+    lines.forEach(l=>{ctx.beginPath();ctx.moveTo(l.sx,l.sy);if(l.bezier)ctx.quadraticCurveTo(l.cpx,l.cpy,l.ex,l.ey);else ctx.lineTo(l.ex,l.ey);ctx.stroke()});
+    ctx.setLineDash([]);
 
-                for (let i = 1; i < numLines; i++) {
-                    const t = i / numLines;
-                    const angle = 0.25 + t * (Math.PI - 0.5); // ~15° to ~165°
+    // Distance line
+    if(q1s!==0&&q2s!==0){
+        const dY=cy+Math.max(sR2,32)+sR2/2+18;ctx.strokeStyle='#bbb';ctx.lineWidth=1.5;ctx.setLineDash([4,4]);
+        ctx.beginPath();ctx.moveTo(q1x,cy+sR2+6);ctx.lineTo(q1x,dY);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(q2x,cy+sR2+6);ctx.lineTo(q2x,dY);ctx.stroke();ctx.setLineDash([]);
+        ctx.strokeStyle='#777';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(q1x,dY);ctx.lineTo(q2x,dY);ctx.stroke();
+        [q1x+10,q2x-10].forEach((x,i)=>{const d=i===0?-1:1,s=7;ctx.beginPath();ctx.strokeStyle='#777';ctx.lineWidth=1.8;ctx.moveTo(x-d*s,dY-s*.5);ctx.lineTo(x,dY);ctx.lineTo(x-d*s,dY+s*.5);ctx.stroke()});
+        ctx.fillStyle='#4A403A';ctx.font='600 13px Fredoka';ctx.textAlign='center';ctx.fillText('r='+S.r.toFixed(1)+' cm',(q1x+q2x)/2,dY-7)
+    }
 
-                    // Upper half
-                    const sx_u = posX + sphereR * Math.cos(angle);
-                    const sy_u = posY - sphereR * Math.sin(angle);
-                    const ex_u = negX + sphereR * Math.cos(Math.PI - angle);
-                    const ey_u = negY - sphereR * Math.sin(Math.PI - angle);
-                    const bulge = sep * 0.45 * Math.sin(angle);
-                    const cpx_u = midX;
-                    const cpy_u = midY - bulge;
-                    lines.push({ sx: sx_u, sy: sy_u, cpx: cpx_u, cpy: cpy_u, ex: ex_u, ey: ey_u });
+    drawSphere(q1x,q1y,sR2,S.q1);drawSphere(q2x,q2y,sR2,S.q2);
+    if(forceData.ok){const d1=forceData.repulse?-1:1;arrow(q1x,q1y,d1,forceData.F);arrow(q2x,q2y,-d1,forceData.F)}
 
-                    // Lower half
-                    const sx_l = posX + sphereR * Math.cos(-angle);
-                    const sy_l = posY - sphereR * Math.sin(-angle);
-                    const ex_l = negX + sphereR * Math.cos(Math.PI + angle);
-                    const ey_l = negY - sphereR * Math.sin(Math.PI + angle);
-                    const cpx_l = midX;
-                    const cpy_l = midY + bulge;
-                    lines.push({ sx: sx_l, sy: sy_l, cpx: cpx_l, cpy: cpy_l, ex: ex_l, ey: ey_l });
-                }
-            } else if (isRepulsive && q1Sign !== 0 && q2Sign !== 0) {
-                // Repulsion: field lines from each charge bending outward
-                const sep = Math.abs(q2x - q1x);
-                // From q1 (left sphere): gap around 0° (rightward, toward q2)
-                for (let i = 0; i < 13; i++) {
-                    const angleDeg = 30 + i * 300 / 12; // 30° to 330°, skipping 60° gap around 0°
-                    const angle = angleDeg * Math.PI / 180;
-                    const sx = q1x + sphereR * Math.cos(angle);
-                    const sy = q1y + sphereR * Math.sin(angle);
-                    const facing = Math.max(0, Math.cos(angle)); // 1 towards q2, 0 perpendicular/away
-                    const lineLen = 130 + facing * 50;
-                    const perpSign = Math.sin(angle) > 0 ? 1 : -1; // below axis: +, above: -
-                    const perpOffset = facing * sep * 0.45;
-                    const cpx = sx + lineLen * 0.45 * Math.cos(angle);
-                    const cpy = sy + lineLen * 0.45 * Math.sin(angle) + perpOffset * perpSign;
-                    const ex = sx + lineLen * 0.9 * Math.cos(angle);
-                    const ey = sy + lineLen * 0.9 * Math.sin(angle) + perpOffset * 0.65 * perpSign;
-                    lines.push({ sx, sy, cpx, cpy, ex, ey });
-                }
-                // From q2 (right sphere): gap around 180° (leftward, toward q1)
-                for (let i = 0; i < 13; i++) {
-                    const angleDeg = -150 + i * 300 / 12; // -150° to +150°, skipping 60° gap around 180°
-                    const angle = angleDeg * Math.PI / 180;
-                    const sx = q2x + sphereR * Math.cos(angle);
-                    const sy = q2y + sphereR * Math.sin(angle);
-                    const facing = Math.max(0, -Math.cos(angle)); // 1 towards q1 (180°), 0 away
-                    const lineLen = 130 + facing * 50;
-                    const perpSign = Math.sin(angle) > 0 ? 1 : -1;
-                    const perpOffset = facing * sep * 0.45;
-                    const cpx = sx + lineLen * 0.45 * Math.cos(angle);
-                    const cpy = sy + lineLen * 0.45 * Math.sin(angle) + perpOffset * perpSign;
-                    const ex = sx + lineLen * 0.9 * Math.cos(angle);
-                    const ey = sy + lineLen * 0.9 * Math.sin(angle) + perpOffset * 0.65 * perpSign;
-                    lines.push({ sx, sy, cpx, cpy, ex, ey });
-                }
-            }
+    ctx.fillStyle='#4A403A';ctx.font='700 16px Fredoka';ctx.textAlign='center';
+    ctx.fillText('q₁',q1x,q1y-sR2-14);ctx.font='600 11px Fredoka';
+    ctx.fillText((S.q1>=0?'+':'')+S.q1.toFixed(1)+' μC',q1x,q1y-sR2-28);
+    ctx.font='700 16px Fredoka';ctx.fillText('q₂',q2x,q2y-sR2-14);ctx.font='600 11px Fredoka';
+    ctx.fillText((S.q2>=0?'+':'')+S.q2.toFixed(1)+' μC',q2x,q2y-sR2-28);
 
-            // Monopole radial lines when only one charge is non-zero
-            if (q1Sign !== 0 && q2Sign === 0) {
-                for (let i = 0; i < 16; i++) {
-                    const angle = i * Math.PI * 2 / 16;
-                    const sx = q1x + sphereR * Math.cos(angle);
-                    const sy = q1y + sphereR * Math.sin(angle);
-                    const ex = q1x + (sphereR + 180) * Math.cos(angle);
-                    const ey = q1y + (sphereR + 180) * Math.sin(angle);
-                    const cpx = (sx + ex) / 2;
-                    const cpy = (sy + ey) / 2;
-                    lines.push({ sx, sy, cpx, cpy, ex, ey });
-                }
-            }
-            if (q2Sign !== 0 && q1Sign === 0) {
-                for (let i = 0; i < 16; i++) {
-                    const angle = i * Math.PI * 2 / 16;
-                    const sx = q2x + sphereR * Math.cos(angle);
-                    const sy = q2y + sphereR * Math.sin(angle);
-                    const ex = q2x + (sphereR + 180) * Math.cos(angle);
-                    const ey = q2y + (sphereR + 180) * Math.sin(angle);
-                    const cpx = (sx + ex) / 2;
-                    const cpy = (sy + ey) / 2;
-                    lines.push({ sx, sy, cpx, cpy, ex, ey });
-                }
-            }
+    // E-field + potential graphs
+    drawEGraph(forceData);drawVGraph(forceData)
+}
 
-            return lines;
-        }
+function drawEGraph(fd){
+    const w=eC.width,h=eC.height;ctxE.clearRect(0,0,w,h);ctxE.fillStyle='#fefdf9';ctxE.fillRect(0,0,w,h);
+    ctxE.strokeStyle='#e8ddd0';ctxE.lineWidth=1;ctxE.strokeRect(0,0,w,h);
+    const ml=28,mr=10,mt=18,mb=22,pw=w-ml-mr,ph=h-mt-mb,pl=ml,pt=mt,midY=pt+ph/2;
+    ctxE.fillStyle='#9b59b6';ctxE.font='bold 11px Fredoka';ctxE.textAlign='left';ctxE.fillText('合电场 E (中心连线)',6,13);
+    ctxE.strokeStyle='#ddd';ctxE.lineWidth=1;ctxE.beginPath();ctxE.moveTo(pl,midY);ctxE.lineTo(pl+pw,midY);ctxE.stroke();
+    // Compute E along line from q1 to q2
+    if(!fd.ok||S.q1===0||S.q2===0)return;
+    const absF=fd.F;ctxE.fillStyle='#aaa';ctxE.font='9px Fredoka';ctxE.textAlign='right';
+    ctxE.fillText('|F|='+fmtF(absF),w-6,13);
 
-        // ---- Drawing functions ----
-        function drawBackground() {
-            ctx.strokeStyle = '#fef5eb';
-            ctx.lineWidth = 1;
-            const gs = 40;
-            for (let x = gs; x < canvas.width; x += gs) {
-                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
-            }
-            for (let y = gs; y < canvas.height; y += gs) {
-                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
-            }
-        }
+    ctxE.strokeStyle='#9b59b6';ctxE.lineWidth=2;ctxE.beginPath();
+    let maxE=0;const pts=[];const q1uC=S.q1*1e-6,q2uC=S.q2*1e-6,rm=S.r*0.01,sR2=S.rad*0.01;
+    for(let i=0;i<=200;i++){const t=i/200;const xPhys=-rm/2+t*rm;const xQ1=Math.abs(xPhys-sR2),xQ2=Math.abs(rm-xPhys-sR2);let E=0;if(xQ1>1e-9)E+=K*q1uC/(xQ1*xQ1);if(xQ2>1e-9)E+=K*q2uC/(xQ2*xQ2);if(E>maxE)maxE=E;pts.push({E,xPhys})}
+    for(let i=0;i<=200;i++){const px=pl+(i/200)*pw,py=midY-(pts[i].E/Math.max(maxE,1e-9))*ph*.45;if(i===0)ctxE.moveTo(px,py);else ctxE.lineTo(px,py)}
+    ctxE.stroke();ctxE.fillStyle='#aaa';ctxE.font='9px Fredoka';ctxE.textAlign='right';ctxE.fillText('0',pl-4,midY+4);
+    ctxE.fillText('q₁',pl+4,pt+10);ctxE.textAlign='right';ctxE.fillText('q₂',pl+pw-4,pt+10)
+}
 
-        function drawSphere(x, y, r, chargeVal) {
-            if (chargeVal === 0) {
-                // Neutral: gray
-                const grad = ctx.createRadialGradient(x - r*0.3, y - r*0.3, r*0.05, x, y, r);
-                grad.addColorStop(0, '#ffffff');
-                grad.addColorStop(0.15, '#e0e0e0');
-                grad.addColorStop(0.7, '#b0b0b0');
-                grad.addColorStop(1, '#808080');
-                ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2);
-                ctx.fillStyle = grad; ctx.fill();
-                ctx.strokeStyle = '#707070'; ctx.lineWidth = 2; ctx.stroke();
-                return;
-            }
+function drawVGraph(fd){
+    const w=vC.width,h=vC.height;ctxV.clearRect(0,0,w,h);ctxV.fillStyle='#fefdf9';ctxV.fillRect(0,0,w,h);
+    ctxV.strokeStyle='#e8ddd0';ctxV.lineWidth=1;ctxV.strokeRect(0,0,w,h);
+    const ml=28,mr=10,mt=18,mb=22,pw=w-ml-mr,ph=h-mt-mb,pl=ml,pt=mt,midY=pt+ph/2;
+    ctxV.fillStyle='#2ecc71';ctxV.font='bold 11px Fredoka';ctxV.textAlign='left';ctxV.fillText('电势 V (中心连线)',6,13);
+    ctxV.strokeStyle='#ddd';ctxV.lineWidth=1;ctxV.beginPath();ctxV.moveTo(pl,midY);ctxV.lineTo(pl+pw,midY);ctxV.stroke();
+    if(!fd.ok||S.q1===0||S.q2===0)return;
+    const q1uC=S.q1*1e-6,q2uC=S.q2*1e-6,rm=S.r*0.01,sR2=S.rad*0.01;
+    ctxV.strokeStyle='#2ecc71';ctxV.lineWidth=2;ctxV.beginPath();
+    let maxV=0;const pts2=[];for(let i=0;i<=200;i++){const t=i/200;const xPhys=-rm/2+t*rm;const xQ1=Math.max(Math.abs(xPhys),sR2),xQ2=Math.max(Math.abs(rm-xPhys),sR2);let V=0;if(xQ1>1e-9)V+=K*q1uC/xQ1;if(xQ2>1e-9)V+=K*q2uC/xQ2;if(Math.abs(V)>maxV)maxV=Math.abs(V);pts2.push({V,xPhys})}
+    const vScale=Math.max(maxV,1e-9);
+    for(let i=0;i<=200;i++){const px=pl+(i/200)*pw,py=midY-(pts2[i].V/vScale)*ph*.45;if(i===0)ctxV.moveTo(px,py);else ctxV.lineTo(px,py)}
+    ctxV.stroke();ctxV.fillStyle='#aaa';ctxV.font='9px Fredoka';ctxV.textAlign='right';ctxV.fillText('0',pl-4,midY+4)
+}
 
-            const isPos = chargeVal > 0;
-            const color = isPos ? POS_COLOR : NEG_COLOR;
+function updateFormula(fd){
+    const a1=Math.abs(S.q1),a2=Math.abs(S.q2),q1c=S.q1>0?PC:(S.q1<0?NC:'#999'),q2c=S.q2>0?PC:(S.q2<0?NC:'#999');
+    fRoot.innerHTML=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center"><span style="font-size:32px;font-weight:700;color:var(--primary)">F</span><span style="font-size:22px;color:#ccc">=</span><span style="font-size:24px;font-weight:700;color:#888">k</span><span style="font-size:22px;color:#ccc">·</span><span style="font-size:${28+a1*3}px;font-weight:700;color:${q1c}">q₁</span><span style="font-size:22px;color:#ccc">·</span><span style="font-size:${28+a2*3}px;font-weight:700;color:${q2c}">q₂</span><span style="font-size:22px;color:#ccc">/</span><span style="font-size:${28+S.r*2.5}px;font-weight:700;color:#666">r²</span></div><div style="font-size:0.8rem;color:#999;margin-top:3px">k=8.99×10⁹ N·m²/C² &nbsp;|&nbsp; 球半径 R=${S.rad.toFixed(1)} cm</div>`;
+    if(fd.ok){resForce.textContent=fmtF(fd.F);resType.textContent=fd.repulse?'← → 排斥力':'→ ← 吸引力';resType.style.color=fd.repulse?PC:NC}else{resForce.textContent='—';resType.textContent='电荷为零';resType.style.color='#999'}
+}
 
-            // Glow aura
-            const pulseR = state.isPlaying ? (2 + 2 * Math.sin(state.time * 2.5)) : 2;
-            const glowGrad = ctx.createRadialGradient(x, y, r * 0.85, x, y, r + pulseR + 4);
-            glowGrad.addColorStop(0, 'rgba(255,255,255,0)');
-            glowGrad.addColorStop(1, color + '55');
-            ctx.beginPath(); ctx.arc(x, y, r + pulseR + 4, 0, Math.PI * 2);
-            ctx.fillStyle = glowGrad; ctx.fill();
+function updateBadges(){
+    bQ1.textContent=(S.q1>=0?'+':'')+S.q1.toFixed(1)+' μC';bQ2.textContent=(S.q2>=0?'+':'')+S.q2.toFixed(1)+' μC';bR.textContent=S.r.toFixed(1)+' cm';bRad.textContent=S.rad.toFixed(1)+' cm';
+    bQ1.style.color=S.q1>0?PC:(S.q1<0?NC:'#999');bQ2.style.color=S.q2>0?PC:(S.q2<0?NC:'#999')
+}
 
-            // 3D sphere gradient
-            const grad = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.05, x, y, r);
-            grad.addColorStop(0, '#ffffff');
-            grad.addColorStop(0.12, lightenColor(color, 0.5));
-            grad.addColorStop(0.55, color);
-            grad.addColorStop(1, darkenColor(color, 0.35));
-            ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
-            ctx.fillStyle = grad; ctx.fill();
-            ctx.strokeStyle = darkenColor(color, 0.45);
-            ctx.lineWidth = 2.5; ctx.stroke();
-
-            // Sign symbol
-            ctx.fillStyle = '#fff';
-            ctx.font = 'bold 22px Fredoka, Noto Sans SC';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(isPos ? '+' : '−', x, y + 1);
-        }
-
-        function drawForceArrow(x, y, direction, magnitude) {
-            if (magnitude < 1e-9) return;
-            const pulse = state.isPlaying ? (1 + 0.06 * Math.sin(state.time * 3)) : 1;
-            const baseLen = Math.sqrt(Math.max(0, magnitude)) * 18;
-            const len = Math.max(12, Math.min(140, baseLen)) * pulse;
-
-            const startX = x + direction * (32 + 4);
-            const endX = startX + direction * len;
-            const headSize = 11;
-
-            // Arrow shaft
-            ctx.beginPath();
-            ctx.strokeStyle = '#FF8c42';
-            ctx.lineWidth = 3.5;
-            ctx.lineCap = 'round';
-            ctx.moveTo(startX, y);
-            ctx.lineTo(endX - direction * headSize * 0.8, y);
-            ctx.stroke();
-
-            // Arrowhead
-            ctx.beginPath();
-            ctx.moveTo(endX, y);
-            ctx.lineTo(endX - direction * headSize, y - headSize * 0.55);
-            ctx.lineTo(endX - direction * headSize, y + headSize * 0.55);
-            ctx.closePath();
-            ctx.fillStyle = '#FF8c42';
-            ctx.fill();
-        }
-
-        function drawFieldLines(lines) {
-            if (lines.length === 0) return;
-            ctx.strokeStyle = 'rgba(180, 160, 140, 0.7)';
-            ctx.lineWidth = 1.4;
-            ctx.lineCap = 'round';
-
-            if (state.isPlaying) {
-                ctx.setLineDash([5, 10]);
-                ctx.lineDashOffset = -state.time * 45;
-            } else {
-                ctx.setLineDash([]);
-            }
-
-            lines.forEach(l => {
-                ctx.beginPath();
-                ctx.moveTo(l.sx, l.sy);
-                ctx.quadraticCurveTo(l.cpx, l.cpy, l.ex, l.ey);
-                ctx.stroke();
-            });
-            ctx.setLineDash([]);
-        }
-
-        function drawDistanceLine(x1, x2, midY) {
-            const lineY = midY + 55;
-            const spR = 32;
-
-            // Vertical ticks from sphere bottoms
-            ctx.strokeStyle = '#bbb';
-            ctx.lineWidth = 1.5;
-            ctx.setLineDash([4, 4]);
-            ctx.beginPath(); ctx.moveTo(x1, midY + spR + 6); ctx.lineTo(x1, lineY); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(x2, midY + spR + 6); ctx.lineTo(x2, lineY); ctx.stroke();
-            ctx.setLineDash([]);
-
-            // Main measurement line
-            ctx.strokeStyle = '#777';
-            ctx.lineWidth = 2;
-            ctx.beginPath(); ctx.moveTo(x1, lineY); ctx.lineTo(x2, lineY); ctx.stroke();
-
-            // Arrowheads
-            drawSmallArrow(x1 + 10, lineY, -1);
-            drawSmallArrow(x2 - 10, lineY, 1);
-
-            // Label
-            ctx.fillStyle = '#4A403A';
-            ctx.font = '600 15px Fredoka, Noto Sans SC';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'bottom';
-            ctx.fillText('r = ' + state.r.toFixed(1) + ' cm', (x1 + x2) / 2, lineY - 7);
-        }
-
-        function drawSmallArrow(x, y, dir) {
-            const s = 7;
-            ctx.beginPath();
-            ctx.strokeStyle = '#777';
-            ctx.lineWidth = 1.8;
-            ctx.moveTo(x - dir * s, y - s * 0.5);
-            ctx.lineTo(x, y);
-            ctx.lineTo(x - dir * s, y + s * 0.5);
-            ctx.stroke();
-        }
-
-        // ---- Main draw ----
-        function draw(forceData) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawBackground();
-
-            const pxPerCm = 52;
-            const rPx = state.r * pxPerCm;
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2 - 10;
-            const spR = 32;
-
-            const q1x = centerX - rPx / 2;
-            const q1y = centerY;
-            const q2x = centerX + rPx / 2;
-            const q2y = centerY;
-
-            // Determine field line scenario
-            const q1Sign = state.q1 === 0 ? 0 : (state.q1 > 0 ? 1 : -1);
-            const q2Sign = state.q2 === 0 ? 0 : (state.q2 > 0 ? 1 : -1);
-            const bothNonZero = q1Sign !== 0 && q2Sign !== 0;
-            const isRepulsive = bothNonZero && (q1Sign * q2Sign > 0);
-
-            // Field lines (drawn behind spheres)
-            const fieldLines = getFieldLines(q1x, q1y, q2x, q2y, spR, isRepulsive, q1Sign, q2Sign);
-            drawFieldLines(fieldLines);
-
-            // Distance measurement line
-            if (bothNonZero) {
-                drawDistanceLine(q1x, q2x, centerY);
-            }
-
-            // Spheres
-            drawSphere(q1x, q1y, spR, state.q1);
-            drawSphere(q2x, q2y, spR, state.q2);
-
-            // Force arrows
-            if (forceData.isValid) {
-                const dirQ1 = forceData.isRepulsive ? -1 : 1;
-                const dirQ2 = forceData.isRepulsive ? 1 : -1;
-                drawForceArrow(q1x, q1y, dirQ1, forceData.F);
-                drawForceArrow(q2x, q2y, dirQ2, forceData.F);
-            }
-
-            // Labels
-            ctx.fillStyle = '#4A403A';
-            ctx.font = '700 18px Fredoka, Noto Sans SC';
-            ctx.textAlign = 'center';
-
-            // q1 label
-            ctx.fillText('q₁', q1x, q1y - spR - 16);
-            ctx.font = '600 13px Fredoka, Noto Sans SC';
-            const q1SignStr = state.q1 >= 0 ? '+' : '';
-            ctx.fillText(q1SignStr + state.q1.toFixed(1) + ' μC', q1x, q1y - spR - 34);
-
-            // q2 label
-            ctx.font = '700 18px Fredoka, Noto Sans SC';
-            ctx.fillText('q₂', q2x, q2y - spR - 16);
-            ctx.font = '600 13px Fredoka, Noto Sans SC';
-            const q2SignStr = state.q2 >= 0 ? '+' : '';
-            ctx.fillText(q2SignStr + state.q2.toFixed(1) + ' μC', q2x, q2y - spR - 34);
-        }
-
-        // ---- Formula display ----
-        function updateFormula(forceData) {
-            const absQ1 = Math.abs(state.q1);
-            const absQ2 = Math.abs(state.q2);
-            const q1Color = state.q1 > 0 ? POS_COLOR : (state.q1 < 0 ? NEG_COLOR : '#999');
-            const q2Color = state.q2 > 0 ? POS_COLOR : (state.q2 < 0 ? NEG_COLOR : '#999');
-
-            const sQ1 = 30 + absQ1 * 4;
-            const sQ2 = 30 + absQ2 * 4;
-            const sR = 30 + state.r * 3;
-
-            fRoot.innerHTML = `
-                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;">
-                    <span style="font-size:40px;font-weight:700;color:var(--primary);">F</span>
-                    <span style="font-size:26px;color:#ccc;">=</span>
-                    <span style="font-size:28px;font-weight:700;color:#888;">k</span>
-                    <span style="font-size:26px;color:#ccc;">&middot;</span>
-                    <span style="font-size:${sQ1}px;font-weight:700;color:${q1Color};">q₁</span>
-                    <span style="font-size:26px;color:#ccc;">&middot;</span>
-                    <span style="font-size:${sQ2}px;font-weight:700;color:${q2Color};">q₂</span>
-                    <span style="font-size:26px;color:#ccc;">/</span>
-                    <span style="font-size:${sR}px;font-weight:700;color:#666;">r²</span>
-                </div>
-                <div style="font-size:0.85rem;color:#999;margin-top:4px;">
-                    k = 8.99 &times; 10⁹ N&middot;m²/C²
-                </div>
-            `;
-
-            if (forceData.isValid) {
-                resForce.textContent = formatForce(forceData.F);
-                resType.textContent = forceData.isRepulsive ? '← → 排斥力 / Repulsion' : '→ ← 吸引力 / Attraction';
-                resType.style.color = forceData.isRepulsive ? POS_COLOR : NEG_COLOR;
-            } else {
-                resForce.textContent = '—';
-                resType.textContent = '电荷为零 / Zero charge';
-                resType.style.color = '#999';
-            }
-        }
-
-        function updateBadges() {
-            const q1SignStr = state.q1 >= 0 ? '+' : '';
-            const q2SignStr = state.q2 >= 0 ? '+' : '';
-            bQ1.textContent = q1SignStr + state.q1.toFixed(1) + ' μC';
-            bQ2.textContent = q2SignStr + state.q2.toFixed(1) + ' μC';
-            bR.textContent = state.r.toFixed(1) + ' cm';
-
-            // Update badge colors based on charge sign
-            bQ1.style.color = state.q1 > 0 ? POS_COLOR : (state.q1 < 0 ? NEG_COLOR : '#999');
-            bQ2.style.color = state.q2 > 0 ? POS_COLOR : (state.q2 < 0 ? NEG_COLOR : '#999');
-
-            // Update slider thumb colors
-            const q1ThumbColor = state.q1 >= 0 ? POS_COLOR : NEG_COLOR;
-            const q2ThumbColor = state.q2 >= 0 ? POS_COLOR : NEG_COLOR;
-            sQ1.style.setProperty('--thumb-color', q1ThumbColor);
-            sQ2.style.setProperty('--thumb-color', q2ThumbColor);
-        }
-
-        // ---- Animation loop ----
-        function update() {
-            state.q1 = parseFloat(sQ1.value);
-            state.q2 = parseFloat(sQ2.value);
-            state.r = parseFloat(sR.value);
-
-            updateBadges();
-
-            if (state.isPlaying) {
-                state.time += 0.016;
-            }
-
-            const forceData = calcForce();
-            updateFormula(forceData);
-            draw(forceData);
-            requestAnimationFrame(update);
-        }
-
-        // ---- Button handlers ----
-        bStart.onclick = () => {
-            state.isPlaying = !state.isPlaying;
-            bStart.textContent = state.isPlaying ? '暂停 Pause' : '开始 Start';
-            bStart.classList.toggle('start', !state.isPlaying);
-            bStart.classList.toggle('pause', state.isPlaying);
-        };
-
-        bReset.onclick = () => {
-            state.q1 = defaults.q1;
-            state.q2 = defaults.q2;
-            state.r = defaults.r;
-            state.isPlaying = false;
-            state.time = 0;
-            sQ1.value = defaults.q1;
-            sQ2.value = defaults.q2;
-            sR.value = defaults.r;
-            bStart.textContent = '开始 Start';
-            bStart.className = 'ctrl-btn start';
-        };
-
-        // Dynamic slider thumb colors via CSS custom properties and inline style updates
-        const styleSheet = document.createElement('style');
-        styleSheet.textContent = `
-            #q1-slider::-webkit-slider-thumb { background: var(--thumb-color-q1, var(--pos-color)); }
-            #q2-slider::-webkit-slider-thumb { background: var(--thumb-color-q2, var(--pos-color)); }
-        `;
-        document.head.appendChild(styleSheet);
-
-        // Override updateBadges to also set slider thumb colors dynamically
-        const origUpdateBadges = updateBadges;
-        updateBadges = function() {
-            origUpdateBadges();
-            const q1c = state.q1 > 0 ? POS_COLOR : (state.q1 < 0 ? NEG_COLOR : '#999');
-            const q2c = state.q2 > 0 ? POS_COLOR : (state.q2 < 0 ? NEG_COLOR : '#999');
-            document.documentElement.style.setProperty('--thumb-color-q1', q1c);
-            document.documentElement.style.setProperty('--thumb-color-q2', q2c);
-        };
-
-        resize();
-        update();
-    </script>
+function update(){S.q1=parseFloat(sQ1.value);S.q2=parseFloat(sQ2.value);S.r=parseFloat(sR.value);S.rad=parseFloat(sRad.value);updateBadges();if(S.playing)S.time+=0.016;const fd=calcForce();updateFormula(fd);draw(fd);requestAnimationFrame(update)}
+bStart.onclick=()=>{S.playing=!S.playing;bStart.textContent=S.playing?'暂停 Pause':'开始 Start';bStart.classList.toggle('start',!S.playing);bStart.classList.toggle('pause',S.playing)};
+bReset.onclick=()=>{S.q1=D.q1;S.q2=D.q2;S.r=D.r;S.rad=D.rad;S.playing=false;S.time=0;sQ1.value=D.q1;sQ2.value=D.q2;sR.value=D.r;sRad.value=D.rad;bStart.textContent='开始 Start';bStart.className='ctrl-btn start'};
+resize();update();
+</script>
 </body>
-
 </html>
