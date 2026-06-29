@@ -8,11 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-color:#FFF9F0;--primary:#FF8c42;--secondary:#FFC75F;--accent:#FF5E5B;
-            --text-dark:#4A403A;--card-bg:#FFFFFF;--shadow:0 6px 30px rgba(255,140,66,0.18);
-            --pos-color:#FF5E5B;--neg-color:#3498db;
-        }
+        :root{--bg-color:#FFF9F0;--primary:#FF8c42;--secondary:#FFC75F;--accent:#FF5E5B;--text-dark:#4A403A;--card-bg:#fff;--shadow:0 6px 30px rgba(255,140,66,0.18);--pos-color:#FF5E5B;--neg-color:#3498db}
         *{box-sizing:border-box;margin:0;padding:0}
         body{font-family:'Fredoka','Noto Sans SC',sans-serif;background:var(--bg-color);color:var(--text-dark);display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:5px 40px 10px}
         .branding{position:fixed;top:10px;left:20px;z-index:1000}
@@ -28,9 +24,8 @@
         .legend-dot{width:11px;height:11px;border-radius:50%;display:inline-block}
         .diagram-section{grid-area:diagram;display:flex;flex-direction:column;gap:6px}
         .main-canvas-wrap{background:#fff;border-radius:20px;box-shadow:var(--shadow);overflow:hidden;flex:1;min-height:180px;border:2px solid #fff}
-        .graph-canvas-wrap{background:#fff;border-radius:16px;box-shadow:var(--shadow);overflow:hidden;flex:1;min-height:160px;border:1px solid #fff5eb;display:flex;flex-direction:column}
-        .graph-canvas-wrap canvas{width:100%;height:50%;display:block}
         #simCanvas{width:100%;height:100%;display:block}
+        .graph-canvas-wrap{background:#fff;border-radius:16px;box-shadow:var(--shadow);overflow:hidden;flex:1;min-height:160px;border:1px solid #fff5eb;display:flex;flex-direction:column}
         .graph-canvas-wrap canvas{width:100%;height:50%;display:block}
         .controls-section{grid-area:controls;display:flex;flex-direction:column;gap:10px}
         .control-panel{background:#fff;border-radius:20px;box-shadow:var(--shadow);padding:14px 18px;display:flex;flex-direction:column;gap:10px}
@@ -40,7 +35,7 @@
         .label-row{display:flex;justify-content:space-between;font-weight:600;font-size:0.9rem}
         .val-badge{background:#fff;padding:1px 7px;border-radius:7px;font-size:0.85rem;border:2px solid #f0f0f0}
         input[type=range]{width:100%;appearance:none;height:6px;background:#eee;border-radius:3px;outline:none}
-        input[type=range]::-webkit-slider-thumb{appearance:none;width:20px;height:20px;border-radius:50%;cursor:pointer;background:var(--primary);box-shadow:0 2px 6px rgba(0,0,0,0.2)}
+        input[type=range]::-webkit-slider-thumb{appearance:none;width:20px;height:20px;border-radius:50%;cursor:pointer;background:var(--primary)}
         .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px}
         .ctrl-btn{padding:10px;border:none;border-radius:14px;font-size:1.05rem;font-weight:700;cursor:pointer;color:white}
         .start{background:var(--primary)}.pause{background:#2ecc71}.reset{background:#95a5a6}
@@ -52,7 +47,6 @@
 <div class="branding"><div class="logo">Wuli布雷克</div></div>
 <div class="container">
     <header><h1>库仑定律 / Coulomb's Law</h1></header>
-
     <section class="formula-display">
         <div class="formula-container" id="formula-root"></div>
         <div class="result-row">
@@ -65,31 +59,16 @@
             <div class="legend-item"><span style="color:var(--primary);font-weight:700">→</span> 力方向</div>
         </div>
     </section>
-
     <section class="diagram-section">
         <div class="main-canvas-wrap"><canvas id="simCanvas"></canvas></div>
         <div class="graph-canvas-wrap"><canvas id="canvasE"></canvas><canvas id="canvasV"></canvas></div>
     </section>
-
     <section class="controls-section">
         <div class="control-panel">
-            <div class="param-section" style="border-left:5px solid var(--pos-color)">
-                <div class="param-section-header">电荷 q₁ (左侧)</div>
-                <div class="control-group"><div class="label-row"><span>电荷量 q₁</span><span id="q1-badge" class="val-badge">+3 μC</span></div><input type="range" id="q1-slider" min="-5" max="5" step="0.1" value="3"></div>
-            </div>
-            <div class="param-section" style="border-left:5px solid var(--neg-color)">
-                <div class="param-section-header">电荷 q₂ (右侧)</div>
-                <div class="control-group"><div class="label-row"><span>电荷量 q₂</span><span id="q2-badge" class="val-badge">+2 μC</span></div><input type="range" id="q2-slider" min="-5" max="5" step="0.1" value="2"></div>
-            </div>
-            <div class="param-section" style="border-left:5px solid var(--primary)">
-                <div class="param-section-header">距离与半径</div>
-                <div class="control-group"><div class="label-row"><span>距离 r (cm)</span><span id="r-badge" class="val-badge">5.0</span></div><input type="range" id="r-slider" min="2" max="10" step="0.1" value="5"></div>
-                <div class="control-group"><div class="label-row"><span>球半径 R (cm)</span><span id="rad-badge" class="val-badge">1.5</span></div><input type="range" id="rad-slider" min="0.5" max="1.0" step="0.05" value="0.8"></div>
-            </div>
-            <div class="btn-row">
-                <button id="btn-start" class="ctrl-btn start">开始 Start</button>
-                <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
-            </div>
+            <div class="param-section" style="border-left:5px solid var(--pos-color)"><div class="param-section-header">电荷 q₁ (左侧)</div><div class="control-group"><div class="label-row"><span>电荷量 q₁</span><span id="q1-badge" class="val-badge">+3 μC</span></div><input type="range" id="q1-slider" min="-5" max="5" step="0.1" value="3"></div></div>
+            <div class="param-section" style="border-left:5px solid var(--neg-color)"><div class="param-section-header">电荷 q₂ (右侧)</div><div class="control-group"><div class="label-row"><span>电荷量 q₂</span><span id="q2-badge" class="val-badge">+2 μC</span></div><input type="range" id="q2-slider" min="-5" max="5" step="0.1" value="2"></div></div>
+            <div class="param-section" style="border-left:5px solid var(--primary)"><div class="param-section-header">距离与半径</div><div class="control-group"><div class="label-row"><span>距离 r (cm)</span><span id="r-badge" class="val-badge">5.0</span></div><input type="range" id="r-slider" min="2" max="10" step="0.1" value="5"></div><div class="control-group"><div class="label-row"><span>球半径 R (cm)</span><span id="rad-badge" class="val-badge">0.8</span></div><input type="range" id="rad-slider" min="0.5" max="1.0" step="0.05" value="0.8"></div></div>
+            <div class="btn-row"><button id="btn-start" class="ctrl-btn start">开始 Start</button><button id="btn-reset" class="ctrl-btn reset">重置 Reset</button></div>
         </div>
         <div class="info-card">
             <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem">演示要点 / Key Points</div>
@@ -104,6 +83,7 @@
 </div>
 
 <script>
+const PC='#FF5E5B',NC='#3498db',K=8.99e9;
 const simC=document.getElementById('simCanvas'),ctx=simC.getContext('2d');
 const eC=document.getElementById('canvasE'),ctxE=eC.getContext('2d');
 const vC=document.getElementById('canvasV'),ctxV=vC.getContext('2d');
@@ -111,167 +91,98 @@ const sQ1=document.getElementById('q1-slider'),sQ2=document.getElementById('q2-s
 const bQ1=document.getElementById('q1-badge'),bQ2=document.getElementById('q2-badge'),bR=document.getElementById('r-badge'),bRad=document.getElementById('rad-badge');
 const bStart=document.getElementById('btn-start'),bReset=document.getElementById('btn-reset');
 const fRoot=document.getElementById('formula-root'),resForce=document.getElementById('res-force'),resType=document.getElementById('res-type');
-
-const PC='#FF5E5B',NC='#3498db',K=8.99e9;
 const S={q1:3,q2:2,r:5,rad:0.8,playing:false,time:0};
 const D={q1:3,q2:2,r:5,rad:0.8};
 
 function resize(){simC.width=simC.clientWidth;simC.height=simC.clientHeight;eC.width=eC.clientWidth;eC.height=eC.clientHeight;vC.width=vC.clientWidth;vC.height=vC.clientHeight}
 window.addEventListener('resize',resize);
-
-function calcForce(){const a1=Math.abs(S.q1)*1e-6,a2=Math.abs(S.q2)*1e-6,rm=S.r*0.01;if(rm<1e-6||a1<1e-12||a2<1e-12)return{F:0,repulse:false,ok:false};return{F:K*a1*a2/(rm*rm),repulse:S.q1*S.q2>0,ok:true}}
+function calcF(){const a1=Math.abs(S.q1)*1e-6,a2=Math.abs(S.q2)*1e-6,rm=S.r*0.01;if(rm<1e-6||a1<1e-12||a2<1e-12)return{F:0,repulse:false,ok:false};return{F:K*a1*a2/(rm*rm),repulse:S.q1*S.q2>0,ok:true}}
 function fmtF(F){if(F===0)return'0 N';if(F<0.01)return F.toExponential(2)+' N';if(F<100)return F.toFixed(2)+' N';return F.toExponential(2)+' N'}
 function lt(c,f){const r=parseInt(c.slice(1,3),16),g=parseInt(c.slice(3,5),16),b=parseInt(c.slice(5,7),16);return`rgb(${Math.min(255,Math.round(r+(255-r)*f))},${Math.min(255,Math.round(g+(255-g)*f))},${Math.min(255,Math.round(b+(255-b)*f))})`}
 function dk(c,f){const r=parseInt(c.slice(1,3),16),g=parseInt(c.slice(3,5),16),b=parseInt(c.slice(5,7),16);return`rgb(${Math.round(r*(1-f))},${Math.round(g*(1-f))},${Math.round(b*(1-f))})`}
 
-// Field lines: radial from each sphere. Repulsion: gap toward other. Attraction: lines from + to -.
 function getLines(q1x,q1y,q2x,q2y,sR2,q1s,q2s){
-    const lines=[],both=q1s!==0&&q2s!==0;
-    if(!both&&q1s===0&&q2s===0)return lines;
-    if(!both){// monopole
-        const cx=q1s!==0?q1x:q2x,cy=q1s!==0?q1y:q2y;
-        for(let i=0;i<18;i++){const a=i*Math.PI*2/18;lines.push({sx:cx+sR2*Math.cos(a),sy:cy+sR2*Math.sin(a),ex:cx+(sR2+170)*Math.cos(a),ey:cy+(sR2+170)*Math.sin(a),cpx:0,cpy:0,bezier:false})}
-        return lines
-    }
+    const lines=[];if(q1s===0&&q2s===0)return lines;
+    if(q1s===0||q2s===0){const cx=q1s!==0?q1x:q2x,cy=q1s!==0?q1y:q2y;for(let i=0;i<18;i++){const a=i*Math.PI*2/18;lines.push({sx:cx+sR2*Math.cos(a),sy:cy+sR2*Math.sin(a),ex:cx+(sR2+170)*Math.cos(a),ey:cy+(sR2+170)*Math.sin(a),cpx:0,cpy:0,bez:false})}return lines}
     const sep=Math.abs(q2x-q1x);
-    if(q1s*q2s>0){// repulsion: radial from each sphere, gap toward other, half-sep max length
-        const gaps=Math.PI*0.5;// 90° gap — wider to prevent crossing
-        const halfSep=(q2x-q1x)/2-sR2;
-        [0,1].forEach(idx=>{
-            const cx=idx===0?q1x:q2x,cy=idx===0?q1y:q2y;
-            const dir=idx===0?0:Math.PI;
-            for(let i=0;i<16;i++){
-                const a=i*Math.PI*2/16;
-                let da=a-dir;while(da<-Math.PI)da+=2*Math.PI;while(da>Math.PI)da-=2*Math.PI;
-                if(Math.abs(da)<gaps/2)continue;
-                const sx=cx+sR2*Math.cos(a),sy=cy+sR2*Math.sin(a);
-                // Length capped so lines never cross the midpoint
-                const maxLen=Math.min(150,Math.abs(Math.cos(da))<0.1?halfSep:200);
-                lines.push({sx,sy,ex:sx+maxLen*Math.cos(a),ey:sy+maxLen*Math.sin(a),cpx:0,cpy:0,bezier:false})
-            }
-        })
-    }else{// attraction: bezier curves from positive to negative
-        const px=q1s>0?q1x:q2x,py=q1s>0?q1y:q2y;
-        const nx=q1s>0?q2x:q1x,ny=q1s>0?q2y:q1y;
-        const mid=(px+nx)/2,midY=(py+ny)/2;
-        for(let i=1;i<11;i++){
-            const t=i/11,a=0.2+t*(Math.PI-0.4);// 36° to 162°
-            const sx=px+sR2*Math.cos(a),sy=py-sR2*Math.sin(a);
-            const ex=nx+sR2*Math.cos(Math.PI-a),ey=ny-sR2*Math.sin(Math.PI-a);
-            const bulge=sep*0.55*Math.sin(a);
-            lines.push({sx,sy,cpx:mid,cpy:midY-bulge,ex,ey,bezier:true});
-            // lower half
-            lines.push({sx:px+sR2*Math.cos(-a),sy:py-sR2*Math.sin(-a),cpx:mid,cpy:midY+bulge,ex:nx+sR2*Math.cos(Math.PI+a),ey:ny-sR2*Math.sin(Math.PI+a),bezier:true})
-        }
+    if(q1s*q2s>0){// repulsion: radial from each, gap 90°, maxLen < halfSep
+        const gaps=Math.PI*0.5,halfSep=sep/2-sR2;
+        [0,1].forEach(idx=>{const cx=idx===0?q1x:q2x,cy=idx===0?q1y:q2y,dir=idx===0?0:Math.PI;
+            for(let i=0;i<16;i++){const a=i*Math.PI*2/16;let da=a-dir;while(da<-Math.PI)da+=2*Math.PI;while(da>Math.PI)da-=2*Math.PI;if(Math.abs(da)<gaps/2)continue;
+                const sx=cx+sR2*Math.cos(a),sy=cy+sR2*Math.sin(a),maxLen=Math.min(150,Math.abs(Math.cos(da))<0.1?halfSep:200);
+                lines.push({sx,sy,ex:sx+maxLen*Math.cos(a),ey:sy+maxLen*Math.sin(a),cpx:0,cpy:0,bez:false})}})
+    }else{// attraction: bezier from + to -
+        const px=q1s>0?q1x:q2x,py=q1s>0?q1y:q2y,nx=q1s>0?q2x:q1x,ny=q1s>0?q2y:q1y,mid=(px+nx)/2,midY=(py+ny)/2;
+        for(let i=1;i<11;i++){const t=i/11,a=0.2+t*(Math.PI-0.4),bulge=sep*0.55*Math.sin(a);
+            lines.push({sx:px+sR2*Math.cos(a),sy:py-sR2*Math.sin(a),cpx:mid,cpy:midY-bulge,ex:nx+sR2*Math.cos(Math.PI-a),ey:ny-sR2*Math.sin(Math.PI-a),bez:true});
+            lines.push({sx:px+sR2*Math.cos(-a),sy:py-sR2*Math.sin(-a),cpx:mid,cpy:midY+bulge,ex:nx+sR2*Math.cos(Math.PI+a),ey:ny-sR2*Math.sin(Math.PI+a),bez:true})}
     }
     return lines
 }
 
 function drawBg(){ctx.strokeStyle='#fef5eb';ctx.lineWidth=1;for(let x=0;x<simC.width;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,simC.height);ctx.stroke()}for(let y=0;y<simC.height;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(simC.width,y);ctx.stroke()}}
-
 function drawSphere(x,y,r2,val){
     if(val===0){const g=ctx.createRadialGradient(x-r2*.3,y-r2*.3,r2*.05,x,y,r2);g.addColorStop(0,'#fff');g.addColorStop(0.15,'#e0e0e0');g.addColorStop(0.7,'#b0b0b0');g.addColorStop(1,'#808080');ctx.beginPath();ctx.arc(x,y,r2,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();ctx.strokeStyle='#707070';ctx.lineWidth=2;ctx.stroke();return}
-    const isPos=val>0,clr=isPos?PC:NC;
-    const pulse=S.playing?(2+2*Math.sin(S.time*2.5)):2;
+    const clr=val>0?PC:NC,pulse=S.playing?(2+2*Math.sin(S.time*2.5)):2;
     const glow=ctx.createRadialGradient(x,y,r2*.85,x,y,r2+pulse+4);glow.addColorStop(0,'rgba(255,255,255,0)');glow.addColorStop(1,clr+'55');
     ctx.beginPath();ctx.arc(x,y,r2+pulse+4,0,Math.PI*2);ctx.fillStyle=glow;ctx.fill();
     const g=ctx.createRadialGradient(x-r2*.3,y-r2*.3,r2*.05,x,y,r2);g.addColorStop(0,'#fff');g.addColorStop(0.12,lt(clr,0.5));g.addColorStop(0.55,clr);g.addColorStop(1,dk(clr,0.35));
     ctx.beginPath();ctx.arc(x,y,r2,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();ctx.strokeStyle=dk(clr,0.45);ctx.lineWidth=2.5;ctx.stroke();
-    ctx.fillStyle='#fff';ctx.font='bold '+Math.round(r2*.6)+'px Fredoka';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(isPos?'+':'−',x,y+1)
+    ctx.fillStyle='#fff';ctx.font='bold '+Math.round(r2*.6)+'px Fredoka';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(val>0?'+':'−',x,y+1)
 }
-
 function arrow(x,y,dir,mag){
-    if(mag<1e-9)return;const pulse=S.playing?(1+.06*Math.sin(S.time*3)):1;
-    const len=Math.max(12,Math.min(140,Math.sqrt(Math.max(0,mag))*18))*pulse;
+    if(mag<1e-9)return;const pulse=S.playing?(1+.06*Math.sin(S.time*3)):1,len=Math.max(12,Math.min(140,Math.sqrt(Math.max(0,mag))*18))*pulse;
     const sx=x+dir*(S.rad*52+4),ex=sx+dir*len,h=11;ctx.beginPath();ctx.strokeStyle='#FF8c42';ctx.lineWidth=3.5;ctx.lineCap='round';ctx.moveTo(sx,y);ctx.lineTo(ex-dir*h*.8,y);ctx.stroke();
     ctx.beginPath();ctx.moveTo(ex,y);ctx.lineTo(ex-dir*h,y-h*.55);ctx.lineTo(ex-dir*h,y+h*.55);ctx.closePath();ctx.fillStyle='#FF8c42';ctx.fill()
 }
 
 let pxPerCm=52;
 function draw(forceData){
-    ctx.clearRect(0,0,simC.width,simC.height);drawBg();
-    if(simC.width<300)return;
-    // Fixed pxPerCm like original. Spheres at left/right sides.
-    const rPx=S.r*pxPerCm;
-    const sR2=S.rad*pxPerCm;
-    const cx=simC.width/2,cy=simC.height/2-10;
-    const Q1X=cx-rPx/2,Q2X=cx+rPx/2,QY=cy;
+    ctx.clearRect(0,0,simC.width,simC.height);drawBg();if(simC.width<300)return;
+    // Left sphere fixed at 20% width; right sphere moves with r
+    const QY=simC.height/2-10,Q1X=simC.width*0.2;pxPerCm=Math.min(52,(simC.width*0.75-Q1X)/S.r);const Q2X=Q1X+S.r*pxPerCm,sR2=S.rad*pxPerCm;
     const q1s=S.q1===0?0:(S.q1>0?1:-1),q2s=S.q2===0?0:(S.q2>0?1:-1);
-    const lines=getLines(Q1X,QY,Q2X,QY,sR2,q1s,q2s);
-    ctx.strokeStyle='rgba(180,160,140,0.65)';ctx.lineWidth=1.3;ctx.lineCap='round';
-    if(S.playing){ctx.setLineDash([5,10]);ctx.lineDashOffset=-S.time*45}else ctx.setLineDash([]);
-    lines.forEach(l=>{ctx.beginPath();ctx.moveTo(l.sx,l.sy);if(l.bezier)ctx.quadraticCurveTo(l.cpx,l.cpy,l.ex,l.ey);else ctx.lineTo(l.ex,l.ey);ctx.stroke()});
-    ctx.setLineDash([]);
-
+    // Field lines only when playing (animation on)
+    if(S.playing){const lines=getLines(Q1X,QY,Q2X,QY,sR2,q1s,q2s);ctx.strokeStyle='rgba(180,160,140,0.65)';ctx.lineWidth=1.3;ctx.lineCap='round';ctx.setLineDash([5,10]);ctx.lineDashOffset=-S.time*45;lines.forEach(l=>{ctx.beginPath();ctx.moveTo(l.sx,l.sy);if(l.bez)ctx.quadraticCurveTo(l.cpx,l.cpy,l.ex,l.ey);else ctx.lineTo(l.ex,l.ey);ctx.stroke()});ctx.setLineDash([])}
     // Distance line
-    if(q1s!==0&&q2s!==0){
-        const dY=QY+Math.max(sR2,32)+sR2/2+18;ctx.strokeStyle='#bbb';ctx.lineWidth=1.5;ctx.setLineDash([4,4]);
-        ctx.beginPath();ctx.moveTo(Q1X,QY+sR2+6);ctx.lineTo(Q1X,dY);ctx.stroke();
-        ctx.beginPath();ctx.moveTo(Q2X,QY+sR2+6);ctx.lineTo(Q2X,dY);ctx.stroke();ctx.setLineDash([]);
-        ctx.strokeStyle='#777';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(Q1X,dY);ctx.lineTo(Q2X,dY);ctx.stroke();
-        [Q1X+10,Q2X-10].forEach((x,i)=>{const d=i===0?-1:1,s=7;ctx.beginPath();ctx.strokeStyle='#777';ctx.lineWidth=1.8;ctx.moveTo(x-d*s,dY-s*.5);ctx.lineTo(x,dY);ctx.lineTo(x-d*s,dY+s*.5);ctx.stroke()});
-        ctx.fillStyle='#4A403A';ctx.font='600 13px Fredoka';ctx.textAlign='center';ctx.fillText('r='+S.r.toFixed(1)+' cm',(Q1X+Q2X)/2,dY-7)
-    }
-
+    if(q1s!==0&&q2s!==0){const dY=QY+Math.max(sR2,32)+sR2/2+18;ctx.strokeStyle='#bbb';ctx.lineWidth=1.5;ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(Q1X,QY+sR2+6);ctx.lineTo(Q1X,dY);ctx.stroke();ctx.beginPath();ctx.moveTo(Q2X,QY+sR2+6);ctx.lineTo(Q2X,dY);ctx.stroke();ctx.setLineDash([]);ctx.strokeStyle='#777';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(Q1X,dY);ctx.lineTo(Q2X,dY);ctx.stroke();[Q1X+10,Q2X-10].forEach((x,i)=>{const d=i===0?-1:1,s=7;ctx.beginPath();ctx.strokeStyle='#777';ctx.lineWidth=1.8;ctx.moveTo(x-d*s,dY-s*.5);ctx.lineTo(x,dY);ctx.lineTo(x-d*s,dY+s*.5);ctx.stroke()});ctx.fillStyle='#4A403A';ctx.font='600 13px Fredoka';ctx.textAlign='center';ctx.fillText('r='+S.r.toFixed(1)+' cm',(Q1X+Q2X)/2,dY-7)}
     drawSphere(Q1X,QY,sR2,S.q1);drawSphere(Q2X,QY,sR2,S.q2);
     if(forceData.ok){const d1=forceData.repulse?-1:1;arrow(Q1X,QY,d1,forceData.F);arrow(Q2X,QY,-d1,forceData.F)}
-
-    ctx.fillStyle='#4A403A';ctx.font='700 16px Fredoka';ctx.textAlign='center';
-    ctx.fillText('q₁',Q1X,QY-sR2-14);ctx.font='600 11px Fredoka';
-    ctx.fillText((S.q1>=0?'+':'')+S.q1.toFixed(1)+' μC',Q1X,QY-sR2-28);
-    ctx.font='700 16px Fredoka';ctx.fillText('q₂',Q2X,QY-sR2-14);ctx.font='600 11px Fredoka';
-    ctx.fillText((S.q2>=0?'+':'')+S.q2.toFixed(1)+' μC',Q2X,QY-sR2-28);
-
-    // E-field + potential graphs — pass sphere positions for axis alignment
+    ctx.fillStyle='#4A403A';ctx.font='700 16px Fredoka';ctx.textAlign='center';ctx.fillText('q₁',Q1X,QY-sR2-14);ctx.font='600 11px Fredoka';ctx.fillText((S.q1>=0?'+':'')+S.q1.toFixed(1)+' μC',Q1X,QY-sR2-28);ctx.font='700 16px Fredoka';ctx.fillText('q₂',Q2X,QY-sR2-14);ctx.font='600 11px Fredoka';ctx.fillText((S.q2>=0?'+':'')+S.q2.toFixed(1)+' μC',Q2X,QY-sR2-28);
     drawEGraph(forceData,Q1X,Q2X);drawVGraph(forceData,Q1X,Q2X)
 }
 
-function drawEGraph(fd){
-    const w=eC.width,h=eC.height;ctxE.clearRect(0,0,w,h);ctxE.fillStyle='#fefdf9';ctxE.fillRect(0,0,w,h);
-    ctxE.strokeStyle='#e8ddd0';ctxE.lineWidth=1;ctxE.strokeRect(0,0,w,h);
+function drawEGraph(fd,q1x,q2x){
+    const w=eC.width,h=eC.height;ctxE.clearRect(0,0,w,h);ctxE.fillStyle='#fefdf9';ctxE.fillRect(0,0,w,h);ctxE.strokeStyle='#e8ddd0';ctxE.lineWidth=1;ctxE.strokeRect(0,0,w,h);
     const ml=28,mr=10,mt=18,mb=22,pw=w-ml-mr,ph=h-mt-mb,pl=ml,pt=mt,midY=pt+ph/2;
-    ctxE.fillStyle='#9b59b6';ctxE.font='bold 11px Fredoka';ctxE.textAlign='left';ctxE.fillText('合电场 E (中心连线)',6,13);
-    ctxE.strokeStyle='#ddd';ctxE.lineWidth=1;ctxE.beginPath();ctxE.moveTo(pl,midY);ctxE.lineTo(pl+pw,midY);ctxE.stroke();
-    // Compute E along line from q1 to q2
+    ctxE.fillStyle='#9b59b6';ctxE.font='bold 11px Fredoka';ctxE.textAlign='left';ctxE.fillText('E (向右为正)',6,13);ctxE.strokeStyle='#ddd';ctxE.lineWidth=1;ctxE.beginPath();ctxE.moveTo(pl,midY);ctxE.lineTo(pl+pw,midY);ctxE.stroke();
     if(!fd.ok||S.q1===0||S.q2===0)return;
-    const absF=fd.F;ctxE.fillStyle='#aaa';ctxE.font='9px Fredoka';ctxE.textAlign='right';
-    ctxE.fillText('|F|='+fmtF(absF),w-6,13);
-
-    ctxE.strokeStyle='#9b59b6';ctxE.lineWidth=2;ctxE.beginPath();
-    let maxE=0;const pts=[];const q1uC=S.q1*1e-6,q2uC=S.q2*1e-6,rm=S.r*0.01,sR2=S.rad*0.01;
-    for(let i=0;i<=200;i++){const t=i/200;const xPhys=t*rm;const sR2m=S.rad*0.01;const xQ1=Math.max(xPhys,sR2m),xQ2=Math.max(rm-xPhys,sR2m);let E=0;if(xQ1>sR2m)E+=K*q1uC/(xQ1*xQ1);if(xQ2>sR2m)E+=K*q2uC/(xQ2*xQ2);if(E>maxE)maxE=E;pts.push({E,xPhys})}
-    for(let i=0;i<=200;i++){const px=pl+(i/200)*pw,py=midY-(pts[i].E/Math.max(maxE,1e-9))*ph*.45;if(i===0)ctxE.moveTo(px,py);else ctxE.lineTo(px,py)}
-    ctxE.stroke();ctxE.fillStyle='#aaa';ctxE.font='9px Fredoka';ctxE.textAlign='right';ctxE.fillText('0',pl-4,midY+4);
+    const q1uC=S.q1*1e-6,q2uC=S.q2*1e-6,rm=S.r*0.01,sR2m=S.rad*0.01;ctxE.strokeStyle='#9b59b6';ctxE.lineWidth=2;ctxE.beginPath();
+    let maxE=0;const pts=[];// signed E
+    for(let i=0;i<=200;i++){const t=i/200,xPhys=t*rm,x1=Math.max(xPhys,sR2m),x2=Math.max(rm-xPhys,sR2m);let E=0;if(x1>sR2m)E+=K*q1uC/(x1*x1)*Math.sign(S.q1);if(x2>sR2m)E-=K*q2uC/(x2*x2)*Math.sign(S.q2);if(Math.abs(E)>maxE)maxE=Math.abs(E);pts.push({E,xPhys})}
+    const sc=Math.max(maxE,1e-9);for(let i=0;i<=200;i++){const px=pl+(i/200)*pw,py=midY-(pts[i].E/sc)*ph*.45;if(i===0)ctxE.moveTo(px,py);else ctxE.lineTo(px,py)}ctxE.stroke();
+    ctxE.fillStyle='#aaa';ctxE.font='9px Fredoka';ctxE.textAlign='right';ctxE.fillText('+',pl-4,midY-ph*.45);ctxE.fillText('0',pl-4,midY+4);ctxE.fillText('−',pl-4,midY+ph*.45+8);
     ctxE.fillText('q₁',pl+4,pt+10);ctxE.textAlign='right';ctxE.fillText('q₂',pl+pw-4,pt+10)
 }
-
-function drawVGraph(fd){
-    const w=vC.width,h=vC.height;ctxV.clearRect(0,0,w,h);ctxV.fillStyle='#fefdf9';ctxV.fillRect(0,0,w,h);
-    ctxV.strokeStyle='#e8ddd0';ctxV.lineWidth=1;ctxV.strokeRect(0,0,w,h);
+function drawVGraph(fd,q1x,q2x){
+    const w=vC.width,h=vC.height;ctxV.clearRect(0,0,w,h);ctxV.fillStyle='#fefdf9';ctxV.fillRect(0,0,w,h);ctxV.strokeStyle='#e8ddd0';ctxV.lineWidth=1;ctxV.strokeRect(0,0,w,h);
     const ml=28,mr=10,mt=18,mb=22,pw=w-ml-mr,ph=h-mt-mb,pl=ml,pt=mt,midY=pt+ph/2;
-    ctxV.fillStyle='#2ecc71';ctxV.font='bold 11px Fredoka';ctxV.textAlign='left';ctxV.fillText('电势 V (中心连线)',6,13);
-    ctxV.strokeStyle='#ddd';ctxV.lineWidth=1;ctxV.beginPath();ctxV.moveTo(pl,midY);ctxV.lineTo(pl+pw,midY);ctxV.stroke();
+    ctxV.fillStyle='#2ecc71';ctxV.font='bold 11px Fredoka';ctxV.textAlign='left';ctxV.fillText('V (标量)',6,13);ctxV.strokeStyle='#ddd';ctxV.lineWidth=1;ctxV.beginPath();ctxV.moveTo(pl,midY);ctxV.lineTo(pl+pw,midY);ctxV.stroke();
     if(!fd.ok||S.q1===0||S.q2===0)return;
-    const q1uC=S.q1*1e-6,q2uC=S.q2*1e-6,rm=S.r*0.01,sR2=S.rad*0.01;
-    ctxV.strokeStyle='#2ecc71';ctxV.lineWidth=2;ctxV.beginPath();
-    let maxV=0;const pts2=[];for(let i=0;i<=200;i++){const t=i/200;const xPhys=t*rm;const xQ1=Math.max(xPhys,sR2),xQ2=Math.max(rm-xPhys,sR2);let V=0;if(xQ1>1e-9)V+=K*q1uC/xQ1;if(xQ2>1e-9)V+=K*q2uC/xQ2;if(Math.abs(V)>maxV)maxV=Math.abs(V);pts2.push({V,xPhys})}
-    const vScale=Math.max(maxV,1e-9);
-    for(let i=0;i<=200;i++){const px=pl+(i/200)*pw,py=midY-(pts2[i].V/vScale)*ph*.45;if(i===0)ctxV.moveTo(px,py);else ctxV.lineTo(px,py)}
-    ctxV.stroke();ctxV.fillStyle='#aaa';ctxV.font='9px Fredoka';ctxV.textAlign='right';ctxV.fillText('0',pl-4,midY+4)
+    const q1uC=S.q1*1e-6,q2uC=S.q2*1e-6,rm=S.r*0.01,sR2m=S.rad*0.01;ctxV.strokeStyle='#2ecc71';ctxV.lineWidth=2;ctxV.beginPath();
+    let maxV=0;const pts2=[];for(let i=0;i<=200;i++){const t=i/200,xPhys=t*rm,x1=Math.max(xPhys,sR2m),x2=Math.max(rm-xPhys,sR2m);let V=0;if(x1>1e-9)V+=K*q1uC/x1;if(x2>1e-9)V+=K*q2uC/x2;if(Math.abs(V)>maxV)maxV=Math.abs(V);pts2.push({V,xPhys})}
+    const sc=Math.max(maxV,1e-9);for(let i=0;i<=200;i++){const px=pl+(i/200)*pw,py=midY-(pts2[i].V/sc)*ph*.45;if(i===0)ctxV.moveTo(px,py);else ctxV.lineTo(px,py)}ctxV.stroke();
+    ctxV.fillStyle='#aaa';ctxV.font='9px Fredoka';ctxV.textAlign='right';ctxV.fillText('0',pl-4,midY+4);
+    ctxV.fillText('q₁',pl+4,pt+10);ctxV.textAlign='right';ctxV.fillText('q₂',pl+pw-4,pt+10)
 }
 
 function updateFormula(fd){
     const a1=Math.abs(S.q1),a2=Math.abs(S.q2),q1c=S.q1>0?PC:(S.q1<0?NC:'#999'),q2c=S.q2>0?PC:(S.q2<0?NC:'#999');
-    fRoot.innerHTML=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center"><span style="font-size:32px;font-weight:700;color:var(--primary)">F</span><span style="font-size:22px;color:#ccc">=</span><span style="font-size:24px;font-weight:700;color:#888">k</span><span style="font-size:22px;color:#ccc">·</span><span style="font-size:${28+a1*3}px;font-weight:700;color:${q1c}">q₁</span><span style="font-size:22px;color:#ccc">·</span><span style="font-size:${28+a2*3}px;font-weight:700;color:${q2c}">q₂</span><span style="font-size:22px;color:#ccc">/</span><span style="font-size:${28+S.r*2.5}px;font-weight:700;color:#666">r²</span></div><div style="font-size:0.8rem;color:#999;margin-top:3px">k=8.99×10⁹ N·m²/C² &nbsp;|&nbsp; 球半径 R=${S.rad.toFixed(1)} cm</div>`;
+    fRoot.innerHTML=`<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center"><span style="font-size:32px;font-weight:700;color:var(--primary)">F</span><span style="font-size:22px;color:#ccc">=</span><span style="font-size:24px;font-weight:700;color:#888">k</span><span style="font-size:22px;color:#ccc">·</span><span style="font-size:${28+a1*3}px;font-weight:700;color:${q1c}">q₁</span><span style="font-size:22px;color:#ccc">·</span><span style="font-size:${28+a2*3}px;font-weight:700;color:${q2c}">q₂</span><span style="font-size:22px;color:#ccc">/</span><span style="font-size:${28+S.r*2.5}px;font-weight:700;color:#666">r²</span></div><div style="font-size:0.8rem;color:#999;margin-top:3px">k=8.99×10⁹ N·m²/C² &nbsp;|&nbsp; R=${S.rad.toFixed(2)} cm</div>`;
     if(fd.ok){resForce.textContent=fmtF(fd.F);resType.textContent=fd.repulse?'← → 排斥力':'→ ← 吸引力';resType.style.color=fd.repulse?PC:NC}else{resForce.textContent='—';resType.textContent='电荷为零';resType.style.color='#999'}
 }
-
-function updateBadges(){
-    bQ1.textContent=(S.q1>=0?'+':'')+S.q1.toFixed(1)+' μC';bQ2.textContent=(S.q2>=0?'+':'')+S.q2.toFixed(1)+' μC';bR.textContent=S.r.toFixed(1)+' cm';bRad.textContent=S.rad.toFixed(1)+' cm';
-    bQ1.style.color=S.q1>0?PC:(S.q1<0?NC:'#999');bQ2.style.color=S.q2>0?PC:(S.q2<0?NC:'#999')
-}
-
-function update(){S.q1=parseFloat(sQ1.value);S.q2=parseFloat(sQ2.value);S.r=parseFloat(sR.value);S.rad=parseFloat(sRad.value);updateBadges();if(S.playing)S.time+=0.016;const fd=calcForce();updateFormula(fd);draw(fd);requestAnimationFrame(update)}
+function updateBadges(){bQ1.textContent=(S.q1>=0?'+':'')+S.q1.toFixed(1)+' μC';bQ2.textContent=(S.q2>=0?'+':'')+S.q2.toFixed(1)+' μC';bR.textContent=S.r.toFixed(1)+' cm';bRad.textContent=S.rad.toFixed(2)+' cm';bQ1.style.color=S.q1>0?PC:(S.q1<0?NC:'#999');bQ2.style.color=S.q2>0?PC:(S.q2<0?NC:'#999')}
+function update(){S.q1=parseFloat(sQ1.value);S.q2=parseFloat(sQ2.value);S.r=parseFloat(sR.value);S.rad=parseFloat(sRad.value);updateBadges();if(S.playing)S.time+=0.016;const fd=calcF();updateFormula(fd);draw(fd);requestAnimationFrame(update)}
 bStart.onclick=()=>{S.playing=!S.playing;bStart.textContent=S.playing?'暂停 Pause':'开始 Start';bStart.classList.toggle('start',!S.playing);bStart.classList.toggle('pause',S.playing)};
 bReset.onclick=()=>{S.q1=D.q1;S.q2=D.q2;S.r=D.r;S.rad=D.rad;S.playing=false;S.time=0;sQ1.value=D.q1;sQ2.value=D.q2;sR.value=D.r;sRad.value=D.rad;bStart.textContent='开始 Start';bStart.className='ctrl-btn start'};
 resize();update();
