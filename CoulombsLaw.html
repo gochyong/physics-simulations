@@ -187,13 +187,18 @@ function arrow(x,y,dir,mag){
 let pxPerCm=48;
 function draw(forceData){
     ctx.clearRect(0,0,simC.width,simC.height);drawBg();
-    pxPerCm=Math.min(52,simC.width/(S.r+4));
-    const rPx=S.r*pxPerCm,sR2=S.rad*pxPerCm;
-    const cx=simC.width/2,cy=simC.height/2-5;
-    const q1x=cx-rPx/2,q1y=cy,q2x=cx+rPx/2,q2y=cy;
+    const M=50;const q1x=M,q1y=simC.height/2-5;
+    // Place spheres at sides. Distance between centers = r.
+    const availW=simC.width-2*M;
+    pxPerCm=availW/S.r;
+    const sR2=S.rad*pxPerCm;
+    const q1cx=q1x+sR2; // sphere center: edge + radius
+    const q2cx=simC.width-M-sR2; // right sphere center
+    const q2x=q2cx,q1xFinal=q1cx,q2xFinal=q2cx,sR2Final=sR2,rPxFinal=q2cx-q1cx;
     const q1s=S.q1===0?0:(S.q1>0?1:-1),q2s=S.q2===0?0:(S.q2>0?1:-1);
+    const Q1X=q1xFinal,Q2X=q2xFinal,QY=q1y,SR=sR2Final;
 
-    const lines=getLines(q1x,q1y,q2x,q2y,sR2,q1s,q2s);
+    const lines=getLines(Q1X,QY,Q2X,QY,SR,q1s,q2s);
     ctx.strokeStyle='rgba(180,160,140,0.65)';ctx.lineWidth=1.3;ctx.lineCap='round';
     if(S.playing){ctx.setLineDash([5,10]);ctx.lineDashOffset=-S.time*45}else ctx.setLineDash([]);
     lines.forEach(l=>{ctx.beginPath();ctx.moveTo(l.sx,l.sy);if(l.bezier)ctx.quadraticCurveTo(l.cpx,l.cpy,l.ex,l.ey);else ctx.lineTo(l.ex,l.ey);ctx.stroke()});
@@ -201,25 +206,25 @@ function draw(forceData){
 
     // Distance line
     if(q1s!==0&&q2s!==0){
-        const dY=cy+Math.max(sR2,32)+sR2/2+18;ctx.strokeStyle='#bbb';ctx.lineWidth=1.5;ctx.setLineDash([4,4]);
-        ctx.beginPath();ctx.moveTo(q1x,cy+sR2+6);ctx.lineTo(q1x,dY);ctx.stroke();
-        ctx.beginPath();ctx.moveTo(q2x,cy+sR2+6);ctx.lineTo(q2x,dY);ctx.stroke();ctx.setLineDash([]);
-        ctx.strokeStyle='#777';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(q1x,dY);ctx.lineTo(q2x,dY);ctx.stroke();
-        [q1x+10,q2x-10].forEach((x,i)=>{const d=i===0?-1:1,s=7;ctx.beginPath();ctx.strokeStyle='#777';ctx.lineWidth=1.8;ctx.moveTo(x-d*s,dY-s*.5);ctx.lineTo(x,dY);ctx.lineTo(x-d*s,dY+s*.5);ctx.stroke()});
-        ctx.fillStyle='#4A403A';ctx.font='600 13px Fredoka';ctx.textAlign='center';ctx.fillText('r='+S.r.toFixed(1)+' cm',(q1x+q2x)/2,dY-7)
+        const dY=QY+Math.max(SR,32)+SR/2+18;ctx.strokeStyle='#bbb';ctx.lineWidth=1.5;ctx.setLineDash([4,4]);
+        ctx.beginPath();ctx.moveTo(Q1X,QY+SR+6);ctx.lineTo(Q1X,dY);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(Q2X,QY+SR+6);ctx.lineTo(Q2X,dY);ctx.stroke();ctx.setLineDash([]);
+        ctx.strokeStyle='#777';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(Q1X,dY);ctx.lineTo(Q2X,dY);ctx.stroke();
+        [Q1X+10,Q2X-10].forEach((x,i)=>{const d=i===0?-1:1,s=7;ctx.beginPath();ctx.strokeStyle='#777';ctx.lineWidth=1.8;ctx.moveTo(x-d*s,dY-s*.5);ctx.lineTo(x,dY);ctx.lineTo(x-d*s,dY+s*.5);ctx.stroke()});
+        ctx.fillStyle='#4A403A';ctx.font='600 13px Fredoka';ctx.textAlign='center';ctx.fillText('r='+S.r.toFixed(1)+' cm',(Q1X+Q2X)/2,dY-7)
     }
 
-    drawSphere(q1x,q1y,sR2,S.q1);drawSphere(q2x,q2y,sR2,S.q2);
-    if(forceData.ok){const d1=forceData.repulse?-1:1;arrow(q1x,q1y,d1,forceData.F);arrow(q2x,q2y,-d1,forceData.F)}
+    drawSphere(Q1X,QY,SR,S.q1);drawSphere(Q2X,QY,SR,S.q2);
+    if(forceData.ok){const d1=forceData.repulse?-1:1;arrow(Q1X,QY,d1,forceData.F);arrow(Q2X,QY,-d1,forceData.F)}
 
     ctx.fillStyle='#4A403A';ctx.font='700 16px Fredoka';ctx.textAlign='center';
-    ctx.fillText('q₁',q1x,q1y-sR2-14);ctx.font='600 11px Fredoka';
-    ctx.fillText((S.q1>=0?'+':'')+S.q1.toFixed(1)+' μC',q1x,q1y-sR2-28);
-    ctx.font='700 16px Fredoka';ctx.fillText('q₂',q2x,q2y-sR2-14);ctx.font='600 11px Fredoka';
-    ctx.fillText((S.q2>=0?'+':'')+S.q2.toFixed(1)+' μC',q2x,q2y-sR2-28);
+    ctx.fillText('q₁',Q1X,QY-SR-14);ctx.font='600 11px Fredoka';
+    ctx.fillText((S.q1>=0?'+':'')+S.q1.toFixed(1)+' μC',Q1X,QY-SR-28);
+    ctx.font='700 16px Fredoka';ctx.fillText('q₂',Q2X,QY-SR-14);ctx.font='600 11px Fredoka';
+    ctx.fillText((S.q2>=0?'+':'')+S.q2.toFixed(1)+' μC',Q2X,QY-SR-28);
 
-    // E-field + potential graphs
-    drawEGraph(forceData);drawVGraph(forceData)
+    // E-field + potential graphs — pass sphere positions for axis alignment
+    drawEGraph(forceData,Q1X,Q2X);drawVGraph(forceData,Q1X,Q2X)
 }
 
 function drawEGraph(fd){
@@ -235,7 +240,7 @@ function drawEGraph(fd){
 
     ctxE.strokeStyle='#9b59b6';ctxE.lineWidth=2;ctxE.beginPath();
     let maxE=0;const pts=[];const q1uC=S.q1*1e-6,q2uC=S.q2*1e-6,rm=S.r*0.01,sR2=S.rad*0.01;
-    for(let i=0;i<=200;i++){const t=i/200;const xPhys=-rm/2+t*rm;const xQ1=Math.abs(xPhys-sR2),xQ2=Math.abs(rm-xPhys-sR2);let E=0;if(xQ1>1e-9)E+=K*q1uC/(xQ1*xQ1);if(xQ2>1e-9)E+=K*q2uC/(xQ2*xQ2);if(E>maxE)maxE=E;pts.push({E,xPhys})}
+    for(let i=0;i<=200;i++){const t=i/200;const xPhys=t*rm;const xQ1=Math.max(xPhys,sR2),xQ2=Math.max(rm-xPhys,sR2);let E=0;if(xQ1>1e-9)E+=K*q1uC/(xQ1*xQ1);if(xQ2>1e-9)E+=K*q2uC/(xQ2*xQ2);if(E>maxE)maxE=E;pts.push({E,xPhys})}
     for(let i=0;i<=200;i++){const px=pl+(i/200)*pw,py=midY-(pts[i].E/Math.max(maxE,1e-9))*ph*.45;if(i===0)ctxE.moveTo(px,py);else ctxE.lineTo(px,py)}
     ctxE.stroke();ctxE.fillStyle='#aaa';ctxE.font='9px Fredoka';ctxE.textAlign='right';ctxE.fillText('0',pl-4,midY+4);
     ctxE.fillText('q₁',pl+4,pt+10);ctxE.textAlign='right';ctxE.fillText('q₂',pl+pw-4,pt+10)
@@ -250,7 +255,7 @@ function drawVGraph(fd){
     if(!fd.ok||S.q1===0||S.q2===0)return;
     const q1uC=S.q1*1e-6,q2uC=S.q2*1e-6,rm=S.r*0.01,sR2=S.rad*0.01;
     ctxV.strokeStyle='#2ecc71';ctxV.lineWidth=2;ctxV.beginPath();
-    let maxV=0;const pts2=[];for(let i=0;i<=200;i++){const t=i/200;const xPhys=-rm/2+t*rm;const xQ1=Math.max(Math.abs(xPhys),sR2),xQ2=Math.max(Math.abs(rm-xPhys),sR2);let V=0;if(xQ1>1e-9)V+=K*q1uC/xQ1;if(xQ2>1e-9)V+=K*q2uC/xQ2;if(Math.abs(V)>maxV)maxV=Math.abs(V);pts2.push({V,xPhys})}
+    let maxV=0;const pts2=[];for(let i=0;i<=200;i++){const t=i/200;const xPhys=t*rm;const xQ1=Math.max(xPhys,sR2),xQ2=Math.max(rm-xPhys,sR2);let V=0;if(xQ1>1e-9)V+=K*q1uC/xQ1;if(xQ2>1e-9)V+=K*q2uC/xQ2;if(Math.abs(V)>maxV)maxV=Math.abs(V);pts2.push({V,xPhys})}
     const vScale=Math.max(maxV,1e-9);
     for(let i=0;i<=200;i++){const px=pl+(i/200)*pw,py=midY-(pts2[i].V/vScale)*ph*.45;if(i===0)ctxV.moveTo(px,py);else ctxV.lineTo(px,py)}
     ctxV.stroke();ctxV.fillStyle='#aaa';ctxV.font='9px Fredoka';ctxV.textAlign='right';ctxV.fillText('0',pl-4,midY+4)
