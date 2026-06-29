@@ -495,10 +495,15 @@
 
             const ml = 55, mr = 20, mt = 20, mb = 18;
             const uw = W - ml - mr, uh = graphH - mt - mb;
-            const eachH = uh / 3;
+            // 4 rows: x-t, v-t, a-t, energy
+            const eachH = uh * 0.26;  // x-t
+            const vth = uh * 0.26;    // v-t
+            const ath = uh * 0.26;    // a-t
+            const energyH = uh - eachH - vth - ath;
             drawXTGraph(ml, graphTop + mt, uw, eachH);
-            drawVTGraph(ml, graphTop + mt + eachH, uw, eachH);
-            drawATGraph(ml, graphTop + mt + 2 * eachH, uw, eachH);
+            drawVTGraph(ml, graphTop + mt + eachH, uw, vth);
+            drawATGraph(ml, graphTop + mt + eachH + vth, uw, ath);
+            drawEnergyBar(ml, graphTop + mt + eachH + vth + ath, uw, energyH);
         }
 
         function drawTimeSeriesGraph(left, top, w, h, title, getY, yLabel, color, yMin, yMax) {
@@ -541,13 +546,25 @@
             ctx.stroke();
             ctx.setLineDash([]);
 
-            // Y-axis label
-            ctx.fillStyle = '#aaa';
-            ctx.font = '9px Fredoka';
-            ctx.textAlign = 'right';
+            // Y-axis labels
+            ctx.fillStyle = '#aaa'; ctx.font = '9px Fredoka'; ctx.textAlign = 'right';
             ctx.fillText(yMax.toFixed(1), plotLeft - 4, plotTop + 10);
             ctx.fillText('0', plotLeft - 4, midY + 4);
             ctx.fillText((-yMax).toFixed(1), plotLeft - 4, plotBottom - 2);
+
+            // X-axis T markers
+            const T = period();
+            const latestT = state.graphTime;
+            const oldestT = Math.max(0, latestT - HISTORY_WINDOW);
+            ctx.fillStyle = '#ccc'; ctx.font = '8px Fredoka'; ctx.textAlign = 'center';
+            for (let n = 0; n * T <= latestT; n++) {
+                const tN = n * T;
+                if (tN < oldestT) continue;
+                const tx = plotLeft + ((tN - oldestT) / HISTORY_WINDOW) * plotW;
+                ctx.beginPath(); ctx.moveTo(tx, plotBottom - 4); ctx.lineTo(tx, plotBottom + 2); ctx.strokeStyle = '#ddd';
+                ctx.stroke();
+                ctx.fillText((n === 0 ? '0' : n + 'T'), tx, plotBottom + 12);
+            }
 
             // Data curve
             const hist = state.history;
@@ -555,9 +572,6 @@
                 ctx.restore();
                 return;
             }
-
-            const latestT = state.graphTime;
-            const oldestT = Math.max(0, latestT - HISTORY_WINDOW);
 
             ctx.strokeStyle = color;
             ctx.lineWidth = 2;
@@ -730,9 +744,18 @@
             ctx.beginPath(); ctx.moveTo(pl, midY); ctx.lineTo(pr, midY); ctx.stroke();
             ctx.beginPath(); ctx.moveTo(midX, pt); ctx.lineTo(midX, pb); ctx.stroke();
 
-            // Axis labels
+            // Axis labels with max values
+            const wA = state.A * omega();
             ctx.fillStyle = '#aaa'; ctx.font = '9px Fredoka'; ctx.textAlign = 'center';
-            ctx.fillText('x', pr, midY + 12); ctx.fillText('v', midX + 8, pt - 2);
+            ctx.fillText('x (cm)', pr, midY + 12); ctx.fillText('v (cm/s)', midX + 8, pt - 2);
+            // Y-axis max/min
+            ctx.fillStyle = '#999'; ctx.font = '8px Fredoka'; ctx.textAlign = 'right';
+            ctx.fillText('+ωA=' + wA.toFixed(0), midX - 6, pt + 10);
+            ctx.fillText('-ωA', midX - 6, pb - 2);
+            // X-axis max/min
+            ctx.textAlign = 'center';
+            ctx.fillText('+A', pr - 8, midY + 24);
+            ctx.fillText('-A', pl + 8, midY + 24);
 
             // Plot history as v vs x (ellipse)
             const hist = state.history;
