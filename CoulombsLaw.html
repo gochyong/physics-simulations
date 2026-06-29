@@ -27,7 +27,7 @@
         .legend-item{font-size:0.9rem;font-weight:600;display:flex;align-items:center;gap:5px}
         .legend-dot{width:11px;height:11px;border-radius:50%;display:inline-block}
         .diagram-section{grid-area:diagram;display:flex;flex-direction:column;gap:6px}
-        .main-canvas-wrap{background:#fff;border-radius:20px;box-shadow:var(--shadow);overflow:hidden;flex:2;min-height:350px;border:2px solid #fff}
+        .main-canvas-wrap{background:#fff;border-radius:20px;box-shadow:var(--shadow);overflow:hidden;flex:1;min-height:180px;border:2px solid #fff}
         .graph-canvas-wrap{background:#fff;border-radius:16px;box-shadow:var(--shadow);overflow:hidden;flex:1;min-height:160px;border:1px solid #fff5eb;display:flex;flex-direction:column}
         .graph-canvas-wrap canvas{width:100%;height:50%;display:block}
         #simCanvas{width:100%;height:100%;display:block}
@@ -84,7 +84,7 @@
             <div class="param-section" style="border-left:5px solid var(--primary)">
                 <div class="param-section-header">距离与半径</div>
                 <div class="control-group"><div class="label-row"><span>距离 r (cm)</span><span id="r-badge" class="val-badge">5.0</span></div><input type="range" id="r-slider" min="2" max="10" step="0.1" value="5"></div>
-                <div class="control-group"><div class="label-row"><span>球半径 R (cm)</span><span id="rad-badge" class="val-badge">1.5</span></div><input type="range" id="rad-slider" min="0.5" max="3.0" step="0.1" value="1.5"></div>
+                <div class="control-group"><div class="label-row"><span>球半径 R (cm)</span><span id="rad-badge" class="val-badge">1.5</span></div><input type="range" id="rad-slider" min="0.5" max="1.0" step="0.05" value="0.8"></div>
             </div>
             <div class="btn-row">
                 <button id="btn-start" class="ctrl-btn start">开始 Start</button>
@@ -113,8 +113,8 @@ const bStart=document.getElementById('btn-start'),bReset=document.getElementById
 const fRoot=document.getElementById('formula-root'),resForce=document.getElementById('res-force'),resType=document.getElementById('res-type');
 
 const PC='#FF5E5B',NC='#3498db',K=8.99e9;
-const S={q1:3,q2:2,r:5,rad:1.5,playing:false,time:0};
-const D={q1:3,q2:2,r:5,rad:1.5};
+const S={q1:3,q2:2,r:5,rad:0.8,playing:false,time:0};
+const D={q1:3,q2:2,r:5,rad:0.8};
 
 function resize(){simC.width=simC.clientWidth;simC.height=simC.clientHeight;eC.width=eC.clientWidth;eC.height=eC.clientHeight;vC.width=vC.clientWidth;vC.height=vC.clientHeight}
 window.addEventListener('resize',resize);
@@ -134,18 +134,20 @@ function getLines(q1x,q1y,q2x,q2y,sR2,q1s,q2s){
         return lines
     }
     const sep=Math.abs(q2x-q1x);
-    if(q1s*q2s>0){// repulsion: radial lines from each, gap toward the other
-        const gaps=Math.PI*0.3;// 54°
+    if(q1s*q2s>0){// repulsion: radial from each sphere, gap toward other, half-sep max length
+        const gaps=Math.PI*0.5;// 90° gap — wider to prevent crossing
+        const halfSep=(q2x-q1x)/2-sR2;
         [0,1].forEach(idx=>{
             const cx=idx===0?q1x:q2x,cy=idx===0?q1y:q2y;
-            const dir=idx===0?0:Math.PI;// gap direction = toward other sphere
+            const dir=idx===0?0:Math.PI;
             for(let i=0;i<16;i++){
                 const a=i*Math.PI*2/16;
                 let da=a-dir;while(da<-Math.PI)da+=2*Math.PI;while(da>Math.PI)da-=2*Math.PI;
                 if(Math.abs(da)<gaps/2)continue;
                 const sx=cx+sR2*Math.cos(a),sy=cy+sR2*Math.sin(a);
-                const len=130+sR2;
-                lines.push({sx,sy,ex:sx+len*Math.cos(a),ey:sy+len*Math.sin(a),cpx:0,cpy:0,bezier:false})
+                // Length capped so lines never cross the midpoint
+                const maxLen=Math.min(150,Math.abs(Math.cos(da))<0.1?halfSep:200);
+                lines.push({sx,sy,ex:sx+maxLen*Math.cos(a),ey:sy+maxLen*Math.sin(a),cpx:0,cpy:0,bezier:false})
             }
         })
     }else{// attraction: bezier curves from positive to negative
