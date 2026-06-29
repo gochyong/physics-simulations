@@ -238,8 +238,7 @@
         // DOM refs
         const sK = document.getElementById('k-slider'), sM = document.getElementById('m-slider'), sA = document.getElementById('a-slider');
         const bK = document.getElementById('k-badge'), bM = document.getElementById('m-badge'), bA = document.getElementById('a-badge');
-        const resT = document.getElementById('res-T'), resF = document.getElementById('res-f'), resOmega = document.getElementById('res-omega');
-        const fOmega = document.getElementById('f-omega'), fT = document.getElementById('f-T'), fFreq = document.getElementById('f-freq');
+        const fOmega = document.getElementById('f-omega'), fT = document.getElementById('f-T');
         const bStart = document.getElementById('btn-start'), bReset = document.getElementById('btn-reset');
 
         const state = {
@@ -305,13 +304,9 @@
         }
 
         function updateUI() {
-            const w = omega(), T = period(), f = freq();
-            resT.textContent = T.toFixed(3);
-            resF.textContent = f.toFixed(2);
-            resOmega.textContent = w.toFixed(2);
+            const w = omega(), T = period();
             fOmega.textContent = w.toFixed(2);
             fT.textContent = T.toFixed(3);
-            fFreq.textContent = f.toFixed(2);
         }
 
         function roundRect(ctx, x, y, w, h, r) {
