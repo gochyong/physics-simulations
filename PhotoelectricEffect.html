@@ -759,18 +759,15 @@
             lastCurrent += (I - lastCurrent) * 0.3;
             const frac = Math.min(1, lastCurrent / 3);
 
-            // Circular gauge, upright: arc on bottom half, 0 at left, max at right
-            const startA = Math.PI * 0.7;   // zero (bottom-left)
-            const endA = Math.PI * 0.3;      // max (bottom-right)
-            // Arc background
-            ctx.beginPath(); ctx.arc(cx, cy, r, startA, endA, true);
+            // Circular gauge: arc on top, 0 at left, max at right, needle swings left→right
+            const startA = Math.PI * 1.15;   // left (zero)
+            const endA = Math.PI * 1.85;      // right (max) — sweeping clockwise over the top
+            ctx.beginPath(); ctx.arc(cx, cy, r, startA, endA, false);
             ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 4; ctx.stroke();
-            // Active green arc
             const na = startA + (endA - startA) * frac;
-            ctx.beginPath(); ctx.arc(cx, cy, r, startA, na, true);
+            ctx.beginPath(); ctx.arc(cx, cy, r, startA, na, false);
             ctx.strokeStyle = '#2ecc71'; ctx.lineWidth = 3; ctx.stroke();
 
-            // Tick marks
             for (let i = 0; i <= 5; i++) {
                 const a = startA + (i / 5) * (endA - startA);
                 const tx1 = cx + (r - 6) * Math.cos(a), ty1 = cy + (r - 6) * Math.sin(a);
@@ -778,21 +775,17 @@
                 ctx.beginPath(); ctx.moveTo(tx1, ty1); ctx.lineTo(tx2, ty2);
                 ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.lineWidth = 1; ctx.stroke();
             }
-            // Needle
             const nx = cx + (r - 10) * Math.cos(na), ny = cy + (r - 10) * Math.sin(na);
             ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(nx, ny);
             ctx.strokeStyle = '#FF5E5B'; ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.stroke();
             ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(cx, cy, 4, 0, Math.PI * 2); ctx.fill();
 
-            // Labels
             ctx.fillStyle = 'rgba(255,255,255,0.8)'; ctx.font = 'bold 10px Fredoka'; ctx.textAlign = 'center';
-            ctx.fillText('光电流 μA', cx, cy - r - 8);
-            ctx.fillStyle = '#2ecc71'; ctx.font = 'bold 11px Fredoka';
-            ctx.fillText((lastCurrent * 10).toFixed(1), cx, cy + r + 14);
-            // Tick values
+            ctx.fillText('光电流 μA', cx, cy - r - 10);
+            ctx.fillText((lastCurrent * 10).toFixed(1), cx, cy + r + 16);
             ctx.fillStyle = 'rgba(255,255,255,0.45)'; ctx.font = '7px Fredoka';
-            ctx.fillText('0', cx + (r + 10) * Math.cos(startA), cy + (r + 10) * Math.sin(startA) + 3);
-            ctx.fillText('3', cx + (r + 10) * Math.cos(endA), cy + (r + 10) * Math.sin(endA) + 3);
+            ctx.fillText('0', cx + (r + 10) * Math.cos(startA), cy + (r + 10) * Math.sin(startA));
+            ctx.fillText('3', cx + (r + 10) * Math.cos(endA), cy + (r + 10) * Math.sin(endA));
         }
 
         bStart.onclick = () => {
