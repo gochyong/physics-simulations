@@ -23,7 +23,7 @@
         .legend-item{font-size:0.9rem;font-weight:600;display:flex;align-items:center;gap:5px}
         .legend-dot{width:11px;height:11px;border-radius:50%;display:inline-block}
         .diagram-section{grid-area:diagram;display:flex;flex-direction:column;gap:6px}
-        .main-canvas-wrap{background:#fff;border-radius:20px;box-shadow:var(--shadow);overflow:hidden;flex:1;min-height:144px;border:2px solid #fff}
+        .main-canvas-wrap{background:#fff;border-radius:20px;box-shadow:var(--shadow);overflow:hidden;min-height:200px;border:2px solid #fff}
         #simCanvas{width:100%;height:100%;display:block}
         .graph-canvas-wrap{background:#fff;border-radius:16px;box-shadow:var(--shadow);overflow:hidden;flex:1;min-height:128px;border:1px solid #fff5eb;display:none;flex-direction:column}
         .graph-canvas-wrap.show{display:flex}
@@ -232,7 +232,7 @@ function updateBadges(){bQ1.textContent=(S.q1>=0?'+':'')+S.q1.toFixed(1)+' μC';
 function update(){S.q1=parseFloat(sQ1.value);S.q2=parseFloat(sQ2.value);S.r=parseFloat(sR.value);S.rad=parseFloat(sRad.value);updateBadges();if(S.playing)S.time+=0.016;const fd=calcF();updateFormula(fd);draw(fd);requestAnimationFrame(update)}
 const wrapG=document.querySelector('.graph-canvas-wrap'),btnE=document.getElementById('btn-e'),btnV=document.getElementById('btn-v');
 let showE=false,showV=false;
-function updateGraphs(){wrapG.classList.toggle('show',showE||showV);eC.style.display=showE?'block':'none';vC.style.display=showV?'block':'none';if(showE&&!showV){eC.style.height='100%'}else if(!showE&&showV){vC.style.height='100%'}else{eC.style.height='50%';vC.style.height='50%'}}
+function updateGraphs(){wrapG.classList.toggle('show',showE||showV);eC.style.display=showE?'block':'none';vC.style.display=showV?'block':'none';if(showE&&!showV){eC.style.height='100%'}else if(!showE&&showV){vC.style.height='100%'}else{eC.style.height='50%';vC.style.height='50%'};setTimeout(resize,50)}
 btnE.onclick=()=>{showE=!showE;btnE.className='toggle-btn'+(showE?' active-e':'');updateGraphs()};
 btnV.onclick=()=>{showV=!showV;btnV.className='toggle-btn'+(showV?' active-v':'');updateGraphs()};
 bStart.onclick=()=>{S.playing=!S.playing;bStart.textContent=S.playing?'暂停 Pause':'开始 Start';bStart.classList.toggle('start',!S.playing);bStart.classList.toggle('pause',S.playing)};
