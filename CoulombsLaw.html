@@ -191,28 +191,30 @@ function draw(forceData){
     drawEGraph(forceData,Q1X,Q2X);drawVGraph(forceData,Q1X,Q2X)
 }
 
+function graphMargins(w,h,q1x,q2x){const lF=q1x/Math.max(simC.width,1),rF=1-q2x/Math.max(simC.width,1);const ml=Math.max(10,w*lF),mr=Math.max(10,w*rF),mt=18,mb=22;return{ml,mr,mt,mb,pl:ml,pt:mt,pw:w-ml-mr,ph:h-mt-mb,midY:mt+(h-mt-mb)/2}}
 function drawEGraph(fd,q1x,q2x){
     const w=eC.width,h=eC.height;ctxE.clearRect(0,0,w,h);ctxE.fillStyle='#fefdf9';ctxE.fillRect(0,0,w,h);ctxE.strokeStyle='#e8ddd0';ctxE.lineWidth=1;ctxE.strokeRect(0,0,w,h);
-    const ml=28,mr=10,mt=18,mb=22,pw=w-ml-mr,ph=h-mt-mb,pl=ml,pt=mt,midY=pt+ph/2;
-    ctxE.fillStyle='#9b59b6';ctxE.font='bold 11px Fredoka';ctxE.textAlign='left';ctxE.fillText('E (向右为正)',6,13);ctxE.strokeStyle='#ddd';ctxE.lineWidth=1;ctxE.beginPath();ctxE.moveTo(pl,midY);ctxE.lineTo(pl+pw,midY);ctxE.stroke();
+    const{pl,pt,pw,ph,midY}=graphMargins(w,h,q1x,q2x);
+    const opp=S.q1*S.q2<0;
+    ctxE.fillStyle='#9b59b6';ctxE.font='bold 11px Fredoka';ctxE.textAlign='left';ctxE.fillText('E (向右为正)'+(opp?' — 同方向':' — 中间E=0'),6,13);ctxE.strokeStyle='#ddd';ctxE.lineWidth=1;ctxE.beginPath();ctxE.moveTo(pl,midY);ctxE.lineTo(pl+pw,midY);ctxE.stroke();
     if(!fd.ok||S.q1===0||S.q2===0)return;
-    const q1uC=S.q1*1e-6,q2uC=S.q2*1e-6,rm=S.r*0.01,sR2m=S.rad*0.01;ctxE.strokeStyle='#9b59b6';ctxE.lineWidth=2;ctxE.beginPath();
-    let maxE=0;const pts=[];// signed E
-    for(let i=0;i<=200;i++){const t=i/200,xPhys=t*rm,x1=Math.max(xPhys,sR2m),x2=Math.max(rm-xPhys,sR2m);let E=0;if(x1>sR2m)E+=K*q1uC/(x1*x1)*Math.sign(S.q1);if(x2>sR2m)E-=K*q2uC/(x2*x2)*Math.sign(S.q2);if(Math.abs(E)>maxE)maxE=Math.abs(E);pts.push({E,xPhys})}
-    const sc=Math.max(maxE,1e-9);for(let i=0;i<=200;i++){const px=pl+(i/200)*pw,py=midY-(pts[i].E/sc)*ph*.45;if(i===0)ctxE.moveTo(px,py);else ctxE.lineTo(px,py)}ctxE.stroke();
+    const q1uC=Math.abs(S.q1)*1e-6,q2uC=Math.abs(S.q2)*1e-6,rm=S.r*0.01,sR2m=S.rad*0.01;ctxE.strokeStyle='#9b59b6';ctxE.lineWidth=2;ctxE.beginPath();
+    let maxA=0;const pts=[];
+    for(let i=0;i<=200;i++){const t=i/200,xPhys=t*rm,x1=Math.max(xPhys,sR2m),x2=Math.max(rm-xPhys,sR2m);let E=0;if(x1>sR2m)E+=K*q1uC/(x1*x1)*(S.q1>0?1:-1);if(x2>sR2m)E-=K*q2uC/(x2*x2)*(S.q2>0?1:-1);if(Math.abs(E)>maxA)maxA=Math.abs(E);pts.push({E,xPhys})}
+    const sc=Math.max(maxA,1e-9);for(let i=0;i<=200;i++){const px=pl+(i/200)*pw,py=midY-(pts[i].E/sc)*ph*.45;if(i===0)ctxE.moveTo(px,py);else ctxE.lineTo(px,py)}ctxE.stroke();
     ctxE.fillStyle='#aaa';ctxE.font='9px Fredoka';ctxE.textAlign='right';ctxE.fillText('+',pl-4,midY-ph*.45);ctxE.fillText('0',pl-4,midY+4);ctxE.fillText('−',pl-4,midY+ph*.45+8);
-    ctxE.fillText('q₁ (x='+(q1x||0).toFixed(0)+')',pl+4,pt+10);ctxE.textAlign='right';ctxE.fillText('q₂ (x='+(q2x||0).toFixed(0)+')',pl+pw-4,pt+10)
+    ctxE.textAlign='center';ctxE.fillText('q₁ (x='+(q1x||0).toFixed(0)+')',pl,pt+10);ctxE.fillText('q₂ (x='+(q2x||0).toFixed(0)+')',pl+pw,pt+10)
 }
 function drawVGraph(fd,q1x,q2x){
     const w=vC.width,h=vC.height;ctxV.clearRect(0,0,w,h);ctxV.fillStyle='#fefdf9';ctxV.fillRect(0,0,w,h);ctxV.strokeStyle='#e8ddd0';ctxV.lineWidth=1;ctxV.strokeRect(0,0,w,h);
-    const ml=28,mr=10,mt=18,mb=22,pw=w-ml-mr,ph=h-mt-mb,pl=ml,pt=mt,midY=pt+ph/2;
+    const{pl,pt,pw,ph,midY}=graphMargins(w,h,q1x,q2x);
     ctxV.fillStyle='#2ecc71';ctxV.font='bold 11px Fredoka';ctxV.textAlign='left';ctxV.fillText('V (标量)',6,13);ctxV.strokeStyle='#ddd';ctxV.lineWidth=1;ctxV.beginPath();ctxV.moveTo(pl,midY);ctxV.lineTo(pl+pw,midY);ctxV.stroke();
     if(!fd.ok||S.q1===0||S.q2===0)return;
-    const q1uC=S.q1*1e-6,q2uC=S.q2*1e-6,rm=S.r*0.01,sR2m=S.rad*0.01;ctxV.strokeStyle='#2ecc71';ctxV.lineWidth=2;ctxV.beginPath();
-    let maxV=0;const pts2=[];for(let i=0;i<=200;i++){const t=i/200,xPhys=t*rm,x1=Math.max(xPhys,sR2m),x2=Math.max(rm-xPhys,sR2m);let V=0;if(x1>1e-9)V+=K*q1uC/x1;if(x2>1e-9)V+=K*q2uC/x2;if(Math.abs(V)>maxV)maxV=Math.abs(V);pts2.push({V,xPhys})}
+    const q1uC=Math.abs(S.q1)*1e-6,q2uC=Math.abs(S.q2)*1e-6,rm=S.r*0.01,sR2m=S.rad*0.01;ctxV.strokeStyle='#2ecc71';ctxV.lineWidth=2;ctxV.beginPath();
+    let maxV=0;const pts2=[];for(let i=0;i<=200;i++){const t=i/200,xPhys=t*rm,x1=Math.max(xPhys,sR2m),x2=Math.max(rm-xPhys,sR2m);let V=0;if(x1>1e-9)V+=K*q1uC/x1*(S.q1>0?1:-1);if(x2>1e-9)V+=K*q2uC/x2*(S.q2>0?1:-1);if(Math.abs(V)>maxV)maxV=Math.abs(V);pts2.push({V,xPhys})}
     const sc=Math.max(maxV,1e-9);for(let i=0;i<=200;i++){const px=pl+(i/200)*pw,py=midY-(pts2[i].V/sc)*ph*.45;if(i===0)ctxV.moveTo(px,py);else ctxV.lineTo(px,py)}ctxV.stroke();
     ctxV.fillStyle='#aaa';ctxV.font='9px Fredoka';ctxV.textAlign='right';ctxV.fillText('0',pl-4,midY+4);
-    ctxV.fillText('q₁ (x='+(q1x||0).toFixed(0)+')',pl+4,pt+10);ctxV.textAlign='right';ctxV.fillText('q₂ (x='+(q2x||0).toFixed(0)+')',pl+pw-4,pt+10)
+    ctxV.textAlign='center';ctxV.fillText('q₁ (x='+(q1x||0).toFixed(0)+')',pl,pt+10);ctxV.fillText('q₂ (x='+(q2x||0).toFixed(0)+')',pl+pw,pt+10)
 }
 
 function updateFormula(fd){
