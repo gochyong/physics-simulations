@@ -314,7 +314,6 @@
                 <div class="legend-item"><span class="legend-dot" style="background:#FFC75F"></span> 太阳 Sun</div>
                 <div class="legend-item"><span class="legend-dot" style="background:#3498db"></span> 行星 Planet</div>
                 <div class="legend-item"><span class="legend-dot" style="background:rgba(255,94,91,0.6)"></span> 扇形A Sector A</div>
-                <div class="legend-item"><span class="legend-dot" style="background:rgba(46,204,113,0.6)"></span> 扇形B Sector B</div>
                 <div class="legend-item"><span class="legend-dot" style="background:rgba(255,255,255,0.5);border:1px dashed #888"></span> 半长轴 Semi-major axis</div>
             </div>
         </section>
@@ -598,31 +597,13 @@
             ctx.stroke();
 
             // --- Equal-area sector shading (Kepler's 2nd Law) ---
-            // Find positions for two equal-time windows at opposite orbital phases
-            const sectorDeltaM = Math.PI / 3.5; // ~1/7 of an orbit
-
-            // Sector A: centered on current meanAnomaly
+            const sectorDeltaM = Math.PI / 3.5;
             const sectorA_positions = [];
-            // Sector B: centered half an orbit away
-            const sectorB_positions = [];
-
-            // Use position history
             for (const rec of state.posHistory) {
                 const dM_A = ((rec.meanAnomaly - M) % (2 * Math.PI) + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
-                if (Math.abs(dM_A) <= sectorDeltaM / 2) {
-                    sectorA_positions.push({ x: rec.x, y: rec.y });
-                }
-                const M_opposite = (M + Math.PI) % (2 * Math.PI);
-                const dM_B = ((rec.meanAnomaly - M_opposite) % (2 * Math.PI) + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
-                if (Math.abs(dM_B) <= sectorDeltaM / 2) {
-                    sectorB_positions.push({ x: rec.x, y: rec.y });
-                }
+                if (Math.abs(dM_A) <= sectorDeltaM / 2) sectorA_positions.push({ x: rec.x, y: rec.y });
             }
-
-            // Sort positions by mean anomaly for proper polygon rendering
-            // (positions are roughly in chronological order in the buffer)
             drawFilledSector(sunX, sunY, sectorA_positions, 'rgba(255,94,91,0.25)', 'rgba(255,94,91,0.55)');
-            drawFilledSector(sunX, sunY, sectorB_positions, 'rgba(46,204,113,0.25)', 'rgba(46,204,113,0.55)');
 
             // --- Draw radial line from Sun to planet (sweeping) ---
             ctx.beginPath();
@@ -641,24 +622,15 @@
             const planetR = Math.max(5, Math.min(10, w / 130));
             drawPlanet(planetX, planetY, planetR);
 
-            // --- Draw "Sector A" and "Sector B" labels ---
+            // --- Sector label ---
             ctx.font = '600 11px Fredoka, "Noto Sans SC", sans-serif';
             ctx.textAlign = 'center';
-
             const midA_idx = Math.floor(sectorA_positions.length / 2);
             if (sectorA_positions.length > 1 && midA_idx >= 0) {
                 const mx = (sunX + sectorA_positions[midA_idx].x) / 2;
                 const my = (sunY + sectorA_positions[midA_idx].y) / 2 - 14;
                 ctx.fillStyle = 'rgba(255,140,120,0.9)';
                 ctx.fillText('A', mx, my);
-            }
-
-            const midB_idx = Math.floor(sectorB_positions.length / 2);
-            if (sectorB_positions.length > 1 && midB_idx >= 0) {
-                const mx = (sunX + sectorB_positions[midB_idx].x) / 2;
-                const my = (sunY + sectorB_positions[midB_idx].y) / 2 + 18;
-                ctx.fillStyle = 'rgba(100,220,140,0.9)';
-                ctx.fillText('B', mx, my);
             }
 
             // --- Label perihelion and aphelion ---
