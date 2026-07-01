@@ -419,17 +419,15 @@
             const w = canvas.width, h = canvas.height;
             const e = state.e, a_au = state.a;
             const b_au = a_au * Math.sqrt(Math.max(0, 1 - e * e));
-            const padding = 80;
-            const availW = w - padding * 2;
-            const availH = h - padding * 2;
-            const bSafe = b_au < 0.01 ? 0.01 : b_au;
-            const scale = Math.min(availW / (2 * a_au), availH / (2 * bSafe)) * 0.9;
+            // Fixed scale based on max a=5 AU
+            const scale = Math.min((w-160)/10, (h-160)/10);
             const a_px = a_au * scale;
-            const b_px = bSafe * scale;
+            const b_px = Math.max(b_au, 0.01) * scale;
             const c_px = a_au * e * scale;
-            const sunX = w * 0.32;
+            // Sun at RIGHT focus — perihelion at E=0 (near Sun, fast), aphelion at E=π (far, slow)
+            const sunX = w * 0.6;
             const sunY = h / 2;
-            const centerX = sunX + c_px;
+            const centerX = sunX - c_px; // center is LEFT of Sun (Sun is RIGHT focus)
             const centerY = sunY;
             return { w, h, e, a_au, b_au, scale, a_px, b_px, c_px, sunX, sunY, centerX, centerY };
         }
