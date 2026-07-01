@@ -25,8 +25,12 @@
         .diagram-section{grid-area:diagram;display:flex;flex-direction:column;gap:6px}
         .main-canvas-wrap{background:#fff;border-radius:20px;box-shadow:var(--shadow);overflow:hidden;flex:1;min-height:144px;border:2px solid #fff}
         #simCanvas{width:100%;height:100%;display:block}
-        .graph-canvas-wrap{background:#fff;border-radius:16px;box-shadow:var(--shadow);overflow:hidden;flex:1;min-height:128px;border:1px solid #fff5eb;display:flex;flex-direction:column}
+        .graph-canvas-wrap{background:#fff;border-radius:16px;box-shadow:var(--shadow);overflow:hidden;flex:1;min-height:128px;border:1px solid #fff5eb;display:none;flex-direction:column}
+        .graph-canvas-wrap.show{display:flex}
         .graph-canvas-wrap canvas{width:100%;height:50%;display:block}
+        .toggle-btn{padding:8px 12px;border:2px solid #ddd;border-radius:10px;font-size:0.85rem;font-weight:600;cursor:pointer;background:#fff;color:#888;transition:all 0.2s}
+        .toggle-btn.active-e{background:rgba(155,89,182,0.1);border-color:#9b59b6;color:#9b59b6}
+        .toggle-btn.active-v{background:rgba(46,204,113,0.1);border-color:#2ecc71;color:#2ecc71}
         .controls-section{grid-area:controls;display:flex;flex-direction:column;gap:10px}
         .control-panel{background:#fff;border-radius:20px;box-shadow:var(--shadow);padding:14px 18px;display:flex;flex-direction:column;gap:10px}
         .param-section{background:#fff;border-radius:14px;padding:10px 14px 8px;border:2px solid #f5f0eb}
@@ -68,6 +72,7 @@
             <div class="param-section" style="border-left:5px solid var(--pos-color)"><div class="param-section-header">电荷 q₁ (左侧)</div><div class="control-group"><div class="label-row"><span>电荷量 q₁</span><span id="q1-badge" class="val-badge">+3 μC</span></div><input type="range" id="q1-slider" min="-5" max="5" step="0.1" value="3"></div></div>
             <div class="param-section" style="border-left:5px solid var(--neg-color)"><div class="param-section-header">电荷 q₂ (右侧)</div><div class="control-group"><div class="label-row"><span>电荷量 q₂</span><span id="q2-badge" class="val-badge">+2 μC</span></div><input type="range" id="q2-slider" min="-5" max="5" step="0.1" value="2"></div></div>
             <div class="param-section" style="border-left:5px solid var(--primary)"><div class="param-section-header">距离与半径</div><div class="control-group"><div class="label-row"><span>距离 r (cm)</span><span id="r-badge" class="val-badge">5.0</span></div><input type="range" id="r-slider" min="2" max="10" step="0.1" value="5"></div><div class="control-group"><div class="label-row"><span>球半径 R (cm)</span><span id="rad-badge" class="val-badge">0.8</span></div><input type="range" id="rad-slider" min="0.5" max="1.0" step="0.05" value="0.8"></div></div>
+            <div class="btn-row" style="grid-template-columns:1fr 1fr;gap:8px"><button id="btn-e" class="toggle-btn">E-x 电场图</button><button id="btn-v" class="toggle-btn">V-x 电势图</button></div>
             <div class="btn-row"><button id="btn-start" class="ctrl-btn start">开始 Start</button><button id="btn-reset" class="ctrl-btn reset">重置 Reset</button></div>
         </div>
         <div class="info-card">
@@ -225,6 +230,11 @@ function updateFormula(fd){
 }
 function updateBadges(){bQ1.textContent=(S.q1>=0?'+':'')+S.q1.toFixed(1)+' μC';bQ2.textContent=(S.q2>=0?'+':'')+S.q2.toFixed(1)+' μC';bR.textContent=S.r.toFixed(1)+' cm';bRad.textContent=S.rad.toFixed(2)+' cm';bQ1.style.color=S.q1>0?PC:(S.q1<0?NC:'#999');bQ2.style.color=S.q2>0?PC:(S.q2<0?NC:'#999')}
 function update(){S.q1=parseFloat(sQ1.value);S.q2=parseFloat(sQ2.value);S.r=parseFloat(sR.value);S.rad=parseFloat(sRad.value);updateBadges();if(S.playing)S.time+=0.016;const fd=calcF();updateFormula(fd);draw(fd);requestAnimationFrame(update)}
+const wrapG=document.querySelector('.graph-canvas-wrap'),btnE=document.getElementById('btn-e'),btnV=document.getElementById('btn-v');
+let showE=false,showV=false;
+function updateGraphs(){wrapG.classList.toggle('show',showE||showV);eC.style.display=showE?'block':'none';vC.style.display=showV?'block':'none';if(showE&&!showV){eC.style.height='100%'}else if(!showE&&showV){vC.style.height='100%'}else{eC.style.height='50%';vC.style.height='50%'}}
+btnE.onclick=()=>{showE=!showE;btnE.className='toggle-btn'+(showE?' active-e':'');updateGraphs()};
+btnV.onclick=()=>{showV=!showV;btnV.className='toggle-btn'+(showV?' active-v':'');updateGraphs()};
 bStart.onclick=()=>{S.playing=!S.playing;bStart.textContent=S.playing?'暂停 Pause':'开始 Start';bStart.classList.toggle('start',!S.playing);bStart.classList.toggle('pause',S.playing)};
 bReset.onclick=()=>{S.q1=D.q1;S.q2=D.q2;S.r=D.r;S.rad=D.rad;S.playing=false;S.time=0;sQ1.value=D.q1;sQ2.value=D.q2;sR.value=D.r;sRad.value=D.rad;bStart.textContent='开始 Start';bStart.className='ctrl-btn start'};
 resize();update();
