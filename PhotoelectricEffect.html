@@ -680,11 +680,11 @@
             ctx.lineWidth = 1.5;
             ctx.strokeRect(x - w/2, topY, w, botY - topY);
 
-            // "+" label
+            // "−" label
             ctx.fillStyle = '#e74c3c';
             ctx.font = 'bold 16px Fredoka';
             ctx.textAlign = 'center';
-            ctx.fillText('+', x, topY - 8);
+            ctx.fillText('−', x, topY - 8);
 
             // Base
             ctx.fillStyle = '#3d3d3d';
@@ -744,7 +744,7 @@
 
         let lastCurrent = 0; // smoothed current display
         function drawAmmeter(W, H) {
-            const cx = W * 0.76, cy = H * 0.5, r = 38;
+            const cx = W * 0.74, cy = H * 0.5 - 10, r = 30, bw = 65, bh = 14;
             const phi = metals[state.metal].phi, E_photon = hc_eVnm / state.wavelength;
             const aboveThreshold = E_photon > phi, K = Math.max(0, E_photon - phi), V0 = K;
             let I = 0;
@@ -754,40 +754,36 @@
             }
             lastCurrent += (I - lastCurrent) * 0.3;
 
-            // Arc: needle at center-left (0), deflects clockwise (rightward) as current increases
-            const startA = Math.PI * 1.15;  // left-bottom (zero position)
-            const endA = Math.PI * 0.85;     // right-bottom (max position)
-            const sweep = startA - endA;
-            ctx.beginPath(); ctx.arc(cx, cy, r, startA, endA, true);
-            ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 4; ctx.stroke();
-            // Active arc (green, from zero to current position)
-            const needleAngle = startA - Math.min(1, lastCurrent / 2.5) * sweep;
-            ctx.beginPath(); ctx.arc(cx, cy, r, startA, needleAngle, true);
-            ctx.strokeStyle = '#2ecc71'; ctx.lineWidth = 3; ctx.stroke();
+            // Upright ammeter: arc on bottom, needle pivots from left (0) to right (max)
+            const left = cx - bw, right = cx + bw, barY = cy + 25;
+            // Background bar
+            ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.moveTo(left, barY); ctx.lineTo(right, barY); ctx.stroke();
+            // Active green bar
+            const frac = Math.min(1, lastCurrent / 2.5);
+            ctx.strokeStyle = '#2ecc71'; ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.moveTo(left, barY); ctx.lineTo(left + frac * bw * 2, barY); ctx.stroke();
 
-            // Tick marks
+            // Tick marks below
             for (let i = 0; i <= 5; i++) {
-                const a = startA - (i / 5) * sweep;
-                const tx1 = cx + (r - 7) * Math.cos(a), ty1 = cy + (r - 7) * Math.sin(a);
-                const tx2 = cx + (r + 3) * Math.cos(a), ty2 = cy + (r + 3) * Math.sin(a);
-                ctx.beginPath(); ctx.moveTo(tx1, ty1); ctx.lineTo(tx2, ty2);
+                const tx = left + (i / 5) * 2 * bw;
+                ctx.beginPath(); ctx.moveTo(tx, barY - 5); ctx.lineTo(tx, barY + 8);
                 ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.lineWidth = 1; ctx.stroke();
                 ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.font = '8px Fredoka'; ctx.textAlign = 'center';
-                ctx.fillText((i * 0.5).toFixed(1), cx + (r + 12) * Math.cos(a), cy + (r + 12) * Math.sin(a) + 3);
+                ctx.fillText((i * 0.5).toFixed(1), tx, barY + 18);
             }
 
-            // Needle (pivots at center, points to current position)
-            const nx = cx + (r - 12) * Math.cos(needleAngle), ny = cy + (r - 12) * Math.sin(needleAngle);
-            ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(nx, ny);
-            ctx.strokeStyle = '#FF5E5B'; ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.stroke();
-            ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(cx, cy, 4, 0, Math.PI * 2); ctx.fill();
+            // Needle — vertical line pivoting at center-bottom
+            const pivotX = left + frac * bw * 2;
+            const pivotY = barY;
+            ctx.beginPath(); ctx.moveTo(pivotX, pivotY); ctx.lineTo(pivotX, pivotY - 20);
+            ctx.strokeStyle = '#FF5E5B'; ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.stroke();
+            ctx.fillStyle = '#FF5E5B'; ctx.beginPath(); ctx.arc(pivotX, pivotY, 3, 0, Math.PI * 2); ctx.fill();
 
             // Labels
             ctx.fillStyle = 'rgba(255,255,255,0.8)'; ctx.font = 'bold 10px Fredoka'; ctx.textAlign = 'center';
-            ctx.fillText('光电流', cx, cy - r - 16);
-            ctx.fillText('μA', cx, cy - r - 4);
-            ctx.fillStyle = '#2ecc71'; ctx.font = 'bold 12px Fredoka';
-            ctx.fillText((lastCurrent * 10).toFixed(1), cx, cy + r + 16);
+            ctx.fillText('光电流 μA', cx, cy - 5);
+            ctx.fillText((lastCurrent * 10).toFixed(1), cx, barY + 34);
         }
 
         bStart.onclick = () => {
