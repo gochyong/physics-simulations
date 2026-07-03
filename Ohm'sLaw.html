@@ -4,391 +4,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>欧姆定律模拟 - Wuli布雷克</title>
+    <title>欧姆定律 / Ohm's Law - Wuli布雷克</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #FFF9F0;
-            --primary: #FF8c42;
-            --secondary: #FFC75F;
-            --accent: #FF5E5B;
-            --text-dark: #4A403A;
-            --card-bg: #FFFFFF;
-            --shadow: 0 4px 20px rgba(255, 140, 66, 0.15);
-            --radius: 20px;
-
-            /* Physics Specific */
-            --col-v: #d32f2f;
-            --col-i: #2e7d32;
-            --col-r: #1565c0;
+            --bg-color: #FFF9F0; --primary: #FF8c42; --secondary: #FFC75F;
+            --accent: #FF5E5B; --text-dark: #4A403A; --card-bg: #FFFFFF;
+            --shadow: 0 6px 30px rgba(255,140,66,0.18);
+            --col-v: #d32f2f; --col-i: #2e7d32; --col-r: #1565c0;
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-dark);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px 20px 40px 20px;
-        }
-
-        /* Branding */
-        .branding {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1000;
-        }
-
-        .logo {
-            font-weight: 700;
-            font-size: 1.2rem;
-            color: #FFFFFF;
-            background: var(--primary);
-            padding: 8px 18px;
-            border-radius: 12px;
-            box-shadow: 2px 2px 10px rgba(255, 140, 66, 0.3);
-        }
-
-        .container {
-            width: 100%;
-            max-width: 1600px;
-            /* Increased from 1200px */
-            margin-top: 60px;
-            display: grid;
-            grid-template-columns: 1fr 340px;
-            gap: 25px;
-        }
-
-        /* Title Section */
-        header {
-            grid-column: 1 / -1;
-            text-align: center;
-            margin-bottom: 5px;
-        }
-
-        h1 {
-            font-size: 2.2rem;
-            color: var(--text-dark);
-            margin-bottom: 5px;
-        }
-
-        .subtitle {
-            font-size: 1.1rem;
-            color: var(--primary);
-            font-weight: 400;
-        }
-
-        /* Simulation Area */
-        .simulation-card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            min-height: 500px;
-        }
-
-        .formula-section {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 15px;
-            background: #fffcf5;
-            border-bottom: 2px solid #fff3e0;
-            font-family: "Times New Roman", serif;
-            font-weight: bold;
-            font-size: 3rem;
-        }
-
-        .sym {
-            display: inline-block;
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .frac {
-            display: inline-flex;
-            flex-direction: column;
-            align-items: center;
-            font-size: 0.85em;
-            margin-left: 10px;
-            vertical-align: middle;
-        }
-
-        .line {
-            width: 1.2em;
-            height: 4px;
-            background: var(--text-dark);
-            margin: 4px 0;
-            border-radius: 2px;
-        }
-
-        .visual-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            flex: 1;
-            min-height: 0;
-        }
-
-        .visual-box {
-            background: #fafafa;
-            border: 1px solid #eee;
-            border-radius: 12px;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-        }
-
-        .box-label {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: #999;
-            text-transform: uppercase;
-        }
-
-        .circuit-svg {
-            width: 100%;
-            height: 100%;
-            max-height: 300px;
-        }
-
-        canvas {
-            width: 100%;
-            height: 100%;
-        }
-
-        /* Controls Section */
-        .controls-card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 25px;
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .label-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 600;
-        }
-
-        .val-badge {
-            font-family: 'Fredoka', monospace;
-            padding: 4px 10px;
-            border-radius: 8px;
-            color: white;
-            font-size: 0.95rem;
-        }
-
-        input[type=range] {
-            width: 100%;
-            appearance: none;
-            height: 8px;
-            background: #eee;
-            border-radius: 4px;
-            outline: none;
-        }
-
-        input[type=range]::-webkit-slider-thumb {
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-            transition: transform 0.1s;
-        }
-
-        input[type=range]::-webkit-slider-thumb:hover {
-            transform: scale(1.1);
-        }
-
-        /* Voltage styling */
-        #sld-v::-webkit-slider-thumb {
-            background: var(--col-v);
-        }
-
-        .bg-v {
-            background-color: var(--col-v);
-        }
-
-        /* Resistance styling */
-        #sld-r::-webkit-slider-thumb {
-            background: var(--col-r);
-        }
-
-        .bg-r {
-            background-color: var(--col-r);
-        }
-
-        .result-box {
-            background: #e8f5e9;
-            border: 2px solid var(--col-i);
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            margin-top: auto;
-        }
-
-        .result-title {
-            color: var(--col-i);
-            font-size: 0.9rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .result-value {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: var(--col-i);
-            font-family: 'Fredoka', monospace;
-        }
-
-        @media (max-width: 900px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
-
-            .branding {
-                position: absolute;
-            }
-
-            .visual-grid {
-                grid-template-columns: 1fr;
-                height: auto;
-            }
-
-            .visual-box {
-                height: 300px;
-            }
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Fredoka','Noto Sans SC',sans-serif; background: var(--bg-color); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 5px 40px 10px; }
+        .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
+        .logo { font-weight: 700; font-size: 1.3rem; color: #fff; background: var(--primary); padding: 6px 18px; border-radius: 16px; box-shadow: 4px 4px 15px rgba(255,140,66,0.3); }
+        .container { width: 100%; max-width: 1400px; margin-top: 8px; display: grid; grid-template-areas:"header header" "formula formula" "diagram controls"; grid-template-columns: 1fr 400px; gap: 12px; }
+        header { grid-area: header; text-align: center; }
+        h1 { font-size: 2rem; color: var(--text-dark); margin-bottom: 2px; }
+        .formula-display { grid-area: formula; background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb; }
+        .formula-container { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 56px; font-size: 2.8rem; font-weight: 700; }
+        .frac { display: inline-flex; flex-direction: column; align-items: center; margin: 0 4px; }
+        .frac-line { width: 1.2em; height: 4px; background: var(--text-dark); margin: 2px 0; border-radius: 2px; }
+        .sym { display: inline-block; transition: transform 0.2s cubic-bezier(0.175,0.885,0.32,1.275); }
+        .result-row { font-size: 1rem; font-weight: 600; margin-top: 6px; display: flex; gap: 20px; justify-content: center; }
+        .legend { display: flex; gap: 16px; justify-content: center; border-top: 1px solid #eee; padding-top: 6px; width: 100%; flex-wrap: wrap; }
+        .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+        .diagram-section { grid-area: diagram; background: #fff; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; min-height: 320px; display: flex; flex-direction: column; border: 2px solid #fff5eb; }
+        #cvs { width: 100%; flex: 1; display: block; }
+        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
+        .control-panel { background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+        .control-group { display: flex; flex-direction: column; gap: 3px; }
+        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
+        .val-badge { background: #fff; padding: 1px 7px; border-radius: 7px; font-size: 0.85rem; border: 2px solid #f0f0f0; }
+        input[type=range] { width: 100%; appearance: none; height: 6px; background: #eee; border-radius: 3px; }
+        input[type=range]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; cursor: pointer; background: var(--primary); }
+        #sld-v::-webkit-slider-thumb { background: var(--col-v); }
+        #sld-r::-webkit-slider-thumb { background: var(--col-r); }
+        .info-card { background: #fff; border-radius: 20px; padding: 12px 16px; box-shadow: var(--shadow); font-size: 0.9rem; line-height: 1.4; color: #5D6D7E; }
+        .circuit-mini { width: 100%; max-width: 230px; margin-top: 4px; }
+        @media(max-width:1100px){.container{grid-template-areas:"header" "formula" "diagram" "controls";grid-template-columns:1fr}}
     </style>
 </head>
 
 <body>
-    <div class="branding">
-        <div class="logo">Wuli布雷克</div>
-    </div>
+    <div class="branding"><div class="logo">Wuli布雷克</div></div>
+    <div class="container">
+        <header><h1>欧姆定律 / Ohm's Law</h1></header>
 
-    <header>
-        <h1>欧姆定律</h1>
-        <div class="subtitle">Ohm's Law Simulation</div>
-    </header>
-
-    <main class="container">
-        <!-- Simulation Visuals -->
-        <section class="simulation-card">
-            <!-- Formula -->
-            <div class="formula-section">
+        <section class="formula-display">
+            <div class="formula-container">
                 <span id="f-i" class="sym" style="color: var(--col-i);">I</span>
-                <span style="margin: 0 15px; color: #aaa;">=</span>
+                <span style="margin: 0 12px; color: #ccc; font-size: 1.6rem;">=</span>
                 <div class="frac">
                     <span id="f-v" class="sym" style="color: var(--col-v);">V</span>
-                    <div class="line"></div>
+                    <div class="frac-line"></div>
                     <span id="f-r" class="sym" style="color: var(--col-r);">R</span>
                 </div>
             </div>
-
-            <!-- Visualization Grid -->
-            <div class="visual-grid">
-                <div class="visual-box">
-                    <div class="box-label">Circuit Diagram</div>
-                    <svg class="circuit-svg" viewBox="0 0 400 220" preserveAspectRatio="xMidYMid meet">
-                        <!-- Wires -->
-                        <path d="M 80 160 L 80 50 L 320 50 L 320 160 L 80 160" fill="none" stroke="#444"
-                            stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
-
-                        <!-- Battery -->
-                        <line x1="70" y1="100" x2="90" y2="100" stroke="#444" stroke-width="2" />
-                        <line x1="75" y1="110" x2="85" y2="110" stroke="#444" stroke-width="5" />
-
-                        <!-- Resistor -->
-                        <rect x="165" y="35" width="70" height="30" fill="white" stroke="var(--col-r)" stroke-width="3"
-                            rx="4" />
-                        <text x="188" y="56" font-family="Fredoka" font-size="16" fill="var(--col-r)"
-                            font-weight="bold">R</text>
-
-                        <!-- Ammeter -->
-                        <circle cx="320" cy="105" r="22" fill="white" stroke="var(--col-i)" stroke-width="3" />
-                        <text x="314" y="111" font-family="Fredoka" font-size="18" fill="var(--col-i)"
-                            font-weight="bold">A</text>
-
-                        <!-- Voltmeter (Parallel) -->
-                        <path d="M 165 50 L 165 100 L 235 100 L 235 50" fill="none" stroke="var(--col-v)"
-                            stroke-width="2" />
-                        <circle cx="200" cy="100" r="22" fill="white" stroke="var(--col-v)" stroke-width="3" />
-                        <text x="193" y="106" font-family="Fredoka" font-size="18" fill="var(--col-v)"
-                            font-weight="bold">V</text>
-                    </svg>
-                </div>
-
-                <div class="visual-box">
-                    <div class="box-label">I-V Graph</div>
-                    <canvas id="cvs"></canvas>
-                </div>
+            <div class="result-row">
+                <span>电流 I = <strong id="txt-i" style="color:var(--col-i)">--</strong> A</span>
+            </div>
+            <div class="legend">
+                <div class="legend-item"><span class="legend-dot" style="background:var(--col-v)"></span> 电压 V (V)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--col-r)"></span> 电阻 R (Ω)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--col-i)"></span> 电流 I (A)</div>
             </div>
         </section>
 
-        <!-- Control Sidebar -->
-        <section class="controls-card">
+        <section class="diagram-section"><canvas id="cvs"></canvas></section>
 
-            <!-- Voltage Control -->
-            <div class="control-group">
-                <div class="label-row">
-                    <span>电压 Voltage (V)</span>
-                    <span id="txt-v" class="val-badge bg-v">-- V</span>
+        <section class="controls-section">
+            <div class="control-panel">
+                <div class="control-group">
+                    <div class="label-row"><span style="color:var(--col-v)">电压 Voltage (V)</span><span id="txt-v" class="val-badge">-- V</span></div>
+                    <input type="range" id="sld-v" min="1" max="30" step="0.5" value="15">
                 </div>
-                <input type="range" id="sld-v" min="1" max="30" step="0.5" value="15">
-            </div>
-
-            <!-- Resistance Control -->
-            <div class="control-group">
-                <div class="label-row">
-                    <span>电阻 Resistance (R)</span>
-                    <span id="txt-r" class="val-badge bg-r">-- Ω</span>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:var(--col-r)">电阻 Resistance (R)</span><span id="txt-r" class="val-badge">-- Ω</span></div>
+                    <input type="range" id="sld-r" min="1" max="50" step="1" value="10">
                 </div>
-                <input type="range" id="sld-r" min="1" max="50" step="1" value="10">
+                <svg class="circuit-mini" viewBox="0 0 400 150" preserveAspectRatio="xMidYMid meet">
+                    <path d="M 60 110 L 60 35 L 340 35 L 340 110 L 60 110" fill="none" stroke="#444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    <line x1="50" y1="70" x2="70" y2="70" stroke="#444" stroke-width="2"/>
+                    <line x1="55" y1="80" x2="65" y2="80" stroke="#444" stroke-width="5"/>
+                    <rect x="165" y="20" width="70" height="30" fill="white" stroke="var(--col-r)" stroke-width="3" rx="4"/>
+                    <text x="200" y="40" font-family="Fredoka" font-size="14" fill="var(--col-r)" font-weight="bold" text-anchor="middle">R</text>
+                    <circle cx="340" cy="70" r="20" fill="white" stroke="var(--col-i)" stroke-width="3"/>
+                    <text x="340" y="76" font-family="Fredoka" font-size="16" fill="var(--col-i)" font-weight="bold" text-anchor="middle">A</text>
+                    <path d="M 165 35 L 165 60 L 235 60 L 235 35" fill="none" stroke="var(--col-v)" stroke-width="2"/>
+                    <circle cx="200" cy="60" r="20" fill="white" stroke="var(--col-v)" stroke-width="3"/>
+                    <text x="200" y="66" font-family="Fredoka" font-size="16" fill="var(--col-v)" font-weight="bold" text-anchor="middle">V</text>
+                </svg>
             </div>
-
-            <hr style="border: 0; border-top: 2px dashed #eee; margin: 10px 0;">
-
-            <!-- Results -->
-            <div class="result-box">
-                <div class="result-title">计算电流 / Current (I)</div>
-                <div id="txt-i" class="result-value">-- A</div>
+            <div class="info-card">
+                <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem">演示要点 / Key Points</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700">I</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">I = V / R</div><div style="font-size:0.78rem;color:#888">欧姆定律：电流与电压成正比，与电阻成反比。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(211,47,47,0.1);color:var(--col-v);font-weight:700">V</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">I-V 图斜率 = 1/R</div><div style="font-size:0.78rem;color:#888">图像中直线斜率越大，电阻越小；斜率越小，电阻越大。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(21,101,192,0.1);color:var(--col-r);font-weight:700">R</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">固定电阻下V-I为直线</div><div style="font-size:0.78rem;color:#888">欧姆导体满足线性关系，红色点表示当前工作点。</div></div>
+                    </div>
+                </div>
             </div>
-
         </section>
-    </main>
+    </div>
 
     <script>
         const sldV = document.getElementById('sld-v');
@@ -446,7 +174,6 @@
             ctx.strokeStyle = '#eee';
             ctx.lineWidth = 1;
             ctx.beginPath();
-            // Max I line
             /*
             let y = padTop;
             ctx.moveTo(padLeft, y); ctx.lineTo(w-padRight, y);
@@ -468,11 +195,11 @@
             ctx.strokeStyle = '#bbdefb'; // Light Blue
             ctx.lineWidth = 2;
             ctx.moveTo(mapX(x1), mapY(y1));
-            // Clamp to visible graph area area? 
+            // Clamp to visible graph area area?
             // Ideally we draw to V=MAX_V, but I might exceed axes if R is small.
             // Let's just draw to V_max for this R at current scale, or edge of graph
 
-            // Actually, let's just draw the line segment relevant to current V? 
+            // Actually, let's just draw the line segment relevant to current V?
             // No, the line represents the Resistance.
             // Let's find end point. End X is MAX_V.
             let endX = MAX_V;
