@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>圆周运动 / Circular Motion - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-color: #FFF9F0; --primary: #FF8c42; --secondary: #FFC75F; --accent: #FF5E5B; --text-dark: #4A403A; --card-bg: #FFFFFF; --shadow: 0 6px 30px rgba(255,140,66,0.18); }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Fredoka','Noto Sans SC',sans-serif; background: var(--bg-color); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 5px 40px 10px; }
+        .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
+        .logo { font-weight: 700; font-size: 1.3rem; color: #fff; background: var(--primary); padding: 6px 18px; border-radius: 16px; box-shadow: 4px 4px 15px rgba(255,140,66,0.3); }
+        .container { width: 100%; max-width: 1400px; margin-top: 8px; display: grid; grid-template-areas:"header header" "formula formula" "diagram controls"; grid-template-columns: 1fr 400px; gap: 12px; }
+        header { grid-area: header; text-align: center; } h1 { font-size: 2rem; margin-bottom: 2px; } .subtitle { font-size: 0.85rem; color: #999; }
+        .formula-display { grid-area: formula; background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb; }
+        .formula-container { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; min-height: 40px; }
+        .formula-item { font-size: 0.9rem; font-weight: 600; padding: 3px 10px; border-radius: 10px; background: #fafaf7; }
+        .result-row { font-size: 0.95rem; font-weight: 600; margin-top: 4px; display: flex; gap: 20px; justify-content: center; }
+        .legend { display: flex; gap: 16px; justify-content: center; border-top: 1px solid #eee; padding-top: 6px; width: 100%; }
+        .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+        .diagram-section { grid-area: diagram; display: flex; flex-direction: column; gap: 6px; }
+        .main-canvas-wrap { background: #fff; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; flex: 1; min-height: 480px; border: 2px solid #fff; }
+        #simCanvas { width: 100%; height: 100%; display: block; }
+        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
+        .control-panel { background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+        .control-group { display: flex; flex-direction: column; gap: 3px; }
+        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
+        .val-badge { background: #fff; padding: 1px 7px; border-radius: 7px; font-size: 0.85rem; border: 2px solid #f0f0f0; }
+        input[type=range] { width: 100%; appearance: none; height: 6px; background: #eee; border-radius: 3px; }
+        input[type=range]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; cursor: pointer; background: var(--primary); }
+        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px; }
+        .ctrl-btn { padding: 10px; border: none; border-radius: 14px; font-size: 1.05rem; font-weight: 700; cursor: pointer; color: white; }
+        .start { background: var(--primary); } .pause { background: #2ecc71; } .reset { background: #95a5a6; }
+        .info-card { background: #fff; border-radius: 20px; padding: 12px 16px; box-shadow: var(--shadow); font-size: 0.9rem; line-height: 1.4; color: #5D6D7E; }
+        @media (max-width: 1100px) { .container { grid-template-areas: "header" "formula" "diagram" "controls"; grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="branding"><div class="logo">Wuli布雷克</div></div>
+<div class="container">
+<header><h1>圆周运动 / Circular Motion &amp; Centripetal Force</h1><p class="subtitle">v=&omega;r &nbsp; a<sub>c</sub>=v&sup2;/r=&omega;&sup2;r &nbsp; F<sub>c</sub>=mv&sup2;/r=m&omega;&sup2;r</p></header>
+<section class="formula-display">
+    <div class="formula-container" id="formula-root"></div>
+    <div class="result-row" id="result-row"></div>
+    <div class="legend">
+        <div class="legend-item"><span class="legend-dot" style="background:#3498db"></span> 线速度 v (切线)</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#e74c3c"></span> 向心加速度 a<sub>c</sub> (指向中心)</div>
+        <div class="legend-item"><span style="color:#FF8c42">●</span> 向心力 F<sub>c</sub></div>
+        <div class="legend-item"><span style="color:#bbb">- - -</span> 轨道</div>
+    </div>
+</section>
+<section class="diagram-section">
+    <div class="main-canvas-wrap"><canvas id="simCanvas"></canvas></div>
+</section>
+<section class="controls-section">
+    <div class="control-panel">
+        <div class="control-group"><div class="label-row"><span>半径 r / Radius</span><span id="badge-r" class="val-badge">3.0 m</span></div><input type="range" id="slider-r" min="1" max="5" step="0.1" value="3"></div>
+        <div class="control-group"><div class="label-row"><span>角速度 &omega; / Angular Velocity</span><span id="badge-w" class="val-badge">4.0 rad/s</span></div><input type="range" id="slider-w" min="1" max="10" step="0.1" value="4"></div>
+        <div class="control-group"><div class="label-row"><span>质量 m / Mass</span><span id="badge-m" class="val-badge">1.0 kg</span></div><input type="range" id="slider-m" min="0.5" max="3.0" step="0.1" value="1.0"></div>
+        <div class="btn-row"><button id="btn-start" class="ctrl-btn start">开始 Start</button><button id="btn-reset" class="ctrl-btn reset">重置 Reset</button></div>
+    </div>
+    <div class="info-card">
+        <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem;">演示要点 / Key Points</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:#3498db;font-weight:700;">v</div><div><div style="font-weight:700;font-size:0.9rem;">线速度：v = &omega;r</div><div style="font-size:0.78rem;color:#888;">速度沿切线方向，与半径垂直。大小恒定，方向时刻变化。</div></div></div>
+            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(231,76,60,0.1);color:#e74c3c;font-weight:700;">a</div><div><div style="font-weight:700;font-size:0.9rem;">向心加速度：a<sub>c</sub>=v&sup2;/r=&omega;&sup2;r</div><div style="font-size:0.78rem;color:#888;">加速度始终指向圆心，产生向心力。大小恒定，方向时刻变化。</div></div></div>
+            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;">F</div><div><div style="font-weight:700;font-size:0.9rem;">向心力：F<sub>c</sub>=mv&sup2;/r=m&omega;&sup2;r</div><div style="font-size:0.78rem;color:#888;">绳子的拉力提供向心力——指向圆心。没有此力，物体将沿切线飞出。</div></div></div>
+            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(155,89,182,0.1);color:#9b59b6;font-weight:700;">T</div><div><div style="font-weight:700;font-size:0.9rem;">周期：T = 2&pi;/&omega;</div><div style="font-size:0.78rem;color:#888;">转一圈的时间。&omega;越大，周期越短，转动越快。</div></div></div>
+        </div>
+    </div>
+</section>
+</div>
+
+<script>
+const simC = document.getElementById('simCanvas'), ctx = simC.getContext('2d');
+const sR = document.getElementById('slider-r'), sW = document.getElementById('slider-w'), sM = document.getElementById('slider-m');
+const bR = document.getElementById('badge-r'), bW = document.getElementById('badge-w'), bM = document.getElementById('badge-m');
+const bStart = document.getElementById('btn-start'), bReset = document.getElementById('btn-reset');
+const fRoot = document.getElementById('formula-root');
+const rRow = document.getElementById('result-row');
+
+const S = { r: 3.0, w: 4.0, m: 1.0, angle: 0, playing: true, speed: 1.0 };
+let lt = 0;
+
+function resize() { simC.width = simC.clientWidth; simC.height = simC.clientHeight; }
+window.addEventListener('resize', resize);
+
+function arrow(c, x, y, dx, dy, clr, lw) {
+    const a = Math.atan2(dy, dx), h = 8, tx = x + dx, ty = y + dy;
+    c.strokeStyle = clr; c.fillStyle = clr; c.lineWidth = lw || 2; c.lineCap = 'round';
+    c.beginPath(); c.moveTo(x, y); c.lineTo(tx, ty); c.stroke();
+    c.beginPath(); c.moveTo(tx, ty);
+    c.lineTo(tx - h * Math.cos(a - Math.PI / 6), ty - h * Math.sin(a - Math.PI / 6));
+    c.lineTo(tx - h * Math.cos(a + Math.PI / 6), ty - h * Math.sin(a + Math.PI / 6));
+    c.closePath(); c.fill();
+}
+
+function draw() {
+    ctx.clearRect(0, 0, simC.width, simC.height);
+    const cw = simC.width, ch = simC.height;
+    if (cw < 10) return;
+
+    const r = S.r, w = S.w, m = S.m, ang = S.angle;
+    const v = w * r;
+    const ac = w * w * r;
+    const Fc = m * ac;
+    const T = 2 * Math.PI / w;
+
+    // Canvas center for the orbit circle
+    const cx = cw / 2, cy = ch / 2;
+    // Scale: make the max-radius circle (5m) fit with margin
+    const maxR_px = Math.min(cw, ch) * 0.38;
+    const pxPerM = maxR_px / 5;
+    const r_px = r * pxPerM;
+
+    // Orbit parameters
+    const orbitR = r_px;
+    // Ball position (angle from +x axis, CCW in math coords)
+    const bx = cx + orbitR * Math.cos(ang);
+    const by = cy - orbitR * Math.sin(ang);
+
+    // Draw dashed orbit circle
+    ctx.strokeStyle = '#bbb';
+    ctx.lineWidth = 2.5;
+    ctx.setLineDash([10, 8]);
+    ctx.beginPath();
+    ctx.arc(cx, cy, orbitR, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Draw center point
+    ctx.fillStyle = '#4A403A';
+    ctx.beginPath();
+    ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Label center
+    ctx.fillStyle = '#888';
+    ctx.font = '11px Fredoka';
+    ctx.textAlign = 'right';
+    ctx.fillText('O', cx - 10, cy + 5);
+
+    // Draw string from center to ball (thin dashed line)
+    ctx.strokeStyle = '#d5a870';
+    ctx.lineWidth = 1.8;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(bx, by);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Draw angle indicator arc at center
+    const arcR = Math.min(orbitR * 0.22, 45);
+    ctx.strokeStyle = '#9b59b6';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 3]);
+    ctx.beginPath();
+    // Arc from 0 (positive x-axis) to current angle (CCW)
+    // In canvas coords: start angle = 0 (right), sweep CCW means negative angle
+    ctx.arc(cx, cy, arcR, 0, -ang, ang > 0);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Small theta label near the arc
+    const arcMid = ang / 2;
+    const lblX = cx + (arcR + 14) * Math.cos(-arcMid);
+    const lblY = cy - (arcR + 14) * Math.sin(-arcMid);
+    ctx.fillStyle = '#9b59b6';
+    ctx.font = 'bold 12px Fredoka';
+    ctx.textAlign = 'center';
+    ctx.fillText('θ', lblX, lblY + 4);
+
+    // Draw radius dimension line
+    const midAng = ang === 0 ? 0 : ang / 2;
+    if (ang > 0.05 || ang < -0.05) {
+        // Radius label at midpoint of radius line
+        const rmx = cx + r_px * 0.5 * Math.cos(ang);
+        const rmy = cy - r_px * 0.5 * Math.sin(ang);
+        ctx.fillStyle = '#888';
+        ctx.font = 'bold 11px Fredoka';
+        ctx.textAlign = 'left';
+        const offsetAng = ang + Math.PI / 2;
+        ctx.fillText('r=' + r.toFixed(1) + ' m', rmx + 8 * Math.cos(offsetAng), rmy - 8 * Math.sin(offsetAng));
+    }
+
+    // Draw velocity vector (blue, tangent to circle)
+    // Tangent direction: CCW -> (-sin(ang), -cos(ang)) in math coords, in canvas: dx = -sin, dy = cos
+    const vdx = -Math.sin(ang);
+    const vdy = -Math.cos(ang); // canvas y flips
+    const vScale = 9; // px per m/s
+    const vLen = v * vScale;
+    const vLenClamped = Math.min(vLen, orbitR * 0.7);
+    const vLenFinal = Math.max(vLenClamped, 2);
+    const vx = vdx * vLenFinal;
+    const vy = vdy * vLenFinal;
+    arrow(ctx, bx, by, vx, vy, '#3498db', 3);
+
+    // Velocity label
+    const vlx = bx + vx + 8 * Math.sign(vx);
+    const vly = by + vy + 8 * Math.sign(vy);
+    ctx.fillStyle = '#3498db';
+    ctx.font = 'bold 12px Fredoka';
+    ctx.textAlign = 'center';
+    ctx.fillText('v=' + v.toFixed(2) + ' m/s', vlx + 4, vly + 4);
+
+    // Draw centripetal acceleration vector (red, pointing toward center)
+    const adx = cx - bx;
+    const ady = cy - by;
+    const aDist = Math.sqrt(adx * adx + ady * ady);
+    const anx = adx / aDist;
+    const any = ady / aDist;
+    const aScale = 1.5; // px per m/s^2
+    const aLen = ac * aScale;
+    const aLenClamped = Math.min(aLen, orbitR * 0.5);
+    const aLenFinal = Math.max(aLenClamped, 2);
+    const ax = anx * aLenFinal;
+    const ay = any * aLenFinal;
+    arrow(ctx, bx, by, ax, ay, '#e74c3c', 3);
+
+    // Acceleration label
+    const alx = bx + ax - 15 * anx;
+    const aly = by + ay - 15 * any;
+    ctx.fillStyle = '#e74c3c';
+    ctx.font = 'bold 12px Fredoka';
+    ctx.textAlign = 'center';
+    ctx.fillText('a_c=' + ac.toFixed(2) + ' m/s²', alx, aly - 6);
+
+    // Draw centripetal force arrow (orange, pointing toward center, slightly offset)
+    const fScale = 0.8; // px per N
+    const fLen = Fc * fScale;
+    const fLenClamped = Math.min(fLen, orbitR * 0.4);
+    const fLenFinal = Math.max(fLenClamped, 2);
+    const fx = anx * fLenFinal;
+    const fy = any * fLenFinal;
+    // Offset the force arrow start point slightly from ball toward center
+    const fStartX = bx + anx * 16;
+    const fStartY = by + any * 16;
+    arrow(ctx, fStartX, fStartY, fx - anx * 16, fy - any * 16, '#FF8c42', 2.5);
+
+    // Force label
+    const flx = fStartX + (fx - anx * 16) * 0.5 - 18 * anx;
+    const fly = fStartY + (fy - any * 16) * 0.5 - 18 * any;
+    ctx.fillStyle = '#FF8c42';
+    ctx.font = 'bold 11px Fredoka';
+    ctx.textAlign = 'center';
+    ctx.fillText('F_c=' + Fc.toFixed(2) + ' N', flx, fly - 4);
+
+    // Draw ball
+    const ballR = 10;
+    const bg = ctx.createRadialGradient(bx - 2, by - 3, 2, bx, by, ballR);
+    bg.addColorStop(0, '#ff8a80');
+    bg.addColorStop(1, '#c62828');
+    ctx.fillStyle = bg;
+    ctx.beginPath();
+    ctx.arc(bx, by, ballR, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Draw plus sign on ball (for visual tracking)
+    ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(bx - 5, by);
+    ctx.lineTo(bx + 5, by);
+    ctx.moveTo(bx, by - 5);
+    ctx.lineTo(bx, by + 5);
+    ctx.stroke();
+
+    // Update UI badges
+    bR.textContent = r.toFixed(1) + ' m';
+    bW.textContent = w.toFixed(1) + ' rad/s';
+    bM.textContent = m.toFixed(1) + ' kg';
+
+    // Formula display
+    fRoot.innerHTML =
+        `<span class="formula-item" style="color:#3498db">v=&omega;r=${w.toFixed(1)}·${r.toFixed(1)}=<b>${v.toFixed(2)}</b> m/s</span>` +
+        `<span class="formula-item" style="color:#e74c3c">a<sub>c</sub>=v&sup2;/r=${v.toFixed(2)}&sup2;/${r.toFixed(1)}=&omega;&sup2;r=${w.toFixed(1)}&sup2;·${r.toFixed(1)}=<b>${ac.toFixed(2)}</b> m/s&sup2;</span>` +
+        `<span class="formula-item" style="color:#FF8c42">F<sub>c</sub>=mv&sup2;/r=${m.toFixed(1)}·${v.toFixed(2)}&sup2;/${r.toFixed(1)}=m&omega;&sup2;r=<b>${Fc.toFixed(2)}</b> N</span>`;
+
+    // Result row
+    rRow.innerHTML =
+        `<span style="color:#3498db">v = <b>${v.toFixed(2)}</b> m/s</span>` +
+        `<span style="color:#e74c3c">a<sub>c</sub> = <b>${ac.toFixed(2)}</b> m/s&sup2;</span>` +
+        `<span style="color:#FF8c42">F<sub>c</sub> = <b>${Fc.toFixed(2)}</b> N</span>` +
+        `<span style="color:#9b59b6">T = <b>${T.toFixed(2)}</b> s</span>`;
+}
+
+function loop(ts) {
+    if (!lt) lt = ts;
+    let dt = (ts - lt) / 1000;
+    lt = ts;
+    if (dt > 0.1) dt = 0.016;
+    if (S.playing) {
+        S.angle += dt * S.w * S.speed;
+        // Keep angle in [0, 2π)
+        S.angle = S.angle % (2 * Math.PI);
+        if (S.angle < 0) S.angle += 2 * Math.PI;
+    }
+    draw();
+    requestAnimationFrame(loop);
+}
+
+function onChg() {
+    S.r = parseFloat(sR.value);
+    S.w = parseFloat(sW.value);
+    S.m = parseFloat(sM.value);
+    draw();
+}
+
+sR.addEventListener('input', onChg);
+sW.addEventListener('input', onChg);
+sM.addEventListener('input', onChg);
+
+bStart.onclick = () => {
+    S.playing = !S.playing;
+    bStart.textContent = S.playing ? '暂停 Pause' : '开始 Start';
+    bStart.className = 'ctrl-btn ' + (S.playing ? 'pause' : 'start');
+};
+
+bReset.onclick = () => {
+    S.angle = 0;
+    S.playing = false;
+    bStart.textContent = '开始 Start';
+    bStart.className = 'ctrl-btn start';
+    lt = 0;
+    draw();
+};
+
+resize();
+draw();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

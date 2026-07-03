@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>单缝衍射 / Single Slit Diffraction - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #FFF9F0; --primary: #FF8c42; --secondary: #FFC75F;
+            --accent: #FF5E5B; --text-dark: #4A403A; --card-bg: #FFFFFF;
+            --shadow: 0 6px 30px rgba(255, 140, 66, 0.18);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-color); color: var(--text-dark);
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh; padding: 5px 40px 10px;
+        }
+        .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
+        .logo {
+            font-weight: 700; font-size: 1.3rem; color: #fff;
+            background: var(--primary); padding: 6px 18px; border-radius: 16px;
+            box-shadow: 4px 4px 15px rgba(255,140,66,0.3);
+        }
+        .container {
+            width: 100%; max-width: 1400px; margin-top: 8px;
+            display: grid;
+            grid-template-areas:
+                "header header"
+                "formula formula"
+                "diagram controls";
+            grid-template-columns: 1fr 420px; gap: 12px;
+        }
+        header { grid-area: header; text-align: center; }
+        h1 { font-size: 2rem; color: var(--text-dark); margin-bottom: 2px; }
+        .formula-display {
+            grid-area: formula; background: var(--card-bg);
+            border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px;
+            display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb;
+        }
+        .formula-container {
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px; flex-wrap: wrap; min-height: 44px;
+        }
+        .result-row {
+            font-size: 0.95rem; font-weight: 600; color: var(--text-dark);
+            margin-top: 4px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;
+        }
+        .legend {
+            display: flex; gap: 16px; justify-content: center;
+            border-top: 1px solid #eee; padding-top: 6px; width: 100%; flex-wrap: wrap;
+        }
+        .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+        .color-swatch { width: 18px; height: 18px; border-radius: 4px; display: inline-block; border: 1px solid #ddd; vertical-align: middle; }
+
+        .diagram-section {
+            grid-area: diagram; background: #1a1a2e; border-radius: 20px;
+            box-shadow: var(--shadow); position: relative; overflow: hidden;
+            min-height: 440px; display: flex; flex-direction: column; border: 2px solid #fff;
+        }
+        canvas { width: 100%; flex: 1; display: block; }
+
+        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
+        .control-panel {
+            background: var(--card-bg); border-radius: 20px; box-shadow: var(--shadow);
+            padding: 14px 18px; display: flex; flex-direction: column; gap: 10px;
+        }
+        .param-section {
+            background: #fff; border-radius: 14px; padding: 10px 14px 8px; border: 2px solid #f5f0eb;
+        }
+        .param-section-header {
+            font-weight: 700; font-size: 0.95rem; margin-bottom: 6px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .param-section-header .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+        .control-group { display: flex; flex-direction: column; gap: 3px; margin-bottom: 1px; }
+        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
+        .val-badge {
+            background: #fff; padding: 1px 7px; border-radius: 7px;
+            font-size: 0.85rem; border: 2px solid #f0f0f0;
+        }
+        input[type=range] {
+            width: 100%; appearance: none; height: 6px;
+            background: #eee; border-radius: 3px; outline: none;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            appearance: none; width: 20px; height: 20px; border-radius: 50%;
+            cursor: pointer; background: var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px; }
+        .ctrl-btn {
+            padding: 10px; border: none; border-radius: 14px;
+            font-size: 1.05rem; font-weight: 700; cursor: pointer;
+            transition: all 0.2s; color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .start { background-color: var(--primary); }
+        .pause { background-color: #2ecc71; }
+        .reset { background-color: #95a5a6; }
+        .ctrl-btn:active { transform: translateY(2px); box-shadow: none; }
+        .info-card {
+            background: var(--card-bg); border-radius: 20px;
+            padding: 12px 16px; box-shadow: var(--shadow);
+            font-size: 0.9rem; line-height: 1.4; color: #5D6D7E;
+        }
+        @media (max-width: 1100px) {
+            .container {
+                grid-template-areas: "header" "formula" "diagram" "controls";
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="branding"><div class="logo">Wuli布雷克</div></div>
+
+    <div class="container">
+        <header><h1>单缝衍射 / Single Slit Diffraction</h1></header>
+
+        <section class="formula-display">
+            <div class="formula-container" id="formula-root"></div>
+            <div class="result-row">
+                <span>第一暗纹角 θ₁ = <strong style="color:var(--primary)" id="res-theta">—</strong></span>
+                <span>中央明纹宽: <strong style="color:var(--accent)" id="res-cenw">—</strong></span>
+                <span>可见暗纹数: <strong style="color:#2ecc71" id="res-orders">—</strong></span>
+            </div>
+            <div class="legend">
+                <div class="legend-item"><span class="legend-dot" style="background:#ffdd57"></span> 亮纹 Bright</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#111;border:2px solid #555"></span> 暗纹 Dark</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#e74c3c"></span> 狭缝 Slit</div>
+                <div class="legend-item"><span class="color-swatch" id="swatch-legend"></span> λ 颜色</div>
+            </div>
+        </section>
+
+        <section class="diagram-section">
+            <canvas id="simCanvas"></canvas>
+        </section>
+
+        <section class="controls-section">
+            <div class="control-panel">
+                <div class="param-section" style="border-left-color:#9b59b6;">
+                    <div class="param-section-header">
+                        <span class="dot" style="background:#9b59b6;"></span>
+                        光源 / Light &nbsp;<span class="color-swatch" id="swatch-light"></span>
+                    </div>
+                    <div class="control-group">
+                        <div class="label-row"><span>波长 λ / Wavelength</span><span id="lambda-badge" class="val-badge">550 nm</span></div>
+                        <input type="range" id="lambda-slider" min="400" max="700" step="5" value="550">
+                    </div>
+                </div>
+                <div class="param-section" style="border-left-color:#e74c3c;">
+                    <div class="param-section-header">
+                        <span class="dot" style="background:#e74c3c;"></span>
+                        狭缝与屏 / Slit &amp; Screen
+                    </div>
+                    <div class="control-group">
+                        <div class="label-row"><span>缝宽 a / Slit width</span><span id="a-badge" class="val-badge">2.0 μm</span></div>
+                        <input type="range" id="a-slider" min="0.5" max="5.0" step="0.05" value="2.0">
+                    </div>
+                    <div class="control-group">
+                        <div class="label-row"><span>缝到屏距离 D / Distance</span><span id="d-badge" class="val-badge">2.0 m</span></div>
+                        <input type="range" id="d-slider" min="0.5" max="5.0" step="0.1" value="2.0">
+                    </div>
+                </div>
+                <div class="btn-row">
+                    <button id="btn-start" class="ctrl-btn start">开始 Start</button>
+                    <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
+                </div>
+            </div>
+            <div class="info-card">
+                <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem;">演示要点 / Key points</div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;background:rgba(255,140,66,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--primary);font-weight:700;">⊙</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">惠更斯原理 / Huygens Principle</div><div style="font-size:0.78rem;color:#888;">波前上每一点都是次级子波源，子波包络面形成新波前，解释衍射现象。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;background:rgba(44,62,80,0.08);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#555;font-weight:700;">⏺</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">中央明纹最宽（2倍）</div><div style="font-size:0.78rem;color:#888;">Central max is twice as wide as secondary maxima: Δθ₀ = 2λ/a vs Δθₙ = λ/a.</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;background:rgba(46,204,113,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#2ecc71;font-weight:700;">⇔</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">单缝 vs 双缝：衍射包络 × 干涉条纹</div><div style="font-size:0.78rem;color:#888;">Single slit diffraction envelope modulates double-slit interference fringes in real experiments.</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;background:rgba(155,89,182,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#9b59b6;font-weight:700;">a</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">缝越窄，衍射越明显</div><div style="font-size:0.78rem;color:#888;">Narrower slit → wider diffraction. When a ≫ λ, diffraction is negligible (geometric optics).</div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas'), ctx = canvas.getContext('2d');
+        const sLambda = document.getElementById('lambda-slider'), sA = document.getElementById('a-slider'), sD = document.getElementById('d-slider');
+        const bLambda = document.getElementById('lambda-badge'), bA = document.getElementById('a-badge'), bD = document.getElementById('d-badge');
+        const resTheta = document.getElementById('res-theta'), resCenW = document.getElementById('res-cenw'), resOrders = document.getElementById('res-orders');
+        const fRoot = document.getElementById('formula-root');
+        const swatchLight = document.getElementById('swatch-light'), swatchLegend = document.getElementById('swatch-legend');
+        const bStart = document.getElementById('btn-start'), bReset = document.getElementById('btn-reset');
+
+        const state = { lambdaNm: 550, aUm: 2.0, Dm: 2.0, time: 0, isPlaying: false };
+
+        function lambdaToRGB(nm) {
+            let r, g, b;
+            if (nm < 440) { r = -(nm - 440) / 60; g = 0; b = 1; }
+            else if (nm < 490) { r = 0; g = (nm - 440) / 50; b = 1; }
+            else if (nm < 510) { r = 0; g = 1; b = -(nm - 510) / 20; }
+            else if (nm < 580) { r = (nm - 510) / 70; g = 1; b = 0; }
+            else if (nm < 645) { r = 1; g = -(nm - 645) / 65; b = 0; }
+            else { r = 1; g = 0; b = 0; }
+            let f = 1;
+            if (nm < 420) f = 0.3 + 0.7 * (nm - 380) / 40;
+            else if (nm > 700) f = 0.3 + 0.7 * (780 - nm) / 80;
+            return { r: Math.round(r * f * 255), g: Math.round(g * f * 255), b: Math.round(b * f * 255) };
+        }
+        function lCSS(nm) { const c = lambdaToRGB(nm); return `rgb(${c.r},${c.g},${c.b})`; }
+
+        function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+        window.addEventListener('resize', resize);
+
+        function updateFormulaUI() {
+            const base = 22, lc = lCSS(state.lambdaNm);
+            fRoot.innerHTML = `
+                <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;justify-content:center;">
+                    <span style="font-size:${base}px;font-weight:700;">I</span>
+                    <span style="font-size:${base}px;">=</span>
+                    <span style="font-size:${base}px;">I</span>
+                    <span style="font-size:${base*0.6}px;">0</span>
+                    <span style="font-size:${base*1.4}px;font-weight:700;">(</span>
+                    <span style="font-size:${base*1.4}px;font-weight:700;">sin β / β</span>
+                    <span style="font-size:${base*1.4}px;font-weight:700;">)</span>
+                    <span style="font-size:${base*0.6}px;vertical-align:super;font-weight:700;">2</span>
+                    <span style="margin:0 8px;color:#ccc;">|</span>
+                    <span style="font-size:${base}px;font-weight:700;">β</span>
+                    <span style="font-size:${base}px;">=</span>
+                    <span style="font-size:${base*1.2}px;">π</span>
+                    <span style="color:${lc};font-size:${base*1.1}px;font-weight:700;">a</span>
+                    <span style="font-size:${base}px;">sinθ /</span>
+                    <span style="color:${lc};font-size:${base*1.1}px;font-weight:700;">λ</span>
+                </div>
+                <div style="font-size:0.78rem;color:#999;margin-top:3px;text-align:center;">
+                    暗纹条件 Dark fringes: a sinθ = nλ &nbsp;|&nbsp; 中央明纹半角宽: λ/a
+                </div>`;
+        }
+
+        function update() {
+            state.lambdaNm = parseInt(sLambda.value); state.aUm = parseFloat(sA.value); state.Dm = parseFloat(sD.value);
+            bLambda.textContent = state.lambdaNm + ' nm';
+            bA.textContent = state.aUm.toFixed(1) + ' μm';
+            bD.textContent = state.Dm.toFixed(1) + ' m';
+            const css = lCSS(state.lambdaNm); swatchLight.style.backgroundColor = css; swatchLegend.style.backgroundColor = css;
+            updateFormulaUI();
+            if (state.isPlaying) state.time += 0.016;
+
+            // Physics calculations
+            const lm = state.lambdaNm * 1e-9;
+            const am = state.aUm * 1e-6;
+            // First dark fringe angle
+            const sinTheta1 = lm / am;
+            let theta1Deg = '--';
+            if (sinTheta1 < 1) {
+                theta1Deg = (Math.asin(sinTheta1) * 180 / Math.PI).toFixed(2) + '°';
+            } else {
+                theta1Deg = '>90° (无暗纹)';
+            }
+            resTheta.textContent = theta1Deg;
+            // Central max width on screen: 2 * λD/a
+            const cenWidth = 2 * lm * state.Dm / am; // in meters
+            const cenWidthMm = cenWidth * 1000;
+            if (cenWidthMm < 1000) {
+                resCenW.textContent = cenWidthMm.toFixed(2) + ' mm';
+            } else {
+                resCenW.textContent = (cenWidthMm / 1000).toFixed(2) + ' m';
+            }
+            // Visible dark fringe orders
+            const maxOrder = Math.floor(am / lm);
+            if (maxOrder < 1) {
+                resOrders.textContent = '0 (仅中央极大)';
+            } else if (maxOrder <= 6) {
+                const o = [];
+                for (let n = -maxOrder; n <= maxOrder; n++) if (n !== 0) o.push((n > 0 ? '+' : '') + n);
+                resOrders.textContent = o.join(', ');
+            } else {
+                resOrders.textContent = '±1,±2,…,±' + maxOrder;
+            }
+
+            draw(); requestAnimationFrame(update);
+        }
+
+        function draw() {
+            const w = canvas.width, h = canvas.height;
+            ctx.clearRect(0, 0, w, h);
+            ctx.fillStyle = '#1a1a2e'; ctx.fillRect(0, 0, w, h);
+
+            const midY = h * 0.5;
+            const lc = lCSS(state.lambdaNm);
+            const lrgb = lambdaToRGB(state.lambdaNm);
+
+            // === Layout ===
+            const srcX2 = w * 0.07;              // light source right edge
+            const slitX = w * 0.22;              // slit barrier x
+            const fieldX1 = slitX + 1;           // wave field start
+            const fieldY1 = h * 0.04;            // wave field top
+            const fieldY2 = h * 0.96;            // wave field bottom
+            const fieldH = fieldY2 - fieldY1;
+            // Screen position varies with D
+            const dMin = 0.5, dMax = 5.0;
+            const screenXMin = slitX + 70;
+            const screenXMax = w * 0.94;
+            const dFrac = (state.Dm - dMin) / (dMax - dMin);
+            const screenX = screenXMin + dFrac * (screenXMax - screenXMin);
+            const fieldW = screenX - fieldX1;
+            const Dpx = screenX - slitX;
+
+            // Visual slit width (pixels)
+            const aPx = 18 + state.aUm * 18;     // 27 to 108 px
+            const halfA = aPx / 2;
+
+            // Visual wavelength for fringe spacing on screen
+            const lambdaPx = 5 + (state.lambdaNm - 400) / 300 * 8; // 5 to 13 px
+
+            // === Light Source ===
+            const grad = ctx.createLinearGradient(0, 0, srcX2, 0);
+            grad.addColorStop(0, lc); grad.addColorStop(0.7, lc); grad.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = grad; ctx.fillRect(0, midY - 25, srcX2, 50);
+            ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillText('单色光源', srcX2 / 2, midY - 30);
+            ctx.fillText('λ=' + state.lambdaNm + 'nm', srcX2 / 2, midY + 38);
+
+            // === Incoming plane waves (left of slit) ===
+            ctx.save();
+            ctx.beginPath(); ctx.rect(srcX2, fieldY1, slitX - srcX2 - 2, fieldH); ctx.clip();
+            const planeWaveSpacing = 18;
+            const planePhase = state.time * planeWaveSpacing * 1.5 % planeWaveSpacing;
+            for (let px = srcX2; px < slitX - 2; px += planeWaveSpacing) {
+                const x = px + planePhase;
+                ctx.strokeStyle = lc; ctx.lineWidth = 1; ctx.globalAlpha = 0.25;
+                ctx.beginPath(); ctx.moveTo(x, fieldY1); ctx.lineTo(x, fieldY2); ctx.stroke();
+            }
+            ctx.globalAlpha = 1;
+            ctx.restore();
+
+            // === Slit Barrier ===
+            const barTop = fieldY1;
+            const barBot = fieldY2;
+            const slitTop = midY - halfA;
+            const slitBot = midY + halfA;
+
+            // Upper barrier block
+            ctx.fillStyle = '#2c3e50';
+            ctx.fillRect(slitX - 3, barTop, 8, slitTop - barTop);
+            // Lower barrier block
+            ctx.fillStyle = '#2c3e50';
+            ctx.fillRect(slitX - 3, slitBot, 8, barBot - slitBot);
+
+            // Barrier edge highlights
+            ctx.strokeStyle = '#3d566e'; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(slitX - 3, barTop); ctx.lineTo(slitX - 3, slitTop); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(slitX + 5, barTop); ctx.lineTo(slitX + 5, slitTop); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(slitX - 3, slitBot); ctx.lineTo(slitX - 3, barBot); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(slitX + 5, slitBot); ctx.lineTo(slitX + 5, barBot); ctx.stroke();
+
+            // Slit glow
+            const slitGlow = ctx.createRadialGradient(slitX + 1, midY, 0, slitX + 1, midY, halfA + 8);
+            slitGlow.addColorStop(0, '#fff');
+            slitGlow.addColorStop(0.4, lc);
+            slitGlow.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = slitGlow;
+            ctx.fillRect(slitX - 10, slitTop - 8, 22, (slitBot - slitTop) + 16);
+
+            // Slit label
+            ctx.fillStyle = '#e74c3c'; ctx.font = 'bold 10px Fredoka'; ctx.textAlign = 'right';
+            ctx.fillText('单缝', slitX - 7, midY + 4);
+            // a label
+            ctx.strokeStyle = '#e74c3c'; ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
+            ctx.beginPath(); ctx.moveTo(slitX + 14, slitTop); ctx.lineTo(slitX + 14, slitBot); ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle = '#e74c3c'; ctx.textAlign = 'left';
+            ctx.fillText('a=' + state.aUm.toFixed(1) + 'μm', slitX + 18, midY + 4);
+
+            // === Huygens wavelets from multiple sources across the slit ===
+            const numHuygens = Math.max(3, Math.floor(aPx / 5)); // at least 3 sources
+            ctx.save();
+            ctx.beginPath(); ctx.rect(fieldX1, fieldY1, fieldW, fieldH); ctx.clip();
+
+            const t = state.time;
+            const simWaveLambda = 16;
+            const phase = (t * simWaveLambda * 1.6) % simWaveLambda;
+
+            // Draw wavefronts from each Huygens source
+            for (let i = 0; i < numHuygens; i++) {
+                const frac = (i + 0.5) / numHuygens; // evenly spaced
+                const sy = slitTop + frac * (slitBot - slitTop);
+                const strength = 0.35 + 0.25 * (1 - Math.abs(frac - 0.5) * 2); // stronger at center
+
+                // Huygens source dot
+                ctx.fillStyle = 'rgba(255,255,255,0.9)';
+                ctx.beginPath(); ctx.arc(slitX + 1, sy, 1.8, 0, Math.PI * 2); ctx.fill();
+
+                // Crests
+                const maxR = Math.sqrt(fieldW * fieldW + fieldH * fieldH) + 30;
+                const numRings = Math.floor(maxR / simWaveLambda) + 2;
+                for (let j = 0; j < numRings; j++) {
+                    const r = j * simWaveLambda + phase;
+                    ctx.beginPath();
+                    // Only draw forward-going arcs (to the right of slit)
+                    ctx.arc(slitX + 1, sy, r, -Math.PI * 0.48, Math.PI * 0.48);
+                    ctx.strokeStyle = lc;
+                    ctx.lineWidth = 1.0;
+                    ctx.globalAlpha = strength * 0.65;
+                    ctx.stroke();
+                }
+                // Troughs (dashed)
+                for (let j = 0; j < numRings; j++) {
+                    const r = j * simWaveLambda + simWaveLambda / 2 + phase;
+                    ctx.beginPath();
+                    ctx.arc(slitX + 1, sy, r, -Math.PI * 0.48, Math.PI * 0.48);
+                    ctx.setLineDash([3, 4]);
+                    ctx.strokeStyle = lc;
+                    ctx.lineWidth = 0.6;
+                    ctx.globalAlpha = strength * 0.25;
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+            }
+
+            // Envelope hint: draw faint guide curves showing diffraction spreading
+            ctx.globalAlpha = 0.12;
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([6, 12]);
+            // Spreading envelope from slit edges
+            const spreadAngle = Math.atan2(halfA + fieldH * 0.5, fieldW) * 0.7;
+            ctx.beginPath();
+            ctx.moveTo(slitX + 1, slitTop);
+            ctx.lineTo(screenX, slitTop - fieldW * Math.tan(spreadAngle));
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(slitX + 1, slitBot);
+            ctx.lineTo(screenX, slitBot + fieldW * Math.tan(spreadAngle));
+            ctx.stroke();
+
+            ctx.setLineDash([]);
+            ctx.globalAlpha = 1;
+            ctx.restore();
+
+            // Field subtle border
+            ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1;
+            ctx.strokeRect(fieldX1, fieldY1, fieldW, fieldH);
+
+            // === Screen ===
+            const scrTop = fieldY1 + 4;
+            const scrBot = fieldY2 - 4;
+            ctx.strokeStyle = '#aaa'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(screenX, scrTop); ctx.lineTo(screenX, scrBot); ctx.stroke();
+            ctx.fillStyle = '#ddd'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillText('屏 Screen', screenX, scrTop - 10);
+
+            // D arrow below field
+            const dY = fieldY2 + 10;
+            if (dY < h - 8) {
+                ctx.strokeStyle = '#2ecc71'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 3]);
+                ctx.beginPath(); ctx.moveTo(slitX + 6, dY); ctx.lineTo(screenX - 3, dY); ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.fillStyle = '#2ecc71';
+                ctx.beginPath(); ctx.moveTo(slitX + 6, dY); ctx.lineTo(slitX + 15, dY - 5); ctx.lineTo(slitX + 15, dY + 5); ctx.fill();
+                ctx.beginPath(); ctx.moveTo(screenX - 3, dY); ctx.lineTo(screenX - 13, dY - 5); ctx.lineTo(screenX - 13, dY + 5); ctx.fill();
+                ctx.fillText('D=' + state.Dm.toFixed(1) + 'm', (slitX + screenX) / 2, dY - 7);
+            }
+
+            // === Diffraction intensity pattern on screen ===
+            const scrY1 = scrTop + 2, scrY2 = scrBot - 2, scrH = scrY2 - scrY1;
+
+            // Draw intensity pattern pixel by pixel
+            const halfScrH = scrH / 2;
+            for (let i = 0; i < Math.floor(scrH); i++) {
+                const yPx = scrY1 + i;
+                const dy = yPx - midY;
+
+                // sinθ calculated from geometry
+                const sinTheta = dy / Math.sqrt(Dpx * Dpx + dy * dy);
+                const beta = Math.PI * aPx * sinTheta / lambdaPx;
+
+                // Intensity: I = I₀ (sinβ/β)²
+                let I;
+                if (Math.abs(beta) < 0.001) {
+                    I = 1.0;
+                } else {
+                    I = Math.pow(Math.sin(beta) / beta, 2);
+                }
+
+                // Clamp and draw
+                I = Math.max(0, Math.min(1, I));
+
+                const rr = Math.floor(lrgb.r * I);
+                const gg = Math.floor(lrgb.g * I);
+                const bb = Math.floor(lrgb.b * I);
+                ctx.fillStyle = `rgb(${rr},${gg},${bb})`;
+                ctx.fillRect(screenX + 2, yPx, 6, 1.5);
+
+                // Broader glow for bright regions
+                if (I > 0.12) {
+                    const glowAlpha = I * 0.7;
+                    ctx.fillStyle = `rgba(${lrgb.r},${lrgb.g},${lrgb.b},${Math.min(1, glowAlpha)})`;
+                    ctx.fillRect(screenX + 9, yPx - 1, 30, 2.5);
+                } else if (I < 0.03) {
+                    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+                    ctx.fillRect(screenX + 9, yPx - 1, 30, 2.5);
+                }
+            }
+
+            // === Central maximum label ===
+            ctx.fillStyle = '#ffdd57'; ctx.font = 'bold 10px Fredoka'; ctx.textAlign = 'left';
+            ctx.fillText('中央极大 Central max', screenX + 42, midY + 3);
+
+            // === Dark fringe markers (where β = nπ, i.e., a sinθ = nλ) ===
+            // In pixel terms: aPx * sinθ = n * lambdaPx for dark fringes
+            // sinθ = dy / sqrt(Dpx² + dy²)
+            // Solve: aPx * dy / sqrt(Dpx² + dy²) = n * lambdaPx
+            // aPx² * dy² = n² * lambdaPx² * (Dpx² + dy²)
+            // dy² * (aPx² - n² * lambdaPx²) = n² * lambdaPx² * Dpx²
+            // dy = n * lambdaPx * Dpx / sqrt(aPx² - n² * lambdaPx²)
+
+            const maxVisibleOrder = Math.floor(aPx / lambdaPx);
+            for (let n = 1; n <= Math.min(maxVisibleOrder, 8); n++) {
+                const denom = Math.sqrt(Math.max(0.01, aPx * aPx - n * n * lambdaPx * lambdaPx));
+                const dyPos = n * lambdaPx * Dpx / denom;
+
+                for (const sign of [-1, 1]) {
+                    const dyVal = sign * dyPos;
+                    const yPx = midY + dyVal;
+                    if (yPx < scrY1 + 4 || yPx > scrY2 - 4) continue;
+
+                    // Dark fringe marker (small dark circle)
+                    ctx.beginPath();
+                    ctx.arc(screenX + 5, yPx, 3.2, 0, Math.PI * 2);
+                    ctx.fillStyle = '#111';
+                    ctx.fill();
+                    ctx.strokeStyle = '#555';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+
+                    // Label
+                    ctx.fillStyle = '#ccc';
+                    ctx.font = 'bold 9px Fredoka';
+                    ctx.textAlign = 'left';
+                    const labelN = sign > 0 ? '+' + n : '-' + n;
+                    ctx.fillText('n=' + labelN, screenX + 42, yPx + 3.5);
+                }
+            }
+
+            // === Central max edges (first dark fringe on each side, n=±1) ===
+            const dy1 = lambdaPx * Dpx / Math.sqrt(Math.max(0.01, aPx * aPx - lambdaPx * lambdaPx));
+            for (const sign of [-1, 1]) {
+                const yPx = midY + sign * dy1;
+                if (yPx >= scrY1 && yPx <= scrY2) {
+                    // Dashed line marking central max boundary
+                    ctx.setLineDash([4, 5]);
+                    ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(screenX + 5, yPx);
+                    ctx.lineTo(screenX + 5, midY);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+
+                    // Small bracket
+                    ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(screenX + 5, yPx);
+                    ctx.lineTo(screenX + 12, yPx);
+                    ctx.stroke();
+                }
+            }
+
+            // Central max half-width annotation
+            if (dy1 < halfScrH * 0.9) {
+                ctx.fillStyle = 'rgba(255,255,180,0.7)';
+                ctx.font = 'italic 9px Fredoka';
+                ctx.textAlign = 'left';
+                ctx.fillText('← λ/a →', screenX + 42, midY - dy1 / 2 + 4);
+            }
+
+            // Time display
+            ctx.fillStyle = 'rgba(255,255,255,0.3)';
+            ctx.font = '500 10px Fredoka';
+            ctx.textAlign = 'right';
+            ctx.fillText('t=' + state.time.toFixed(1) + 's', w - 12, 16);
+
+            // Huygens label
+            ctx.fillStyle = 'rgba(255,255,255,0.2)';
+            ctx.font = 'italic 9px Fredoka';
+            ctx.textAlign = 'right';
+            ctx.fillText('惠更斯子波 Huygens wavelets', w - 12, h - 8);
+        }
+
+        const DEFAULTS = { lambda: 550, a: 2.0, d: 2.0 };
+        function resetAll() {
+            sLambda.value = DEFAULTS.lambda; sA.value = DEFAULTS.a; sD.value = DEFAULTS.d;
+            state.lambdaNm = DEFAULTS.lambda; state.aUm = DEFAULTS.a; state.Dm = DEFAULTS.d;
+            bLambda.textContent = DEFAULTS.lambda + ' nm';
+            bA.textContent = DEFAULTS.a.toFixed(1) + ' μm';
+            bD.textContent = DEFAULTS.d.toFixed(1) + ' m';
+            const css = lCSS(DEFAULTS.lambda); swatchLight.style.backgroundColor = css; swatchLegend.style.backgroundColor = css;
+            updateFormulaUI();
+        }
+        bStart.onclick = () => {
+            state.isPlaying = !state.isPlaying;
+            bStart.textContent = state.isPlaying ? '暂停 Pause' : '开始 Start';
+            bStart.classList.toggle('start', !state.isPlaying);
+            bStart.classList.toggle('pause', state.isPlaying);
+        };
+        bReset.onclick = () => {
+            state.time = 0; state.isPlaying = false;
+            bStart.textContent = '开始 Start'; bStart.className = 'ctrl-btn start';
+            resetAll();
+        };
+
+        resize(); update();
+    </script>
+</body>
+</html>
