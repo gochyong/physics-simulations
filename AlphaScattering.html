@@ -91,7 +91,6 @@
         <header><h1>卢瑟福散射 / Rutherford Scattering</h1></header>
 
         <section class="formula-display">
-            <div class="formula-container" id="formula-root"></div>
             <div class="result-row">
                 <span>Total / 粒子总数: <strong id="totalTxt" style="color:var(--primary)">0</strong></span>
             </div>
@@ -161,7 +160,7 @@
                 <div style="display:flex;flex-direction:column;gap:6px">
                     <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
                         <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(76,175,80,0.1);color:#4caf50;font-weight:700">99%</div>
-                        <div><div style="font-weight:700;font-size:0.9rem">大部分α粒子直线穿过</div><div style="font-size:0.78rem;color:#888">原子内部绝大部分是空的空间，电子在核外运动。</div></div>
+                        <div><div style="font-weight:700;font-size:0.9rem">大部分α粒子直线穿过</div><div style="font-size:0.78rem;color:#888">原子内部绝大部分是空的空间，原子内部绝大部分是空的空间。</div></div>
                     </div>
                     <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
                         <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,152,0,0.1);color:#ff9800;font-weight:700">&lt;1%</div>
@@ -181,7 +180,6 @@
         const ctx = canvas.getContext('2d');
         const startBtn = document.getElementById('startBtn');
         const resetBtn = document.getElementById('resetBtn');
-        const fRoot = document.getElementById('formula-root');
 
         let particles = [];
         let isRunning = false;
@@ -275,19 +273,6 @@
             const dPer = count.total === 0 ? 0 : (count.d / count.total * 100);
             const rPer = count.total === 0 ? 0 : (count.r / count.total * 100);
 
-            if (count.total === 0) {
-                fRoot.innerHTML = '<span style="color:#aaa;font-size:1.1rem;font-weight:600;">Click START to fire α particles at gold foil...</span>';
-            } else {
-                const sFS = Math.min(72, Math.max(24, sPer * 0.75));
-                const dFS = Math.min(48, Math.max(16, dPer * 5));
-                const rFS = Math.min(36, Math.max(14, rPer * 10));
-                fRoot.innerHTML =
-                    '<span style="color:#4caf50;font-size:' + sFS + 'px;font-weight:700;line-height:1;">' + sPer.toFixed(1) + '%</span>' +
-                    '<span style="font-size:22px;color:#ccc;">&gt;</span>' +
-                    '<span style="color:#ff9800;font-size:' + dFS + 'px;font-weight:700;line-height:1;">' + dPer.toFixed(1) + '%</span>' +
-                    '<span style="font-size:22px;color:#ccc;">&gt;</span>' +
-                    '<span style="color:#f44336;font-size:' + rFS + 'px;font-weight:700;line-height:1;">' + rPer.toFixed(1) + '%</span>';
-            }
         }
 
         ['s', 'd', 'r'].forEach(type => {
