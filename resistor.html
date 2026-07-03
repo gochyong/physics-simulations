@@ -4,286 +4,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>电阻计算公式 - Wuli布雷克专属版</title>
+    <title>电阻 / Resistance - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #fffaf5;
-            --primary-warm: #ff9800;
-            --accent-warm: #f57c00;
-            --color-r: #d32f2f;
-            /* 电阻 - 红 */
-            --color-rho: #7b1fa2;
-            /* 电阻率 - 紫 */
-            --color-l: #2e7d32;
-            /* 长度 - 绿 */
-            --color-a: #1565c0;
-            /* 面积 - 蓝 */
-            --text-main: #3e2723;
+            --bg-color: #FFF9F0; --primary: #FF8c42; --secondary: #FFC75F;
+            --accent: #FF5E5B; --text-dark: #4A403A; --card-bg: #FFFFFF;
+            --shadow: 0 6px 30px rgba(255,140,66,0.18);
         }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Fredoka','Noto Sans SC',sans-serif; background: var(--bg-color); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 5px 40px 10px; }
+        .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
+        .logo { font-weight: 700; font-size: 1.3rem; color: #fff; background: var(--primary); padding: 6px 18px; border-radius: 16px; box-shadow: 4px 4px 15px rgba(255,140,66,0.3); }
+        .container { width: 100%; max-width: 1400px; margin-top: 8px; display: grid; grid-template-areas:"header header" "formula formula" "diagram controls"; grid-template-columns: 1fr 400px; gap: 12px; }
+        header { grid-area: header; text-align: center; }
+        h1 { font-size: 2rem; color: var(--text-dark); margin-bottom: 2px; }
 
-        body {
-            font-family: 'Segoe UI', 'PingFang SC', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            padding: 40px 20px;
-        }
+        .formula-display { grid-area: formula; background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb; }
+        .math-text { display: flex; align-items: center; justify-content: center; font-size: 4rem; font-weight: bold; font-family: "Cambria","Times New Roman",serif; gap: 15px; }
+        .symbol { transition: transform 0.2s ease-out; display: inline-block; }
+        .fraction { display: flex; flex-direction: column; align-items: center; font-size: 0.85em; }
+        .frac-line { width: 130%; height: 5px; background: var(--text-dark); margin: 10px 0; border-radius: 3px; }
+        .legend { display: flex; gap: 16px; justify-content: center; border-top: 1px solid #eee; padding-top: 6px; width: 100%; flex-wrap: wrap; }
+        .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
 
-        /* 专属标志设计 */
-        .watermark {
-            position: absolute;
-            top: 30px;
-            left: 30px;
-            background: #ff8c00;
-            color: white;
-            padding: 10px 25px;
-            border-radius: 25px;
-            font-size: 1.6em;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
-            z-index: 1000;
-            font-family: 'Segoe UI', 'PingFang SC', sans-serif;
-            pointer-events: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        .diagram-section { grid-area: diagram; background: #fff; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; min-height: 320px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px solid #fff5eb; padding: 20px; }
+        #wire-bar { background: linear-gradient(to bottom, #e2a76f, #b87333, #8b4513); border-radius: 6px; box-shadow: 0 6px 12px rgba(0,0,0,0.1); transition: width 0.2s, height 0.2s; }
 
-        .main-container {
-            background: #ffffff;
-            width: 100%;
-            max-width: 750px;
-            padding: 45px;
-            border-radius: 35px;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.06);
-            border: 1px solid rgba(255, 152, 0, 0.15);
-        }
-
-        h1 {
-            text-align: center;
-            font-size: 2rem;
-            margin-bottom: 35px;
-            color: var(--text-main);
-        }
-
-        /* 公式联动区 */
-        .formula-display {
-            background: #fff8f0;
-            padding: 45px;
-            border-radius: 25px;
-            margin-bottom: 35px;
-            border: 2px solid #ffecb3;
-            text-align: center;
-        }
-
-        .math-text {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4.5rem;
-            font-weight: bold;
-            font-family: "Cambria", "Times New Roman", serif;
-            gap: 15px;
-        }
-
-        .symbol {
-            transition: transform 0.2s ease-out;
-            display: inline-block;
-        }
-
-        .sym-r {
-            color: var(--color-r);
-        }
-
-        .sym-rho {
-            color: var(--color-rho);
-        }
-
-        .sym-l {
-            color: var(--color-l);
-        }
-
-        .sym-a {
-            color: var(--color-a);
-        }
-
-        .fraction {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-size: 0.85em;
-        }
-
-        .frac-line {
-            width: 130%;
-            height: 5px;
-            background: var(--text-main);
-            margin: 10px 0;
-            border-radius: 3px;
-        }
-
-        /* 导线预览 */
-        .wire-view {
-            height: 90px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 35px;
-            background: #fafafa;
-            border-radius: 15px;
-        }
-
-        #wire-bar {
-            background: linear-gradient(to bottom, #e2a76f, #b87333, #8b4513);
-            border-radius: 6px;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        /* 纵向排列控件区 */
-        .control-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-        }
-
-        .control-block {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .label-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .label-text {
-            font-weight: 800;
-            font-size: 1.2rem;
-            color: #5d4037;
-        }
-
-        /* 大字号数值显示 */
-        .value-output {
-            font-family: 'Consolas', monospace;
-            font-size: 1.6rem;
-            font-weight: 900;
-            color: #fff;
-            background: #3e2723;
-            padding: 6px 18px;
-            border-radius: 10px;
-            min-width: 140px;
-            text-align: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        select,
-        input[type="range"] {
-            width: 100%;
-            height: 45px;
-            cursor: pointer;
-            accent-color: var(--accent-warm);
-        }
-
-        select {
-            padding: 0 15px;
-            font-size: 1.1rem;
-            border-radius: 10px;
-            border: 2px solid #ddd;
-        }
-
-        .result-box {
-            margin-top: 40px;
-            padding: 30px;
-            background: #fff3e0;
-            border-radius: 20px;
-            text-align: center;
-        }
-
-        .res-val {
-            font-size: 3rem;
-            color: var(--color-r);
-            font-weight: 900;
-        }
+        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
+        .control-panel { background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+        .control-group { display: flex; flex-direction: column; gap: 3px; }
+        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
+        .val-badge { background: #fff; padding: 1px 7px; border-radius: 7px; font-size: 0.8rem; border: 2px solid #f0f0f0; white-space: nowrap; }
+        input[type=range] { width: 100%; appearance: none; height: 6px; background: #eee; border-radius: 3px; }
+        input[type=range]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; cursor: pointer; background: var(--primary); }
+        select { width: 100%; padding: 8px 12px; font-size: 0.9rem; border-radius: 10px; border: 2px solid #eee; font-family: inherit; cursor: pointer; background: #fff; color: var(--text-dark); }
+        .info-card { background: #fff; border-radius: 20px; padding: 12px 16px; box-shadow: var(--shadow); font-size: 0.9rem; line-height: 1.4; color: #5D6D7E; }
+        .material-tag { display: inline-block; background: rgba(255,140,66,0.1); color: var(--primary); padding: 4px 14px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; }
+        .result-box { margin-top: 0; padding: 14px; background: rgba(255,140,66,0.06); border-radius: 14px; text-align: center; }
+        .res-val { font-size: 2rem; color: var(--primary); font-weight: 700; }
+        @media(max-width:1100px){.container{grid-template-areas:"header" "formula" "diagram" "controls";grid-template-columns:1fr}}
     </style>
 </head>
 
 <body>
+    <div class="branding"><div class="logo">Wuli布雷克</div></div>
+    <div class="container">
+        <header><h1>电阻 / Resistance</h1></header>
 
-    <div class="watermark">Wuli布雷克</div>
-
-    <div class="main-container">
-        <h1>电阻计算公式 / Resistance Formula</h1>
-
-        <div class="formula-display">
+        <section class="formula-display">
             <div class="math-text">
-                <span id="f-r" class="symbol sym-r">R</span>
+                <span id="f-r" class="symbol" style="color:#d32f2f">R</span>
                 <span>=</span>
-                <span id="f-rho" class="symbol sym-rho">ρ</span>
+                <span id="f-rho" class="symbol" style="color:#7b1fa2">ρ</span>
                 <div class="fraction">
-                    <span id="f-l" class="symbol sym-l">L</span>
+                    <span id="f-l" class="symbol" style="color:#2e7d32">L</span>
                     <div class="frac-line"></div>
-                    <span id="f-a" class="symbol sym-a">A</span>
+                    <span id="f-a" class="symbol" style="color:#1565c0">A</span>
                 </div>
             </div>
-        </div>
+            <div class="legend">
+                <div class="legend-item"><span class="legend-dot" style="background:#d32f2f"></span> 电阻 R (Ω)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#7b1fa2"></span> 电阻率 ρ (Ω·m)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#2e7d32"></span> 长度 L (m)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#1565c0"></span> 截面积 A (mm²)</div>
+            </div>
+        </section>
 
-        <div class="wire-view">
-            <div id="wire-bar"></div>
-        </div>
+        <section class="diagram-section"><div id="wire-bar"></div></section>
 
-        <div class="control-panel">
-
-            <div class="control-block">
-                <div class="label-row">
-                    <span class="label-text">1. 电阻率 / Resistivity (ρ)</span>
-                    <div id="out-rho" class="value-output">--</div>
+        <section class="controls-section">
+            <div class="control-panel">
+                <div class="control-group">
+                    <div class="label-row"><span>电阻率 / Resistivity (ρ)</span><span id="out-rho" class="val-badge" style="color:#7b1fa2">--</span></div>
+                    <select id="select-rho">
+                        <option value="1e12">1.00×10¹² Ω·m (玻璃/Glass)</option>
+                        <option value="1e13">1.00×10¹³ Ω·m (橡胶/Rubber)</option>
+                        <option value="1e5">1.00×10⁵ Ω·m (干木材/Wood)</option>
+                        <option value="3.5e-5">3.50×10⁻⁵ Ω·m (碳/Carbon)</option>
+                        <option value="1.1e-6">1.10×10⁻⁶ Ω·m (镍铬合金/Nichrome)</option>
+                        <option value="1.0e-7">1.00×10⁻⁷ Ω·m (铁/Iron)</option>
+                        <option value="2.44e-8">2.44×10⁻⁸ Ω·m (金/Gold)</option>
+                        <option value="1.72e-8" selected>1.72×10⁻⁸ Ω·m (铜/Copper)</option>
+                        <option value="1.59e-8">1.59×10⁻⁸ Ω·m (银/Silver)</option>
+                        <option value="1.0e-10">1.00×10⁻¹⁰ Ω·m (超导体近值/Ideal)</option>
+                    </select>
                 </div>
-                <select id="select-rho">
-                    <option value="1e12">1.00×10¹² Ω·m (玻璃/Glass)</option>
-                    <option value="1e13">1.00×10¹³ Ω·m (橡胶/Rubber)</option>
-                    <option value="1e5">1.00×10⁵ Ω·m (干木材/Wood)</option>
-                    <option value="3.5e-5">3.50×10⁻⁵ Ω·m (碳/Carbon)</option>
-                    <option value="1.1e-6">1.10×10⁻⁶ Ω·m (镍铬合金/Nichrome)</option>
-                    <option value="1.0e-7">1.00×10⁻⁷ Ω·m (铁/Iron)</option>
-                    <option value="2.44e-8">2.44×10⁻⁸ Ω·m (金/Gold)</option>
-                    <option value="1.72e-8" selected>1.72×10⁻⁸ Ω·m (铜/Copper)</option>
-                    <option value="1.59e-8">1.59×10⁻⁸ Ω·m (银/Silver)</option>
-                    <option value="1.0e-10">1.00×10⁻¹⁰ Ω·m (超导体近值/Ideal)</option>
-                </select>
-            </div>
-
-            <div class="control-block">
-                <div class="label-row">
-                    <span class="label-text">2. 长度 / Length (L)</span>
-                    <div id="out-l" class="value-output">--</div>
+                <div class="control-group">
+                    <div class="label-row"><span>长度 / Length (L)</span><span id="out-l" class="val-badge" style="color:#2e7d32">--</span></div>
+                    <input type="range" id="range-l" min="1" max="100" value="50">
                 </div>
-                <input type="range" id="range-l" min="1" max="100" value="50">
-            </div>
-
-            <div class="control-block">
-                <div class="label-row">
-                    <span class="label-text">3. 截面积 / Area (A)</span>
-                    <div id="out-a" class="value-output">--</div>
+                <div class="control-group">
+                    <div class="label-row"><span>截面积 / Area (A)</span><span id="out-a" class="val-badge" style="color:#1565c0">--</span></div>
+                    <input type="range" id="range-a" min="1" max="100" value="40">
                 </div>
-                <input type="range" id="range-a" min="1" max="100" value="40">
+                <div class="result-box">
+                    <div style="font-weight:700;color:var(--primary);margin-bottom:6px;font-size:0.9rem">计算结果 / Total Resistance (R):</div>
+                    <div id="out-r" class="res-val">--</div>
+                </div>
             </div>
-
-        </div>
-
-        <div class="result-box">
-            <div style="font-weight: bold; font-size: 1.1rem; color: #795548; margin-bottom: 10px;">
-                计算结果 / Total Resistance (R):
+            <div class="info-card">
+                <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem">演示要点 / Key Points</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(211,47,47,0.1);color:#d32f2f;font-weight:700">R</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">R = ρ·L / A</div><div style="font-size:0.78rem;color:#888">电阻与长度成正比，与截面积成反比。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(123,31,162,0.1);color:#7b1fa2;font-weight:700">ρ</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">电阻率是材料固有属性</div><div style="font-size:0.78rem;color:#888">不同材料的电阻率差异极大（10⁻¹⁰ ~ 10¹³）。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,125,50,0.1);color:#2e7d32;font-weight:700">L/A</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">导线越细越长，电阻越大</div><div style="font-size:0.78rem;color:#888">下方方框中导线形状随 L 和 A 实时变化。</div></div>
+                    </div>
+                </div>
             </div>
-            <div id="out-r" class="res-val">--</div>
-        </div>
+        </section>
     </div>
 
     <script>
-        // 格式化为科学计数法并带单位
+        // Format to scientific notation with units
         function formatPhysics(num, unit) {
             const exp = num.toExponential(2);
             const parts = exp.split('e');
@@ -293,23 +137,22 @@
         }
 
         function update() {
-            // 获取输入
+            // Get inputs
             const rho = parseFloat(document.getElementById('select-rho').value);
             const l = parseFloat(document.getElementById('range-l').value) / 10; // 0.1m - 10m
             const a_mm2 = parseFloat(document.getElementById('range-a').value) / 10; // 0.1mm2 - 10mm2
-            const a_m2 = a_mm2 * 1e-6; // 换算为平方米
+            const a_m2 = a_mm2 * 1e-6; // Convert to m²
 
-            // 计算电阻 R = rho * L / A
+            // Calculate resistance R = rho * L / A
             const r = (rho * l) / a_m2;
 
-            // 更新数值显示
+            // Update value displays
             document.getElementById('out-rho').innerHTML = formatPhysics(rho, "Ω·m");
             document.getElementById('out-l').innerHTML = l.toFixed(1) + " <small>m</small>";
             document.getElementById('out-a').innerHTML = a_mm2.toFixed(1) + " <small>mm²</small>";
             document.getElementById('out-r').innerHTML = formatPhysics(r, "Ω");
 
-            // 公式动态缩放
-            // R 的缩放：基于 (L/A) 的比例
+            // Formula dynamic scaling
             const scaleR = Math.min(Math.max(0.6 + (l / a_mm2) * 0.4, 0.5), 2.2);
             const scaleL = 0.8 + (l / 10);
             const scaleA = 0.8 + (a_mm2 / 10);
@@ -319,20 +162,19 @@
             document.getElementById('f-a').style.transform = `scale(${scaleA})`;
             document.getElementById('f-rho').style.transform = `scale(${rho > 1e-4 ? 1.2 : 0.9})`;
 
-            // 导线模型更新
+            // Wire model update
             const wire = document.getElementById('wire-bar');
             wire.style.width = (l * 45) + "px";
             wire.style.height = (a_mm2 * 7) + "px";
         }
 
-        // 绑定事件
+        // Bind events
         document.querySelectorAll('input, select').forEach(el => {
             el.addEventListener('input', update);
         });
 
-        // 启动初始化
+        // Initialize
         update();
     </script>
 </body>
-
 </html>

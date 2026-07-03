@@ -1,283 +1,109 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
-    <title>卢瑟福散射实验模拟</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>卢瑟福散射 / Rutherford Scattering - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #fcf9f2;
-            --text-color: #4e342e;
-            --canvas-bg: #050505;
-            --panel-bg: #fff;
-            --highlight: #e67e22;
+            --bg-color: #FFF9F0; --primary: #FF8c42; --secondary: #FFC75F;
+            --accent: #FF5E5B; --text-dark: #4A403A; --card-bg: #FFFFFF;
+            --shadow: 0 6px 30px rgba(255,140,66,0.18);
         }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Fredoka','Noto Sans SC',sans-serif; background: var(--bg-color); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 5px 40px 10px; }
+        .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
+        .logo { font-weight: 700; font-size: 1.3rem; color: #fff; background: var(--primary); padding: 6px 18px; border-radius: 16px; box-shadow: 4px 4px 15px rgba(255,140,66,0.3); }
+        .container { width: 100%; max-width: 1400px; margin-top: 8px; display: grid; grid-template-areas:"header header" "formula formula" "diagram controls"; grid-template-columns: 1fr 400px; gap: 12px; }
+        header { grid-area: header; text-align: center; }
+        h1 { font-size: 2rem; color: var(--text-dark); margin-bottom: 2px; }
 
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background-color: var(--bg-color);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
-            box-sizing: border-box;
+        .formula-display { grid-area: formula; background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb; }
+        .formula-container { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; min-height: 50px; }
+        .result-row { font-size: 1rem; font-weight: 600; margin-top: 6px; display: flex; gap: 20px; justify-content: center; }
+        .legend { display: flex; gap: 16px; justify-content: center; border-top: 1px solid #eee; padding-top: 6px; width: 100%; flex-wrap: wrap; }
+        .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+
+        .diagram-section { grid-area: diagram; background: #0a0a0a; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; min-height: 450px; display: flex; flex-direction: column; position: relative; border: 2px solid #e8ddd0; }
+        #simCanvas { width: 100%; flex: 1; display: block; }
+
+        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
+        .control-panel { background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+        .control-group { display: flex; flex-direction: column; gap: 3px; }
+        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
+
+        .btn {
+            padding: 10px 20px; border-radius: 25px; border: none;
+            font-family: 'Fredoka','Noto Sans SC',sans-serif;
+            font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: 0.2s;
         }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: #e67a30; }
+        .btn-primary.active { background: var(--accent); }
+        .btn-secondary { background: #bbb; color: #fff; }
+        .btn-secondary:hover { background: #999; }
 
-        .header {
-            text-align: center;
-            margin-bottom: 15px;
-        }
+        .stat-row { padding: 10px; border-radius: 12px; cursor: pointer; transition: 0.3s; background: rgba(255,255,255,0.6); border: 2px solid #f0f0f0; }
+        .stat-row.unlocked { border-color: var(--primary); background: #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .stat-label { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 5px; font-size: 0.9rem; }
+        .progress-bg { height: 10px; background: #e0e0e0; border-radius: 5px; overflow: hidden; }
+        .progress-bar { height: 100%; transition: width 0.4s; }
 
-        .controls {
-            margin: 10px 0;
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
+        .conclusion { background: white; padding: 12px; border-radius: 12px; border-left: 5px solid var(--primary); display: none; animation: fadeIn 0.5s ease; margin-top: 6px; font-size: 0.85rem; }
+        .visible { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .conc-title { display: block; font-weight: 700; color: var(--text-dark); margin-bottom: 4px; }
+        .lang-en { display: block; font-size: 0.8rem; color: #8d6e63; font-style: italic; border-top: 1px solid #eee; margin-top: 5px; padding-top: 5px; }
 
-        button {
-            padding: 12px 24px;
-            border-radius: 30px;
-            border: none;
-            background: #795548;
-            color: white;
-            cursor: pointer;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: 0.2s;
-        }
+        .info-card { background: #fff; border-radius: 20px; padding: 12px 16px; box-shadow: var(--shadow); font-size: 0.9rem; line-height: 1.4; color: #5D6D7E; }
 
-        button:hover {
-            background: #5d4037;
-            transform: translateY(-1px);
-        }
-
-        button.active {
-            background: #e74c3c;
-        }
-
-        .main-layout {
-            display: flex;
-            gap: 20px;
-            width: 100%;
-            max-width: 1400px;
-            flex-grow: 1;
-            min-height: 0;
-        }
-
-        .canvas-area {
-            flex: 2.5;
-            background: var(--canvas-bg);
-            border-radius: 16px;
-            border: 4px solid #5d4037;
-            position: relative;
-            overflow: hidden;
-            box-shadow: inset 0 0 50px rgba(0, 0, 0, 1);
-        }
-
-        canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
+        /* Overlay elements on canvas */
         .alpha-diagram {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 10px;
-            border-radius: 12px;
-            text-align: center;
-            backdrop-filter: blur(4px);
-            z-index: 10;
+            position: absolute; top: 15px; left: 15px;
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3);
+            padding: 10px; border-radius: 12px; text-align: center;
+            backdrop-filter: blur(4px); z-index: 10;
         }
-
-        .nucleon-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 25px);
-            gap: 4px;
-            margin-top: 5px;
-        }
-
-        .nucleon {
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            color: white;
-            font-weight: bold;
-        }
-
-        .p {
-            background: #ff4444;
-            box-shadow: 0 0 8px #ff4444;
-        }
-
-        .n {
-            background: #4444ff;
-            box-shadow: 0 0 8px #4444ff;
-        }
-
-        .sidebar {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            min-width: 380px;
-            overflow-y: auto;
-        }
-
-        .stats-box {
-            background: #efebe9;
-            padding: 15px;
-            border-radius: 12px;
-            border: 1px solid #d7ccc8;
-        }
-
-        .stat-row {
-            margin: 8px 0;
-            padding: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.3s;
-            background: rgba(255, 255, 255, 0.6);
-            border: 2px solid transparent;
-        }
-
-        .stat-row.unlocked {
-            border-color: var(--highlight);
-            background: #fff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .stat-label {
-            display: flex;
-            justify-content: space-between;
-            font-weight: bold;
-            margin-bottom: 5px;
-            font-size: 0.9rem;
-        }
-
-        .progress-bg {
-            height: 10px;
-            background: #dcdcdc;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            height: 100%;
-            transition: width 0.4s;
-        }
-
-        .conclusion {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            border-left: 6px solid var(--highlight);
-            display: none;
-            animation: fadeIn 0.5s ease;
-            margin-bottom: 5px;
-        }
-
-        .visible {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
-        .conc-title {
-            display: block;
-            font-size: 1rem;
-            color: #3e2723;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .lang-en {
-            display: block;
-            font-size: 0.8rem;
-            color: #8d6e63;
-            font-style: italic;
-            border-top: 1px solid #eee;
-            margin-top: 5px;
-            padding-top: 5px;
-        }
+        .nucleon-grid { display: grid; grid-template-columns: repeat(2, 25px); gap: 4px; margin-top: 5px; }
+        .nucleon { width: 25px; height: 25px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; font-weight: bold; }
+        .p { background: #ff4444; box-shadow: 0 0 8px #ff4444; }
+        .n { background: #4444ff; box-shadow: 0 0 8px #4444ff; }
 
         .color-legend {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            border: 1px solid #444;
+            position: absolute; top: 15px; right: 15px;
+            background: rgba(0,0,0,0.7); color: white; padding: 10px;
+            border-radius: 8px; font-size: 0.8rem; border: 1px solid #444; z-index: 10;
         }
+        .dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; vertical-align: middle; }
 
-        .dot {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 8px;
-            vertical-align: middle;
-        }
-
-        .watermark {
-            position: absolute;
-            top: 30px;
-            left: 30px;
-            background: #ff8c00;
-            color: white;
-            padding: 10px 25px;
-            border-radius: 25px;
-            font-size: 1.6em;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
-            z-index: 1000;
-            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
-            pointer-events: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        @media(max-width:1100px){.container{grid-template-areas:"header" "formula" "diagram" "controls";grid-template-columns:1fr}}
     </style>
 </head>
 
 <body>
-    <div class="watermark">Wuli布雷克</div>
+    <div class="branding"><div class="logo">Wuli布雷克</div></div>
+    <div class="container">
+        <header><h1>卢瑟福散射 / Rutherford Scattering</h1></header>
 
-    <div class="header">
-        <h2 style="margin:0">Alpha Particle Scattering Experiment</h2>
-        <h3 style="margin:0; color:#8d6e63; font-weight: normal;">α粒子散射实验模拟</h3>
-        <div class="controls">
-            <button id="startBtn">START / 开始发射</button>
-            <button id="resetBtn" style="background:#9e9e9e">RESET / 重置</button>
-            <span>Total / 粒子总数: <b id="totalTxt">0</b></span>
-        </div>
-    </div>
+        <section class="formula-display">
+            <div class="formula-container" id="formula-root"></div>
+            <div class="result-row">
+                <span>Total / 粒子总数: <strong id="totalTxt" style="color:var(--primary)">0</strong></span>
+            </div>
+            <div class="legend">
+                <div class="legend-item"><span class="legend-dot" style="background:#4caf50"></span> Straight 直线</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#ff9800"></span> Deflected 偏转</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#f44336"></span> Rebound 反弹</div>
+            </div>
+        </section>
 
-    <div class="main-layout">
-        <div class="canvas-area">
+        <section class="diagram-section">
             <canvas id="simCanvas"></canvas>
-
             <div class="alpha-diagram">
                 <div style="color:white; font-size:12px; margin-bottom:5px;">Alpha Particle (α)</div>
                 <div class="nucleon-grid">
@@ -287,25 +113,24 @@
                     <div class="nucleon p">P+</div>
                 </div>
             </div>
-
             <div class="color-legend">
-                <div style="margin-bottom:5px;"><span class="dot"
-                        style="background:rgba(255,255,255,0.5)"></span>Straight (直线)</div>
-                <div style="margin-bottom:5px;"><span class="dot" style="background:rgba(0,255,0,0.7)"></span>Deflected
-                    (偏转)</div>
+                <div style="margin-bottom:5px;"><span class="dot" style="background:rgba(255,255,255,0.5)"></span>Straight (直线)</div>
+                <div style="margin-bottom:5px;"><span class="dot" style="background:rgba(0,255,0,0.7)"></span>Deflected (偏转)</div>
                 <div><span class="dot" style="background:rgba(255,255,0,1)"></span>Rebound (反弹)</div>
             </div>
-        </div>
+        </section>
 
-        <div class="sidebar">
-            <div class="stats-box">
-                <p style="margin:0 0 10px 0; font-size:0.85rem; color:#6d4c41; font-weight:bold;">📊 点击数据行解锁实验发现：</p>
+        <section class="controls-section">
+            <div class="control-panel">
+                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                    <button class="btn btn-primary" id="startBtn">START / 开始发射</button>
+                    <button class="btn btn-secondary" id="resetBtn">RESET / 重置</button>
+                </div>
+                <p style="margin:0; font-size:0.85rem; color:#8d6e63; font-weight:600;">点击下方数据行解锁实验发现：</p>
 
                 <div class="stat-row" id="stat-s">
                     <div class="stat-label"><span>Straight (直线通过)</span><span id="s1">0%</span></div>
-                    <div class="progress-bg">
-                        <div id="b1" class="progress-bar" style="background:#4caf50; width:0%"></div>
-                    </div>
+                    <div class="progress-bg"><div id="b1" class="progress-bar" style="background:#4caf50; width:0%"></div></div>
                 </div>
                 <div id="box-s" class="conclusion">
                     <span class="conc-title">1. 大部分穿过 / Most pass straight</span>
@@ -314,9 +139,7 @@
 
                 <div class="stat-row" id="stat-d">
                     <div class="stat-label"><span>Deflected (发生偏转)</span><span id="s2">0%</span></div>
-                    <div class="progress-bg">
-                        <div id="b2" class="progress-bar" style="background:#ff9800; width:0%"></div>
-                    </div>
+                    <div class="progress-bg"><div id="b2" class="progress-bar" style="background:#ff9800; width:0%"></div></div>
                 </div>
                 <div id="box-d" class="conclusion">
                     <span class="conc-title">2. 少数偏转 / Some are deflected</span>
@@ -325,16 +148,32 @@
 
                 <div class="stat-row" id="stat-r">
                     <div class="stat-label"><span>Rebound (大角度反弹)</span><span id="s3">0%</span></div>
-                    <div class="progress-bg">
-                        <div id="b3" class="progress-bar" style="background:#f44336; width:0%"></div>
-                    </div>
+                    <div class="progress-bg"><div id="b3" class="progress-bar" style="background:#f44336; width:0%"></div></div>
                 </div>
                 <div id="box-r" class="conclusion">
                     <span class="conc-title">3. 极个别反弹 / Rare rebound</span>
                     <span class="lang-en">Conclusion: Mass is in a tiny, dense nucleus. <br>结论：原子几乎全部质量集中在极小核内。</span>
                 </div>
             </div>
-        </div>
+
+            <div class="info-card">
+                <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem">实验要点 / Key Points</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(76,175,80,0.1);color:#4caf50;font-weight:700">99%</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">大部分α粒子直线穿过</div><div style="font-size:0.78rem;color:#888">原子内部绝大部分是空的空间，电子在核外运动。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,152,0,0.1);color:#ff9800;font-weight:700">&lt;1%</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">少数α粒子发生偏转</div><div style="font-size:0.78rem;color:#888">原子中心存在带正电的原子核，库仑力使α粒子偏转。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(244,67,54,0.1);color:#f44336;font-weight:700">~0</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">极少数α粒子大角度反弹</div><div style="font-size:0.78rem;color:#888">原子质量几乎全部集中在极小的原子核内。</div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 
     <script>
@@ -342,6 +181,7 @@
         const ctx = canvas.getContext('2d');
         const startBtn = document.getElementById('startBtn');
         const resetBtn = document.getElementById('resetBtn');
+        const fRoot = document.getElementById('formula-root');
 
         let particles = [];
         let isRunning = false;
@@ -423,18 +263,37 @@
             document.getElementById('totalTxt').innerText = count.total;
             const updateRow = (id, bar, val) => {
                 let per = count.total === 0 ? 0 : (val / count.total * 100).toFixed(1);
-                document.getElementById(id).innerText = `${per}% (${val})`;
+                document.getElementById(id).innerText = per + '% (' + val + ')';
                 document.getElementById(bar).style.width = per + '%';
             };
             updateRow('s1', 'b1', count.s);
             updateRow('s2', 'b2', count.d);
             updateRow('s3', 'b3', count.r);
+
+            // Update formula display
+            const sPer = count.total === 0 ? 0 : (count.s / count.total * 100);
+            const dPer = count.total === 0 ? 0 : (count.d / count.total * 100);
+            const rPer = count.total === 0 ? 0 : (count.r / count.total * 100);
+
+            if (count.total === 0) {
+                fRoot.innerHTML = '<span style="color:#aaa;font-size:1.1rem;font-weight:600;">Click START to fire α particles at gold foil...</span>';
+            } else {
+                const sFS = Math.min(72, Math.max(24, sPer * 0.75));
+                const dFS = Math.min(48, Math.max(16, dPer * 5));
+                const rFS = Math.min(36, Math.max(14, rPer * 10));
+                fRoot.innerHTML =
+                    '<span style="color:#4caf50;font-size:' + sFS + 'px;font-weight:700;line-height:1;">' + sPer.toFixed(1) + '%</span>' +
+                    '<span style="font-size:22px;color:#ccc;">&gt;</span>' +
+                    '<span style="color:#ff9800;font-size:' + dFS + 'px;font-weight:700;line-height:1;">' + dPer.toFixed(1) + '%</span>' +
+                    '<span style="font-size:22px;color:#ccc;">&gt;</span>' +
+                    '<span style="color:#f44336;font-size:' + rFS + 'px;font-weight:700;line-height:1;">' + rPer.toFixed(1) + '%</span>';
+            }
         }
 
         ['s', 'd', 'r'].forEach(type => {
-            document.getElementById(`stat-${type}`).onclick = function () {
+            document.getElementById('stat-' + type).onclick = function () {
                 this.classList.add('unlocked');
-                document.getElementById(`box-${type}`).classList.add('visible');
+                document.getElementById('box-' + type).classList.add('visible');
             };
         });
 
