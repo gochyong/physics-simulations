@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
@@ -7,381 +7,144 @@
     <title>动量守恒 / Momentum Conservation - Wuli布雷克</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #FFF9F0;
-            --primary: #FF8c42;
-            --secondary: #FFC75F;
-            --accent: #FF5E5B;
-            --text-dark: #4A403A;
-            --card-bg: #FFFFFF;
-            --shadow: 0 6px 30px rgba(255, 140, 66, 0.18);
-            --radius: 30px;
+            --bg-color: #FFF9F0; --primary: #FF8c42; --secondary: #FFC75F;
+            --accent: #FF5E5B; --text-dark: #4A403A; --card-bg: #FFFFFF;
+            --shadow: 0 6px 30px rgba(255,140,66,0.18);
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-dark);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-            padding: 15px 30px;
-        }
-
-        .branding {
-            position: fixed;
-            top: 20px;
-            left: 25px;
-            z-index: 1000;
-        }
-
-        .logo {
-            font-weight: 700;
-            font-size: 1.5rem;
-            color: #FFFFFF;
-            background: var(--primary);
-            padding: 8px 20px;
-            border-radius: 18px;
-            box-shadow: 3px 3px 15px rgba(255, 140, 66, 0.3);
-        }
-
-        .container {
-            width: 100%;
-            max-width: 1400px;
-            margin-top: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            flex: 1;
-            min-height: 0;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 5px;
-        }
-
-        h1 {
-            font-size: 2.4rem;
-            color: var(--text-dark);
-            margin-bottom: 3px;
-        }
-
-        .subtitle {
-            font-size: 1.25rem;
-            color: #666;
-            line-height: 1.4;
-        }
-
-        /* Simulation Area */
-        .simulation-area {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            min-height: 0;
-        }
-
-        canvas {
-            width: 100%;
-            flex: 1;
-            display: block;
-            background: #fff;
-            min-height: 0;
-        }
-
-        /* Controls */
-        .controls-overlay {
-            padding: 20px 35px;
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(15px);
-            border-top: 2px solid rgba(0, 0, 0, 0.04);
-            display: grid;
-            grid-template-columns: 1.25fr 1.25fr 1fr 1fr;
-            gap: 20px;
-            align-items: center;
-        }
-
-        .object-controls {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            padding: 15px;
-            background: #fdfdfd;
-            border-radius: 20px;
-            border: 1.5px solid #f0f0f0;
-        }
-
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .label-row {
-            display: flex;
-            justify-content: space-between;
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        .val-badge {
-            background: #fff;
-            padding: 2px 10px;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            border: 1.5px solid #eee;
-        }
-
-        /* Sliders */
-        input[type=range] {
-            width: 100%;
-            appearance: none;
-            height: 8px;
-            background: #e0e0e0;
-            border-radius: 4px;
-            outline: none;
-        }
-
-        input[type=range]::-webkit-slider-thumb {
-            appearance: none;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 1.5px 4px rgba(0, 0, 0, 0.2);
-            transition: transform 0.1s;
-        }
-
-        input[type=range]::-webkit-slider-thumb:hover {
-            transform: scale(1.15);
-        }
-
-        #m1-slider::-webkit-slider-thumb,
-        #v1-slider::-webkit-slider-thumb {
-            background: #3498db;
-        }
-
-        #m2-slider::-webkit-slider-thumb,
-        #v2-slider::-webkit-slider-thumb {
-            background: #e74c3c;
-        }
-
-        .obj1-title {
-            color: #3498db;
-            border-bottom: 3px solid #3498db;
-            padding-bottom: 4px;
-            margin-bottom: 10px;
-            font-size: 1.25rem;
-        }
-
-        .obj2-title {
-            color: #e74c3c;
-            border-bottom: 3px solid #e74c3c;
-            padding-bottom: 4px;
-            margin-bottom: 10px;
-            font-size: 1.25rem;
-        }
-
-        /* Global Controls */
-        .global-controls {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            justify-content: center;
-        }
-
-        .mode-toggle {
-            display: flex;
-            background: #eee;
-            border-radius: 15px;
-            padding: 4px;
-            cursor: pointer;
-        }
-
-        .mode-option {
-            flex: 1;
-            text-align: center;
-            padding: 10px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            transition: all 0.2s;
-            color: #666;
-            line-height: 1.2;
-        }
-
-        .mode-option.active {
-            background: #fff;
-            color: var(--primary);
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
-        }
-
-        .ctrl-btn {
-            padding: 15px;
-            border: none;
-            border-radius: 15px;
-            font-size: 1.4rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            color: white;
-            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .ctrl-btn:active {
-            transform: translateY(3px);
-            box-shadow: none;
-        }
-
-        .start {
-            background-color: var(--primary);
-        }
-
-        .start:hover {
-            background-color: #ff7a2f;
-        }
-
-        .pause {
-            background-color: #2ecc71;
-        }
-
-        .pause:hover {
-            background-color: #27ae60;
-        }
-
-        .reset {
-            background-color: #95a5a6;
-        }
-
-        .reset:hover {
-            background-color: #7f8c8d;
-        }
-
-        @media (max-width: 1100px) {
-            .controls-overlay {
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-                padding: 10px 20px;
-            }
-
-            body {
-                overflow-y: auto;
-                height: auto;
-            }
-
-            .container {
-                height: auto;
-            }
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Fredoka','Noto Sans SC',sans-serif; background: var(--bg-color); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 5px 40px 10px; }
+        .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
+        .logo { font-weight: 700; font-size: 1.3rem; color: #fff; background: var(--primary); padding: 6px 18px; border-radius: 16px; box-shadow: 4px 4px 15px rgba(255,140,66,0.3); }
+        .container { width: 100%; max-width: 1400px; margin-top: 8px; display: grid; grid-template-areas:"header header" "formula formula" "diagram controls"; grid-template-columns: 1fr 400px; gap: 12px; }
+        header { grid-area: header; text-align: center; }
+        h1 { font-size: 2rem; color: var(--text-dark); margin-bottom: 2px; }
+        .formula-display { grid-area: formula; background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb; }
+        .formula-container { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; min-height: 50px; }
+        .result-row { font-size: 1rem; font-weight: 600; margin-top: 6px; display: flex; gap: 20px; justify-content: center; }
+        .legend { display: flex; gap: 16px; justify-content: center; border-top: 1px solid #eee; padding-top: 6px; width: 100%; flex-wrap: wrap; }
+        .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+        .diagram-section { grid-area: diagram; background: #fff; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; min-height: 320px; display: flex; flex-direction: column; border: 2px solid #fff5eb; }
+        #simCanvas { width: 100%; flex: 1; display: block; }
+        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
+        .control-panel { background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+        .control-group { display: flex; flex-direction: column; gap: 3px; }
+        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
+        .val-badge { background: #fff; padding: 1px 7px; border-radius: 7px; font-size: 0.85rem; border: 2px solid #f0f0f0; }
+        input[type=range] { width: 100%; appearance: none; height: 6px; background: #eee; border-radius: 3px; }
+        input[type=range]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; cursor: pointer; }
+        #m1-slider::-webkit-slider-thumb, #v1-slider::-webkit-slider-thumb { background: #3498db; }
+        #m2-slider::-webkit-slider-thumb, #v2-slider::-webkit-slider-thumb { background: #e74c3c; }
+        .obj1-title { color: #3498db; font-weight: 700; font-size: 0.95rem; border-bottom: 2px solid #3498db; padding-bottom: 4px; margin-bottom: 2px; }
+        .obj2-title { color: #e74c3c; font-weight: 700; font-size: 0.95rem; border-bottom: 2px solid #e74c3c; padding-bottom: 4px; margin-bottom: 2px; }
+        .mode-toggle { display: flex; background: #eee; border-radius: 12px; padding: 3px; cursor: pointer; }
+        .mode-option { flex: 1; text-align: center; padding: 8px 6px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; transition: all 0.2s; color: #666; line-height: 1.2; }
+        .mode-option.active { background: #fff; color: var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .ctrl-btn { padding: 10px; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .ctrl-btn:active { transform: translateY(2px); box-shadow: none; }
+        .start { background-color: var(--primary); }
+        .pause { background-color: #2ecc71; }
+        .reset { background-color: #95a5a6; }
+        .info-card { background: #fff; border-radius: 20px; padding: 12px 16px; box-shadow: var(--shadow); font-size: 0.9rem; line-height: 1.4; color: #5D6D7E; }
+        @media(max-width:1100px){.container{grid-template-areas:"header" "formula" "diagram" "controls";grid-template-columns:1fr}}
     </style>
 </head>
 
 <body>
-    <div class="branding">
-        <div class="logo">Wuli布雷克</div>
-    </div>
-
-    <header>
-        <h1>动量守恒 Momentum Conservation</h1>
-        <div class="subtitle">
-            In an isolated system, total momentum is constant.<br>
-            在孤立系统中，总动量保持不变。
-        </div>
-    </header>
-
+    <div class="branding"><div class="logo">Wuli布雷克</div></div>
     <div class="container">
-        <!-- Simulation -->
-        <div class="simulation-area">
-            <canvas id="simCanvas"></canvas>
+        <header><h1>动量守恒 / Momentum Conservation</h1></header>
 
-            <div class="controls-overlay">
-                <!-- Object 1 Controls -->
-                <div class="object-controls">
-                    <h3 class="obj1-title">Object 1 (Blue)</h3>
-                    <div class="control-group">
-                        <div class="label-row">
-                            <span>Mass (质量)</span>
-                            <span id="m1-val" class="val-badge">20 kg</span>
-                        </div>
-                        <input type="range" id="m1-slider" min="5" max="50" value="20">
-                    </div>
-                    <div class="control-group">
-                        <div class="label-row">
-                            <span>Velocity (初速度)</span>
-                            <span id="v1-val" class="val-badge">10 m/s</span>
-                        </div>
-                        <input type="range" id="v1-slider" min="-25" max="25" step="1" value="10">
-                    </div>
+        <section class="formula-display">
+            <div class="formula-container" id="formula-root"></div>
+            <div class="result-row">
+                <span>P<sub>total</sub> = <strong id="res-p-before" style="color:#8e44ad">0.00</strong> kg·m/s</span>
+                <span id="res-p-after-wrap" style="display:none"> &rarr; <strong id="res-p-after" style="color:#2ecc71">0.00</strong> kg·m/s</span>
+            </div>
+            <div class="legend">
+                <div class="legend-item"><span class="legend-dot" style="background:#3498db"></span> 小球1 (m<sub>1</sub>, v<sub>1</sub>)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#e74c3c"></span> 小球2 (m<sub>2</sub>, v<sub>2</sub>)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#8e44ad"></span> 总动量 P<sub>total</sub></div>
+            </div>
+        </section>
+
+        <section class="diagram-section"><canvas id="simCanvas"></canvas></section>
+
+        <section class="controls-section">
+            <div class="control-panel">
+                <div class="obj1-title">小球1 / Object 1 (Blue)</div>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:#3498db">质量 m<sub>1</sub> / Mass</span><span id="m1-val" class="val-badge">20 kg</span></div>
+                    <input type="range" id="m1-slider" min="5" max="50" value="20">
                 </div>
-
-                <!-- Object 2 Controls -->
-                <div class="object-controls">
-                    <h3 class="obj2-title">Object 2 (Red)</h3>
-                    <div class="control-group">
-                        <div class="label-row">
-                            <span>Mass (质量)</span>
-                            <span id="m2-val" class="val-badge">20 kg</span>
-                        </div>
-                        <input type="range" id="m2-slider" min="5" max="50" value="20">
-                    </div>
-                    <div class="control-group">
-                        <div class="label-row">
-                            <span>Velocity (初速度)</span>
-                            <span id="v2-val" class="val-badge">-5 m/s</span>
-                        </div>
-                        <input type="range" id="v2-slider" min="-25" max="25" step="1" value="-5">
-                    </div>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:#3498db">初速度 v<sub>1</sub> / Velocity</span><span id="v1-val" class="val-badge">10 m/s</span></div>
+                    <input type="range" id="v1-slider" min="-25" max="25" step="1" value="10">
                 </div>
+            </div>
 
-                <!-- Collision Mode -->
-                <div class="global-controls">
-                    <div style="font-weight: 600; color: #555; margin-bottom: 3px; font-size: 1.1rem;">Collision Type
-                        (碰撞类型):</div>
-                    <div class="mode-toggle">
-                        <div class="mode-option active" id="mode-elastic" onclick="setMode('elastic')">Elastic<br>弹性
-                        </div>
-                        <div class="mode-option" id="mode-inelastic" onclick="setMode('inelastic')">Inelastic<br>非弹性
-                        </div>
-                    </div>
+            <div class="control-panel">
+                <div class="obj2-title">小球2 / Object 2 (Red)</div>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:#e74c3c">质量 m<sub>2</sub> / Mass</span><span id="m2-val" class="val-badge">20 kg</span></div>
+                    <input type="range" id="m2-slider" min="5" max="50" value="20">
                 </div>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:#e74c3c">初速度 v<sub>2</sub> / Velocity</span><span id="v2-val" class="val-badge">-5 m/s</span></div>
+                    <input type="range" id="v2-slider" min="-25" max="25" step="1" value="-5">
+                </div>
+            </div>
 
-                <!-- Buttons -->
-                <div class="global-controls">
+            <div class="control-panel">
+                <div style="font-weight:600;font-size:0.9rem;color:#555;margin-bottom:2px;">碰撞类型 / Collision Type</div>
+                <div class="mode-toggle">
+                    <div class="mode-option active" id="mode-elastic" onclick="setMode('elastic')">弹性<br>Elastic</div>
+                    <div class="mode-option" id="mode-inelastic" onclick="setMode('inelastic')">非弹性<br>Inelastic</div>
+                </div>
+                <div class="btn-row">
                     <button id="btn-start" class="ctrl-btn start">开始 Start</button>
                     <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
                 </div>
             </div>
-        </div>
+
+            <div class="info-card">
+                <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem">演示要点 / Key Points</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(142,68,173,0.1);color:#8e44ad;font-weight:700">P</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">动量守恒定律</div><div style="font-size:0.78rem;color:#888">孤立系统中碰撞前后总动量不变：m<sub>1</sub>v<sub>1</sub>+m<sub>2</sub>v<sub>2</sub> = 常数。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:#3498db;font-weight:700">E</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">弹性碰撞</div><div style="font-size:0.78rem;color:#888">动能守恒，两球以不同速度弹开。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(231,76,60,0.1);color:#e74c3c;font-weight:700">v</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">非弹性碰撞</div><div style="font-size:0.78rem;color:#888">两球粘在一起以共同速度运动，动能减少但动量守恒。</div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 
     <script>
-        const canvas = document.getElementById('simCanvas');
-        const ctx = canvas.getContext('2d');
+        const canvas = document.getElementById('simCanvas'), ctx = canvas.getContext('2d');
 
-        // Slider Refs
         const sM1 = document.getElementById('m1-slider'), sV1 = document.getElementById('v1-slider');
         const sM2 = document.getElementById('m2-slider'), sV2 = document.getElementById('v2-slider');
         const vM1 = document.getElementById('m1-val'), vV1 = document.getElementById('v1-val');
         const vM2 = document.getElementById('m2-val'), vV2 = document.getElementById('v2-val');
 
         const btnStart = document.getElementById('btn-start'), btnReset = document.getElementById('btn-reset');
+
+        const resPBefore = document.getElementById('res-p-before');
+        const resPAfter = document.getElementById('res-p-after');
+        const resPAfterWrap = document.getElementById('res-p-after-wrap');
+        const fRoot = document.getElementById('formula-root');
 
         let mode = 'elastic';
         const state = {
@@ -406,13 +169,32 @@
         }
         window.addEventListener('resize', resize);
 
+        function updateFormulaDisplay() {
+            const initP = state.initialP;
+            const currentP = state.m1 * state.v1 + state.m2 * state.v2;
+            resPBefore.textContent = initP.toFixed(2);
+            if (state.hasCollided) {
+                resPAfter.textContent = currentP.toFixed(2);
+                resPAfterWrap.style.display = 'inline';
+            } else {
+                resPAfterWrap.style.display = 'none';
+            }
+
+            fRoot.innerHTML = `
+                <span style="color:#3498db;font-size:38px;font-weight:700;line-height:1;">m<sub>1</sub>v<sub>1</sub></span>
+                <span style="font-size:28px;color:#4A403A;">+</span>
+                <span style="color:#e74c3c;font-size:38px;font-weight:700;line-height:1;">m<sub>2</sub>v<sub>2</sub></span>
+                <span style="font-size:28px;color:#ccc;">=</span>
+                <span style="color:#8e44ad;font-size:38px;font-weight:700;line-height:1;">P<sub>total</sub></span>
+            `;
+        }
+
         function update() {
             vM1.textContent = state.m1 + ' kg'; vV1.textContent = state.v1 + ' m/s';
             vM2.textContent = state.m2 + ' kg'; vV2.textContent = state.v2 + ' m/s';
 
             if (state.isPlaying) {
                 const dt = 0.45;
-                // Ratio calculation for 1.33x scale
                 const r1 = (15 + (Math.log10(state.m1) * 12)) * 1.33;
                 const r2 = (15 + (Math.log10(state.m2) * 12)) * 1.33;
                 const nextX1 = state.x1 + state.v1 * dt * 1.33;
@@ -435,6 +217,7 @@
                 state.x1 += state.v1 * dt * 1.33;
                 state.x2 += state.v2 * dt * 1.33;
             }
+            updateFormulaDisplay();
             draw();
             requestAnimationFrame(update);
         }
@@ -444,7 +227,6 @@
             const cy = canvas.height * 0.6;
             const cx = canvas.width / 2;
 
-            // Floor
             ctx.beginPath(); ctx.strokeStyle = '#e0e0e0'; ctx.lineWidth = 3;
             ctx.moveTo(0, cy + 60); ctx.lineTo(canvas.width, cy + 60); ctx.stroke();
 
@@ -466,7 +248,6 @@
             ctx.fillStyle = 'white'; ctx.font = 'bold 16px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
             ctx.fillText(m + 'k', x, y);
 
-            // Velocity Labels Above Ball
             ctx.fillStyle = color;
             ctx.font = 'bold 16px Arial';
             ctx.textBaseline = 'bottom';
@@ -488,7 +269,6 @@
                 ctx.fillText("Waiting for collision...", cx + blockW / 2 + 30, yText + 80);
             }
 
-            // Divider
             ctx.beginPath(); ctx.strokeStyle = '#eee'; ctx.lineWidth = 1.5;
             ctx.moveTo(cx, yText); ctx.lineTo(cx, yText + 220); ctx.stroke();
         }
@@ -504,7 +284,6 @@
             ctx.fillStyle = '#f39c12';
             ctx.fillText(`E_tot: ${e.toFixed(2)} J`, x, y + 78);
 
-            // Gauges
             drawGauge(x - 80, y + 155, v1, "v1", "#3498db");
             drawGauge(x + 80, y + 155, v2, "v2", "#e74c3c");
         }
@@ -544,6 +323,7 @@
             state.initialE = 0.5 * state.m1 * state.v1 ** 2 + 0.5 * state.m2 * state.v2 ** 2;
             state.initialV1 = state.v1; state.initialV2 = state.v2;
             const cx = canvas.width / 2; state.x1 = cx - 220; state.x2 = cx + 220;
+            updateFormulaDisplay();
             draw();
         }
 
@@ -562,6 +342,7 @@
         };
 
         resize();
+        updateFormulaDisplay();
         update();
     </script>
 </body>

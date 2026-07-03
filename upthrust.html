@@ -4,308 +4,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>浮力探究实验室 - Wuli布雷克</title>
+    <title>阿基米德原理 / Archimedes' Principle - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-warm: #fffaf5;
-            --primary: #ff9800;
-            --accent: #f57c00;
-            --text-dark: #5d4037;
+            --bg-color: #FFF9F0; --primary: #FF8c42; --secondary: #FFC75F;
+            --accent: #FF5E5B; --text-dark: #4A403A; --card-bg: #FFFFFF;
+            --shadow: 0 6px 30px rgba(255,140,66,0.18);
             --fluid-color: rgba(33, 150, 243, 0.45);
-            --border-color: #ffe0b2;
-            --btn-check: #4caf50;
-            --btn-reset: #e91e63;
         }
-
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            overflow: hidden;
-            background-color: var(--bg-warm);
-            font-family: 'Segoe UI', system-ui, sans-serif;
-        }
-
-        .watermark {
-            position: absolute;
-            top: 30px;
-            left: 30px;
-            background: #ff8c00;
-            color: white;
-            padding: 10px 25px;
-            border-radius: 25px;
-            font-size: 1.6em;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
-            z-index: 1000;
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            pointer-events: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .container {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            padding: 10px 20px;
-            box-sizing: border-box;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        h2 {
-            text-align: center;
-            margin: 5px 0;
-            color: var(--text-dark);
-            font-size: 1.2rem;
-        }
-
-        /* 顶部看板 */
-        .dashboard {
-            display: grid;
-            grid-template-columns: 1.6fr 1fr;
-            gap: 15px;
-            height: 26vh;
-            margin-bottom: 10px;
-            flex-shrink: 0;
-        }
-
-        .card {
-            background: white;
-            border: 2px solid var(--border-color);
-            border-radius: 15px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
-        }
-
-        .math-text {
-            font-family: "Times New Roman", serif;
-            font-weight: bold;
-            font-size: clamp(1.4rem, 4.5vh, 2.8rem);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-
-        .sym {
-            display: inline-block;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        /* 1. 符号解析说明区 */
-        .sym-legend {
-            display: grid;
-            grid-template-columns: 1fr 1.3fr;
-            gap: 4px 15px;
-            font-size: 0.78rem;
-            color: #795548;
-            width: 95%;
-            border-top: 1px dashed #ffe0b2;
-            padding-top: 8px;
-        }
-
-        .res-val {
-            font-size: clamp(1.5rem, 5vh, 2.8rem);
-            font-weight: 900;
-            color: #bdbdbd;
-            transition: color 0.3s;
-        }
-
-        .res-sub {
-            font-size: 0.9rem;
-            color: #bdbdbd;
-            font-weight: bold;
-            margin-top: 5px;
-        }
-
-        .active-res {
-            color: var(--accent) !important;
-        }
-
-        .active-v {
-            color: #1976d2 !important;
-        }
-
-        /* 中间布局 */
-        .main-layout {
-            display: grid;
-            grid-template-columns: 1.2fr 1fr;
-            gap: 15px;
-            flex: 1;
-            min-height: 0;
-        }
-
-        .visual-box {
-            background: #e3f2fd;
-            border: 2px solid #bbdefb;
-            border-radius: 15px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
-        .status-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 6px 15px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            color: #1565c0;
-            border: 1px solid #bbdefb;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-
-        /* 控制区 */
-        .controls {
-            background: #fffcf5;
-            border-radius: 15px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            overflow-y: auto;
-        }
-
-        .group {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            padding-bottom: 5px;
-        }
-
-        .label-row {
-            display: flex;
-            justify-content: space-between;
-            font-weight: bold;
-            font-size: 0.8rem;
-        }
-
-        .val-tag {
-            color: var(--accent);
-            background: #fff;
-            padding: 1px 6px;
-            border-radius: 4px;
-            border: 1px solid var(--border-color);
-            font-family: monospace;
-        }
-
-        .lang-en {
-            font-size: 0.7rem;
-            color: #8d6e63;
-            font-weight: normal;
-        }
-
-        /* 2. 按钮行 */
-        .button-row {
-            display: grid;
-            grid-template-columns: 1.8fr 1fr;
-            gap: 10px;
-            margin-top: 5px;
-        }
-
-        button {
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 1rem;
-            color: white;
-            transition: all 0.2s;
-        }
-
-        #btn-check {
-            background-color: var(--btn-check);
-            box-shadow: 0 4px #2e7d32;
-        }
-
-        #btn-check:hover {
-            background-color: #43a047;
-        }
-
-        #btn-check:active {
-            transform: translateY(3px);
-            box-shadow: 0 1px #2e7d32;
-        }
-
-        #btn-reset {
-            background-color: var(--btn-reset);
-            box-shadow: 0 4px #c2185b;
-        }
-
-        #btn-reset:hover {
-            background-color: #d81b60;
-        }
-
-        #btn-reset:active {
-            transform: translateY(3px);
-            box-shadow: 0 1px #c2185b;
-        }
-
-        input[type=range] {
-            accent-color: var(--accent);
-            cursor: pointer;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Fredoka','Noto Sans SC',sans-serif; background: var(--bg-color); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 5px 40px 10px; }
+        .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
+        .logo { font-weight: 700; font-size: 1.3rem; color: #fff; background: var(--primary); padding: 6px 18px; border-radius: 16px; box-shadow: 4px 4px 15px rgba(255,140,66,0.3); }
+        .container { width: 100%; max-width: 1400px; margin-top: 8px; display: grid; grid-template-areas:"header header" "formula formula" "diagram controls"; grid-template-columns: 1fr 400px; gap: 12px; }
+        header { grid-area: header; text-align: center; }
+        h1 { font-size: 2rem; color: var(--text-dark); margin-bottom: 2px; }
+        .formula-display { grid-area: formula; background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb; }
+        .formula-container { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; min-height: 50px; }
+        .result-row { font-size: 1rem; font-weight: 600; margin-top: 6px; display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; align-items: center; }
+        .legend { display: flex; gap: 16px; justify-content: center; border-top: 1px solid #eee; padding-top: 6px; width: 100%; flex-wrap: wrap; }
+        .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+        .diagram-section { grid-area: diagram; background: #fff; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; min-height: 380px; display: flex; flex-direction: column; border: 2px solid #fff5eb; }
+        #cvs { width: 100%; flex: 1; display: block; }
+        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
+        .control-panel { background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+        .control-group { display: flex; flex-direction: column; gap: 3px; }
+        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
+        .val-badge { background: #fff; padding: 1px 7px; border-radius: 7px; font-size: 0.85rem; border: 2px solid #f0f0f0; }
+        select { font-family: inherit; font-size: 0.9rem; padding: 6px 10px; border-radius: 8px; border: 2px solid #f0f0f0; background: #fff; color: var(--text-dark); cursor: pointer; }
+        input[type=range] { width: 100%; appearance: none; height: 6px; background: #eee; border-radius: 3px; }
+        input[type=range]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; cursor: pointer; background: var(--primary); }
+        #sld-rhol::-webkit-slider-thumb { background: #1976d2; }
+        #sld-rhoo::-webkit-slider-thumb { background: var(--accent); }
+        #sld-vo::-webkit-slider-thumb { background: #d84315; }
+        .button-row { display: grid; grid-template-columns: 1.8fr 1fr; gap: 10px; margin-top: 5px; }
+        .btn { padding: 12px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 1rem; color: white; font-family: inherit; transition: all 0.2s; }
+        .btn-check { background-color: #4caf50; box-shadow: 0 4px #2e7d32; }
+        .btn-check:hover { background-color: #43a047; }
+        .btn-check:active { transform: translateY(3px); box-shadow: 0 1px #2e7d32; }
+        .btn-reset { background-color: #e91e63; box-shadow: 0 4px #c2185b; }
+        .btn-reset:hover { background-color: #d81b60; }
+        .btn-reset:active { transform: translateY(3px); box-shadow: 0 1px #c2185b; }
+        .info-card { background: #fff; border-radius: 20px; padding: 12px 16px; box-shadow: var(--shadow); font-size: 0.9rem; line-height: 1.4; color: #5D6D7E; }
+        .material-tag { display: inline-block; background: rgba(255,140,66,0.1); color: var(--primary); padding: 4px 14px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; }
+        .sym { display: inline-block; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .active-res { color: var(--accent) !important; }
+        .active-v { color: #1976d2 !important; }
+        @media(max-width:1100px){.container{grid-template-areas:"header" "formula" "diagram" "controls";grid-template-columns:1fr}}
     </style>
 </head>
 
 <body>
-
-    <div class="watermark">Wuli布雷克</div>
-
+    <div class="branding"><div class="logo">Wuli布雷克</div></div>
     <div class="container">
-        <h2>浮力探究实验室 / Upthrust Discovery Lab</h2>
+        <header><h1>阿基米德原理 / Archimedes' Principle</h1></header>
 
-        <div class="dashboard">
-            <div class="card">
-                <div class="math-text">
-                    <span id="f-fb" class="sym" style="color:var(--accent)">F<sub>up</sub></span>
-                    <span>=</span>
-                    <span id="f-rho" class="sym" style="color:#1976d2">ρ<sub>l</sub></span>
-                    <span>•</span>
-                    <span class="sym" style="color:#388e3c">g</span>
-                    <span>•</span>
-                    <span id="f-v" class="sym" style="color:#d84315">V<sub>disp</sub></span>
-                </div>
-                <div class="sym-legend">
-                    <div><b>F<sub>up</sub></b>: 浮力 <span class="lang-en">/ Upthrust Force (N)</span></div>
-                    <div><b>ρ<sub>l</sub></b>: 液体密度 <span class="lang-en">/ Liquid Density (kg/m³)</span></div>
-                    <div><b>g</b>: 重力场强度 <span class="lang-en">/ Gravitational field strength (9.81 m/s²)</span></div>
-                    <div><b>V<sub>disp</sub></b>: 排开体积 <span class="lang-en">/ Displaced Volume (m³)</span></div>
-                </div>
+        <section class="formula-display">
+            <div class="formula-container">
+                <span id="f-fb" class="sym" style="color:var(--accent);font-size:2.5rem;font-weight:700;line-height:1;">F<sub>up</sub></span>
+                <span style="font-size:26px;color:#ccc;">=</span>
+                <span id="f-rho" class="sym" style="color:#1976d2;font-size:2rem;font-weight:700;line-height:1;">ρ<sub>l</sub></span>
+                <span style="font-size:20px;color:#999;">•</span>
+                <span class="sym" style="color:#388e3c;font-size:2rem;font-weight:700;line-height:1;">g</span>
+                <span style="font-size:20px;color:#999;">•</span>
+                <span id="f-v" class="sym" style="color:#d84315;font-size:2rem;font-weight:700;line-height:1;">V<sub>disp</sub></span>
             </div>
-            <div class="card" style="background:#fff8e1">
-                <div style="font-size:0.8rem; font-weight:bold; color:#795548">验证结果 / Verification Result</div>
-                <div id="res-fb" class="res-val">-- N</div>
-                <div id="res-vdisp" class="res-sub">V<sub>disp</sub>: -- m³</div>
+            <div class="result-row">
+                <span>浮力 F<sub>up</sub> = <strong id="res-fb" style="color:#bdbdbd">-- N</strong></span>
+                <span id="res-vdisp" style="color:#bdbdbd;font-weight:bold;">V<sub>disp</sub>: -- m³</span>
+                <span id="status" class="material-tag">等待验证 / Waiting</span>
             </div>
-        </div>
+            <div class="legend">
+                <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> F<sub>up</sub>: 浮力 / Upthrust (N)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#1976d2"></span> ρ<sub>l</sub>: 液体密度 / Liquid Density (kg/m³)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#388e3c"></span> g: 重力场强度 / Gravitational field (9.81 m/s²)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#d84315"></span> V<sub>disp</sub>: 排开体积 / Displaced Volume (m³)</div>
+            </div>
+        </section>
 
-        <div class="main-layout">
-            <div class="visual-box">
-                <canvas id="cvs"></canvas>
-                <div id="status" class="status-badge">等待验证 / Waiting</div>
-            </div>
+        <section class="diagram-section"><canvas id="cvs"></canvas></section>
 
-            <div class="controls">
-                <div class="group">
-                    <label class="label-row"><span>物体形状 <span class="lang-en">/ Object Shape</span></span></label>
+        <section class="controls-section">
+            <div class="control-panel">
+                <div class="control-group">
+                    <label class="label-row"><span>物体形状 / Object Shape</span></label>
                     <select id="shape">
                         <option value="cube">立方体 / Cube</option>
                         <option value="sphere">球体 / Sphere</option>
@@ -313,41 +99,44 @@
                     </select>
                 </div>
 
-                <div class="group">
-                    <div class="label-row">
-                        <span>液体密度 <span class="lang-en">/ ρ<sub>l</sub></span></span>
-                        <span id="txt-rhol" class="val-tag">1000 kg/m³</span>
-                    </div>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:#1976d2">液体密度 / ρ<sub>l</sub></span><span id="txt-rhol" class="val-badge">1000 kg/m³</span></div>
                     <input type="range" id="sld-rhol" min="500" max="2000" step="50" value="1000">
                 </div>
 
-                <div class="group">
-                    <div class="label-row">
-                        <span>物体密度 <span class="lang-en">/ ρ<sub>o</sub></span></span>
-                        <span id="txt-rhoo" class="val-tag">600 kg/m³</span>
-                    </div>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:var(--accent)">物体密度 / ρ<sub>o</sub></span><span id="txt-rhoo" class="val-badge">600 kg/m³</span></div>
                     <input type="range" id="sld-rhoo" min="100" max="2500" step="50" value="600">
                 </div>
 
-                <div class="group">
-                    <div class="label-row">
-                        <span>物体体积 <span class="lang-en">/ V<sub>o</sub></span></span>
-                        <span id="txt-vo" class="val-tag">1.0 m³</span>
-                    </div>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:#d84315">物体体积 / V<sub>o</sub></span><span id="txt-vo" class="val-badge">1.0 m³</span></div>
                     <input type="range" id="sld-vo" min="0.1" max="2.0" step="0.1" value="1.0">
                 </div>
 
                 <div class="button-row">
-                    <button id="btn-check">检查 / CHECK</button>
-                    <button id="btn-reset">重置 / RESET</button>
-                </div>
-
-                <div style="font-size: 0.72rem; color: #8d6e63; margin-top:5px; line-height: 1.4;">
-                    <strong>操作说明：</strong> 调节参数后，点击“检查”按钮，观察物体的最终平衡状态及浮力数值变化。<br>
-                    <span class="lang-en">Adjust parameters and click CHECK to see the equilibrium and result.</span>
+                    <button id="btn-check" class="btn btn-check">检查 / CHECK</button>
+                    <button id="btn-reset" class="btn btn-reset">重置 / RESET</button>
                 </div>
             </div>
-        </div>
+            <div class="info-card">
+                <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem">演示要点 / Key Points</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700">F</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">F<sub>up</sub> = ρ<sub>l</sub> · g · V<sub>disp</sub></div><div style="font-size:0.78rem;color:#888">浮力等于排开液体的重量，这是阿基米德原理的核心。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(76,175,80,0.1);color:#4caf50;font-weight:700">↑</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">沉浮条件</div><div style="font-size:0.78rem;color:#888">ρ<sub>o</sub> &lt; ρ<sub>l</sub> 漂浮；ρ<sub>o</sub> = ρ<sub>l</sub> 悬浮；ρ<sub>o</sub> &gt; ρ<sub>l</sub> 下沉。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(33,150,243,0.1);color:#1976d2;font-weight:700">V</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">排开体积</div><div style="font-size:0.78rem;color:#888">漂浮时 V<sub>disp</sub> &lt; V<sub>o</sub>；完全浸没时 V<sub>disp</sub> = V<sub>o</sub>。</div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 
     <script>

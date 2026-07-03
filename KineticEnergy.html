@@ -1,393 +1,100 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>动能 / Kinetic Energy - Wuli布雷克</title>
+    <title>动能 / Kinetic Energy</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #FFF9F0;
-            --primary: #FF8c42;
-            --secondary: #FFC75F;
-            --accent: #FF5E5B;
-            --text-dark: #4A403A;
-            --card-bg: #FFFFFF;
-            --shadow: 0 6px 30px rgba(255, 140, 66, 0.18);
-            --radius: 30px;
+            --bg-color: #FFF9F0; --primary: #FF8c42; --secondary: #FFC75F;
+            --accent: #FF5E5B; --text-dark: #4A403A; --card-bg: #FFFFFF;
+            --shadow: 0 6px 30px rgba(255,140,66,0.18);
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-dark);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px 40px;
-        }
-
-        .branding {
-            position: fixed;
-            top: 25px;
-            left: 30px;
-            z-index: 1000;
-        }
-
-        .logo {
-            font-weight: 700;
-            font-size: 1.6rem;
-            color: #FFFFFF;
-            background: var(--primary);
-            padding: 10px 25px;
-            border-radius: 20px;
-            box-shadow: 4px 4px 15px rgba(255, 140, 66, 0.3);
-        }
-
-        .container {
-            width: 100%;
-            max-width: 1400px;
-            margin-top: 20px;
-            display: grid;
-            grid-template-areas:
-                "header header"
-                "formula formula"
-                "diagram controls";
-            grid-template-columns: 1fr 450px;
-            gap: 25px;
-        }
-
-        header {
-            grid-area: header;
-            text-align: center;
-            margin-bottom: 5px;
-        }
-
-        h1 {
-            font-size: 2.8rem;
-            color: var(--text-dark);
-            margin-bottom: 5px;
-        }
-
-        .subtitle-text {
-            font-size: 1.4rem;
-            color: #666;
-            line-height: 1.4;
-        }
-
-        /* Formula Section */
-        .formula-display {
-            grid-area: formula;
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 25px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            border: 2px solid #fff5eb;
-        }
-
-        .formula-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 15px;
-            height: 100px;
-        }
-
-        .result-row {
-            font-size: 1.8rem;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 15px;
-        }
-
-        /* Legend */
-        .legend {
-            display: flex;
-            gap: 25px;
-            justify-content: center;
-            border-top: 1px solid #eee;
-            padding-top: 15px;
-            width: 100%;
-        }
-
-        .legend-item {
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-
-        .sym-key {
-            font-weight: 700;
-            margin-right: 5px;
-        }
-
-        /* Diagram Section */
-        .diagram-section {
-            grid-area: diagram;
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            position: relative;
-            overflow: hidden;
-            min-height: 500px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        canvas {
-            width: 100%;
-            flex: 1;
-            display: block;
-        }
-
-        /* Controls Section */
-        .controls-section {
-            grid-area: controls;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .control-panel {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 25px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .label-row {
-            display: flex;
-            justify-content: space-between;
-            font-weight: 600;
-            font-size: 1.25rem;
-        }
-
-        .val-badge {
-            background: #fff;
-            padding: 4px 12px;
-            border-radius: 10px;
-            font-size: 1.2rem;
-            border: 2px solid #eee;
-        }
-
-        /* Sliders */
-        input[type=range] {
-            width: 100%;
-            appearance: none;
-            height: 10px;
-            background: #eee;
-            border-radius: 5px;
-            outline: none;
-        }
-
-        input[type=range]::-webkit-slider-thumb {
-            appearance: none;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-            transition: transform 0.1s;
-        }
-
-        input[type=range]::-webkit-slider-thumb:hover {
-            transform: scale(1.1);
-        }
-
-        #m-slider::-webkit-slider-thumb {
-            background: #9b59b6;
-        }
-
-        #v-slider::-webkit-slider-thumb {
-            background: #3498db;
-        }
-
-        .btn-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .ctrl-btn {
-            padding: 18px;
-            border: none;
-            border-radius: 18px;
-            font-size: 1.4rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            color: white;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .ctrl-btn:active {
-            transform: translateY(3px);
-            box-shadow: none;
-        }
-
-        .start {
-            background-color: var(--primary);
-            /* Orange for Start */
-        }
-
-        .start:hover {
-            background-color: #e67e22;
-        }
-
-        .pause {
-            background-color: #2ecc71;
-            /* Green for Pause */
-        }
-
-        .pause:hover {
-            background-color: #27ae60;
-        }
-
-        .reset {
-            background-color: #95a5a6;
-        }
-
-        .reset:hover {
-            background-color: #7f8c8d;
-        }
-
-        /* Gauge Area */
-        .gauge-panel {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 20px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Fraction and Power Styling */
-        .fraction {
-            display: inline-flex;
-            flex-direction: column;
-            align-items: center;
-            vertical-align: middle;
-            font-size: 0.8em;
-            margin: 0 5px;
-        }
-
-        .fraction-top {
-            border-bottom: 2px solid currentColor;
-            padding: 0 4px;
-        }
-
-        .fraction-bottom {
-            padding: 0 4px;
-        }
-
-        sup {
-            font-size: 0.6em;
-            vertical-align: top;
-            position: relative;
-            top: -0.2em;
-        }
-
-        @media (max-width: 1100px) {
-            .container {
-                grid-template-areas: "header" "formula" "diagram" "controls";
-                grid-template-columns: 1fr;
-            }
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Fredoka','Noto Sans SC',sans-serif; background: var(--bg-color); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 5px 40px 10px; }
+        .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
+        .logo { font-weight: 700; font-size: 1.3rem; color: #fff; background: var(--primary); padding: 6px 18px; border-radius: 16px; box-shadow: 4px 4px 15px rgba(255,140,66,0.3); }
+        .container { width: 100%; max-width: 1400px; margin-top: 8px; display: grid; grid-template-areas:"header header" "formula formula" "diagram controls"; grid-template-columns: 1fr 400px; gap: 12px; }
+        header { grid-area: header; text-align: center; }
+        h1 { font-size: 2rem; color: var(--text-dark); margin-bottom: 2px; }
+        .formula-display { grid-area: formula; background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb; }
+        .formula-container { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; min-height: 50px; }
+        .result-row { font-size: 1rem; font-weight: 600; margin-top: 6px; display: flex; gap: 20px; justify-content: center; }
+        .legend { display: flex; gap: 16px; justify-content: center; border-top: 1px solid #eee; padding-top: 6px; width: 100%; flex-wrap: wrap; }
+        .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+        .diagram-section { grid-area: diagram; background: #fff; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; min-height: 320px; display: flex; flex-direction: column; border: 2px solid #fff5eb; }
+        #simCanvas { width: 100%; flex: 1; display: block; }
+        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
+        .control-panel { background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+        .control-group { display: flex; flex-direction: column; gap: 3px; }
+        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
+        .val-badge { background: #fff; padding: 1px 7px; border-radius: 7px; font-size: 0.85rem; border: 2px solid #f0f0f0; }
+        input[type=range] { width: 100%; appearance: none; height: 6px; background: #eee; border-radius: 3px; }
+        input[type=range]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; cursor: pointer; }
+        #m-slider::-webkit-slider-thumb { background: #9b59b6; }
+        #v-slider::-webkit-slider-thumb { background: #3498db; }
+        /* Page-specific: buttons */
+        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .ctrl-btn { padding: 10px; border: none; border-radius: 12px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.2s; color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.08); }
+        .ctrl-btn:active { transform: translateY(2px); box-shadow: none; }
+        .start { background: var(--primary); }
+        .pause { background: #2ecc71; }
+        .reset { background: #95a5a6; }
+        /* Page-specific: gauge */
+        .gauge-panel { background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        /* Page-specific: fraction */
+        .fraction { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; font-size: 0.8em; margin: 0 5px; }
+        .fraction-top { border-bottom: 2px solid currentColor; padding: 0 4px; }
+        .fraction-bottom { padding: 0 4px; }
+        sup { font-size: 0.6em; vertical-align: top; position: relative; top: -0.2em; }
+        @media(max-width:1100px){.container{grid-template-areas:"header" "formula" "diagram" "controls";grid-template-columns:1fr}}
     </style>
 </head>
 
 <body>
-    <div class="branding">
-        <div class="logo">Wuli布雷克</div>
-    </div>
-
+    <div class="branding"><div class="logo">Wuli布雷克</div></div>
     <div class="container">
-        <header>
-            <h1>动能 / Kinetic Energy</h1>
-            <p class="subtitle-text">
-                Energy of object due to its motion.<br>
-                物体由于运动而具有的能量。
-            </p>
-        </header>
+        <header><h1>动能 / Kinetic Energy</h1></header>
 
-        <!-- Formula Section -->
         <section class="formula-display">
-            <div class="formula-container" id="formula-root">
-                <!-- Symbols rendered via JS -->
-            </div>
+            <div class="formula-container" id="formula-root"></div>
             <div class="result-row">
-                E<sub>k</sub> = <span class="operator">½</span> × <span id="res-m" style="color:#9b59b6">0</span> kg ×
+                E<sub>k</sub> = &frac12; &times; <span id="res-m" style="color:#9b59b6">0</span> kg &times;
                 (<span id="res-v" style="color:#3498db">0</span> m/s)<sup>2</sup>
-                = <span id="res-Ek" style="color:var(--accent)">0.00</span> J
+                = <strong id="res-Ek" style="color:var(--accent)">0.00</strong> J
             </div>
             <div class="legend">
-                <div class="legend-item"><span class="sym-key" style="color:var(--accent)">E<sub>k</sub></span>: Kinetic
-                    Energy (动能)</div>
-                <div class="legend-item"><span class="sym-key" style="color:#9b59b6">m</span>: Mass (质量)</div>
-                <div class="legend-item"><span class="sym-key" style="color:#3498db">v</span>: Velocity (速度)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> E<sub>k</sub> 动能</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#9b59b6"></span> m 质量</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#3498db"></span> v 速度</div>
             </div>
         </section>
 
-        <!-- Diagram Section -->
-        <section class="diagram-section">
-            <canvas id="simCanvas"></canvas>
-        </section>
+        <section class="diagram-section"><canvas id="simCanvas"></canvas></section>
 
-        <!-- Controls Section -->
         <section class="controls-section">
             <div class="control-panel">
                 <div class="control-group">
-                    <div class="label-row">
-                        <span>Mass (质量 m)</span>
-                        <span id="m-badge" class="val-badge">10 kg</span>
-                    </div>
+                    <div class="label-row"><span style="color:#9b59b6">质量 m / Mass</span><span id="m-badge" class="val-badge">10 kg</span></div>
                     <input type="range" id="m-slider" min="1" max="100" value="10">
                 </div>
-
                 <div class="control-group">
-                    <div class="label-row">
-                        <span>Velocity (速度 v)</span>
-                        <span id="v-badge" class="val-badge">5 m/s</span>
-                    </div>
+                    <div class="label-row"><span style="color:#3498db">速度 v / Velocity</span><span id="v-badge" class="val-badge">5 m/s</span></div>
                     <input type="range" id="v-slider" min="-30" max="30" value="5">
                 </div>
-
                 <div class="btn-row">
                     <button id="btn-start" class="ctrl-btn start">开始 Start</button>
                     <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
                 </div>
             </div>
-
             <div class="gauge-panel">
                 <canvas id="gaugeCanvas" width="300" height="220"></canvas>
-                <div style="font-weight: 700; font-size: 1.4rem; color: #555; margin-top: -10px;">Velocity (速度 v)</div>
+                <div style="font-weight:700;font-size:0.9rem;color:#555;margin-top:-6px;">速度 v / Velocity</div>
             </div>
         </section>
     </div>
@@ -447,23 +154,23 @@
             resV.textContent = state.v;
 
             const baseSize = 48;
-            const scaleEk = 1 + (Ek / 45000) * 0.3; // max energy is 0.5*100*30^2 = 45000
+            const scaleEk = 1 + (Ek / 45000) * 0.3;
             const scaleM = 1 + (state.m / 100) * 0.3;
             const scaleV = 1 + (Math.abs(state.v) / 30) * 0.2;
 
             const html = `
-                <span style="color:var(--accent); font-weight:700; font-size:${baseSize * scaleEk}px; transition:all 0.2s;">E<sub>k</sub></span>
+                <span style="color:var(--accent);font-weight:700;font-size:${baseSize * scaleEk}px;transition:all 0.2s;">E<sub>k</sub></span>
                 <span style="width:10px"></span>
-                <span style="color:var(--text-dark); font-size:${baseSize}px">=</span>
+                <span style="color:var(--text-dark);font-size:${baseSize}px">=</span>
                 <span style="width:10px"></span>
-                <div class="fraction" style="font-size:${baseSize}px; color:var(--text-dark)">
+                <div class="fraction" style="font-size:${baseSize}px;color:var(--text-dark)">
                     <div class="fraction-top">1</div>
                     <div class="fraction-bottom">2</div>
                 </div>
                 <span style="width:10px"></span>
-                <span style="color:#9b59b6; font-weight:700; font-size:${baseSize * scaleM}px; transition:all 0.2s;">m</span>
-                <span style="width:10px; color:var(--text-dark); font-size:${baseSize}px">·</span>
-                <span style="color:#3498db; font-weight:700; font-size:${baseSize * scaleV}px; transition:all 0.2s;">v<sup>2</sup></span>
+                <span style="color:#9b59b6;font-weight:700;font-size:${baseSize * scaleM}px;transition:all 0.2s;">m</span>
+                <span style="width:10px;color:var(--text-dark);font-size:${baseSize}px">&middot;</span>
+                <span style="color:#3498db;font-weight:700;font-size:${baseSize * scaleV}px;transition:all 0.2s;">v<sup>2</sup></span>
             `;
             if (formulaRoot.innerHTML !== html) formulaRoot.innerHTML = html;
         }
@@ -476,21 +183,17 @@
 
             const currentX = state.currentX;
 
-            // Ground
             ctx.beginPath(); ctx.strokeStyle = '#e0e0e0'; ctx.lineWidth = 4;
             ctx.moveTo(0, groundY); ctx.lineTo(canvas.width, groundY); ctx.stroke();
 
-            // Ball Shadow
             ctx.beginPath(); ctx.ellipse(currentX, groundY + radius * 0.2, radius, radius * 0.2, 0, 0, Math.PI * 2); ctx.fillStyle = 'rgba(0,0,0,0.08)'; ctx.fill();
 
-            // Ball
             ctx.beginPath(); ctx.arc(currentX, groundY - radius, radius, 0, Math.PI * 2);
             const g = ctx.createRadialGradient(currentX - radius * 0.3, groundY - radius * 1.3, radius * 0.1, currentX, groundY - radius, radius);
             g.addColorStop(0, '#fff'); g.addColorStop(0.2, '#9b59b6'); g.addColorStop(1, '#000');
             ctx.fillStyle = g; ctx.fill();
             ctx.beginPath(); ctx.arc(currentX, groundY - radius, radius, 0, Math.PI * 2); ctx.strokeStyle = 'rgba(0,0,0,0.1)'; ctx.lineWidth = 1.5; ctx.stroke();
 
-            // Velocity Vector
             if (state.v !== 0) {
                 const vectorLen = state.v * 4 * scale;
                 drawArrow(currentX, groundY - radius, currentX + vectorLen, groundY - radius, '#3498db', 4, 'v');
@@ -521,7 +224,7 @@
 
             gCtx.beginPath(); gCtx.arc(cx, cy, r, startAngle, endAngle); gCtx.lineWidth = 12; gCtx.strokeStyle = '#f0f0f0'; gCtx.lineCap = 'round'; gCtx.stroke();
 
-            const normVal = (state.v / 30 + 1) / 2; // -30 to 30 => 0 to 1
+            const normVal = (state.v / 30 + 1) / 2;
             const currentAngle = startAngle + range * normVal;
             const midAngle = startAngle + range * 0.5;
 
@@ -552,10 +255,8 @@
         };
         btnReset.onclick = resetSim;
 
-        // Initialize button class
         btnStart.classList.add('start');
 
-        // Initialize position if width available
         if (canvas.clientWidth) {
             canvas.width = canvas.clientWidth;
             state.currentX = canvas.width / 2;
@@ -566,5 +267,4 @@
         update();
     </script>
 </body>
-
 </html>

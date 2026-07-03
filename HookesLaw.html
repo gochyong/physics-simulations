@@ -4,363 +4,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>胡克定律 / Hooke's Law</title>
+    <title>胡克定律 / Hooke's Law - Wuli布雷克</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Warm Theme Palette */
-            --bg-color: #FFF9F0;
-            --primary: #FF8c42;
-            --secondary: #FFC75F;
-            --accent: #FF5E5B;
-            --text-dark: #4A403A;
-            --text-light: #FFF9F0;
-            --card-bg: #FFFFFF;
-            --shadow: 0 4px 20px rgba(255, 140, 66, 0.2);
-            --radius: 16px;
+            --bg-color: #FFF9F0; --primary: #FF8c42; --secondary: #FFC75F;
+            --accent: #FF5E5B; --text-dark: #4A403A; --card-bg: #FFFFFF;
+            --shadow: 0 6px 30px rgba(255,140,66,0.18);
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-dark);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        /* Branding */
-        .watermark {
-            position: fixed;
-            top: 30px;
-            left: 30px;
-            background: #ff8c00;
-            color: white;
-            padding: 10px 25px;
-            border-radius: 25px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
-            z-index: 1000;
-            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
-            pointer-events: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Main Container */
-        .container {
-            display: grid;
-            grid-template-areas:
-                "title title"
-                "formula formula"
-                "diagram controls"
-                "graph graph";
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            width: 100%;
-            max-width: 1000px;
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-        }
-
-        /* Formula Display */
-        .formula-section {
-            grid-area: formula;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 15px;
-            background: #fff5eb;
-            border-radius: var(--radius);
-            border: 2px solid var(--secondary);
-        }
-
-        .formula-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            font-size: 3rem;
-            height: 100px;
-            width: 100%;
-        }
-
-        .symbol {
-            transition: transform 0.3s ease, color 0.3s ease;
-            font-weight: 700;
-            display: inline-block;
-        }
-
-        #sym-F {
-            color: var(--accent);
-        }
-
-        #sym-k {
-            color: var(--primary);
-        }
-
-        #sym-x {
-            color: #0081a7;
-        }
-
-        .operator {
-            color: var(--text-dark);
-            font-weight: 400;
-        }
-
-        .legend {
-            margin-top: 10px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-        }
-
-        .legend-item {
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
-
-        .symbol-key {
-            font-weight: 700;
-            margin-right: 5px;
-        }
-
-        /* Diagram Section */
-        .diagram-section {
-            grid-area: diagram;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #fdfdfd;
-            border-radius: var(--radius);
-            border: 1px solid #eee;
-            min-height: 400px;
-        }
-
-        /* Graph Section */
-        .graph-section {
-            grid-area: graph;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: #fdfdfd;
-            border-radius: var(--radius);
-            border: 1px solid #eee;
-            padding: 20px;
-            min-height: 300px;
-        }
-
-        .graph-title {
-            font-weight: 700;
-            margin-bottom: 10px;
-            color: var(--text-dark);
-        }
-
-        canvas {
-            max-width: 100%;
-            height: auto;
-        }
-
-        /* Controls Section */
-        .controls-section {
-            grid-area: controls;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 30px;
-            padding: 10px 20px;
-        }
-
-        .control-group {
-            background: #fff;
-        }
-
-        label {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-
-        .math-symbol {
-            font-family: serif;
-            font-style: italic;
-            font-weight: bold;
-            margin-left: 5px;
-        }
-
-        .unit {
-            font-size: 0.85rem;
-            color: #888;
-            margin-left: 5px;
-        }
-
-        input[type=range] {
-            width: 100%;
-            appearance: none;
-            height: 8px;
-            background: #eee;
-            border-radius: 5px;
-            outline: none;
-        }
-
-        input[type=range]::-webkit-slider-thumb {
-            appearance: none;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            transition: transform 0.1s;
-        }
-
-        #slider-F::-webkit-slider-thumb {
-            background: var(--accent);
-        }
-
-        #slider-k::-webkit-slider-thumb {
-            background: var(--primary);
-        }
-
-        /* Button Styles */
-        .button-container {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 12px;
-            font-size: 1rem;
-            font-weight: 700;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: inherit;
-        }
-
-        .btn-start {
-            background-color: var(--primary);
-            color: white;
-            box-shadow: 0 4px 10px rgba(255, 140, 66, 0.3);
-        }
-
-        .btn-start:hover {
-            background-color: #e67e3a;
-            transform: translateY(-2px);
-        }
-
-        .btn-reset {
-            background-color: #eee;
-            color: var(--text-dark);
-        }
-
-        .btn-reset:hover {
-            background-color: #ddd;
-            transform: translateY(-2px);
-        }
-
-        /* Responsive */
-        @media (max-width: 850px) {
-            .container {
-                grid-template-areas:
-                    "formula"
-                    "diagram"
-                    "controls"
-                    "graph";
-                grid-template-columns: 1fr;
-            }
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Fredoka','Noto Sans SC',sans-serif; background: var(--bg-color); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 5px 40px 10px; }
+        .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
+        .logo { font-weight: 700; font-size: 1.3rem; color: #fff; background: var(--primary); padding: 6px 18px; border-radius: 16px; box-shadow: 4px 4px 15px rgba(255,140,66,0.3); }
+        .container { width: 100%; max-width: 1400px; margin-top: 8px; display: grid; grid-template-areas:"header header" "formula formula" "diagram controls" "graph graph"; grid-template-columns: 1fr 400px; gap: 12px; }
+        header { grid-area: header; text-align: center; }
+        h1 { font-size: 2rem; color: var(--text-dark); margin-bottom: 2px; }
+        .formula-display { grid-area: formula; background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb; }
+        .formula-container { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; min-height: 50px; }
+        .result-row { font-size: 1rem; font-weight: 600; margin-top: 6px; display: flex; gap: 20px; justify-content: center; }
+        .legend { display: flex; gap: 16px; justify-content: center; border-top: 1px solid #eee; padding-top: 6px; width: 100%; flex-wrap: wrap; }
+        .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+        .diagram-section { grid-area: diagram; background: #fff; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; min-height: 400px; display: flex; align-items: center; justify-content: center; border: 2px solid #fff5eb; }
+        .graph-section { grid-area: graph; background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 20px; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb; }
+        .graph-title { font-weight: 700; margin-bottom: 10px; color: var(--text-dark); font-size: 1rem; }
+        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
+        .control-panel { background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+        .control-group { display: flex; flex-direction: column; gap: 3px; }
+        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
+        .val-badge { background: #fff; padding: 1px 7px; border-radius: 7px; font-size: 0.85rem; border: 2px solid #f0f0f0; }
+        input[type=range] { width: 100%; appearance: none; height: 6px; background: #eee; border-radius: 3px; }
+        input[type=range]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; cursor: pointer; background: var(--primary); }
+        #slider-F::-webkit-slider-thumb { background: var(--accent); }
+        #slider-k::-webkit-slider-thumb { background: var(--primary); }
+        .symbol { transition: transform 0.3s ease, color 0.3s ease; font-weight: 700; display: inline-block; }
+        #sym-F { color: var(--accent); }
+        #sym-k { color: var(--primary); }
+        #sym-x { color: #0081a7; }
+        .button-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; }
+        .btn { padding: 12px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 1rem; color: white; font-family: inherit; transition: all 0.2s; }
+        .btn-start { background-color: var(--primary); box-shadow: 0 4px #d47430; }
+        .btn-start:hover { background-color: #e67e3a; }
+        .btn-start:active { transform: translateY(3px); box-shadow: 0 1px #d47430; }
+        .btn-reset { background-color: #eee; color: var(--text-dark); box-shadow: 0 4px #ccc; }
+        .btn-reset:hover { background-color: #ddd; }
+        .btn-reset:active { transform: translateY(3px); box-shadow: 0 1px #ccc; }
+        .info-card { background: #fff; border-radius: 20px; padding: 12px 16px; box-shadow: var(--shadow); font-size: 0.9rem; line-height: 1.4; color: #5D6D7E; }
+        .result-box { text-align: center; font-size: 1.1rem; font-weight: bold; color: #0081a7; padding: 8px 0; }
+        canvas { display: block; }
+        @media(max-width:1100px){.container{grid-template-areas:"header" "formula" "diagram" "controls" "graph";grid-template-columns:1fr}}
     </style>
 </head>
 
 <body>
+    <div class="branding"><div class="logo">Wuli布雷克</div></div>
+    <div class="container">
+        <header><h1>胡克定律 / Hooke's Law</h1></header>
 
-    <div class="watermark">Wuli布雷克</div>
-
-    <main class="container">
-        <h1 style="grid-area: title; text-align: center; font-size: 2.2rem; margin-bottom: 10px;">胡克定律 <span
-                class="subtitle" style="font-size: 1.1rem; color: var(--primary); font-weight: 400;">Hooke's Law</span>
-        </h1>
-        <!-- Interactive Formula -->
-        <section class="formula-section">
+        <section class="formula-display">
             <div class="formula-container">
-                <span id="sym-F" class="symbol">F</span>
-                <span class="operator">=</span>
-                <span id="sym-k" class="symbol">k</span>
-                <span class="operator">·</span>
-                <span id="sym-x" class="symbol">x</span>
+                <span id="sym-F" class="symbol" style="font-size:3rem;">F</span>
+                <span style="font-size:26px;color:#ccc;">=</span>
+                <span id="sym-k" class="symbol" style="font-size:3rem;">k</span>
+                <span style="font-size:20px;color:#ccc;">·</span>
+                <span id="sym-x" class="symbol" style="font-size:3rem;">x</span>
+            </div>
+            <div class="result-row">
+                <span>形变量 x = F/k = <strong id="disp-x-res" style="color:#0081a7">2.50</strong> m</span>
             </div>
             <div class="legend">
-                <div class="legend-item"><span class="symbol-key" style="color: var(--accent)">F</span>: 力 Force (N)
-                </div>
-                <div class="legend-item"><span class="symbol-key" style="color: var(--primary)">k</span>: 劲度系数 Spring
-                    Constant (N/m)</div>
-                <div class="legend-item"><span class="symbol-key" style="color: #0081a7">x</span>: 形变量 Extension (m)
-                </div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> F: 力 / Force (N)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--primary)"></span> k: 劲度系数 / Spring Constant (N/m)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#0081a7"></span> x: 形变量 / Extension (m)</div>
             </div>
         </section>
 
-        <!-- Visualization Diagram -->
         <section class="diagram-section">
             <canvas id="springCanvas" width="450" height="400"></canvas>
         </section>
 
-        <!-- Controls -->
         <section class="controls-section">
-            <div class="control-group">
-                <label for="slider-F">
-                    <span>拉力 Force <span class="math-symbol">F</span></span>
-                    <span><span id="disp-F">50</span> <span class="unit">N</span></span>
-                </label>
-                <input type="range" id="slider-F" min="0" max="100" step="1" value="50">
-            </div>
+            <div class="control-panel">
+                <div class="control-group">
+                    <div class="label-row"><span style="color:var(--accent)">拉力 / Force F</span><span id="disp-F" class="val-badge">50 N</span></div>
+                    <input type="range" id="slider-F" min="0" max="100" step="1" value="50">
+                </div>
 
-            <div class="control-group">
-                <label for="slider-k">
-                    <span>劲度系数 Constant <span class="math-symbol">k</span></span>
-                    <span><span id="disp-k">20</span> <span class="unit">N/m</span></span>
-                </label>
-                <input type="range" id="slider-k" min="10" max="50" step="1" value="20">
-            </div>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:var(--primary)">劲度系数 / Constant k</span><span id="disp-k" class="val-badge">20 N/m</span></div>
+                    <input type="range" id="slider-k" min="10" max="50" step="1" value="20">
+                </div>
 
-            <div class="result-box" style="text-align: center; font-size: 1.1rem; font-weight: bold; color: #0081a7;">
-                形变量 Extension (x = F/k) = <span id="disp-x">2.50</span> m
-            </div>
+                <div class="result-box">
+                    形变量 Extension (x = F/k) = <span id="disp-x">2.50</span> m
+                </div>
 
-            <div class="button-container">
-                <button id="btn-start" class="btn btn-start">开始 Start</button>
-                <button id="btn-reset" class="btn btn-reset">重置 Reset</button>
+                <div class="button-row">
+                    <button id="btn-start" class="btn btn-start">开始 Start</button>
+                    <button id="btn-reset" class="btn btn-reset">重置 Reset</button>
+                </div>
+            </div>
+            <div class="info-card">
+                <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem">演示要点 / Key Points</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700">F</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">F = k · x</div><div style="font-size:0.78rem;color:#888">弹簧的伸长量（或压缩量）与施加的力成正比，比例系数为劲度系数k。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,94,91,0.1);color:var(--accent);font-weight:700">k</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">劲度系数 k</div><div style="font-size:0.78rem;color:#888">k 越大，弹簧越"硬"，同样的力产生的形变越小。k 越小，弹簧越"软"。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(0,129,167,0.1);color:#0081a7;font-weight:700">x</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">弹性限度</div><div style="font-size:0.78rem;color:#888">胡克定律仅在弹性限度内成立，超过限度弹簧发生永久形变。</div></div>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <!-- Graph Section -->
         <section class="graph-section">
             <div class="graph-title">x - F 图像 / Extension-Force Graph</div>
             <canvas id="graphCanvas" width="800" height="300"></canvas>
         </section>
-    </main>
+    </div>
 
     <script>
         const canvas = document.getElementById('springCanvas');
@@ -465,7 +234,7 @@
             // Draw Spring
             ctx.strokeStyle = '#777';
             ctx.lineWidth = 3;
-            // The spring stiffness k affects thickness visually? 
+            // The spring stiffness k affects thickness visually?
             // Let's make it thicker if k is higher
             ctx.lineWidth = 2 + (state.k / 50) * 4;
             drawSpring(cx, topY, springWidth, currentSpringHeight, 15);
