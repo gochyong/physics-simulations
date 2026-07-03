@@ -51,22 +51,10 @@
 <body>
     <div class="branding"><div class="logo">Wuli布雷克</div></div>
     <div class="container">
-        <header style="display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;">
-            <h1 style="margin:0;">欧姆定律 / Ohm's Law</h1>
-            <svg width="200" height="70" viewBox="0 0 400 120" preserveAspectRatio="xMidYMid meet" style="flex-shrink:0;">
-                <path d="M 60 100 L 60 40 L 340 40 L 340 100 L 60 100" fill="none" stroke="#444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                <rect x="165" y="25" width="70" height="30" fill="white" stroke="var(--col-r)" stroke-width="3" rx="4"/>
-                <text x="200" y="45" font-family="Fredoka" font-size="14" fill="var(--col-r)" font-weight="bold" text-anchor="middle">R</text>
-                <circle cx="340" cy="70" r="18" fill="white" stroke="var(--col-i)" stroke-width="3"/>
-                <text x="340" y="76" font-family="Fredoka" font-size="15" fill="var(--col-i)" font-weight="bold" text-anchor="middle">A</text>
-                <path d="M 165 40 L 165 65 L 235 65 L 235 40" fill="none" stroke="var(--col-v)" stroke-width="2"/>
-                <circle cx="200" cy="65" r="18" fill="white" stroke="var(--col-v)" stroke-width="3"/>
-                <text x="200" y="71" font-family="Fredoka" font-size="15" fill="var(--col-v)" font-weight="bold" text-anchor="middle">V</text>
-            </svg>
-        </header>
+        <header><h1>欧姆定律 / Ohm's Law</h1></header>
 
-        <section class="formula-display">
-            <div class="formula-container">
+        <section class="formula-display" style="flex-direction:row;align-items:center;justify-content:center;gap:30px;flex-wrap:wrap;">
+            <div class="formula-container" style="flex-shrink:0;">
                 <span id="f-i" class="sym" style="color: var(--col-i);">I</span>
                 <span style="margin: 0 12px; color: #ccc; font-size: 1.6rem;">=</span>
                 <div class="frac">
@@ -83,6 +71,16 @@
                 <div class="legend-item"><span class="legend-dot" style="background:var(--col-r)"></span> 电阻 R (Ω)</div>
                 <div class="legend-item"><span class="legend-dot" style="background:var(--col-i)"></span> 电流 I (A)</div>
             </div>
+            <svg width="300" height="90" viewBox="0 0 400 120" preserveAspectRatio="xMidYMid meet" style="flex-shrink:0;">
+                <path d="M 60 100 L 60 40 L 340 40 L 340 100 L 60 100" fill="none" stroke="#444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                <rect x="165" y="25" width="70" height="30" fill="white" stroke="var(--col-r)" stroke-width="3" rx="4"/>
+                <text x="200" y="45" font-family="Fredoka" font-size="14" fill="var(--col-r)" font-weight="bold" text-anchor="middle">R</text>
+                <circle cx="340" cy="70" r="18" fill="white" stroke="var(--col-i)" stroke-width="3"/>
+                <text x="340" y="76" font-family="Fredoka" font-size="15" fill="var(--col-i)" font-weight="bold" text-anchor="middle">A</text>
+                <path d="M 165 40 L 165 65 L 235 65 L 235 40" fill="none" stroke="var(--col-v)" stroke-width="2"/>
+                <circle cx="200" cy="65" r="18" fill="white" stroke="var(--col-v)" stroke-width="3"/>
+                <text x="200" y="71" font-family="Fredoka" font-size="15" fill="var(--col-v)" font-weight="bold" text-anchor="middle">V</text>
+            </svg>
         </section>
 
         <section class="diagram-section"><canvas id="cvs"></canvas></section>
