@@ -231,7 +231,6 @@ function draw() {
     ctx.fillStyle = '#e74c3c';
     ctx.font = 'bold 12px Fredoka';
     ctx.textAlign = 'center';
-    ctx.fillText('a_c=' + ac.toFixed(2) + ' m/s²', alx, aly - 6);
 
     // Draw centripetal force arrow (orange, pointing toward center, slightly offset)
     const fScale = 0.8; // px per N
@@ -251,7 +250,6 @@ function draw() {
     ctx.fillStyle = '#FF8c42';
     ctx.font = 'bold 11px Fredoka';
     ctx.textAlign = 'center';
-    ctx.fillText('F_c=' + Fc.toFixed(2) + ' N', flx, fly - 4);
 
     // Draw ball
     const ballR = 10;
