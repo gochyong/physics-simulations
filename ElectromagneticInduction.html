@@ -244,7 +244,6 @@ function draw() {
     ctx.fillText('G', galvX, galvY + 4);
 
     // --- Draw magnet ---
-    const isNLeft = S.nsDir === 'N-left';
     const nColor = '#e74c3c', sColor = '#3498db';
     const gradM = ctx.createLinearGradient(magnetLeft, 0, magnetRight, 0);
     gradM.addColorStop(0, isNLeft ? nColor : sColor);
@@ -271,7 +270,7 @@ function draw() {
     const nFaceX = isNLeft ? mx + magnetW * 0.1 : mx + magnetW * 0.9;
     const sFaceX = isNLeft ? mx + magnetW * 0.9 : mx + magnetW * 0.1;
     for (let i = 0; i < 7; i++) {
-        const frac = (i - 3) / 3; // -1 to 1
+        const frac = (i - 3) / 3;
         const sy = my + frac * magnetH * 0.4;
         const bulge = magnetW * 0.5 * (1 + Math.abs(frac) * 0.6);
         const cpx = (nFaceX + sFaceX) / 2 + frac * bulge * 0.3;
@@ -279,7 +278,6 @@ function draw() {
         ctx.strokeStyle = 'rgba(127,140,141,0.5)'; ctx.lineWidth = 1.2;
         ctx.beginPath(); ctx.moveTo(nFaceX, sy);
         ctx.quadraticCurveTo(cpx, cpy, sFaceX, sy); ctx.stroke();
-        // Arrow at midpoint
         const t = 0.5;
         const ax = (1-t)*(1-t)*nFaceX + 2*(1-t)*t*cpx + t*t*sFaceX;
         const ay = (1-t)*(1-t)*sy + 2*(1-t)*t*cpy + t*t*sy;
@@ -331,12 +329,12 @@ function draw() {
         let emfMax = 0.5;
         const prePts = [];
         const sp = S.side === 'left' ? 1 : -1;
+        const magPoleSep = magnetW * 0.8;
         for (let i = 0; i <= nPts; i++) {
             const px = startX + (i / nPts) * travelDist;
             const mc = px + magnetW / 2;
-            const ps = magnetW * 0.8;
-            const nX2 = mc + (isNLeft ? -ps / 2 : ps / 2);
-            const sX2 = mc + (isNLeft ? ps / 2 : -ps / 2);
+            const nX2 = mc + (isNLeft ? -magPoleSep / 2 : magPoleSep / 2);
+            const sX2 = mc + (isNLeft ? magPoleSep / 2 : -magPoleSep / 2);
             const pN = S.B * 3 * Math.exp(-(nX2 - coilCx) * (nX2 - coilCx) / (2 * sigmaP * sigmaP));
             const pS = S.B * 3 * Math.exp(-(sX2 - coilCx) * (sX2 - coilCx) / (2 * sigmaP * sigmaP));
             const dN = -pN * (nX2 - coilCx) / (sigmaP * sigmaP) * speedPx * sp;
