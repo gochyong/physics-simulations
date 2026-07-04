@@ -14,72 +14,88 @@
         .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
         .logo { font-weight: 700; font-size: 1.3rem; color: #fff; background: var(--primary); padding: 6px 18px; border-radius: 16px; box-shadow: 4px 4px 15px rgba(255,140,66,0.3); }
         .container { width: 100%; max-width: 1400px; margin-top: 8px; display: grid; grid-template-areas:"header header" "formula formula" "diagram controls"; grid-template-columns: 1fr 400px; gap: 12px; }
-        header { grid-area: header; text-align: center; } h1 { font-size: 2rem; margin-bottom: 2px; } .subtitle { font-size: 0.85rem; color: #999; }
+        header { grid-area: header; text-align: center; } h1 { font-size: 2rem; margin-bottom: 2px; }
         .formula-display { grid-area: formula; background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb; }
         .formula-container { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; min-height: 40px; }
-        .formula-item { font-size: 0.9rem; font-weight: 600; padding: 3px 10px; border-radius: 10px; background: #fafaf7; }
         .result-row { font-size: 0.95rem; font-weight: 600; margin-top: 4px; display: flex; gap: 20px; justify-content: center; }
         .legend { display: flex; gap: 16px; justify-content: center; border-top: 1px solid #eee; padding-top: 6px; width: 100%; flex-wrap: wrap; }
         .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
         .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
         .diagram-section { grid-area: diagram; display: flex; flex-direction: column; gap: 6px; }
-        .main-canvas-wrap { background: #fff; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; flex: 1; min-height: 200px; border: 2px solid #fff; }
-        #simCanvas { width: 100%; height: 100%; display: block; }
-        .sub-wrap { background: #fff; border-radius: 16px; box-shadow: var(--shadow); flex: 1; display: flex; flex-direction: column; border: 1px solid #fff5eb; overflow: hidden; }
+        .main-wrap { background: #fff; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; min-height: 260px; display: flex; border: 2px solid #fff; flex: 2; }
+        #simCanvas { width: 100%; flex: 1; display: block; }
+        .sub-wrap { background: #fff; border-radius: 16px; box-shadow: var(--shadow); flex: 1; display: flex; flex-direction: column; border: 1px solid #fff5eb; overflow: hidden; min-height: 130px; }
         .sub-label { background: #fff; padding: 3px 10px; font-weight: 700; font-size: 0.8rem; text-align: center; }
         .sub-wrap canvas { width: 100%; flex: 1; display: block; }
         .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
         .control-panel { background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+        .param-section { background: #fff; border-radius: 14px; padding: 10px 14px 8px; border: 2px solid #f5f0eb; }
+        .param-section-header { font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; }
         .control-group { display: flex; flex-direction: column; gap: 3px; }
         .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
         .val-badge { background: #fff; padding: 1px 7px; border-radius: 7px; font-size: 0.85rem; border: 2px solid #f0f0f0; }
         input[type=range] { width: 100%; appearance: none; height: 6px; background: #eee; border-radius: 3px; }
         input[type=range]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; cursor: pointer; background: var(--primary); }
-        #slider-N::-webkit-slider-thumb { background: #8e44ad; }
-        #slider-speed::-webkit-slider-thumb { background: #e74c3c; }
+        .toggle-row { display: flex; gap: 8px; align-items: center; }
+        .tog-btn { flex: 1; padding: 7px 10px; border: 2px solid #ddd; border-radius: 10px; font-size: 0.8rem; font-weight: 600; cursor: pointer; text-align: center; background: #fff; color: #888; transition: all .2s; }
+        .tog-btn.sel { border-color: var(--primary); background: rgba(255,140,66,0.08); color: var(--primary); }
         .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px; }
         .ctrl-btn { padding: 10px; border: none; border-radius: 14px; font-size: 1.05rem; font-weight: 700; cursor: pointer; color: white; }
         .start { background: var(--primary); } .pause { background: #2ecc71; } .reset { background: #95a5a6; }
         .info-card { background: #fff; border-radius: 20px; padding: 12px 16px; box-shadow: var(--shadow); font-size: 0.9rem; line-height: 1.4; color: #5D6D7E; }
-        @media (max-width: 1100px) { .container { grid-template-areas: "header" "formula" "diagram" "controls"; grid-template-columns: 1fr; } }
+        @media (max-width:1100px) { .container { grid-template-areas:"header" "formula" "diagram" "controls"; grid-template-columns:1fr; } }
     </style>
 </head>
 <body>
 <div class="branding"><div class="logo">Wuli布雷克</div></div>
 <div class="container">
-<header><h1>电磁感应 / Electromagnetic Induction</h1><p class="subtitle">Faraday's Law &amp; Lenz's Law &mdash; 条形磁铁穿过线圈</p></header>
+<header><h1>电磁感应 / Electromagnetic Induction</h1></header>
 <section class="formula-display">
     <div class="formula-container" id="formula-root"></div>
     <div class="result-row" id="result-row"></div>
     <div class="legend">
-        <div class="legend-item"><span class="legend-dot" style="background:#e74c3c"></span> N极 (北极)</div>
-        <div class="legend-item"><span class="legend-dot" style="background:#3498db"></span> S极 (南极)</div>
-        <div class="legend-item"><span style="color:#D4956B">&#8213;&#8213;</span> 线圈 Coil</div>
-        <div class="legend-item"><span style="color:#27ae60">&#8593;</span> 速度方向 v</div>
-        <div class="legend-item"><span style="color:#e67e22">&#10227;</span> 感应电流 I</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#e74c3c"></span> N极</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#3498db"></span> S极</div>
+        <div class="legend-item"><span style="color:#D4956B">――</span> 线圈</div>
+        <div class="legend-item"><span style="color:#27ae60">→</span> 速度 v</div>
     </div>
 </section>
 <section class="diagram-section">
-    <div class="main-canvas-wrap"><canvas id="simCanvas"></canvas></div>
-    <div class="sub-wrap" style="flex:1;min-height:150px;">
-        <div class="sub-label">感应电动势 vs 时间 &nbsp; Induced EMF vs Time</div>
+    <div class="main-wrap"><canvas id="simCanvas"></canvas></div>
+    <div class="sub-wrap">
+        <div class="sub-label">感应电动势 EMF vs 磁铁位置 &nbsp; (法拉第定律 ε = −N dΦ/dt)</div>
         <canvas id="canvasEMF"></canvas>
     </div>
 </section>
 <section class="controls-section">
     <div class="control-panel">
-        <div class="control-group"><div class="label-row"><span>线圈匝数 N</span><span id="badge-N" class="val-badge">5</span></div><input type="range" id="slider-N" min="1" max="10" step="1" value="5"></div>
-        <div class="control-group"><div class="label-row"><span>磁铁速度 Speed</span><span id="badge-speed" class="val-badge">3</span></div><input type="range" id="slider-speed" min="1" max="5" step="1" value="3"></div>
-        <div class="control-group"><div class="label-row"><span>磁铁强度 Strength</span><span id="badge-strength" class="val-badge">3</span></div><input type="range" id="slider-strength" min="1" max="5" step="1" value="3"></div>
+        <div class="param-section" style="border-left:5px solid #e74c3c;">
+            <div class="param-section-header">🧲 磁铁 / Magnet</div>
+            <div class="control-group"><div class="label-row"><span>磁铁速度 Speed</span><span id="badge-speed" class="val-badge">2</span></div><input type="range" id="slider-speed" min="1" max="5" step="1" value="2"></div>
+            <div class="toggle-row" style="margin-top:4px;">
+                <span style="font-size:0.8rem;font-weight:600;">起始位置 Start:</span>
+                <button class="tog-btn sel" id="btn-left" onclick="S.side='left';updateTog()">左侧 Left</button>
+                <button class="tog-btn" id="btn-right" onclick="S.side='right';updateTog()">右侧 Right</button>
+            </div>
+            <div class="toggle-row" style="margin-top:2px;">
+                <span style="font-size:0.8rem;font-weight:600;">NS 方向 NS Dir:</span>
+                <button class="tog-btn sel" id="btn-nl" onclick="S.nsDir='N-left';updateTog()">N左S右</button>
+                <button class="tog-btn" id="btn-nr" onclick="S.nsDir='N-right';updateTog()">N右S左</button>
+            </div>
+        </div>
+        <div class="param-section" style="border-left:5px solid #8e44ad;">
+            <div class="param-section-header">🔗 线圈 / Coil</div>
+            <div class="control-group"><div class="label-row"><span>匝数 N</span><span id="badge-N" class="val-badge">5</span></div><input type="range" id="slider-N" min="1" max="10" step="1" value="5"></div>
+            <div class="control-group" style="margin-top:4px;"><div class="label-row"><span>磁铁强度 B</span><span id="badge-B" class="val-badge">3</span></div><input type="range" id="slider-B" min="1" max="5" step="1" value="3"></div>
+        </div>
         <div class="btn-row"><button id="btn-start" class="ctrl-btn start">开始 Start</button><button id="btn-reset" class="ctrl-btn reset">重置 Reset</button></div>
     </div>
     <div class="info-card">
         <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem;">物理要点 / Key Points</div>
         <div style="display:flex;flex-direction:column;gap:6px;">
-            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;">&#949;</div><div><div style="font-weight:700;font-size:0.9rem;">法拉第定律 &#949; = &minus;N d&#934;/dt</div><div style="font-size:0.78rem;color:#888;">感应电动势等于磁通量变化率的负值乘以匝数。</div></div></div>
-            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:#2ecc71;font-weight:700;">&#8634;</div><div><div style="font-weight:700;font-size:0.9rem;">楞次定律 Lenz&rsquo;s Law</div><div style="font-size:0.78rem;color:#888;">感应电流的方向总是阻碍引起感应电流的磁通量变化。</div></div></div>
-            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(142,68,173,0.1);color:#8e44ad;font-weight:700;">&#934;</div><div><div style="font-weight:700;font-size:0.9rem;">磁通量 &#934; = BA</div><div style="font-size:0.78rem;color:#888;">磁通量等于磁感应强度B与面积A的乘积（均匀磁场下）。</div></div></div>
-            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:#3498db;font-weight:700;">&#9889;</div><div><div style="font-weight:700;font-size:0.9rem;">应用 Applications</div><div style="font-size:0.78rem;color:#888;">发电机、变压器、电磁炉、无线充电、金属探测器等。</div></div></div>
+            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;">ε</div><div><div style="font-weight:700;font-size:0.9rem;">ε = −N dΦ/dt</div><div style="font-size:0.78rem;color:#888;">感应电动势等于磁通量变化率的负值乘以匝数。</div></div></div>
+            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:#2ecc71;font-weight:700;">🔄</div><div><div style="font-weight:700;font-size:0.9rem;">楞次定律</div><div style="font-size:0.78rem;color:#888;">感应电流方向总是阻碍磁通量的变化。</div></div></div>
+            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(142,68,173,0.1);color:#8e44ad;font-weight:700;">Φ</div><div><div style="font-weight:700;font-size:0.9rem;">磁铁进出线圈→EMF反向</div><div style="font-size:0.78rem;color:#888;">进入和离开线圈时感应电动势方向相反。</div></div></div>
         </div>
     </div>
 </section>
@@ -88,22 +104,26 @@
 <script>
 const simC = document.getElementById('simCanvas'), ctx = simC.getContext('2d');
 const emfC = document.getElementById('canvasEMF'), ctxE = emfC.getContext('2d');
-const sN = document.getElementById('slider-N'), sSpeed = document.getElementById('slider-speed'), sStrength = document.getElementById('slider-strength');
-const bN = document.getElementById('badge-N'), bSpeed = document.getElementById('badge-speed'), bStrength = document.getElementById('badge-strength');
+const sSpeed = document.getElementById('slider-speed'), sN = document.getElementById('slider-N'), sB = document.getElementById('slider-B');
+const bSpeed = document.getElementById('badge-speed'), bN = document.getElementById('badge-N'), bB = document.getElementById('badge-B');
 const bStart = document.getElementById('btn-start'), bReset = document.getElementById('btn-reset');
-const fRoot = document.getElementById('formula-root');
-const rRow = document.getElementById('result-row');
+const fRoot = document.getElementById('formula-root'), rRow = document.getElementById('result-row');
 
-const S = { N: 5, speed: 3, strength: 3, playing: false, time: 0 };
+const S = { speed: 2, N: 5, B: 3, side: 'left', nsDir: 'N-left', playing: false, magnetX: 0, time: 0 };
 let lt = 0;
-const EMF_HIST = []; // {t, emf} pairs
-const HIST_MAX = 250;
+const EMF_POS = []; // {x, emf} — EMF vs magnet position
+
+function updateTog() {
+    document.getElementById('btn-left').className = 'tog-btn' + (S.side === 'left' ? ' sel' : '');
+    document.getElementById('btn-right').className = 'tog-btn' + (S.side === 'right' ? ' sel' : '');
+    document.getElementById('btn-nl').className = 'tog-btn' + (S.nsDir === 'N-left' ? ' sel' : '');
+    document.getElementById('btn-nr').className = 'tog-btn' + (S.nsDir === 'N-right' ? ' sel' : '');
+    EMF_POS.length = 0;
+}
 
 function resize() {
-    simC.width = simC.clientWidth;
-    simC.height = simC.clientHeight;
-    emfC.width = emfC.clientWidth;
-    emfC.height = emfC.clientHeight;
+    simC.width = simC.clientWidth; simC.height = simC.clientHeight;
+    emfC.width = emfC.clientWidth; emfC.height = emfC.clientHeight;
 }
 window.addEventListener('resize', resize);
 
@@ -117,454 +137,280 @@ function arrow(c, x, y, dx, dy, clr, lw) {
     c.closePath(); c.fill();
 }
 
-function drawFieldLine(c, x1, y1, x2, y2, cpx, cpy, clr, lw, alpha) {
-    c.save();
-    c.globalAlpha = alpha || 0.5;
-    c.strokeStyle = clr || '#888';
-    c.lineWidth = lw || 1.2;
-    c.beginPath();
-    c.moveTo(x1, y1);
-    c.quadraticCurveTo(cpx, cpy, x2, y2);
-    c.stroke();
-    c.restore();
-}
-
 function draw() {
     ctx.clearRect(0, 0, simC.width, simC.height);
     const cw = simC.width, ch = simC.height;
     if (cw < 10 || ch < 10) return;
+    ctx.fillStyle = '#fdfdfa'; ctx.fillRect(0, 0, cw, ch);
 
-    // Background
-    ctx.fillStyle = '#fdfdfa';
-    ctx.fillRect(0, 0, cw, ch);
+    const coilCx = cw * 0.50, coilCy = ch * 0.50;
+    const coilW = 140, coilH = 16, turnSp = Math.min(22, (ch * 0.6) / (S.N + 1));
+    const coilHalfH = S.N * turnSp / 2;
+    const coilLeft = coilCx - coilW / 2, coilRight = coilCx + coilW / 2;
 
-    // --- Compute geometry ---
-    const coilCx = cw * 0.5;
-    const coilCy = ch * 0.40;
-    const coilWidth = Math.min(220, cw * 0.38);
-    const turnSpacing = Math.min(30, Math.max(10, ch * 0.52 / (S.N + 2)));
-    const coilHalfH = S.N * turnSpacing / 2;
-    const coilLeft = coilCx - coilWidth / 2;
-    const coilRight = coilCx + coilWidth / 2;
-    const coilTop = coilCy - coilHalfH;
-    const coilBottom = coilCy + coilHalfH;
+    // Magnet
+    const magnetW = 70, magnetH = S.N * turnSp * 0.7 + 20;
+    const edgeMargin = 40;
+    const startX = S.side === 'left' ? edgeMargin : cw - edgeMargin - magnetW;
+    const endX = S.side === 'left' ? cw - edgeMargin - magnetW : edgeMargin;
+    const travelDist = endX - startX;
+    const speedPx = S.speed * 60; // px/s
+    const travelTime = Math.abs(travelDist) / speedPx;
 
-    const magnetW = coilWidth * 0.55;
-    const magnetH = Math.max(turnSpacing * 2.5, coilHalfH * 0.5);
-    const omega = S.speed * 0.35 * 2 * Math.PI;
-    const amplitude = coilHalfH + magnetH * 0.7 + turnSpacing * 2;
-    const magnetY = coilCy + amplitude * Math.sin(omega * S.time);
-    const magnetV = amplitude * omega * Math.cos(omega * S.time);
-
-    const magnetLeft = coilCx - magnetW / 2;
-    const magnetRight = coilCx + magnetW / 2;
-    const magnetTop = magnetY - magnetH / 2;
-    const magnetBot = magnetY + magnetH / 2;
+    if (!S.playing) {
+        S.magnetX = startX;
+        S.time = 0;
+    }
+    const mx = S.magnetX, my = coilCy;
+    const magnetLeft = mx, magnetRight = mx + magnetW;
+    const magnetTop = my - magnetH / 2, magnetBot = my + magnetH / 2;
 
     // --- Physics ---
-    const sigma = coilHalfH * 0.40 + turnSpacing;
-    const Phi0 = S.strength * 6.0;
-    const dy = magnetY - coilCy;
-    const flux = Phi0 * Math.exp(-dy * dy / (2 * sigma * sigma));
-    const dFluxDt = -flux * dy / (sigma * sigma) * magnetV;
+    const sigma = coilW * 0.35;
+    const dx = (mx + magnetW / 2) - coilCx;
+    const flux = S.B * 3 * Math.exp(-dx * dx / (2 * sigma * sigma));
+    const dFluxDt = -flux * dx / (sigma * sigma) * (S.playing ? speedPx * (S.side === 'left' ? 1 : -1) : 0);
     const emf = -S.N * dFluxDt;
     const emfAbs = Math.abs(emf);
 
-    // --- Draw coil former (dashed outline) ---
-    ctx.strokeStyle = '#ccc';
-    ctx.lineWidth = 1;
-    ctx.setLineDash([5, 5]);
-    ctx.strokeRect(coilLeft - 8, coilTop - 6, coilWidth + 16, coilHalfH * 2 + 12);
+    // --- Draw coil ---
+    ctx.strokeStyle = '#ccc'; ctx.lineWidth = 1; ctx.setLineDash([5, 5]);
+    ctx.strokeRect(coilLeft - 6, coilCy - coilHalfH - 3, coilW + 12, coilHalfH * 2 + 6);
     ctx.setLineDash([]);
 
-    // --- Draw coil turns ---
-    const copperColor = '#D4956B';
-    const copperDark = '#B87333';
     for (let i = 0; i < S.N; i++) {
-        const ty = coilTop + (i + 0.5) * turnSpacing;
-        // shadow
-        ctx.strokeStyle = 'rgba(180,130,100,0.3)';
-        ctx.lineWidth = 3.5;
-        ctx.beginPath();
-        ctx.moveTo(coilLeft, ty + 1);
-        ctx.lineTo(coilRight, ty + 1);
-        ctx.stroke();
-        // main wire
-        ctx.strokeStyle = copperColor;
-        ctx.lineWidth = 2.8;
-        ctx.lineCap = 'round';
-        ctx.beginPath();
-        ctx.moveTo(coilLeft, ty);
-        ctx.lineTo(coilRight, ty);
-        ctx.stroke();
-        // end dots
-        ctx.fillStyle = copperDark;
-        ctx.beginPath();
-        ctx.arc(coilLeft, ty, 3.5, 0, Math.PI * 2);
-        ctx.arc(coilRight, ty, 3.5, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = copperColor;
-        ctx.beginPath();
-        ctx.arc(coilLeft, ty, 2, 0, Math.PI * 2);
-        ctx.arc(coilRight, ty, 2, 0, Math.PI * 2);
-        ctx.fill();
+        const ty = coilCy - coilHalfH + (i + 0.5) * turnSp;
+        // left half (behind)
+        ctx.strokeStyle = '#C4956B'; ctx.lineWidth = 2.5; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(coilLeft, ty); ctx.lineTo(coilCx, ty); ctx.stroke();
+        // right half (front)
+        ctx.strokeStyle = '#D4956B'; ctx.lineWidth = 3.2;
+        ctx.beginPath(); ctx.moveTo(coilCx, ty); ctx.lineTo(coilRight, ty); ctx.stroke();
+        ctx.fillStyle = '#B87333'; ctx.beginPath(); ctx.arc(coilLeft, ty, 3, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#D4956B'; ctx.beginPath(); ctx.arc(coilRight, ty, 3, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#B87333'; ctx.beginPath(); ctx.arc(coilCx, ty, 3, 0, Math.PI * 2); ctx.fill();
+    }
+    // Vertical connector
+    ctx.strokeStyle = '#D4956B'; ctx.lineWidth = 2;
+    for (let i = 0; i < S.N - 1; i++) {
+        const y1 = coilCy - coilHalfH + (i + 0.5) * turnSp, y2 = y1 + turnSp;
+        ctx.beginPath(); ctx.moveTo(coilRight, y1); ctx.lineTo(coilRight, y2); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(coilLeft, y1); ctx.lineTo(coilLeft, y2); ctx.stroke();
     }
 
-    // Vertical connector lines (zigzag on left and right)
-    ctx.strokeStyle = copperColor;
-    ctx.lineWidth = 2.2;
-    for (let i = 0; i < S.N - 1; i++) {
-        const y1 = coilTop + (i + 0.5) * turnSpacing;
-        const y2 = coilTop + (i + 1.5) * turnSpacing;
-        // Left side
-        ctx.beginPath();
-        ctx.moveTo(coilLeft, y1);
-        ctx.lineTo(coilLeft, y2);
-        ctx.stroke();
-        // Right side
-        ctx.beginPath();
-        ctx.moveTo(coilRight, y1);
-        ctx.lineTo(coilRight, y2);
-        ctx.stroke();
-    }
+    // --- Galvanometer above coil ---
+    const galvX = coilCx, galvY = coilCy - coilHalfH - 40;
+    const galvR = 22;
+    ctx.beginPath(); ctx.arc(galvX, galvY, galvR, 0, Math.PI * 2);
+    ctx.fillStyle = '#fff'; ctx.fill();
+    ctx.strokeStyle = '#555'; ctx.lineWidth = 2; ctx.stroke();
+    // Needle — deflects left/right based on emf sign
+    const emfClamp = Math.max(Math.abs(emf), 1);
+    const needleAngle = (emf / emfClamp) * Math.PI * 0.35;
+    const nx = galvX + (galvR - 8) * Math.sin(needleAngle);
+    const ny = galvY - (galvR - 8) * Math.cos(needleAngle);
+    ctx.beginPath(); ctx.moveTo(galvX, galvY); ctx.lineTo(nx, ny);
+    ctx.strokeStyle = '#FF5E5B'; ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.stroke();
+    ctx.fillStyle = '#FF5E5B'; ctx.beginPath(); ctx.arc(galvX, galvY, 3.5, 0, Math.PI * 2); ctx.fill();
+    // Galv wires
+    ctx.strokeStyle = '#999'; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(galvX - 12, galvY + galvR); ctx.lineTo(coilRight, coilCy - coilHalfH); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(galvX + 12, galvY + galvR); ctx.lineTo(coilLeft, coilCy - coilHalfH); ctx.stroke();
+    ctx.fillStyle = '#888'; ctx.font = '9px Fredoka'; ctx.textAlign = 'center';
+    ctx.fillText('G', galvX, galvY + 4);
 
     // --- Draw magnet ---
-    // Magnet body
-    const gradM = ctx.createLinearGradient(magnetLeft, magnetTop, magnetLeft, magnetBot);
-    gradM.addColorStop(0, '#e74c3c');
-    gradM.addColorStop(0.48, '#e74c3c');
-    gradM.addColorStop(0.52, '#3498db');
-    gradM.addColorStop(1, '#3498db');
+    const isNLeft = S.nsDir === 'N-left';
+    const nColor = '#e74c3c', sColor = '#3498db';
+    const gradM = ctx.createLinearGradient(magnetLeft, 0, magnetRight, 0);
+    gradM.addColorStop(0, isNLeft ? nColor : sColor);
+    gradM.addColorStop(0.48, isNLeft ? nColor : sColor);
+    gradM.addColorStop(0.52, isNLeft ? sColor : nColor);
+    gradM.addColorStop(1, isNLeft ? sColor : nColor);
     ctx.fillStyle = gradM;
+    const rr = 6;
     ctx.beginPath();
-    const r = 6;
-    ctx.moveTo(magnetLeft + r, magnetTop);
-    ctx.lineTo(magnetRight - r, magnetTop);
-    ctx.arcTo(magnetRight, magnetTop, magnetRight, magnetTop + r, r);
-    ctx.lineTo(magnetRight, magnetBot - r);
-    ctx.arcTo(magnetRight, magnetBot, magnetRight - r, magnetBot, r);
-    ctx.lineTo(magnetLeft + r, magnetBot);
-    ctx.arcTo(magnetLeft, magnetBot, magnetLeft, magnetBot - r, r);
-    ctx.lineTo(magnetLeft, magnetTop + r);
-    ctx.arcTo(magnetLeft, magnetTop, magnetLeft + r, magnetTop, r);
+    ctx.moveTo(magnetLeft + rr, magnetTop);
+    ctx.lineTo(magnetRight - rr, magnetTop);
+    ctx.arcTo(magnetRight, magnetTop, magnetRight, magnetTop + rr, rr);
+    ctx.lineTo(magnetRight, magnetBot - rr);
+    ctx.arcTo(magnetRight, magnetBot, magnetRight - rr, magnetBot, rr);
+    ctx.lineTo(magnetLeft + rr, magnetBot);
+    ctx.arcTo(magnetLeft, magnetBot, magnetLeft, magnetBot - rr, rr);
+    ctx.lineTo(magnetLeft, magnetTop + rr);
+    ctx.arcTo(magnetLeft, magnetTop, magnetLeft + rr, magnetTop, rr);
     ctx.closePath();
     ctx.fill();
-    ctx.strokeStyle = '#555';
-    ctx.lineWidth = 2;
-    ctx.stroke();
+    ctx.strokeStyle = '#555'; ctx.lineWidth = 2; ctx.stroke();
 
     // N/S labels
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 16px Fredoka';
-    ctx.textAlign = 'center';
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 15px Fredoka'; ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('N', coilCx, magnetTop + magnetH * 0.25);
-    ctx.fillText('S', coilCx, magnetTop + magnetH * 0.75);
+    const nlX = isNLeft ? mx + magnetW * 0.25 : mx + magnetW * 0.75;
+    const slX = isNLeft ? mx + magnetW * 0.75 : mx + magnetW * 0.25;
+    ctx.fillText('N', nlX, my);
+    ctx.fillText('S', slX, my);
 
-    // --- Draw magnetic field lines ---
-    const nFaceY = magnetTop;
-    const sFaceY = magnetBot;
-    const lineCount = 7;
-    for (let i = 0; i < lineCount; i++) {
-        const frac = (i - (lineCount - 1) / 2) / ((lineCount - 1) / 2); // -1 to 1
-        const startX = coilCx + frac * magnetW * 0.42;
-        const endX = coilCx + frac * magnetW * 0.42;
-
-        // External field lines (left and right)
-        const bulge = magnetW * 0.7 * (1 + Math.abs(frac));
-        const alpha = 0.15 + 0.3 * (1 - Math.abs(frac) * 0.6);
-
-        if (frac <= 0.3) {
-            // Left side curves
-            const cpx = magnetLeft - bulge;
-            const cpy = magnetY;
-            drawFieldLine(ctx, startX, nFaceY, endX, sFaceY, cpx, cpy, '#7f8c8d', 1.2, alpha);
-        }
-        if (frac >= -0.3) {
-            // Right side curves
-            const cpx = magnetRight + bulge;
-            const cpy = magnetY;
-            drawFieldLine(ctx, startX, nFaceY, endX, sFaceY, cpx, cpy, '#7f8c8d', 1.2, alpha);
-        }
+    // Velocity arrow
+    if (S.playing) {
+        const vDir = S.side === 'left' ? 1 : -1;
+        const ax = mx + magnetW / 2, ay = magnetTop - 20;
+        arrow(ctx, ax, ay, vDir * 25, 0, '#27ae60', 2.5);
+        ctx.fillStyle = '#27ae60'; ctx.font = 'bold 10px Fredoka'; ctx.textAlign = 'center';
+        ctx.fillText('v', ax + vDir * 32, ay - 2);
     }
 
-    // Arrowheads on a few field lines (small triangles)
-    for (let side = 0; side < 2; side++) {
-        const dir = side === 0 ? -1 : 1;
-        for (let i = 0; i < 3; i++) {
-            const frac = (i - 1) * 0.5;
-            const t = 0.5;
-            const startX = coilCx + frac * magnetW * 0.42;
-            const endX = coilCx + frac * magnetW * 0.42;
-            const bulge = magnetW * 0.7 * (1 + Math.abs(frac));
-            const cpx = coilCx + dir * bulge;
-            const cpy = magnetY;
-            // point on curve at t=0.5
-            const bx = (1-t)*(1-t)*startX + 2*(1-t)*t*cpx + t*t*endX;
-            const by = (1-t)*(1-t)*nFaceY + 2*(1-t)*t*cpy + t*t*sFaceY;
-            // tangent
-            const tx = 2*(1-t)*(cpx-startX) + 2*t*(endX-cpx);
-            const ty = 2*(1-t)*(cpy-nFaceY) + 2*t*(sFaceY-cpy);
-            const ang = Math.atan2(ty, tx);
-            const sz = 5;
-            ctx.fillStyle = '#7f8c8d';
-            ctx.globalAlpha = 0.4;
-            ctx.beginPath();
-            ctx.moveTo(bx + sz * Math.cos(ang), by + sz * Math.sin(ang));
-            ctx.lineTo(bx - sz * 0.5 * Math.cos(ang - 0.8), by - sz * 0.5 * Math.sin(ang - 0.8));
-            ctx.lineTo(bx - sz * 0.5 * Math.cos(ang + 0.8), by - sz * 0.5 * Math.sin(ang + 0.8));
-            ctx.closePath();
-            ctx.fill();
-            ctx.globalAlpha = 1;
-        }
-    }
+    // Labels
+    ctx.fillStyle = '#888'; ctx.font = '11px Fredoka'; ctx.textAlign = 'center';
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillText('线圈 (' + S.N + '匝)', coilCx, coilCy + coilHalfH + 16);
 
-    // --- Draw velocity arrow on magnet ---
-    if (S.playing && Math.abs(magnetV) > 5) {
-        const vScale = 0.25;
-        const vLen = magnetV * vScale;
-        const vClamped = Math.max(-magnetH, Math.min(magnetH, vLen));
-        const vx = coilCx + magnetW * 0.6;
-        const vy = magnetY;
-        arrow(ctx, vx, vy, 0, vClamped, '#27ae60', 2.5);
-        ctx.fillStyle = '#27ae60';
-        ctx.font = 'bold 11px Fredoka';
-        ctx.textAlign = 'left';
-        ctx.fillText('v', vx + 8, vy + (vClamped > 0 ? -6 : 10));
-    }
-
-    // --- Draw induced current arrows on coil ---
-    const currentThreshold = 0.3;
-    if (Math.abs(emf) > currentThreshold) {
-        // Lenz's law: induced current opposes flux change
-        // emf > 0 (flux decreasing) -> current LEFT on front segments
-        // emf < 0 (flux increasing) -> current RIGHT on front segments
-        const curDir = emf > 0 ? 1 : -1;
-        for (let i = 0; i < S.N; i++) {
-            const ty = coilTop + (i + 0.5) * turnSpacing;
-            const cx = (coilLeft + coilRight) / 2;
-            const aw = (coilRight - coilLeft) * 0.35;
-            const dx = curDir * aw;
-            const aClr = emf > 0 ? '#e67e22' : '#2980b9';
-            if (Math.abs(dx) > 0.5) {
-                arrow(ctx, cx - dx, ty, dx * 2, 0, aClr, 2.2);
-            }
-        }
-    }
-
-    // --- Labels ---
-    ctx.fillStyle = '#888';
-    ctx.font = '11px Fredoka';
-    ctx.textAlign = 'center';
-    ctx.fillText('线圈 Coil (' + S.N + ' turns)', coilCx, coilBottom + 22);
-    ctx.fillText('N', coilCx, magnetTop - 8);
-    ctx.fillText('S', coilCx, magnetBot + 14);
-
-    // --- Draw EMF graph ---
+    // --- EMF vs Position graph ---
     const ew = emfC.width, eh = emfC.height;
     ctxE.clearRect(0, 0, ew, eh);
-    ctxE.fillStyle = '#fdfcf8';
-    ctxE.fillRect(0, 0, ew, eh);
-
+    ctxE.fillStyle = '#fdfcf8'; ctxE.fillRect(0, 0, ew, eh);
     if (ew > 10 && eh > 10) {
-        const margL = 50, margR = 20, margT = 10, margB = 25;
-        const pw = ew - margL - margR;
-        const ph = eh - margT - margB;
-        const midY = margT + ph / 2;
-
-        // Zero line
-        ctxE.strokeStyle = '#ddd';
-        ctxE.lineWidth = 1;
-        ctxE.setLineDash([4, 4]);
-        ctxE.beginPath();
-        ctxE.moveTo(margL, midY);
-        ctxE.lineTo(ew - margR, midY);
-        ctxE.stroke();
+        const mL = 45, mR = 15, mT = 10, mB = 25;
+        const pw = ew - mL - mR, ph = eh - mT - mB, midY = mT + ph / 2;
+        ctxE.strokeStyle = '#ddd'; ctxE.lineWidth = 1; ctxE.setLineDash([4, 4]);
+        ctxE.beginPath(); ctxE.moveTo(mL, midY); ctxE.lineTo(ew - mR, midY); ctxE.stroke();
         ctxE.setLineDash([]);
 
-        // EMF curve
-        if (EMF_HIST.length > 1) {
-            const now = EMF_HIST[EMF_HIST.length - 1].t;
-            const tMin = now - 5;
-
-            // Find max EMF for scaling
-            let emfMax = 0.5;
-            for (const pt of EMF_HIST) {
-                if (pt.t >= tMin) {
-                    const a = Math.abs(pt.emf);
-                    if (a > emfMax) emfMax = a;
-                }
-            }
-            emfMax = Math.max(emfMax, 1.0);
-            emfMax *= 1.2;
-
-            // Draw filled area
-            ctxE.beginPath();
-            let firstPt = true;
-            for (const pt of EMF_HIST) {
-                if (pt.t < tMin) continue;
-                const sx = margL + ((pt.t - tMin) / 5) * pw;
-                const sy = midY - (pt.emf / emfMax) * (ph / 2);
-                if (firstPt) {
-                    ctxE.moveTo(sx, midY);
-                    ctxE.lineTo(sx, sy);
-                    firstPt = false;
-                } else {
-                    ctxE.lineTo(sx, sy);
-                }
-            }
-            const lastX = margL + pw;
-            ctxE.lineTo(lastX, midY);
-            ctxE.closePath();
-            const gradE = ctxE.createLinearGradient(0, margT, 0, margT + ph);
-            gradE.addColorStop(0, 'rgba(255,140,66,0.20)');
-            gradE.addColorStop(0.5, 'rgba(255,140,66,0.05)');
-            gradE.addColorStop(1, 'rgba(46,204,113,0.20)');
-            ctxE.fillStyle = gradE;
-            ctxE.fill();
-
-            // Draw line
-            ctxE.strokeStyle = '#FF8c42';
-            ctxE.lineWidth = 2.5;
-            ctxE.lineCap = 'round';
-            ctxE.beginPath();
-            firstPt = true;
-            for (const pt of EMF_HIST) {
-                if (pt.t < tMin) continue;
-                const sx = margL + ((pt.t - tMin) / 5) * pw;
-                const sy = midY - (pt.emf / emfMax) * (ph / 2);
-                if (firstPt) { ctxE.moveTo(sx, sy); firstPt = false; }
-                else { ctxE.lineTo(sx, sy); }
-            }
-            ctxE.stroke();
-
-            // Axis labels
-            ctxE.fillStyle = '#888';
-            ctxE.font = '10px Fredoka';
-            ctxE.textAlign = 'right';
-            ctxE.fillText('+' + emfMax.toFixed(1) + ' mV', margL - 4, margT + 12);
-            ctxE.fillText('0', margL - 4, midY + 4);
-            ctxE.fillText('-' + emfMax.toFixed(1) + ' mV', margL - 4, margT + ph - 2);
-            ctxE.textAlign = 'center';
-            ctxE.fillText('时间 Time (s)', ew / 2, eh - 4);
-            ctxE.fillText('EMF', margL - 20, margT + ph / 2);
-
-            // Y axis
-            ctxE.strokeStyle = '#ccc';
-            ctxE.lineWidth = 1;
-            ctxE.beginPath();
-            ctxE.moveTo(margL, margT);
-            ctxE.lineTo(margL, margT + ph);
-            ctxE.stroke();
+        // Compute EMF across full position range for curve
+        const nPts = 200;
+        let emfMax = 0.5;
+        const prePts = [];
+        for (let i = 0; i <= nPts; i++) {
+            const px = startX + (i / nPts) * travelDist;
+            const dx2 = (px + magnetW / 2) - coilCx;
+            const f = S.B * 3 * Math.exp(-dx2 * dx2 / (2 * sigma * sigma));
+            const df = -f * dx2 / (sigma * sigma) * speedPx * (S.side === 'left' ? 1 : -1);
+            const e = -S.N * df;
+            prePts.push({ x: px, emf: e });
+            if (Math.abs(e) > emfMax) emfMax = Math.abs(e);
         }
 
-        // Current EMF indicator dot
-        if (EMF_HIST.length > 0) {
-            const last = EMF_HIST[EMF_HIST.length - 1];
-            const tWin = last.t - 5;
-            let emfDotMax = 0.5;
-            for (const pt of EMF_HIST) { if (pt.t >= tWin) { const a = Math.abs(pt.emf); if (a > emfDotMax) emfDotMax = a; } }
-            emfDotMax = Math.max(emfDotMax, 1.0) * 1.2;
-            const sx2 = margL + ((last.t - tWin) / 5) * pw;
-            const sy2 = midY - (last.emf / emfDotMax) * (ph / 2);
-            ctxE.fillStyle = '#FF5E5B';
-            ctxE.beginPath();
-            ctxE.arc(sx2, sy2, 4.5, 0, Math.PI * 2);
-            ctxE.fill();
-            ctxE.strokeStyle = '#fff';
-            ctxE.lineWidth = 1.5;
-            ctxE.stroke();
+        emfMax = Math.max(emfMax, 1);
+        const scale = (ph / 2) / emfMax;
+
+        // Filled area
+        ctxE.beginPath();
+        let first = true;
+        for (let i = 0; i <= nPts; i++) {
+            const sx = mL + (i / nPts) * pw;
+            const sy = midY - prePts[i].emf * scale;
+            if (first) { ctxE.moveTo(sx, midY); ctxE.lineTo(sx, sy); first = false; }
+            else ctxE.lineTo(sx, sy);
         }
+        ctxE.lineTo(mL + pw, midY); ctxE.closePath();
+        const gE = ctxE.createLinearGradient(0, mT, 0, mT + ph);
+        gE.addColorStop(0, 'rgba(255,140,66,0.25)');
+        gE.addColorStop(0.5, 'rgba(255,140,66,0.05)');
+        gE.addColorStop(1, 'rgba(52,152,219,0.25)');
+        ctxE.fillStyle = gE; ctxE.fill();
+
+        // Line
+        ctxE.strokeStyle = '#FF8c42'; ctxE.lineWidth = 2.5; ctxE.lineCap = 'round';
+        ctxE.beginPath();
+        for (let i = 0; i <= nPts; i++) {
+            const sx = mL + (i / nPts) * pw;
+            const sy = midY - prePts[i].emf * scale;
+            if (i === 0) ctxE.moveTo(sx, sy); else ctxE.lineTo(sx, sy);
+        }
+        ctxE.stroke();
+
+        // Current magnet position dot
+        const xFrac = (S.magnetX - startX) / travelDist;
+        const dotSx = mL + xFrac * pw;
+        const dotSy = midY - emf * scale;
+        ctxE.fillStyle = '#FF5E5B'; ctxE.beginPath();
+        ctxE.arc(dotSx, dotSy, 4.5, 0, Math.PI * 2); ctxE.fill();
+        ctxE.strokeStyle = '#fff'; ctxE.lineWidth = 1.5; ctxE.stroke();
+
+        // Coil position marker
+        const coilFrac = (coilCx - magnetW / 2 - startX) / travelDist;
+        const coilSx = mL + coilFrac * pw;
+        ctxE.strokeStyle = '#D4956B'; ctxE.lineWidth = 1.5; ctxE.setLineDash([3, 5]);
+        ctxE.beginPath(); ctxE.moveTo(coilSx, mT); ctxE.lineTo(coilSx, mT + ph); ctxE.stroke();
+        ctxE.setLineDash([]);
+        ctxE.fillStyle = '#D4956B'; ctxE.font = '9px Fredoka'; ctxE.textAlign = 'center';
+        ctxE.fillText('线圈', coilSx, mT + ph + 14);
+
+        // Axis labels
+        ctxE.fillStyle = '#888'; ctxE.font = '9px Fredoka'; ctxE.textAlign = 'right';
+        ctxE.fillText('+' + emfMax.toFixed(0) + 'mV', mL - 4, mT + 10);
+        ctxE.fillText('0', mL - 4, midY + 4);
+        ctxE.fillText('-' + emfMax.toFixed(0) + 'mV', mL - 4, mT + ph);
+        ctxE.textAlign = 'center';
+        ctxE.fillText('磁铁位置 Magnet Position', ew / 2, eh - 4);
     }
 
     // --- Update UI ---
-    bN.textContent = S.N;
-    bSpeed.textContent = S.speed;
-    bStrength.textContent = S.strength;
-
-    // Max EMF (running estimate)
-    let maxEmf = 0;
-    const now = S.time;
-    for (const pt of EMF_HIST) {
-        if (pt.t > now - 10) {
-            const a = Math.abs(pt.emf);
-            if (a > maxEmf) maxEmf = a;
-        }
-    }
-
+    bSpeed.textContent = S.speed; bN.textContent = S.N; bB.textContent = S.B;
     fRoot.innerHTML =
-        '<span class="formula-item" style="color:#8e44ad"><b>&#949; = &minus;N d&#934;/dt</b></span>' +
-        '<span class="formula-item" style="color:#3498db">&#934; = BA &nbsp; (磁通量 Magnetic Flux)</span>' +
-        '<span class="formula-item" style="color:var(--primary)">N = ' + S.N + ', &nbsp; B &prop; ' + S.strength + '</span>';
-
+        '<span class="formula-item" style="color:#8e44ad"><b>ε = −N dΦ/dt</b></span>' +
+        '<span class="formula-item" style="color:#3498db">Φ = BA (磁通量)</span>' +
+        '<span class="formula-item" style="color:var(--primary)">|ε_max| ≈ ' + (S.N * S.B * S.speed * 0.8).toFixed(1) + ' mV</span>';
     rRow.innerHTML =
-        '<span>|&#949;<sub>max</sub>| = <b style="color:#e74c3c">' + maxEmf.toFixed(1) + ' mV</b></span>' +
-        '<span>|d&#934;/dt| = <b style="color:#8e44ad">' + (Math.abs(dFluxDt)).toFixed(1) + ' mWb/s</b></span>' +
-        '<span>&#949;<sub>now</sub> = <b style="color:' + (emf > 0 ? '#e67e22' : '#2980b9') + '">' + emf.toFixed(1) + ' mV</b></span>';
+        '<span>当前 ε = <b style="color:' + (emf > 0 ? '#e67e22' : '#2980b9') + '">' + emf.toFixed(1) + ' mV</b></span>' +
+        '<span>|ε_max| ≈ <b style="color:#e74c3c">' + (emfAbs).toFixed(1) + ' mV</b></span>';
 }
 
 function loop(ts) {
     if (!lt) lt = ts;
-    let dt = (ts - lt) / 1000;
-    lt = ts;
+    let dt = (ts - lt) / 1000; lt = ts;
     if (dt > 0.1) dt = 0.016;
     if (S.playing) {
         S.time += dt;
-        // Record EMF point (compute EMF here for history)
-        const omega = S.speed * 0.35 * 2 * Math.PI;
-        const turnSpacing = Math.min(30, Math.max(10, simC.height * 0.52 / (S.N + 2)));
-        const coilHalfH = S.N * turnSpacing / 2;
-        const magnetH = Math.max(turnSpacing * 2.5, coilHalfH * 0.5);
-        const amplitude = coilHalfH + magnetH * 0.7 + turnSpacing * 2;
-        const coilCy = simC.height * 0.40;
-        const magnetY = coilCy + amplitude * Math.sin(omega * S.time);
-        const magnetV = amplitude * omega * Math.cos(omega * S.time);
-        const sigma = coilHalfH * 0.40 + turnSpacing;
-        const Phi0 = S.strength * 6.0;
-        const dy = magnetY - coilCy;
-        const flux = Phi0 * Math.exp(-dy * dy / (2 * sigma * sigma));
-        const dFluxDt2 = -flux * dy / (sigma * sigma) * magnetV;
-        const emfV = -S.N * dFluxDt2;
-
-        EMF_HIST.push({ t: S.time, emf: emfV });
-        if (EMF_HIST.length > HIST_MAX) EMF_HIST.shift();
+        const edgeMargin = 40;
+        const cw = simC.width;
+        const magnetW = 70;
+        const startX = S.side === 'left' ? edgeMargin : cw - edgeMargin - magnetW;
+        const endX = S.side === 'left' ? cw - edgeMargin - magnetW : edgeMargin;
+        const travelDist = endX - startX;
+        const speedPx = S.speed * 60;
+        const travelTime = Math.abs(travelDist) / speedPx;
+        const frac = Math.min(1, S.time / travelTime);
+        S.magnetX = startX + frac * travelDist;
+        if (frac >= 1) { S.playing = false; bStart.textContent = '开始 Start'; bStart.className = 'ctrl-btn start'; }
     }
     draw();
     requestAnimationFrame(loop);
 }
 
 function onChg() {
-    S.N = parseInt(sN.value);
     S.speed = parseInt(sSpeed.value);
-    S.strength = parseInt(sStrength.value);
-    S.time = 0;
-    lt = 0;
-    EMF_HIST.length = 0;
-    resize();
+    S.N = parseInt(sN.value);
+    S.B = parseInt(sB.value);
+    const edgeMargin = 40;
+    const startX = S.side === 'left' ? edgeMargin : simC.width - edgeMargin - 70;
+    S.magnetX = startX; S.time = 0; lt = 0; EMF_POS.length = 0;
     draw();
 }
-
-sN.addEventListener('input', onChg);
 sSpeed.addEventListener('input', onChg);
-sStrength.addEventListener('input', onChg);
+sN.addEventListener('input', onChg);
+sB.addEventListener('input', onChg);
 
 bStart.onclick = () => {
+    if (!S.playing) {
+        const edgeMargin = 40;
+        const startX = S.side === 'left' ? edgeMargin : simC.width - edgeMargin - 70;
+        S.magnetX = startX; S.time = 0; lt = 0;
+    }
     S.playing = !S.playing;
     bStart.textContent = S.playing ? '暂停 Pause' : '开始 Start';
     bStart.className = 'ctrl-btn ' + (S.playing ? 'pause' : 'start');
 };
 
 bReset.onclick = () => {
-    S.time = 0;
-    S.playing = false;
-    EMF_HIST.length = 0;
-    bStart.textContent = '开始 Start';
-    bStart.className = 'ctrl-btn start';
+    const edgeMargin = 40;
+    const startX = S.side === 'left' ? edgeMargin : simC.width - edgeMargin - 70;
+    S.magnetX = startX; S.time = 0; S.playing = false; lt = 0; EMF_POS.length = 0;
+    bStart.textContent = '开始 Start'; bStart.className = 'ctrl-btn start';
     draw();
 };
 
-resize();
-draw();
+resize(); draw();
 requestAnimationFrame(loop);
 </script>
 </body>
