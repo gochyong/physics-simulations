@@ -165,38 +165,62 @@ function draw() {
     const magnetLeft = mx, magnetRight = mx + magnetW;
     const magnetTop = my - magnetH / 2, magnetBot = my + magnetH / 2;
 
-    // --- Physics ---
-    const sigma = coilW * 0.35;
-    const dx = (mx + magnetW / 2) - coilCx;
-    const flux = S.B * 3 * Math.exp(-dx * dx / (2 * sigma * sigma));
-    const dFluxDt = -flux * dx / (sigma * sigma) * (S.playing ? speedPx * (S.side === 'left' ? 1 : -1) : 0);
+    // --- Physics: dual-pole model ---
+    // N and S poles separated by magnet length, each contributes a Gaussian to the flux
+    const magCx = mx + magnetW / 2;
+    const poleSep = magnetW * 0.8;
+    const isNLeft = S.nsDir === 'N-left';
+    const nX = magCx + (isNLeft ? -poleSep / 2 : poleSep / 2);
+    const sX = magCx + (isNLeft ? poleSep / 2 : -poleSep / 2);
+    const sigmaP = coilW * 0.22;
+    // Flux = contribution from N pole - contribution from S pole
+    const phiN = S.B * 3 * Math.exp(-(nX - coilCx) * (nX - coilCx) / (2 * sigmaP * sigmaP));
+    const phiS = S.B * 3 * Math.exp(-(sX - coilCx) * (sX - coilCx) / (2 * sigmaP * sigmaP));
+    const flux = phiN - phiS;
+    // dΦ/dt from motion
+    const vPx = S.playing ? speedPx * (S.side === 'left' ? 1 : -1) : 0;
+    const dPhiNDt = -phiN * (nX - coilCx) / (sigmaP * sigmaP) * vPx;
+    const dPhiSDt = -phiS * (sX - coilCx) / (sigmaP * sigmaP) * vPx;
+    const dFluxDt = dPhiNDt - dPhiSDt;
     const emf = -S.N * dFluxDt;
     const emfAbs = Math.abs(emf);
 
-    // --- Draw coil ---
-    ctx.strokeStyle = '#ccc'; ctx.lineWidth = 1; ctx.setLineDash([5, 5]);
-    ctx.strokeRect(coilLeft - 6, coilCy - coilHalfH - 3, coilW + 12, coilHalfH * 2 + 6);
-    ctx.setLineDash([]);
+    // --- Draw solenoid (horizontal, rotated 90°) ---
+    const solCY = coilCy, solR = coilHalfH * 0.85;
+    const solL = coilLeft, solRr = coilRight, solLen = coilW;
+    // Solenoid body (cylinder)
+    ctx.fillStyle = 'rgba(200,180,160,0.25)'; ctx.strokeStyle = '#bbb'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.ellipse(solL, solCY, 4, solR, 0, Math.PI / 2, 3 * Math.PI / 2); // left cap
+    ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(solRr, solCY, 4, solR, 0, Math.PI / 2, 3 * Math.PI / 2); // left cap (front)
+    // Actually, draw a rectangular tube with rounded ends
+    const tubeTop = solCY - solR, tubeBot = solCY + solR;
+    ctx.fillStyle = 'rgba(200,180,160,0.2)';
+    ctx.fillRect(solL, tubeTop, solLen, solR * 2);
+    ctx.strokeStyle = '#bbb'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(solL, tubeTop); ctx.lineTo(solRr, tubeTop); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(solL, tubeBot); ctx.lineTo(solRr, tubeBot); ctx.stroke();
 
-    for (let i = 0; i < S.N; i++) {
-        const ty = coilCy - coilHalfH + (i + 0.5) * turnSp;
-        // left half (behind)
-        ctx.strokeStyle = '#C4956B'; ctx.lineWidth = 2.5; ctx.lineCap = 'round';
-        ctx.beginPath(); ctx.moveTo(coilLeft, ty); ctx.lineTo(coilCx, ty); ctx.stroke();
-        // right half (front)
-        ctx.strokeStyle = '#D4956B'; ctx.lineWidth = 3.2;
-        ctx.beginPath(); ctx.moveTo(coilCx, ty); ctx.lineTo(coilRight, ty); ctx.stroke();
-        ctx.fillStyle = '#B87333'; ctx.beginPath(); ctx.arc(coilLeft, ty, 3, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = '#D4956B'; ctx.beginPath(); ctx.arc(coilRight, ty, 3, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = '#B87333'; ctx.beginPath(); ctx.arc(coilCx, ty, 3, 0, Math.PI * 2); ctx.fill();
+    // Helical windings (front-facing)
+    const nTurns = S.N * 3;
+    for (let i = 0; i <= nTurns; i++) {
+        const frac = i / nTurns;
+        const wx = solL + frac * solLen;
+        // Sine wave path along the cylinder — draw as diagonal lines
+        const phase = frac * Math.PI * 4;
+        const topY = tubeTop + (1 + Math.sin(phase)) * solR * 0.5;
+        const botY = tubeBot - (1 + Math.sin(phase + Math.PI)) * solR * 0.5;
+        ctx.strokeStyle = i % 3 === 0 ? '#D4956B' : '#C4956B';
+        ctx.lineWidth = i % 3 === 0 ? 2.5 : 1.5;
+        ctx.beginPath(); ctx.moveTo(wx, topY); ctx.lineTo(wx, botY); ctx.stroke();
     }
-    // Vertical connector
-    ctx.strokeStyle = '#D4956B'; ctx.lineWidth = 2;
-    for (let i = 0; i < S.N - 1; i++) {
-        const y1 = coilCy - coilHalfH + (i + 0.5) * turnSp, y2 = y1 + turnSp;
-        ctx.beginPath(); ctx.moveTo(coilRight, y1); ctx.lineTo(coilRight, y2); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(coilLeft, y1); ctx.lineTo(coilLeft, y2); ctx.stroke();
-    }
+
+    // Left/right end caps (ellipses)
+    ctx.fillStyle = 'rgba(200,180,160,0.3)';
+    ctx.beginPath(); ctx.ellipse(solL, solCY, solR, solR * 0.25, 0, 0, Math.PI * 2);
+    ctx.fill(); ctx.strokeStyle = '#bbb'; ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(solRr, solCY, solR, solR * 0.25, 0, 0, Math.PI * 2);
+    ctx.fill(); ctx.stroke();
 
     // --- Galvanometer above coil ---
     const galvX = coilCx, galvY = coilCy - coilHalfH - 40;
@@ -243,11 +267,37 @@ function draw() {
     ctx.fill();
     ctx.strokeStyle = '#555'; ctx.lineWidth = 2; ctx.stroke();
 
+    // --- Magnetic field lines (N→S, outside magnet) ---
+    const nFaceX = isNLeft ? mx + magnetW * 0.1 : mx + magnetW * 0.9;
+    const sFaceX = isNLeft ? mx + magnetW * 0.9 : mx + magnetW * 0.1;
+    for (let i = 0; i < 7; i++) {
+        const frac = (i - 3) / 3; // -1 to 1
+        const sy = my + frac * magnetH * 0.4;
+        const bulge = magnetW * 0.5 * (1 + Math.abs(frac) * 0.6);
+        const cpx = (nFaceX + sFaceX) / 2 + frac * bulge * 0.3;
+        const cpy = my - (1 - Math.abs(frac)) * magnetH * 0.6 + frac * bulge * 0.5;
+        ctx.strokeStyle = 'rgba(127,140,141,0.5)'; ctx.lineWidth = 1.2;
+        ctx.beginPath(); ctx.moveTo(nFaceX, sy);
+        ctx.quadraticCurveTo(cpx, cpy, sFaceX, sy); ctx.stroke();
+        // Arrow at midpoint
+        const t = 0.5;
+        const ax = (1-t)*(1-t)*nFaceX + 2*(1-t)*t*cpx + t*t*sFaceX;
+        const ay = (1-t)*(1-t)*sy + 2*(1-t)*t*cpy + t*t*sy;
+        const tx = 2*(1-t)*(cpx-nFaceX) + 2*t*(sFaceX-cpx);
+        const ty = 2*(1-t)*(cpy-sy) + 2*t*(sy-cpy);
+        const ang = Math.atan2(ty, tx), sz = 5;
+        ctx.fillStyle = 'rgba(127,140,141,0.5)';
+        ctx.beginPath(); ctx.moveTo(ax + sz * Math.cos(ang), ay + sz * Math.sin(ang));
+        ctx.lineTo(ax - sz * 0.5 * Math.cos(ang - 0.8), ay - sz * 0.5 * Math.sin(ang - 0.8));
+        ctx.lineTo(ax - sz * 0.5 * Math.cos(ang + 0.8), ay - sz * 0.5 * Math.sin(ang + 0.8));
+        ctx.closePath(); ctx.fill();
+    }
+
     // N/S labels
     ctx.fillStyle = '#fff'; ctx.font = 'bold 15px Fredoka'; ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    const nlX = isNLeft ? mx + magnetW * 0.25 : mx + magnetW * 0.75;
-    const slX = isNLeft ? mx + magnetW * 0.75 : mx + magnetW * 0.25;
+    const nlX = isNLeft ? mx + magnetW * 0.2 : mx + magnetW * 0.8;
+    const slX = isNLeft ? mx + magnetW * 0.8 : mx + magnetW * 0.2;
     ctx.fillText('N', nlX, my);
     ctx.fillText('S', slX, my);
 
@@ -276,16 +326,22 @@ function draw() {
         ctxE.beginPath(); ctxE.moveTo(mL, midY); ctxE.lineTo(ew - mR, midY); ctxE.stroke();
         ctxE.setLineDash([]);
 
-        // Compute EMF across full position range for curve
+        // Compute EMF across full position range using dual-pole model
         const nPts = 200;
         let emfMax = 0.5;
         const prePts = [];
+        const sp = S.side === 'left' ? 1 : -1;
         for (let i = 0; i <= nPts; i++) {
             const px = startX + (i / nPts) * travelDist;
-            const dx2 = (px + magnetW / 2) - coilCx;
-            const f = S.B * 3 * Math.exp(-dx2 * dx2 / (2 * sigma * sigma));
-            const df = -f * dx2 / (sigma * sigma) * speedPx * (S.side === 'left' ? 1 : -1);
-            const e = -S.N * df;
+            const mc = px + magnetW / 2;
+            const ps = magnetW * 0.8;
+            const nX2 = mc + (isNLeft ? -ps / 2 : ps / 2);
+            const sX2 = mc + (isNLeft ? ps / 2 : -ps / 2);
+            const pN = S.B * 3 * Math.exp(-(nX2 - coilCx) * (nX2 - coilCx) / (2 * sigmaP * sigmaP));
+            const pS = S.B * 3 * Math.exp(-(sX2 - coilCx) * (sX2 - coilCx) / (2 * sigmaP * sigmaP));
+            const dN = -pN * (nX2 - coilCx) / (sigmaP * sigmaP) * speedPx * sp;
+            const dS = -pS * (sX2 - coilCx) / (sigmaP * sigmaP) * speedPx * sp;
+            const e = -S.N * (dN - dS);
             prePts.push({ x: px, emf: e });
             if (Math.abs(e) > emfMax) emfMax = Math.abs(e);
         }
