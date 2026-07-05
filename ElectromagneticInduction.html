@@ -144,13 +144,13 @@ function draw() {
     ctx.fillStyle = '#fdfdfa'; ctx.fillRect(0, 0, cw, ch);
 
     const coilCx = cw * 0.50, coilCy = ch * 0.50;
-    const coilW = 140, coilH = 16, turnSp = Math.min(22, (ch * 0.6) / (S.N + 1));
+    const coilW = 100, turnSp = Math.min(22, (ch * 0.6) / (S.N + 1));
     const coilHalfH = S.N * turnSp / 2;
     const coilLeft = coilCx - coilW / 2, coilRight = coilCx + coilW / 2;
 
     // Magnet
-    const magnetW = 70, magnetH = S.N * turnSp * 0.7 + 20;
-    const edgeMargin = 40;
+    const magnetW = 110, magnetH = Math.max(12, (S.N * turnSp * 0.7 + 20) / 3);
+    const edgeMargin = 30;
     const startX = S.side === 'left' ? edgeMargin : cw - edgeMargin - magnetW;
     const endX = S.side === 'left' ? cw - edgeMargin - magnetW : edgeMargin;
     const travelDist = endX - startX;
@@ -270,30 +270,37 @@ function draw() {
     ctx.fill();
     ctx.strokeStyle = '#555'; ctx.lineWidth = 2; ctx.stroke();
 
-    // --- Magnetic field lines: from N pole to S pole (outside magnet) ---
-    const nFaceX = isNLeft ? mx + magnetW * 0.1 : mx + magnetW * 0.9;
-    const sFaceX = isNLeft ? mx + magnetW * 0.9 : mx + magnetW * 0.1;
-    for (let i = 0; i < 7; i++) {
-        const frac = (i - 3) / 3;
-        const sy = my + frac * magnetH * 0.35;
-        const bulge = magnetW * 0.55 * (1 + Math.abs(frac) * 0.5);
-        const cpx = (nFaceX + sFaceX) / 2 + frac * bulge * 0.3;
-        const cpy = my - (1 - Math.abs(frac)) * magnetH * 0.55 + frac * bulge * 0.4;
-        ctx.strokeStyle = 'rgba(127,140,141,0.5)'; ctx.lineWidth = 1.3;
-        ctx.beginPath(); ctx.moveTo(nFaceX, sy);
-        ctx.quadraticCurveTo(cpx, cpy, sFaceX, sy); ctx.stroke();
-        // Arrow at midpoint
-        const t = 0.5;
-        const ax = (1-t)*(1-t)*nFaceX + 2*(1-t)*t*cpx + t*t*sFaceX;
-        const ay = (1-t)*(1-t)*sy + 2*(1-t)*t*cpy + t*t*sy;
-        const tx = 2*(1-t)*(cpx-nFaceX) + 2*t*(sFaceX-cpx);
-        const ty = 2*(1-t)*(cpy-sy) + 2*t*(sy-cpy);
-        const ang = Math.atan2(ty, tx), sz = 5;
-        ctx.fillStyle = 'rgba(127,140,141,0.55)';
-        ctx.beginPath(); ctx.moveTo(ax + sz * Math.cos(ang), ay + sz * Math.sin(ang));
-        ctx.lineTo(ax - sz * 0.5 * Math.cos(ang - 0.8), ay - sz * 0.5 * Math.sin(ang - 0.8));
-        ctx.lineTo(ax - sz * 0.5 * Math.cos(ang + 0.8), ay - sz * 0.5 * Math.sin(ang + 0.8));
-        ctx.closePath(); ctx.fill();
+    // --- Magnetic field lines (classic dipole — outside magnet) ---
+    const nCx = isNLeft ? mx + magnetW * 0.05 : mx + magnetW * 0.95;
+    const sCx = isNLeft ? mx + magnetW * 0.95 : mx + magnetW * 0.05;
+    // Multiple layers of field lines at different bulge distances
+    const layers = [0.3, 0.5, 0.7, 1.0, 1.4, 1.9, 2.6];
+    for (let li = 0; li < layers.length; li++) {
+        const bulge = magnetW * layers[li];
+        // Top and bottom symmetric lines
+        for (let side = 0; side < 2; side++) {
+            const sign = side === 0 ? -1 : 1;
+            const sy1 = my + sign * magnetH * 0.5;
+            const sy2 = my + sign * magnetH * 0.5;
+            const cpx = (nCx + sCx) / 2;
+            const cpy = my + sign * (magnetH * 0.3 + bulge * 0.8);
+            ctx.strokeStyle = 'rgba(127,140,141,' + (0.25 + 0.3 * (1 - li / layers.length)) + ')';
+            ctx.lineWidth = li < 3 ? 1.4 : 1.0;
+            ctx.beginPath(); ctx.moveTo(nCx, sy1);
+            ctx.quadraticCurveTo(cpx, cpy, sCx, sy2); ctx.stroke();
+            // Arrow at midpoint
+            const t = 0.5;
+            const ax = (1-t)*(1-t)*nCx + 2*(1-t)*t*cpx + t*t*sCx;
+            const ay = (1-t)*(1-t)*sy1 + 2*(1-t)*t*cpy + t*t*sy2;
+            const tx = 2*(1-t)*(cpx-nCx) + 2*t*(sCx-cpx);
+            const ty = 2*(1-t)*(cpy-sy1) + 2*t*(sy2-cpy);
+            const ang = Math.atan2(ty, tx), sz = 5;
+            ctx.fillStyle = 'rgba(127,140,141,' + (0.3 + 0.3 * (1 - li / layers.length)) + ')';
+            ctx.beginPath(); ctx.moveTo(ax + sz * Math.cos(ang), ay + sz * Math.sin(ang));
+            ctx.lineTo(ax - sz * 0.5 * Math.cos(ang - 0.8), ay - sz * 0.5 * Math.sin(ang - 0.8));
+            ctx.lineTo(ax - sz * 0.5 * Math.cos(ang + 0.8), ay - sz * 0.5 * Math.sin(ang + 0.8));
+            ctx.closePath(); ctx.fill();
+        }
     }
 
     // N/S labels
@@ -423,7 +430,7 @@ function loop(ts) {
         S.time += dt;
         const edgeMargin = 40;
         const cw = simC.width;
-        const magnetW = 70;
+        const magnetW = 110;
         const startX = S.side === 'left' ? edgeMargin : cw - edgeMargin - magnetW;
         const endX = S.side === 'left' ? cw - edgeMargin - magnetW : edgeMargin;
         const travelDist = endX - startX;
@@ -442,7 +449,7 @@ function onChg() {
     S.N = parseInt(sN.value);
     S.B = parseInt(sB.value);
     const edgeMargin = 40;
-    const startX = S.side === 'left' ? edgeMargin : simC.width - edgeMargin - 70;
+    const startX = S.side === 'left' ? edgeMargin : simC.width - edgeMargin - 110;
     S.magnetX = startX; S.time = 0; lt = 0; EMF_POS.length = 0;
     draw();
 }
@@ -453,7 +460,7 @@ sB.addEventListener('input', onChg);
 bStart.onclick = () => {
     if (!S.playing) {
         const edgeMargin = 40;
-        const startX = S.side === 'left' ? edgeMargin : simC.width - edgeMargin - 70;
+        const startX = S.side === 'left' ? edgeMargin : simC.width - edgeMargin - 110;
         S.magnetX = startX; S.time = 0; lt = 0;
     }
     S.playing = !S.playing;
@@ -463,7 +470,7 @@ bStart.onclick = () => {
 
 bReset.onclick = () => {
     const edgeMargin = 40;
-    const startX = S.side === 'left' ? edgeMargin : simC.width - edgeMargin - 70;
+    const startX = S.side === 'left' ? edgeMargin : simC.width - edgeMargin - 110;
     S.magnetX = startX; S.time = 0; S.playing = false; lt = 0; EMF_POS.length = 0;
     bStart.textContent = '开始 Start'; bStart.className = 'ctrl-btn start';
     draw();
