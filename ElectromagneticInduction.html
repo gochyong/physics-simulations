@@ -170,61 +170,58 @@ function draw() {
     const magCx = mx + magnetW / 2;
     const poleSep = magnetW * 0.8;
     const isNLeft = S.nsDir === 'N-left';
-    const nX = magCx + (isNLeft ? -poleSep / 2 : poleSep / 2);
-    const sX = magCx + (isNLeft ? poleSep / 2 : -poleSep / 2);
+    const nPX = magCx + (isNLeft ? -poleSep / 2 : poleSep / 2);
+    const sPX = magCx + (isNLeft ? poleSep / 2 : -poleSep / 2);
     const sigmaP = coilW * 0.22;
-    // Flux = contribution from N pole - contribution from S pole
-    const phiN = S.B * 3 * Math.exp(-(nX - coilCx) * (nX - coilCx) / (2 * sigmaP * sigmaP));
-    const phiS = S.B * 3 * Math.exp(-(sX - coilCx) * (sX - coilCx) / (2 * sigmaP * sigmaP));
+    const phiN = S.B * 3 * Math.exp(-(nPX - coilCx) * (nPX - coilCx) / (2 * sigmaP * sigmaP));
+    const phiS = S.B * 3 * Math.exp(-(sPX - coilCx) * (sPX - coilCx) / (2 * sigmaP * sigmaP));
     const flux = phiN - phiS;
-    // dΦ/dt from motion
     const vPx = S.playing ? speedPx * (S.side === 'left' ? 1 : -1) : 0;
-    const dPhiNDt = -phiN * (nX - coilCx) / (sigmaP * sigmaP) * vPx;
-    const dPhiSDt = -phiS * (sX - coilCx) / (sigmaP * sigmaP) * vPx;
+    const dPhiNDt = -phiN * (nPX - coilCx) / (sigmaP * sigmaP) * vPx;
+    const dPhiSDt = -phiS * (sPX - coilCx) / (sigmaP * sigmaP) * vPx;
     const dFluxDt = dPhiNDt - dPhiSDt;
     const emf = -S.N * dFluxDt;
     const emfAbs = Math.abs(emf);
 
-    // --- Draw solenoid (helical spring coil, horizontal) ---
-    const solCY = coilCy, solR = Math.max(coilHalfH, 22);
+    // --- Draw solenoid (helical coil, horizontal, connected to galvanometer) ---
+    const solCY = coilCy, solR = Math.max(coilHalfH, 24);
     const solL = coilLeft, solRr = coilRight, solLen = coilW;
-    const windings = S.N * 5;
+    const nVis = S.N * 6;
 
-    // Cylinder body fill
+    // Cylinder body
     ctx.fillStyle = 'rgba(200,185,160,0.12)';
     ctx.fillRect(solL, solCY - solR, solLen, solR * 2);
-    // Top/bottom edges
     ctx.strokeStyle = '#bbb'; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(solL, solCY - solR); ctx.lineTo(solRr, solCY - solR); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(solL, solCY + solR); ctx.lineTo(solRr, solCY + solR); ctx.stroke();
 
-    // Front-facing diagonal windings (wire wrapping around)
-    for (let i = 0; i <= windings; i++) {
-        const frac = i / windings;
-        const wx = solL + frac * solLen;
-        // Top of front arc → bottom of front arc
-        const topY = solCY - solR * 0.5;
-        const botY = solCY + solR * 0.5;
-        // Diagonal: current wire goes from top-left to bottom-right (front facing)
-        const ofs = (i % 2 === 0 ? -0.3 : 0.3) * solR;
-        const midY = (topY + botY) / 2 + ofs * Math.sin(frac * Math.PI * 2);
+    // Diagonal winding wires: front face goes from top-left ↘ bottom-right
+    for (let i = 0; i <= nVis; i++) {
+        const x = solL + (i / nVis) * solLen;
+        const topY = solCY - solR * 0.75;
+        const botY = solCY + solR * 0.75;
         ctx.strokeStyle = i % 3 === 0 ? '#D4956B' : '#C4956B';
-        ctx.lineWidth = i % 3 === 0 ? 3.0 : 1.6;
-        ctx.beginPath(); ctx.moveTo(wx, topY); ctx.lineTo(wx, botY); ctx.stroke();
+        ctx.lineWidth = i % 3 === 0 ? 2.8 : 1.6;
+        ctx.beginPath(); ctx.moveTo(x, topY); ctx.lineTo(x + 4, botY); ctx.stroke();
+        // Back face (fainter)
+        if (i % 3 === 0) {
+            ctx.strokeStyle = '#C4956B'; ctx.lineWidth = 1.2;
+            ctx.beginPath(); ctx.moveTo(x - 2, botY); ctx.lineTo(x + 2, topY); ctx.stroke();
+        }
     }
 
-    // End caps (ellipses showing circular cross-section)
-    const capW = solR * 0.3;
-    ctx.fillStyle = 'rgba(200,185,160,0.25)';
+    // End caps
+    const capW = solR * 0.25;
+    ctx.fillStyle = 'rgba(200,185,160,0.2)';
     ctx.beginPath(); ctx.ellipse(solL, solCY, capW, solR, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = '#C4956B'; ctx.lineWidth = 2;
-    ctx.stroke();
-    ctx.strokeStyle = '#D4956B'; ctx.lineWidth = 2.5;
+    ctx.strokeStyle = '#D4956B'; ctx.lineWidth = 2.2;
     ctx.beginPath(); ctx.ellipse(solL, solCY, capW, solR, 0, Math.PI * 1.5, Math.PI * 0.5); ctx.stroke();
-    ctx.strokeStyle = '#C4956B'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.ellipse(solRr, solCY, capW, solR, 0, 0, Math.PI * 2); ctx.stroke();
-    ctx.strokeStyle = '#D4956B'; ctx.lineWidth = 2.5;
+    ctx.strokeStyle = '#C4956B'; ctx.lineWidth = 1.8;
+    ctx.beginPath(); ctx.ellipse(solL, solCY, capW, solR, 0, Math.PI * 0.5, Math.PI * 1.5); ctx.stroke();
+    ctx.strokeStyle = '#C4956B'; ctx.lineWidth = 1.8;
     ctx.beginPath(); ctx.ellipse(solRr, solCY, capW, solR, 0, Math.PI * 1.5, Math.PI * 0.5); ctx.stroke();
+    ctx.strokeStyle = '#D4956B'; ctx.lineWidth = 2.2;
+    ctx.beginPath(); ctx.ellipse(solRr, solCY, capW, solR, 0, Math.PI * 0.5, Math.PI * 1.5); ctx.stroke();
 
     // --- Galvanometer above coil ---
     const galvX = coilCx, galvY = coilCy - coilHalfH - 40;
@@ -270,32 +267,29 @@ function draw() {
     ctx.fill();
     ctx.strokeStyle = '#555'; ctx.lineWidth = 2; ctx.stroke();
 
-    // --- Magnetic field lines (classic dipole — outside magnet) ---
-    const nCx = isNLeft ? mx + magnetW * 0.05 : mx + magnetW * 0.95;
-    const sCx = isNLeft ? mx + magnetW * 0.95 : mx + magnetW * 0.05;
-    // Multiple layers of field lines at different bulge distances
-    const layers = [0.3, 0.5, 0.7, 1.0, 1.4, 1.9, 2.6];
+    // --- Magnetic field lines: from N-pole END to S-pole END ---
+    const nX = isNLeft ? mx : mx + magnetW;  // N pole face x
+    const sX = isNLeft ? mx + magnetW : mx;  // S pole face x
+    const layers = [0.4, 0.7, 1.0, 1.4, 1.9, 2.5];
     for (let li = 0; li < layers.length; li++) {
         const bulge = magnetW * layers[li];
-        // Top and bottom symmetric lines
         for (let side = 0; side < 2; side++) {
             const sign = side === 0 ? -1 : 1;
-            const sy1 = my + sign * magnetH * 0.5;
-            const sy2 = my + sign * magnetH * 0.5;
-            const cpx = (nCx + sCx) / 2;
-            const cpy = my + sign * (magnetH * 0.3 + bulge * 0.8);
+            const yOff = sign * (magnetH * 0.3 + bulge * 0.6);
+            const cpx = (nX + sX) / 2;
+            const cpy = my + yOff;
             ctx.strokeStyle = 'rgba(127,140,141,' + (0.25 + 0.3 * (1 - li / layers.length)) + ')';
-            ctx.lineWidth = li < 3 ? 1.4 : 1.0;
-            ctx.beginPath(); ctx.moveTo(nCx, sy1);
-            ctx.quadraticCurveTo(cpx, cpy, sCx, sy2); ctx.stroke();
+            ctx.lineWidth = li < 3 ? 1.3 : 0.9;
+            ctx.beginPath(); ctx.moveTo(nX, my);
+            ctx.quadraticCurveTo(cpx, cpy, sX, my); ctx.stroke();
             // Arrow at midpoint
             const t = 0.5;
-            const ax = (1-t)*(1-t)*nCx + 2*(1-t)*t*cpx + t*t*sCx;
-            const ay = (1-t)*(1-t)*sy1 + 2*(1-t)*t*cpy + t*t*sy2;
-            const tx = 2*(1-t)*(cpx-nCx) + 2*t*(sCx-cpx);
-            const ty = 2*(1-t)*(cpy-sy1) + 2*t*(sy2-cpy);
+            const ax = (1-t)*(1-t)*nX + 2*(1-t)*t*cpx + t*t*sX;
+            const ay = (1-t)*(1-t)*my + 2*(1-t)*t*cpy + t*t*my;
+            const tx = 2*(1-t)*(cpx-nX) + 2*t*(sX-cpx);
+            const ty = 2*(1-t)*(cpy-my) + 2*t*(my-cpy);
             const ang = Math.atan2(ty, tx), sz = 5;
-            ctx.fillStyle = 'rgba(127,140,141,' + (0.3 + 0.3 * (1 - li / layers.length)) + ')';
+            ctx.fillStyle = 'rgba(127,140,141,' + (0.35 + 0.25 * (1 - li / layers.length)) + ')';
             ctx.beginPath(); ctx.moveTo(ax + sz * Math.cos(ang), ay + sz * Math.sin(ang));
             ctx.lineTo(ax - sz * 0.5 * Math.cos(ang - 0.8), ay - sz * 0.5 * Math.sin(ang - 0.8));
             ctx.lineTo(ax - sz * 0.5 * Math.cos(ang + 0.8), ay - sz * 0.5 * Math.sin(ang + 0.8));
