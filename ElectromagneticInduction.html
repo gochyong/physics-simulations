@@ -195,19 +195,19 @@ function draw() {
     ctx.beginPath(); ctx.moveTo(solL, solCY - solR); ctx.lineTo(solRr, solCY - solR); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(solL, solCY + solR); ctx.lineTo(solRr, solCY + solR); ctx.stroke();
 
-    // Diagonal winding wires: front face goes from top-left ↘ bottom-right
+    // Helical windings: diagonal front wires from top-left to bottom-right
     for (let i = 0; i <= nVis; i++) {
         const x = solL + (i / nVis) * solLen;
-        const topY = solCY - solR * 0.75;
-        const botY = solCY + solR * 0.75;
+        const topY = solCY - solR * 0.8;
+        const botY = solCY + solR * 0.8;
+        // Diagonal offset for winding effect
+        const dx = solLen / nVis * 0.6;
         ctx.strokeStyle = i % 3 === 0 ? '#D4956B' : '#C4956B';
         ctx.lineWidth = i % 3 === 0 ? 2.8 : 1.6;
-        ctx.beginPath(); ctx.moveTo(x, topY); ctx.lineTo(x + 4, botY); ctx.stroke();
-        // Back face (fainter)
-        if (i % 3 === 0) {
-            ctx.strokeStyle = '#C4956B'; ctx.lineWidth = 1.2;
-            ctx.beginPath(); ctx.moveTo(x - 2, botY); ctx.lineTo(x + 2, topY); ctx.stroke();
-        }
+        ctx.beginPath(); ctx.moveTo(x, topY); ctx.lineTo(x + dx, botY); ctx.stroke();
+        // Back face return (fainter)
+        ctx.strokeStyle = '#C4956B'; ctx.lineWidth = 1.2;
+        ctx.beginPath(); ctx.moveTo(x - dx * 0.5, botY); ctx.lineTo(x + dx * 0.5, topY); ctx.stroke();
     }
 
     // End caps
