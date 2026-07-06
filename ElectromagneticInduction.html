@@ -295,38 +295,12 @@ function draw() {
         ctx.lineTo(ax - sz2 * 0.5 * Math.cos(ang + 0.8), ay - sz2 * 0.5 * Math.sin(ang + 0.8));
         ctx.closePath(); ctx.fill();
     }
-    // Pole-end lines: 2× length + quadratic arcs (top open up, bottom open down)
-    const pLen = 44;
-    // N pole: straight + 2 arcs above + 2 arcs below (all point away from N)
-    arrow(ctx, nSideX, my, nDir * pLen, 0, 'rgba(127,140,141,0.55)', 1.6);
-    for (let si = 0; si < 2; si++) {
-        const sign = si === 0 ? -1 : 1;
-        for (let j = 0; j < 2; j++) {
-            const dy = (j + 1) * 8, sy = my + sign * dy;
-            const ex = nSideX + nDir * pLen, ey = sy + sign * pLen * 0.28;
-            const cpx = nSideX + nDir * pLen * 0.3, cpy = sy + sign * pLen * 0.45; // initial angle up/down
-            ctx.strokeStyle = 'rgba(127,140,141,0.4)'; ctx.lineWidth = 1.2;
-            ctx.beginPath(); ctx.moveTo(nSideX, sy); ctx.quadraticCurveTo(cpx, cpy, ex, ey); ctx.stroke();
-            const t = 0.4, ax = (1-t)*(1-t)*nSideX+2*(1-t)*t*cpx+t*t*ex, ay = (1-t)*(1-t)*sy+2*(1-t)*t*cpy+t*t*ey;
-            ctx.fillStyle = 'rgba(127,140,141,0.45)';
-            ctx.beginPath(); ctx.moveTo(ax+4, ay); ctx.lineTo(ax-2, ay-3); ctx.lineTo(ax-2, ay+3); ctx.closePath(); ctx.fill();
-        }
-    }
-    // S pole: straight + 2 arcs above + 2 arcs below (all point toward S)
-    arrow(ctx, sSideX + sDir * pLen, my, -sDir * pLen, 0, 'rgba(127,140,141,0.55)', 1.6);
-    for (let si = 0; si < 2; si++) {
-        const sign = si === 0 ? -1 : 1;
-        for (let j = 0; j < 2; j++) {
-            const dy = (j + 1) * 8, sy = my + sign * dy;
-            const sx = sSideX + sDir * pLen, sY = sy + sign * pLen * 0.28;
-            const cpx = sSideX + sDir * pLen * 0.7, cpy = sy + sign * pLen * 0.45; // initial angle up/down mirror
-            ctx.strokeStyle = 'rgba(127,140,141,0.4)'; ctx.lineWidth = 1.2;
-            ctx.beginPath(); ctx.moveTo(sx, sY); ctx.quadraticCurveTo(cpx, cpy, sSideX, sy); ctx.stroke();
-            const t = 0.6, ax = (1-t)*(1-t)*sx+2*(1-t)*t*cpx+t*t*sSideX, ay = (1-t)*(1-t)*sY+2*(1-t)*t*cpy+t*t*sy;
-            ctx.fillStyle = 'rgba(127,140,141,0.45)';
-            ctx.beginPath(); ctx.moveTo(ax+4, ay); ctx.lineTo(ax-2, ay-3); ctx.lineTo(ax-2, ay+3); ctx.closePath(); ctx.fill();
-        }
-    }
+    // Straight line segments from middle of N and S side edges
+    // N side: arrow pointing outward (away from magnet)
+    const nMidY = my;
+    arrow(ctx, nSideX, nMidY, nDir * 22, 0, 'rgba(127,140,141,0.55)', 1.5);
+    // S side: arrow pointing inward (toward magnet)
+    arrow(ctx, sSideX + sDir * 22, nMidY, -sDir * 22, 0, 'rgba(127,140,141,0.55)', 1.5);
 
     // N/S labels
     ctx.fillStyle = '#fff'; ctx.font = 'bold 15px Fredoka'; ctx.textAlign = 'center';
