@@ -297,7 +297,7 @@ function draw() {
     }
     // N pole: 1 long center line + 2 arcs above (up-right) + 2 arcs below (down-right)
     const pLen = 44;
-    arrow(ctx, nSideX, my, nDir * pLen, 0, 'rgba(127,140,141,0.55)', 1.6);
+    arrow(ctx, nSideX + nDir * pLen, my, -nDir * pLen, 0, 'rgba(127,140,141,0.55)', 1.6);
     // Arcs: start at magnet surface, curve away from axis
     for (let si = 0; si < 2; si++) {
         const sign = si === 0 ? -1 : 1;
@@ -322,7 +322,7 @@ function draw() {
     }
 
     // S pole: 1 long center line + 2 arcs above + 2 arcs below (all pointing inward)
-    arrow(ctx, sSideX + sDir * pLen, my, -sDir * pLen, 0, 'rgba(127,140,141,0.55)', 1.6);
+    arrow(ctx, sSideX, my, sDir * pLen, 0, 'rgba(127,140,141,0.55)', 1.6);
     for (let si = 0; si < 2; si++) {
         const sign = si === 0 ? -1 : 1;
         for (let j = 0; j < S.B; j++) {
