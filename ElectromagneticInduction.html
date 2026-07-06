@@ -297,14 +297,14 @@ function draw() {
     }
     // Pole-end lines: 2× length + quadratic arcs (top open up, bottom open down)
     const pLen = 44;
-    // N pole
+    // N pole: right half of parabola (vertex at magnet, opening outward)
     arrow(ctx, nSideX, my, nDir * pLen, 0, 'rgba(127,140,141,0.55)', 1.6);
     for (let si = 0; si < 2; si++) {
         const sign = si === 0 ? -1 : 1;
         for (let j = 0; j < 2; j++) {
             const dy = (j + 1) * 9, sy = my + sign * dy;
-            const ex = nSideX + nDir * pLen, ey = sy;
-            const cpx = nSideX + nDir * pLen * 0.5, cpy = sy - sign * pLen * 0.5;
+            const ex = nSideX + nDir * pLen, ey = my; // converge to axis
+            const cpx = nSideX + nDir * pLen * 0.4, cpy = ey + sign * (dy + pLen * 0.4);
             ctx.strokeStyle = 'rgba(127,140,141,0.38)'; ctx.lineWidth = 1.2;
             ctx.beginPath(); ctx.moveTo(nSideX, sy); ctx.quadraticCurveTo(cpx, cpy, ex, ey); ctx.stroke();
             const t = 0.5, ax = (1-t)*(1-t)*nSideX+2*(1-t)*t*cpx+t*t*ex, ay = (1-t)*(1-t)*sy+2*(1-t)*t*cpy+t*t*ey;
@@ -312,17 +312,17 @@ function draw() {
             ctx.beginPath(); ctx.moveTo(ax+4, ay); ctx.lineTo(ax-2, ay-3); ctx.lineTo(ax-2, ay+3); ctx.closePath(); ctx.fill();
         }
     }
-    // S pole
+    // S pole: right half of parabola (vertex away from magnet, converging to surface)
     arrow(ctx, sSideX + sDir * pLen, my, -sDir * pLen, 0, 'rgba(127,140,141,0.55)', 1.6);
     for (let si = 0; si < 2; si++) {
         const sign = si === 0 ? -1 : 1;
         for (let j = 0; j < 2; j++) {
             const dy = (j + 1) * 9, sy = my + sign * dy;
-            const sx = sSideX + sDir * pLen, sY = sy;
-            const cpx = sSideX + sDir * pLen * 0.5, cpy = sy - sign * pLen * 0.5;
+            const sx = sSideX + sDir * pLen;
+            const cpx = sSideX + sDir * pLen * 0.6, cpy = my + sign * (dy + pLen * 0.4);
             ctx.strokeStyle = 'rgba(127,140,141,0.38)'; ctx.lineWidth = 1.2;
-            ctx.beginPath(); ctx.moveTo(sx, sY); ctx.quadraticCurveTo(cpx, cpy, sSideX, sy); ctx.stroke();
-            const t = 0.5, ax = (1-t)*(1-t)*sx+2*(1-t)*t*cpx+t*t*sSideX, ay = (1-t)*(1-t)*sY+2*(1-t)*t*cpy+t*t*sy;
+            ctx.beginPath(); ctx.moveTo(sx, my); ctx.quadraticCurveTo(cpx, cpy, sSideX, sy); ctx.stroke();
+            const t = 0.5, ax = (1-t)*(1-t)*sx+2*(1-t)*t*cpx+t*t*sSideX, ay = (1-t)*(1-t)*my+2*(1-t)*t*cpy+t*t*sy;
             ctx.fillStyle = 'rgba(127,140,141,0.45)';
             ctx.beginPath(); ctx.moveTo(ax+4, ay); ctx.lineTo(ax-2, ay-3); ctx.lineTo(ax-2, ay+3); ctx.closePath(); ctx.fill();
         }
