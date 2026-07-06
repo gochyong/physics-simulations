@@ -307,7 +307,7 @@ function draw() {
             const ex = nSideX + nDir * pLen;
             const ey = my + sign * (dy + 10);
             const cpx = nSideX + nDir * pLen * 0.45;
-            const cpy = my + sign * (dy + 18); // gentle bulge
+            const cpy = my - sign * (dy + 18); // gentle bulge
             ctx.strokeStyle = 'rgba(127,140,141,0.4)'; ctx.lineWidth = 1.2;
             ctx.beginPath(); ctx.moveTo(nSideX, sy);
             ctx.quadraticCurveTo(cpx, cpy, ex, ey); ctx.stroke();
@@ -331,7 +331,7 @@ function draw() {
             const sx = sSideX + sDir * pLen;
             const sY = my + sign * (dy + 10);
             const cpx = sSideX + sDir * pLen * 0.55;
-            const cpy = my + sign * (dy + 18);
+            const cpy = my - sign * (dy + 18);
             ctx.strokeStyle = 'rgba(127,140,141,0.4)'; ctx.lineWidth = 1.2;
             ctx.beginPath(); ctx.moveTo(sx, sY);
             ctx.quadraticCurveTo(cpx, cpy, sSideX, sy); ctx.stroke();
