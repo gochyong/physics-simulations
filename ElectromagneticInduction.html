@@ -304,7 +304,7 @@ function draw() {
         for (let j = 0; j < 2; j++) {
             const dy = (j + 1) * 8, sy = my + sign * dy;
             const ex = nSideX + nDir * pLen, ey = sy + sign * pLen * 0.28;
-            const cpx = nSideX + nDir * pLen * 0.35, cpy = sy - sign * pLen * 0.45; // flip bulge
+            const cpx = nSideX + nDir * pLen * 0.3, cpy = sy + sign * pLen * 0.45; // initial angle up/down
             ctx.strokeStyle = 'rgba(127,140,141,0.4)'; ctx.lineWidth = 1.2;
             ctx.beginPath(); ctx.moveTo(nSideX, sy); ctx.quadraticCurveTo(cpx, cpy, ex, ey); ctx.stroke();
             const t = 0.4, ax = (1-t)*(1-t)*nSideX+2*(1-t)*t*cpx+t*t*ex, ay = (1-t)*(1-t)*sy+2*(1-t)*t*cpy+t*t*ey;
@@ -319,7 +319,7 @@ function draw() {
         for (let j = 0; j < 2; j++) {
             const dy = (j + 1) * 8, sy = my + sign * dy;
             const sx = sSideX + sDir * pLen, sY = sy + sign * pLen * 0.28;
-            const cpx = sSideX + sDir * pLen * 0.65, cpy = sy - sign * pLen * 0.45; // flip bulge
+            const cpx = sSideX + sDir * pLen * 0.7, cpy = sy + sign * pLen * 0.45; // initial angle up/down mirror
             ctx.strokeStyle = 'rgba(127,140,141,0.4)'; ctx.lineWidth = 1.2;
             ctx.beginPath(); ctx.moveTo(sx, sY); ctx.quadraticCurveTo(cpx, cpy, sSideX, sy); ctx.stroke();
             const t = 0.6, ax = (1-t)*(1-t)*sx+2*(1-t)*t*cpx+t*t*sSideX, ay = (1-t)*(1-t)*sY+2*(1-t)*t*cpy+t*t*sy;
