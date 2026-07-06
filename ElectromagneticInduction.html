@@ -276,9 +276,9 @@ function draw() {
         const sy = my + frac * magnetH * 0.45;
         const sign = frac >= 0 ? 1 : -1;
         const dist = Math.abs(frac);
-        const bulge = magnetW * 0.35 * (1 + dist * 2);
+        const bulge = magnetW * 0.5 * (1.5 + dist * 2); // min bulge large so inner lines also curve sharply
         const cpx = (nSideX + sSideX) / 2;
-        const cpy = sy + sign * bulge * 0.9;
+        const cpy = sy + sign * bulge * 1.2;
         ctx.strokeStyle = 'rgba(127,140,141,0.4)'; ctx.lineWidth = 1.3;
         ctx.beginPath(); ctx.moveTo(nSideX, sy);
         ctx.quadraticCurveTo(cpx, cpy, sSideX, sy); ctx.stroke();
