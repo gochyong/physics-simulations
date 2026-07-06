@@ -298,24 +298,34 @@ function draw() {
     // Pole-end lines: 2× length + 2 short arcs above/below on each side
     const poleLen = 45; // doubled
 
-    // N pole: center straight + 2 arcs above + 2 arcs below
+    // N pole: center straight + 2 arcs above + 2 arcs below (arcs flip: bend toward axis)
     arrow(ctx, nSideX, my, nDir * poleLen, 0, 'rgba(127,140,141,0.55)', 1.6);
     for (let si = 0; si < 2; si++) {
-        const sign = si === 0 ? -1 : 1;
+        const sign = si === 0 ? -1 : 1; // top/bottom
         for (let j = 0; j < 2; j++) {
             const dy = (j + 1) * 7;
             const sy = my + sign * dy;
             const ex = nSideX + nDir * poleLen;
-            const ey = sy + sign * poleLen * 0.25;
+            const ey = my; // converge to center line
             const cpx = nSideX + nDir * poleLen * 0.45;
-            const cpy = sy + sign * poleLen * 0.5;
+            const cpy = sy - sign * poleLen * 0.3; // curve toward axis
             ctx.strokeStyle = 'rgba(127,140,141,0.38)'; ctx.lineWidth = 1.2;
             ctx.beginPath(); ctx.moveTo(nSideX, sy);
             ctx.quadraticCurveTo(cpx, cpy, ex, ey); ctx.stroke();
+            // Arrow at midpoint
+            const t = 0.5;
+            const ax = (1-t)*(1-t)*nSideX + 2*(1-t)*t*cpx + t*t*ex;
+            const ay = (1-t)*(1-t)*sy + 2*(1-t)*t*cpy + t*t*ey;
+            const dang = Math.atan2(ey-sy, ex-nSideX), sz3 = 4;
+            ctx.fillStyle = 'rgba(127,140,141,0.45)';
+            ctx.beginPath(); ctx.moveTo(ax + sz3 * Math.cos(dang), ay + sz3 * Math.sin(dang));
+            ctx.lineTo(ax - sz3 * 0.5 * Math.cos(dang - 0.8), ay - sz3 * 0.5 * Math.sin(dang - 0.8));
+            ctx.lineTo(ax - sz3 * 0.5 * Math.cos(dang + 0.8), ay - sz3 * 0.5 * Math.sin(dang + 0.8));
+            ctx.closePath(); ctx.fill();
         }
     }
 
-    // S pole: center straight + 2 arcs above + 2 arcs below
+    // S pole: center straight + 2 arcs above + 2 arcs below (arcs flip: bend toward axis)
     arrow(ctx, sSideX + sDir * poleLen, my, -sDir * poleLen, 0, 'rgba(127,140,141,0.55)', 1.6);
     for (let si = 0; si < 2; si++) {
         const sign = si === 0 ? -1 : 1;
@@ -323,12 +333,21 @@ function draw() {
             const dy = (j + 1) * 7;
             const sy = my + sign * dy;
             const sx = sSideX + sDir * poleLen;
-            const sY = sy + sign * poleLen * 0.25;
+            const sY = my;
             const cpx = sSideX + sDir * poleLen * 0.55;
-            const cpy = sy + sign * poleLen * 0.5;
+            const cpy = sy - sign * poleLen * 0.3;
             ctx.strokeStyle = 'rgba(127,140,141,0.38)'; ctx.lineWidth = 1.2;
             ctx.beginPath(); ctx.moveTo(sx, sY);
             ctx.quadraticCurveTo(cpx, cpy, sSideX, sy); ctx.stroke();
+            const t = 0.5;
+            const ax = (1-t)*(1-t)*sx + 2*(1-t)*t*cpx + t*t*sSideX;
+            const ay = (1-t)*(1-t)*sY + 2*(1-t)*t*cpy + t*t*sy;
+            const dang = Math.atan2(sy-sY, sSideX-sx), sz3 = 4;
+            ctx.fillStyle = 'rgba(127,140,141,0.45)';
+            ctx.beginPath(); ctx.moveTo(ax + sz3 * Math.cos(dang), ay + sz3 * Math.sin(dang));
+            ctx.lineTo(ax - sz3 * 0.5 * Math.cos(dang - 0.8), ay - sz3 * 0.5 * Math.sin(dang - 0.8));
+            ctx.lineTo(ax - sz3 * 0.5 * Math.cos(dang + 0.8), ay - sz3 * 0.5 * Math.sin(dang + 0.8));
+            ctx.closePath(); ctx.fill();
         }
     }
 
