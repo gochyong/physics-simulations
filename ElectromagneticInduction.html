@@ -298,7 +298,7 @@ function draw() {
     // Pole-end lines: 2× length + 2 short arcs above/below on each side
     const poleLen = 45; // doubled
 
-    // N pole: center straight + 2 arcs above + 2 arcs below (arcs flip: bend toward axis)
+    // N pole: center straight + 2 arcs above + 2 arcs below (bend away from axis)
     arrow(ctx, nSideX, my, nDir * poleLen, 0, 'rgba(127,140,141,0.55)', 1.6);
     for (let si = 0; si < 2; si++) {
         const sign = si === 0 ? -1 : 1; // top/bottom
@@ -306,9 +306,9 @@ function draw() {
             const dy = (j + 1) * 7;
             const sy = my + sign * dy;
             const ex = nSideX + nDir * poleLen;
-            const ey = my; // converge to center line
+            const ey = sy + sign * poleLen * 0.35; // continue away from axis
             const cpx = nSideX + nDir * poleLen * 0.45;
-            const cpy = sy - sign * poleLen * 0.3; // curve toward axis
+            const cpy = sy + sign * poleLen * 0.6; // bulge away from axis
             ctx.strokeStyle = 'rgba(127,140,141,0.38)'; ctx.lineWidth = 1.2;
             ctx.beginPath(); ctx.moveTo(nSideX, sy);
             ctx.quadraticCurveTo(cpx, cpy, ex, ey); ctx.stroke();
@@ -325,7 +325,7 @@ function draw() {
         }
     }
 
-    // S pole: center straight + 2 arcs above + 2 arcs below (arcs flip: bend toward axis)
+    // S pole: center straight + 2 arcs above + 2 arcs below (bend away from axis)
     arrow(ctx, sSideX + sDir * poleLen, my, -sDir * poleLen, 0, 'rgba(127,140,141,0.55)', 1.6);
     for (let si = 0; si < 2; si++) {
         const sign = si === 0 ? -1 : 1;
@@ -333,9 +333,9 @@ function draw() {
             const dy = (j + 1) * 7;
             const sy = my + sign * dy;
             const sx = sSideX + sDir * poleLen;
-            const sY = my;
+            const sY = sy + sign * poleLen * 0.35; // continue away from axis
             const cpx = sSideX + sDir * poleLen * 0.55;
-            const cpy = sy - sign * poleLen * 0.3;
+            const cpy = sy + sign * poleLen * 0.6; // bulge away from axis
             ctx.strokeStyle = 'rgba(127,140,141,0.38)'; ctx.lineWidth = 1.2;
             ctx.beginPath(); ctx.moveTo(sx, sY);
             ctx.quadraticCurveTo(cpx, cpy, sSideX, sy); ctx.stroke();
