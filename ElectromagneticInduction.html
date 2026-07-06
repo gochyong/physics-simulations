@@ -305,7 +305,7 @@ function draw() {
             const dy = (j + 1) * 9;
             const sy = my + sign * dy;
             const ex = nSideX + nDir * pLen;
-            const ey = my + sign * (dy + 10);
+            const ey = my + sign * (dy + 20);
             const cpx = nSideX + nDir * pLen * 0.45;
             const cpy = my + sign * (dy + 27); // gentle bulge
             ctx.strokeStyle = 'rgba(127,140,141,0.4)'; ctx.lineWidth = 1.2;
@@ -329,7 +329,7 @@ function draw() {
             const dy = (j + 1) * 9;
             const sy = my + sign * dy;
             const sx = sSideX + sDir * pLen;
-            const sY = my + sign * (dy + 10);
+            const sY = my + sign * (dy + 20);
             const cpx = sSideX + sDir * pLen * 0.55;
             const cpy = my + sign * (dy + 27);
             ctx.strokeStyle = 'rgba(127,140,141,0.4)'; ctx.lineWidth = 1.2;
