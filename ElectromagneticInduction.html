@@ -264,61 +264,48 @@ function draw() {
     ctx.fill();
     ctx.strokeStyle = '#555'; ctx.lineWidth = 2; ctx.stroke();
 
-    // --- Field line segments at poles (4 at N, 4 at S; top/bottom; no crossing magnet) ---
-    const nX = isNLeft ? mx : mx + magnetW;
-    const sX = isNLeft ? mx + magnetW : mx;
-    // N pole: lines point OUTWARD (arrows point away)
-    for (let i = 0; i < 4; i++) {
-        const sign = i < 2 ? -1 : 1;  // top 2, bottom 2
-        const angleOff = (i % 2 === 0 ? 0.3 : 0.7) * Math.PI;
-        const bendX = 30 + (i % 2) * 20;
-        const bendY = (35 + (i % 2) * 20) * sign;
-        const cpx = nX + (isNLeft ? 1 : -1) * bendX * 0.5;
-        const cpy = my + bendY;
-        const ex = nX + (isNLeft ? 1 : -1) * bendX;
-        const ey = my + bendY * 1.2;
-        ctx.strokeStyle = 'rgba(127,140,141,0.45)'; ctx.lineWidth = 1.4;
-        ctx.beginPath(); ctx.moveTo(nX, my);
-        ctx.quadraticCurveTo(cpx, cpy, ex, ey); ctx.stroke();
-        // Arrow at 60% of curve (pointing away from N)
-        const t = 0.6;
-        const ax = (1-t)*(1-t)*nX + 2*(1-t)*t*cpx + t*t*ex;
-        const ay = (1-t)*(1-t)*my + 2*(1-t)*t*cpy + t*t*ey;
-        const tx = 2*(1-t)*(cpx-nX) + 2*t*(ex-cpx);
-        const ty = 2*(1-t)*(cpy-my) + 2*t*(ey-cpy);
+    // --- Field lines: N side → arc → S side (3 above, 3 below) ---
+    const nSideX = isNLeft ? mx + magnetW * 0.2 : mx + magnetW * 0.8;  // N pole side
+    const sSideX = isNLeft ? mx + magnetW * 0.8 : mx + magnetW * 0.2;  // S pole side
+    const nDir = isNLeft ? 1 : -1; // outward direction from N side
+    const sDir = isNLeft ? -1 : 1; // inward direction toward S side
+    // 3 lines each side (top = negative sign, bottom = positive sign)
+    const heights = [-1.8, -1.0, -0.4, 0.4, 1.0, 1.8];
+    for (let i = 0; i < 6; i++) {
+        const sign = heights[i] > 0 ? 1 : -1;
+        const dist = Math.abs(heights[i]);
+        const bulgeX = magnetW * 0.3 * (1 + dist);
+        const bulgeY = magnetH * (1.5 + dist * 2) * sign;
+        const cpx = (nSideX + sSideX) / 2 + (sign * dist * 10);
+        const cpy = my + bulgeY;
+        ctx.strokeStyle = 'rgba(127,140,141,0.4)'; ctx.lineWidth = 1.3;
+        ctx.beginPath(); ctx.moveTo(nSideX, my + sign * magnetH * 0.3);
+        ctx.quadraticCurveTo(cpx, cpy, sSideX, my + sign * magnetH * 0.3); ctx.stroke();
+        // Arrow at midpoint (pointing N→S)
+        const t = 0.5;
+        const ax = (1-t)*(1-t)*nSideX + 2*(1-t)*t*cpx + t*t*sSideX;
+        const ay = (1-t)*(1-t)*(my+sign*magnetH*0.3) + 2*(1-t)*t*cpy + t*t*(my+sign*magnetH*0.3);
+        const tx = 2*(1-t)*(cpx-nSideX) + 2*t*(sSideX-cpx);
+        const ty = 2*(1-t)*(cpy-(my+sign*magnetH*0.3)) + 2*t*((my+sign*magnetH*0.3)-cpy);
         const ang = Math.atan2(ty, tx), sz = 5;
-        ctx.fillStyle = 'rgba(127,140,141,0.5)';
+        ctx.fillStyle = 'rgba(127,140,141,0.45)';
         ctx.beginPath(); ctx.moveTo(ax + sz * Math.cos(ang), ay + sz * Math.sin(ang));
         ctx.lineTo(ax - sz * 0.5 * Math.cos(ang - 0.8), ay - sz * 0.5 * Math.sin(ang - 0.8));
         ctx.lineTo(ax - sz * 0.5 * Math.cos(ang + 0.8), ay - sz * 0.5 * Math.sin(ang + 0.8));
         ctx.closePath(); ctx.fill();
     }
-    // S pole: lines point INWARD (arrows point toward S)
-    for (let i = 0; i < 4; i++) {
-        const sign = i < 2 ? -1 : 1;
-        const startDist = 30 + (i % 2) * 20;
-        const bendX = startDist * 0.5;
-        const bendY = (35 + (i % 2) * 20) * sign;
-        const sx2 = sX + (isNLeft ? -1 : 1) * startDist;
-        const sy2 = my + bendY * 1.2;
-        const cpx = sx2 - (isNLeft ? -1 : 1) * bendX * 0.5;
-        const cpy = my + bendY;
-        ctx.strokeStyle = 'rgba(127,140,141,0.45)'; ctx.lineWidth = 1.4;
-        ctx.beginPath(); ctx.moveTo(sx2, sy2);
-        ctx.quadraticCurveTo(cpx, cpy, sX, my); ctx.stroke();
-        // Arrow at 40% of curve (pointing toward S)
-        const t = 0.4;
-        const ax = (1-t)*(1-t)*sx2 + 2*(1-t)*t*cpx + t*t*sX;
-        const ay = (1-t)*(1-t)*sy2 + 2*(1-t)*t*cpy + t*t*my;
-        const tx = 2*(1-t)*(cpx-sx2) + 2*t*(sX-cpx);
-        const ty = 2*(1-t)*(cpy-sy2) + 2*t*(my-cpy);
-        const ang = Math.atan2(ty, tx), sz = 5;
-        ctx.fillStyle = 'rgba(127,140,141,0.5)';
-        ctx.beginPath(); ctx.moveTo(ax + sz * Math.cos(ang), ay + sz * Math.sin(ang));
-        ctx.lineTo(ax - sz * 0.5 * Math.cos(ang - 0.8), ay - sz * 0.5 * Math.sin(ang - 0.8));
-        ctx.lineTo(ax - sz * 0.5 * Math.cos(ang + 0.8), ay - sz * 0.5 * Math.sin(ang + 0.8));
-        ctx.closePath(); ctx.fill();
-    }
+    // Straight lines from middle of each pole side pointing outward/inward
+    // N side middle → outward
+    const nMidX = nSideX, nMidY = my;
+    const nOutX = nMidX + nDir * 25;
+    ctx.strokeStyle = 'rgba(127,140,141,0.5)'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(nMidX, nMidY); ctx.lineTo(nOutX, nMidY); ctx.stroke();
+    arrow(ctx, nMidX, nMidY, nDir * 20, 0, 'rgba(127,140,141,0.55)', 1.5);
+    // S side middle ← inward
+    const sMidX = sSideX, sMidY = my;
+    const sInX = sMidX + sDir * 25;
+    ctx.beginPath(); ctx.moveTo(sInX + sDir * 20, sMidY); ctx.lineTo(sMidX, sMidY); ctx.stroke();
+    arrow(ctx, sInX + sDir * 20, sMidY, -sDir * 20, 0, 'rgba(127,140,141,0.55)', 1.5);
 
     // N/S labels
     ctx.fillStyle = '#fff'; ctx.font = 'bold 15px Fredoka'; ctx.textAlign = 'center';
