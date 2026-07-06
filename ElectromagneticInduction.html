@@ -274,7 +274,7 @@ function draw() {
     for (let k = 1; k <= nLines; k++) {
         const h = k / (nLines + 1) * 0.95; edgeHeights.push(h, -h);
     } // dynamic count from B
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < edgeHeights.length; i++) {
         const frac = edgeHeights[i];
         const sy = my + frac * magnetH * 0.45;
         const sign = frac >= 0 ? 1 : -1;
