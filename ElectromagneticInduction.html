@@ -186,7 +186,7 @@ function draw() {
     // --- Draw solenoid (helical coil, horizontal, connected to galvanometer) ---
     const solCY = coilCy, solR = Math.max(coilHalfH, 24);
     const solL = coilLeft, solRr = coilRight, solLen = coilW;
-    const nVis = S.N * 6;
+    const nVis = S.N * 3; // visible windings = turns × 3
 
     // Cylinder body
     ctx.fillStyle = 'rgba(200,185,160,0.12)';
@@ -267,34 +267,60 @@ function draw() {
     ctx.fill();
     ctx.strokeStyle = '#555'; ctx.lineWidth = 2; ctx.stroke();
 
-    // --- Magnetic field lines: from N-pole END to S-pole END ---
-    const nX = isNLeft ? mx : mx + magnetW;  // N pole face x
-    const sX = isNLeft ? mx + magnetW : mx;  // S pole face x
-    const layers = [0.4, 0.7, 1.0, 1.4, 1.9, 2.5];
-    for (let li = 0; li < layers.length; li++) {
-        const bulge = magnetW * layers[li];
-        for (let side = 0; side < 2; side++) {
-            const sign = side === 0 ? -1 : 1;
-            const yOff = sign * (magnetH * 0.3 + bulge * 0.6);
-            const cpx = (nX + sX) / 2;
-            const cpy = my + yOff;
-            ctx.strokeStyle = 'rgba(127,140,141,' + (0.25 + 0.3 * (1 - li / layers.length)) + ')';
-            ctx.lineWidth = li < 3 ? 1.3 : 0.9;
-            ctx.beginPath(); ctx.moveTo(nX, my);
-            ctx.quadraticCurveTo(cpx, cpy, sX, my); ctx.stroke();
-            // Arrow at midpoint
-            const t = 0.5;
-            const ax = (1-t)*(1-t)*nX + 2*(1-t)*t*cpx + t*t*sX;
-            const ay = (1-t)*(1-t)*my + 2*(1-t)*t*cpy + t*t*my;
-            const tx = 2*(1-t)*(cpx-nX) + 2*t*(sX-cpx);
-            const ty = 2*(1-t)*(cpy-my) + 2*t*(my-cpy);
-            const ang = Math.atan2(ty, tx), sz = 5;
-            ctx.fillStyle = 'rgba(127,140,141,' + (0.35 + 0.25 * (1 - li / layers.length)) + ')';
-            ctx.beginPath(); ctx.moveTo(ax + sz * Math.cos(ang), ay + sz * Math.sin(ang));
-            ctx.lineTo(ax - sz * 0.5 * Math.cos(ang - 0.8), ay - sz * 0.5 * Math.sin(ang - 0.8));
-            ctx.lineTo(ax - sz * 0.5 * Math.cos(ang + 0.8), ay - sz * 0.5 * Math.sin(ang + 0.8));
-            ctx.closePath(); ctx.fill();
-        }
+    // --- Field line segments at poles (4 at N, 4 at S; top/bottom; no crossing magnet) ---
+    const nX = isNLeft ? mx : mx + magnetW;
+    const sX = isNLeft ? mx + magnetW : mx;
+    // N pole: lines point OUTWARD (arrows point away)
+    for (let i = 0; i < 4; i++) {
+        const sign = i < 2 ? -1 : 1;  // top 2, bottom 2
+        const angleOff = (i % 2 === 0 ? 0.3 : 0.7) * Math.PI;
+        const bendX = 30 + (i % 2) * 20;
+        const bendY = (35 + (i % 2) * 20) * sign;
+        const cpx = nX + (isNLeft ? 1 : -1) * bendX * 0.5;
+        const cpy = my + bendY;
+        const ex = nX + (isNLeft ? 1 : -1) * bendX;
+        const ey = my + bendY * 1.2;
+        ctx.strokeStyle = 'rgba(127,140,141,0.45)'; ctx.lineWidth = 1.4;
+        ctx.beginPath(); ctx.moveTo(nX, my);
+        ctx.quadraticCurveTo(cpx, cpy, ex, ey); ctx.stroke();
+        // Arrow at 60% of curve (pointing away from N)
+        const t = 0.6;
+        const ax = (1-t)*(1-t)*nX + 2*(1-t)*t*cpx + t*t*ex;
+        const ay = (1-t)*(1-t)*my + 2*(1-t)*t*cpy + t*t*ey;
+        const tx = 2*(1-t)*(cpx-nX) + 2*t*(ex-cpx);
+        const ty = 2*(1-t)*(cpy-my) + 2*t*(ey-cpy);
+        const ang = Math.atan2(ty, tx), sz = 5;
+        ctx.fillStyle = 'rgba(127,140,141,0.5)';
+        ctx.beginPath(); ctx.moveTo(ax + sz * Math.cos(ang), ay + sz * Math.sin(ang));
+        ctx.lineTo(ax - sz * 0.5 * Math.cos(ang - 0.8), ay - sz * 0.5 * Math.sin(ang - 0.8));
+        ctx.lineTo(ax - sz * 0.5 * Math.cos(ang + 0.8), ay - sz * 0.5 * Math.sin(ang + 0.8));
+        ctx.closePath(); ctx.fill();
+    }
+    // S pole: lines point INWARD (arrows point toward S)
+    for (let i = 0; i < 4; i++) {
+        const sign = i < 2 ? -1 : 1;
+        const startDist = 30 + (i % 2) * 20;
+        const bendX = startDist * 0.5;
+        const bendY = (35 + (i % 2) * 20) * sign;
+        const sx2 = sX + (isNLeft ? -1 : 1) * startDist;
+        const sy2 = my + bendY * 1.2;
+        const cpx = sx2 - (isNLeft ? -1 : 1) * bendX * 0.5;
+        const cpy = my + bendY;
+        ctx.strokeStyle = 'rgba(127,140,141,0.45)'; ctx.lineWidth = 1.4;
+        ctx.beginPath(); ctx.moveTo(sx2, sy2);
+        ctx.quadraticCurveTo(cpx, cpy, sX, my); ctx.stroke();
+        // Arrow at 40% of curve (pointing toward S)
+        const t = 0.4;
+        const ax = (1-t)*(1-t)*sx2 + 2*(1-t)*t*cpx + t*t*sX;
+        const ay = (1-t)*(1-t)*sy2 + 2*(1-t)*t*cpy + t*t*my;
+        const tx = 2*(1-t)*(cpx-sx2) + 2*t*(sX-cpx);
+        const ty = 2*(1-t)*(cpy-sy2) + 2*t*(my-cpy);
+        const ang = Math.atan2(ty, tx), sz = 5;
+        ctx.fillStyle = 'rgba(127,140,141,0.5)';
+        ctx.beginPath(); ctx.moveTo(ax + sz * Math.cos(ang), ay + sz * Math.sin(ang));
+        ctx.lineTo(ax - sz * 0.5 * Math.cos(ang - 0.8), ay - sz * 0.5 * Math.sin(ang - 0.8));
+        ctx.lineTo(ax - sz * 0.5 * Math.cos(ang + 0.8), ay - sz * 0.5 * Math.sin(ang + 0.8));
+        ctx.closePath(); ctx.fill();
     }
 
     // N/S labels
