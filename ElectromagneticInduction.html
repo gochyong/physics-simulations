@@ -308,10 +308,11 @@ function draw() {
             const ex = nSideX + nDir * poleLen;
             const ey = sy + sign * poleLen * 0.35; // continue away from axis
             const cpx = nSideX + nDir * poleLen * 0.45;
-            const cpy = sy - sign * poleLen * 0.6; // swapped bulge direction
+            const cpy = sy + sign * poleLen * 0.6; // bulge away from axis
             ctx.strokeStyle = 'rgba(127,140,141,0.38)'; ctx.lineWidth = 1.2;
             ctx.beginPath(); ctx.moveTo(nSideX, sy);
             ctx.quadraticCurveTo(cpx, cpy, ex, ey); ctx.stroke();
+            // Arrow at midpoint
             const t = 0.5;
             const ax = (1-t)*(1-t)*nSideX + 2*(1-t)*t*cpx + t*t*ex;
             const ay = (1-t)*(1-t)*sy + 2*(1-t)*t*cpy + t*t*ey;
@@ -334,7 +335,7 @@ function draw() {
             const sx = sSideX + sDir * poleLen;
             const sY = sy + sign * poleLen * 0.35; // continue away from axis
             const cpx = sSideX + sDir * poleLen * 0.55;
-            const cpy = sy - sign * poleLen * 0.6; // swapped bulge direction
+            const cpy = sy + sign * poleLen * 0.6; // bulge away from axis
             ctx.strokeStyle = 'rgba(127,140,141,0.38)'; ctx.lineWidth = 1.2;
             ctx.beginPath(); ctx.moveTo(sx, sY);
             ctx.quadraticCurveTo(cpx, cpy, sSideX, sy); ctx.stroke();
