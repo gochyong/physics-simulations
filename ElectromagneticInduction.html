@@ -305,7 +305,7 @@ function draw() {
         for (let j = 0; j < 2; j++) {
             const dy = (j + 1) * 10; // wider spacing
             const sy = my + sign * dy;
-            const spreadAngle = 0.5 + j * 0.25; // fan out more
+            const spreadAngle = 0.8 + j * 0.35; // wider fan
             const ex = nSideX + nDir * poleLen;
             const ey = sy + sign * poleLen * spreadAngle;
             const cpx = nSideX + nDir * poleLen * 0.45;
