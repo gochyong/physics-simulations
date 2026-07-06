@@ -175,11 +175,11 @@ function draw() {
     const sigmaP = coilW * 4;
     const phiN = S.B * 3 * Math.exp(-(nPX - coilCx) * (nPX - coilCx) / (2 * sigmaP * sigmaP));
     const phiS = S.B * 3 * Math.exp(-(sPX - coilCx) * (sPX - coilCx) / (2 * sigmaP * sigmaP));
-    const flux = phiN - phiS;
+    const flux = phiN + phiS; // both poles contribute → max at center
     const vPx = S.playing ? speedPx * (S.side === 'left' ? 1 : -1) : 0;
     const dPhiNDt = -phiN * (nPX - coilCx) / (sigmaP * sigmaP) * vPx;
     const dPhiSDt = -phiS * (sPX - coilCx) / (sigmaP * sigmaP) * vPx;
-    const dFluxDt = dPhiNDt - dPhiSDt;
+    const dFluxDt = dPhiNDt + dPhiSDt; // sum of derivatives
     const emf = -S.N * dFluxDt;
     const emfAbs = Math.abs(emf);
 
@@ -401,7 +401,7 @@ function draw() {
             const pS = S.B * 3 * Math.exp(-(sX2 - coilCx) * (sX2 - coilCx) / (2 * sigmaP * sigmaP));
             const dN = -pN * (nX2 - coilCx) / (sigmaP * sigmaP) * speedPx * sp;
             const dS = -pS * (sX2 - coilCx) / (sigmaP * sigmaP) * speedPx * sp;
-            const e = -S.N * (dN - dS);
+            const e = -S.N * (dN + dS);
             prePts.push({ x: px, emf: e });
             if (Math.abs(e) > emfMax) emfMax = Math.abs(e);
         }
