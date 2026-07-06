@@ -298,16 +298,16 @@ function draw() {
     // N pole: 1 long center line + 2 arcs above (up-right) + 2 arcs below (down-right)
     const pLen = 44;
     arrow(ctx, nSideX, my, nDir * pLen, 0, 'rgba(127,140,141,0.55)', 1.6);
-    // Arcs: start at magnet surface, curve diagonally up-right or down-right
+    // Arcs: start at magnet surface, curve away from axis
     for (let si = 0; si < 2; si++) {
-        const sign = si === 0 ? -1 : 1; // above/below axis
+        const sign = si === 0 ? -1 : 1;
         for (let j = 0; j < 2; j++) {
             const dy = (j + 1) * 9;
-            const sy = my + sign * dy; // start y
+            const sy = my + sign * dy;
             const ex = nSideX + nDir * pLen;
-            const ey = my + sign * (dy + 8); // end further out from axis
+            const ey = my + sign * (dy + 10);
             const cpx = nSideX + nDir * pLen * 0.45;
-            const cpy = sy + sign * 12; // slight curve
+            const cpy = my + sign * (dy + 22); // bulge away from axis
             ctx.strokeStyle = 'rgba(127,140,141,0.4)'; ctx.lineWidth = 1.2;
             ctx.beginPath(); ctx.moveTo(nSideX, sy);
             ctx.quadraticCurveTo(cpx, cpy, ex, ey); ctx.stroke();
@@ -331,7 +331,7 @@ function draw() {
             const sx = sSideX + sDir * pLen;
             const sY = my + sign * (dy + 8);
             const cpx = sSideX + sDir * pLen * 0.55;
-            const cpy = sy + sign * 12;
+            const cpy = my + sign * (dy + 22);
             ctx.strokeStyle = 'rgba(127,140,141,0.4)'; ctx.lineWidth = 1.2;
             ctx.beginPath(); ctx.moveTo(sx, sY);
             ctx.quadraticCurveTo(cpx, cpy, sSideX, sy); ctx.stroke();
