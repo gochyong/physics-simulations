@@ -186,7 +186,7 @@ function draw() {
     // --- Draw solenoid (helical coil, horizontal, connected to galvanometer) ---
     const solCY = coilCy, solR = Math.max(coilHalfH, 24);
     const solL = coilLeft, solRr = coilRight, solLen = coilW;
-    const nVis = S.N; // exact turns from parameter
+    const nVis = S.N; // exact number of turns
 
     // Cylinder body
     ctx.fillStyle = 'rgba(200,185,160,0.12)';
@@ -195,19 +195,22 @@ function draw() {
     ctx.beginPath(); ctx.moveTo(solL, solCY - solR); ctx.lineTo(solRr, solCY - solR); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(solL, solCY + solR); ctx.lineTo(solRr, solCY + solR); ctx.stroke();
 
-    // Helical windings: diagonal front wires from top-left to bottom-right
-    for (let i = 0; i <= nVis; i++) {
-        const x = solL + (i / nVis) * solLen;
-        const topY = solCY - solR * 0.8;
-        const botY = solCY + solR * 0.8;
-        // Diagonal offset for winding effect
-        const dx = solLen / nVis * 0.6;
-        ctx.strokeStyle = i % 3 === 0 ? '#D4956B' : '#C4956B';
-        ctx.lineWidth = i % 3 === 0 ? 2.8 : 1.6;
-        ctx.beginPath(); ctx.moveTo(x, topY); ctx.lineTo(x + dx, botY); ctx.stroke();
-        // Back face return (fainter)
-        ctx.strokeStyle = '#C4956B'; ctx.lineWidth = 1.2;
-        ctx.beginPath(); ctx.moveTo(x - dx * 0.5, botY); ctx.lineTo(x + dx * 0.5, topY); ctx.stroke();
+    // Helical windings — curved arcs (front: top-right ↘ bottom-right, back: fainter)
+    for (let i = 0; i < nVis; i++) {
+        const t = (i + 0.5) / nVis; // center of each turn
+        const x = solL + t * solLen;
+        const dx = solLen / nVis * 0.45;
+        const topY = solCY - solR * 0.75;
+        const botY = solCY + solR * 0.75;
+        // Front arc: curve from top to bottom
+        const cpx = x + dx * 0.5, cpy = solCY;
+        ctx.strokeStyle = '#D4956B'; ctx.lineWidth = 2.6;
+        ctx.beginPath(); ctx.moveTo(x, topY);
+        ctx.quadraticCurveTo(cpx, cpy, x + dx, botY); ctx.stroke();
+        // Back arc (fainter): curve from bottom to next top
+        ctx.strokeStyle = '#C4956B'; ctx.lineWidth = 1.3;
+        ctx.beginPath(); ctx.moveTo(x - dx * 0.3, botY);
+        ctx.quadraticCurveTo(x - dx * 0.2, solCY, x + dx * 0.3, topY); ctx.stroke();
     }
 
 
