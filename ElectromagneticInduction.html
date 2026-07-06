@@ -186,7 +186,7 @@ function draw() {
     // --- Draw solenoid (helical coil, horizontal, connected to galvanometer) ---
     const solCY = coilCy, solR = Math.max(coilHalfH, 24);
     const solL = coilLeft, solRr = coilRight, solLen = coilW;
-    const nVis = S.N * 3; // visible windings = turns × 3
+    const nVis = S.N; // exact turns from parameter
 
     // Cylinder body
     ctx.fillStyle = 'rgba(200,185,160,0.12)';
@@ -210,18 +210,6 @@ function draw() {
         ctx.beginPath(); ctx.moveTo(x - dx * 0.5, botY); ctx.lineTo(x + dx * 0.5, topY); ctx.stroke();
     }
 
-    // End caps
-    const capW = solR * 0.25;
-    ctx.fillStyle = 'rgba(200,185,160,0.2)';
-    ctx.beginPath(); ctx.ellipse(solL, solCY, capW, solR, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = '#D4956B'; ctx.lineWidth = 2.2;
-    ctx.beginPath(); ctx.ellipse(solL, solCY, capW, solR, 0, Math.PI * 1.5, Math.PI * 0.5); ctx.stroke();
-    ctx.strokeStyle = '#C4956B'; ctx.lineWidth = 1.8;
-    ctx.beginPath(); ctx.ellipse(solL, solCY, capW, solR, 0, Math.PI * 0.5, Math.PI * 1.5); ctx.stroke();
-    ctx.strokeStyle = '#C4956B'; ctx.lineWidth = 1.8;
-    ctx.beginPath(); ctx.ellipse(solRr, solCY, capW, solR, 0, Math.PI * 1.5, Math.PI * 0.5); ctx.stroke();
-    ctx.strokeStyle = '#D4956B'; ctx.lineWidth = 2.2;
-    ctx.beginPath(); ctx.ellipse(solRr, solCY, capW, solR, 0, Math.PI * 0.5, Math.PI * 1.5); ctx.stroke();
 
     // --- Galvanometer above coil ---
     const galvX = coilCx, galvY = coilCy - coilHalfH - 40;
@@ -237,10 +225,15 @@ function draw() {
     ctx.beginPath(); ctx.moveTo(galvX, galvY); ctx.lineTo(nx, ny);
     ctx.strokeStyle = '#FF5E5B'; ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.stroke();
     ctx.fillStyle = '#FF5E5B'; ctx.beginPath(); ctx.arc(galvX, galvY, 3.5, 0, Math.PI * 2); ctx.fill();
-    // Galv wires
-    ctx.strokeStyle = '#999'; ctx.lineWidth = 1.2;
-    ctx.beginPath(); ctx.moveTo(galvX - 12, galvY + galvR); ctx.lineTo(coilRight, coilCy - coilHalfH); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(galvX + 12, galvY + galvR); ctx.lineTo(coilLeft, coilCy - coilHalfH); ctx.stroke();
+    // Galv connection wires — rectangular loop
+    const gwY = galvY + galvR;
+    ctx.strokeStyle = '#999'; ctx.lineWidth = 1.5;
+    // Left wire: galv left → down → coil left
+    ctx.beginPath(); ctx.moveTo(galvX - 14, galvY); ctx.lineTo(galvX - 14, gwY + 8);
+    ctx.lineTo(coilLeft - 10, gwY + 8); ctx.lineTo(coilLeft - 10, solCY - solR); ctx.stroke();
+    // Right wire: galv right → down → coil right
+    ctx.beginPath(); ctx.moveTo(galvX + 14, galvY); ctx.lineTo(galvX + 14, gwY + 8);
+    ctx.lineTo(coilRight + 10, gwY + 8); ctx.lineTo(coilRight + 10, solCY - solR); ctx.stroke();
     ctx.fillStyle = '#888'; ctx.font = '9px Fredoka'; ctx.textAlign = 'center';
     ctx.fillText('G', galvX, galvY + 4);
 
