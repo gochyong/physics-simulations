@@ -229,16 +229,14 @@ function draw() {
     const waveLeftY = solCY - waveAmp * Math.sin(0); // ≈ solCY
     const waveRightY = solCY - waveAmp * Math.sin(nWaves * Math.PI * 2); // ≈ solCY
     ctx.strokeStyle = '#999'; ctx.lineWidth = 1.5; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-    // Left: wave start → up to G left side
+    // Left: wave start → up → G left bottom edge
     ctx.beginPath(); ctx.moveTo(solL, waveLeftY);
     ctx.lineTo(solL, galvY + galvR);
-    ctx.lineTo(galvX - 14, galvY + galvR);
-    ctx.lineTo(galvX - 14, galvY); ctx.stroke();
-    // Right: wave end → up to G right side
+    ctx.lineTo(galvX - 14, galvY + galvR); ctx.stroke();
+    // Right: wave end → up → G right bottom edge
     ctx.beginPath(); ctx.moveTo(solRr, waveRightY);
     ctx.lineTo(solRr, galvY + galvR);
-    ctx.lineTo(galvX + 14, galvY + galvR);
-    ctx.lineTo(galvX + 14, galvY); ctx.stroke();
+    ctx.lineTo(galvX + 14, galvY + galvR); ctx.stroke();
     // G label
     ctx.fillStyle = '#888'; ctx.font = '10px Fredoka'; ctx.textAlign = 'center';
     ctx.fillText('G', galvX, galvY + 4);
