@@ -318,7 +318,7 @@ function draw() {
             const t = 0.4;
             const ax = (1-t)*(1-t)*nSideX + 2*(1-t)*t*cpx + t*t*ex;
             const ay = (1-t)*(1-t)*sy + 2*(1-t)*t*cpy + t*t*ey;
-            const dang = Math.atan2(ey-sy, ex-nSideX);
+            const dang = Math.atan2(ey-sy, ex-nSideX) + Math.PI;
             ctx.fillStyle = 'rgba(127,140,141,0.5)';
             ctx.beginPath(); ctx.moveTo(ax+4, ay); ctx.lineTo(ax-2, ay-3); ctx.lineTo(ax-2, ay+3); ctx.closePath(); ctx.fill();
         }
@@ -341,7 +341,7 @@ function draw() {
             const t = 0.6;
             const ax = (1-t)*(1-t)*sx + 2*(1-t)*t*cpx + t*t*sSideX;
             const ay = (1-t)*(1-t)*sY + 2*(1-t)*t*cpy + t*t*sy;
-            const dang = Math.atan2(sy-sY, sSideX-sx);
+            const dang = Math.atan2(sy-sY, sSideX-sx) + Math.PI;
             ctx.fillStyle = 'rgba(127,140,141,0.5)';
             ctx.beginPath(); ctx.moveTo(ax+4, ay); ctx.lineTo(ax-2, ay-3); ctx.lineTo(ax-2, ay+3); ctx.closePath(); ctx.fill();
         }
