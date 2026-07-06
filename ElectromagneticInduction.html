@@ -295,12 +295,42 @@ function draw() {
         ctx.lineTo(ax - sz2 * 0.5 * Math.cos(ang + 0.8), ay - sz2 * 0.5 * Math.sin(ang + 0.8));
         ctx.closePath(); ctx.fill();
     }
-    // Straight line segments from middle of N and S side edges
-    // N side: arrow pointing outward (away from magnet)
-    const nMidY = my;
-    arrow(ctx, nSideX, nMidY, nDir * 22, 0, 'rgba(127,140,141,0.55)', 1.5);
-    // S side: arrow pointing inward (toward magnet)
-    arrow(ctx, sSideX + sDir * 22, nMidY, -sDir * 22, 0, 'rgba(127,140,141,0.55)', 1.5);
+    // Pole-end lines: 2× length + 2 short arcs above/below on each side
+    const poleLen = 45; // doubled
+
+    // N pole: center straight + 2 arcs above + 2 arcs below
+    arrow(ctx, nSideX, my, nDir * poleLen, 0, 'rgba(127,140,141,0.55)', 1.6);
+    for (let si = 0; si < 2; si++) {
+        const sign = si === 0 ? -1 : 1;
+        for (let j = 0; j < 2; j++) {
+            const dy = (j + 1) * 7;
+            const sy = my + sign * dy;
+            const ex = nSideX + nDir * poleLen;
+            const ey = sy + sign * poleLen * 0.25;
+            const cpx = nSideX + nDir * poleLen * 0.45;
+            const cpy = sy + sign * poleLen * 0.5;
+            ctx.strokeStyle = 'rgba(127,140,141,0.38)'; ctx.lineWidth = 1.2;
+            ctx.beginPath(); ctx.moveTo(nSideX, sy);
+            ctx.quadraticCurveTo(cpx, cpy, ex, ey); ctx.stroke();
+        }
+    }
+
+    // S pole: center straight + 2 arcs above + 2 arcs below
+    arrow(ctx, sSideX + sDir * poleLen, my, -sDir * poleLen, 0, 'rgba(127,140,141,0.55)', 1.6);
+    for (let si = 0; si < 2; si++) {
+        const sign = si === 0 ? -1 : 1;
+        for (let j = 0; j < 2; j++) {
+            const dy = (j + 1) * 7;
+            const sy = my + sign * dy;
+            const sx = sSideX + sDir * poleLen;
+            const sY = sy + sign * poleLen * 0.25;
+            const cpx = sSideX + sDir * poleLen * 0.55;
+            const cpy = sy + sign * poleLen * 0.5;
+            ctx.strokeStyle = 'rgba(127,140,141,0.38)'; ctx.lineWidth = 1.2;
+            ctx.beginPath(); ctx.moveTo(sx, sY);
+            ctx.quadraticCurveTo(cpx, cpy, sSideX, sy); ctx.stroke();
+        }
+    }
 
     // N/S labels
     ctx.fillStyle = '#fff'; ctx.font = 'bold 15px Fredoka'; ctx.textAlign = 'center';
