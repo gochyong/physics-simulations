@@ -303,12 +303,13 @@ function draw() {
     for (let si = 0; si < 2; si++) {
         const sign = si === 0 ? -1 : 1; // top/bottom
         for (let j = 0; j < 2; j++) {
-            const dy = (j + 1) * 7;
+            const dy = (j + 1) * 10; // wider spacing
             const sy = my + sign * dy;
+            const spreadAngle = 0.5 + j * 0.25; // fan out more
             const ex = nSideX + nDir * poleLen;
-            const ey = sy + sign * poleLen * 0.35; // continue away from axis
+            const ey = sy + sign * poleLen * spreadAngle;
             const cpx = nSideX + nDir * poleLen * 0.45;
-            const cpy = sy - sign * poleLen * 0.6; // reversed bulge
+            const cpy = sy - sign * poleLen * (0.7 + j * 0.2);
             ctx.strokeStyle = 'rgba(127,140,141,0.38)'; ctx.lineWidth = 1.2;
             ctx.beginPath(); ctx.moveTo(nSideX, sy);
             ctx.quadraticCurveTo(cpx, cpy, ex, ey); ctx.stroke();
@@ -329,12 +330,13 @@ function draw() {
     for (let si = 0; si < 2; si++) {
         const sign = si === 0 ? -1 : 1;
         for (let j = 0; j < 2; j++) {
-            const dy = (j + 1) * 7;
+            const dy = (j + 1) * 10; // wider spacing
             const sy = my + sign * dy;
+            const spreadAngle = 0.5 + j * 0.25;
             const sx = sSideX + sDir * poleLen;
-            const sY = sy + sign * poleLen * 0.35; // continue away from axis
+            const sY = sy + sign * poleLen * spreadAngle;
             const cpx = sSideX + sDir * poleLen * 0.55;
-            const cpy = sy - sign * poleLen * 0.6; // reversed bulge
+            const cpy = sy - sign * poleLen * (0.7 + j * 0.2);
             ctx.strokeStyle = 'rgba(127,140,141,0.38)'; ctx.lineWidth = 1.2;
             ctx.beginPath(); ctx.moveTo(sx, sY);
             ctx.quadraticCurveTo(cpx, cpy, sSideX, sy); ctx.stroke();
