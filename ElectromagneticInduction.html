@@ -301,7 +301,7 @@ function draw() {
     // Arcs: start at magnet surface, curve away from axis
     for (let si = 0; si < 2; si++) {
         const sign = si === 0 ? -1 : 1;
-        for (let j = 0; j < 2; j++) {
+        for (let j = 0; j < S.B; j++) {
             const dy = (j + 1) * 9;
             const sy = my + sign * dy;
             const ex = nSideX + nDir * pLen;
@@ -325,7 +325,7 @@ function draw() {
     arrow(ctx, sSideX + sDir * pLen, my, -sDir * pLen, 0, 'rgba(127,140,141,0.55)', 1.6);
     for (let si = 0; si < 2; si++) {
         const sign = si === 0 ? -1 : 1;
-        for (let j = 0; j < 2; j++) {
+        for (let j = 0; j < S.B; j++) {
             const dy = (j + 1) * 9;
             const sy = my + sign * dy;
             const sx = sSideX + sDir * pLen;
