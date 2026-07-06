@@ -172,7 +172,7 @@ function draw() {
     const isNLeft = S.nsDir === 'N-left';
     const nPX = magCx + (isNLeft ? -poleSep / 2 : poleSep / 2);
     const sPX = magCx + (isNLeft ? poleSep / 2 : -poleSep / 2);
-    const sigmaP = coilW * 0.22;
+    const sigmaP = coilW * 0.8;
     const phiN = S.B * 3 * Math.exp(-(nPX - coilCx) * (nPX - coilCx) / (2 * sigmaP * sigmaP));
     const phiS = S.B * 3 * Math.exp(-(sPX - coilCx) * (sPX - coilCx) / (2 * sigmaP * sigmaP));
     const flux = phiN - phiS;
