@@ -208,17 +208,6 @@ function draw() {
     }
     ctx.stroke();
 
-    // Back wave (fainter, phase-shifted for 3D depth)
-    ctx.strokeStyle = '#C4956B'; ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    const backAmp = waveAmp * 0.5;
-    for (let i = 0; i <= nWaves * 40; i++) {
-        const t = i / (nWaves * 40);
-        const x = solL + t * solLen;
-        const y = solCY - backAmp * Math.sin(t * nWaves * Math.PI * 2 + Math.PI);
-        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-    }
-    ctx.stroke();
 
 
     // --- Galvanometer above coil ---
