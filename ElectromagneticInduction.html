@@ -270,7 +270,7 @@ function draw() {
     const nDir = isNLeft ? -1 : 1; // N pole edge: lines go outward (left or right)
     const sDir = isNLeft ? 1 : -1; // S pole edge: lines come inward
     // Field lines start from various heights along the magnet side edges
-    const edgeHeights = [0.8, 0.4, 0.0, -0.0, -0.4, -0.8]; // fractions of magnetH
+    const edgeHeights = [0.9, 0.6, 0.3, -0.3, -0.6, -0.9]; // 3 above, 3 below, evenly spaced
     for (let i = 0; i < 6; i++) {
         const frac = edgeHeights[i];
         const sy = my + frac * magnetH * 0.45;
