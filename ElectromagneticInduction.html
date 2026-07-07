@@ -157,10 +157,6 @@ function draw() {
     const speedPx = S.speed * 60; // px/s
     const travelTime = Math.abs(travelDist) / speedPx;
 
-    if (!S.playing) {
-        S.magnetX = startX;
-        S.time = 0;
-    }
     const mx = S.magnetX, my = coilCy;
     const magnetLeft = mx, magnetRight = mx + magnetW;
     const magnetTop = my - magnetH / 2, magnetBot = my + magnetH / 2;
@@ -509,9 +505,14 @@ sB.addEventListener('input', onChg);
 
 bStart.onclick = () => {
     if (!S.playing) {
+        // Only reset to start if magnet completed its travel
         const edgeMargin = 40;
-        const startX = S.side === 'left' ? edgeMargin : simC.width - edgeMargin - 110;
-        S.magnetX = startX; S.time = 0; lt = 0;
+        const cw = simC.width;
+        const startX = S.side === 'left' ? edgeMargin : cw - edgeMargin - 110;
+        const endX = S.side === 'left' ? cw - edgeMargin - 110 : edgeMargin;
+        if ((S.side === 'left' && S.magnetX >= endX - 2) || (S.side === 'right' && S.magnetX <= endX + 2)) {
+            S.magnetX = startX; S.time = 0;
+        }
     }
     S.playing = !S.playing;
     bStart.textContent = S.playing ? '暂停 Pause' : '开始 Start';
