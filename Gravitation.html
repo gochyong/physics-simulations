@@ -446,7 +446,7 @@
 
             // Vector scale factors (independent for force and velocity display)
             const forceScale = 0.25 * (5 / r_val); // so force vector is visible at all radii
-            const velScale = 0.02;   // v≈2500m/s→~50px, varies with √(M/r)
+            const velScale = 0.04;   // ~100px baseline
 
             // Force vector: from planet toward center
             const forceMag = Math.min(phys.F * forceScale * 1e-21, r_px * 0.7);
