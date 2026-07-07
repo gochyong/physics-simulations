@@ -446,7 +446,7 @@
 
             // Vector scale factors (independent for force and velocity display)
             const forceScale = 0.25 * (5 / r_val); // so force vector is visible at all radii
-            const velScale = 0.6 * (r_val / 5);     // so velocity vector is visible at all radii
+            const velScale = 2.5 * (r_val / 5);     // velocity arrow scales visibly with speed
 
             // Force vector: from planet toward center
             const forceMag = Math.min(phys.F * forceScale * 1e-21, r_px * 0.7);
@@ -471,7 +471,7 @@
             const vux = -Math.sin(theta);
             const vuy = -Math.cos(theta);
 
-            const velMag = Math.min(phys.v * velScale * 0.4, r_px * 0.6);
+            const velMag = Math.min(phys.v * velScale, r_px * 0.7);
             if (velMag > 3) {
                 arrow(ctx, px, py, vux * velMag, vuy * velMag, '#3498db', 3);
                 // Velocity label
