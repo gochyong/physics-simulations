@@ -176,7 +176,7 @@ function draw() {
     const dPhiNDt = -phiN * (nPX - coilCx) / (sigmaP * sigmaP) * vPx;
     const dPhiSDt = -phiS * (sPX - coilCx) / (sigmaP * sigmaP) * vPx;
     const dFluxDt = dPhiNDt + dPhiSDt; // sum of derivatives
-    const emf = S.N * dFluxDt;
+    const emf = S.N * dFluxDt * (isNLeft ? 1 : -1);
     const emfAbs = Math.abs(emf);
 
     // --- Draw solenoid (helical coil, horizontal, connected to galvanometer) ---
@@ -387,7 +387,7 @@ function draw() {
     const pSE = S.B * 3 * Math.exp(-(sXE - coilCx) * (sXE - coilCx) / (2 * sigmaP * sigmaP));
     const dNE = -pNE * (nXE - coilCx) / (sigmaP * sigmaP) * speedPx * spE;
     const dSE = -pSE * (sXE - coilCx) / (sigmaP * sigmaP) * speedPx * spE;
-    const curEMF = S.N * (dNE + dSE);
+    const curEMF = S.N * (dNE + dSE) * (isNLeft ? 1 : -1);
     if (S.playing) EMF_POS.push({ x: S.magnetX, emf: curEMF });
     if (EMF_POS.length > 500) EMF_POS.shift();
 
