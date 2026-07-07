@@ -213,8 +213,8 @@ function draw() {
     ctx.fillStyle = '#fff'; ctx.fill();
     ctx.strokeStyle = '#555'; ctx.lineWidth = 2; ctx.stroke();
     // Needle — proportional deflection, not on/off
-    const refEMF = S.N * S.B * S.speed * 5;
-    const rawAngle = (emf / Math.max(refEMF, 1)) * 0.6;
+    const refEMF = S.N * S.B * S.speed * 1.2;
+    const rawAngle = (emf / Math.max(refEMF, 1)) * 1.2;
     const needleAngle = Math.max(-0.35 * Math.PI, Math.min(0.35 * Math.PI, rawAngle));
     const nx = galvX + (galvR - 8) * Math.sin(needleAngle);
     const ny = galvY - (galvR - 8) * Math.cos(needleAngle);
