@@ -149,14 +149,12 @@
     <div class="container">
         <header>
             <h1>万有引力 / Universal Gravitation</h1>
-            <p class="subtitle">F = G·m₁·m₂ / r² &nbsp;|&nbsp; 圆形轨道 Circular Orbit</p>
         </header>
 
         <section class="formula-display">
-            <div class="formula-container" id="formula-root">
-                <span class="formula-item" style="color:#9b59b6;">F = G·M·m / r²</span>
-                <span class="formula-item" style="color:#3498db;">v = √(G·M / r)</span>
-                <span class="formula-item" style="color:#e67e22;">T = 2π·√(r³/(G·M))</span>
+            <div class="formula-container" id="formula-root" style="flex-direction:column;gap:4px;">
+                <div style="font-size:1.3rem;font-weight:700;color:#9b59b6;" id="formula-main"></div>
+                <div style="font-size:0.82rem;color:#888;" id="formula-sub"></div>
             </div>
             <div class="result-row" id="result-area">
                 <span>引力 F: <strong id="res-F" style="color:var(--force-color)">--</strong></span>
@@ -183,6 +181,11 @@
                         <div class="label-row"><span>质量 M</span><span id="badge-M" class="val-badge">5</span></div>
                         <input type="range" id="slider-M" min="1" max="10" step="0.1" value="5">
                     </div>
+                </div>
+
+                <div class="param-section" style="border-left:5px solid #3498db;">
+                    <div class="param-section-header">&#127758; 转动天体 Orbiting Body</div>
+                    <div class="control-group"><div class="label-row"><span>质量 m</span><span id="badge-m" class="val-badge">1</span></div><input type="range" id="slider-m" min="0.1" max="5" step="0.1" value="1"></div>
                 </div>
 
                 <div class="param-section" style="border-left: 5px solid var(--primary);">
@@ -217,8 +220,8 @@
                         <div><div style="font-weight:700;font-size:0.9rem;">轨道速度 / Orbital Speed</div><div style="font-size:0.78rem;color:#888;">v = √(GM/r)。质量越大或半径越小，轨道速度越快。</div></div>
                     </div>
                     <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
-                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(230,126,34,0.1);color:#e67e22;font-weight:700;">T²∝r³</div>
-                        <div><div style="font-weight:700;font-size:0.9rem;">开普勒第三定律 / Kepler's 3rd</div><div style="font-size:0.78rem;color:#888;">T² ∝ r³。轨道周期的平方正比于轨道半径的立方。</div></div>
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(230,126,34,0.1);color:#e67e22;font-weight:700;">G</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">引力常数 G = 6.674×10⁻¹¹ N·m²/kg²</div><div style="font-size:0.78rem;color:#888;">万有引力常数，由卡文迪许扭秤实验测得。</div></div>
                     </div>
                     <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
                         <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:#2ecc71;font-weight:700;">F⊥v</div>
@@ -236,12 +239,12 @@
         const G = 6.67430e-11;          // gravitational constant
         const MASS_SCALE = 1e24;         // 1 slider unit = 10^24 kg
         const LENGTH_SCALE = 1e7;        // 1 slider unit = 10^7 m (~Earth radius)
-        const PLANET_MASS = 1e22;        // fixed small mass ~ 1/600 Earth mass
         const TIME_ACCEL = 12000;        // simulation time acceleration factor
 
         // --- State ---
         let M_val = 5;      // central mass in slider units
         let r_val = 5;      // orbital radius in slider units
+        let m_val = 1;      // orbiting mass in slider units (×10²² kg)
         let speed = 1.0;    // animation speed multiplier
         let theta = 0;      // current orbital angle (radians)
         let playing = false;
@@ -286,14 +289,16 @@
         }
 
         // --- Physics calculations ---
+        const MASS_SCALE2 = 1e22; // 1 slider unit for m = 10^22 kg
         function getPhysics() {
             const M_actual = M_val * MASS_SCALE;
+            const m_actual = m_val * MASS_SCALE2;
             const r_actual = r_val * LENGTH_SCALE;
-            const F = G * M_actual * PLANET_MASS / (r_actual * r_actual);
+            const F = G * M_actual * m_actual / (r_actual * r_actual);
             const v = Math.sqrt(G * M_actual / r_actual);
             const T = 2 * Math.PI * Math.sqrt(r_actual * r_actual * r_actual / (G * M_actual));
-            const omega = v / r_actual; // angular velocity rad/s (real)
-            return { F, v, T, omega, M_actual, r_actual };
+            const omega = v / r_actual;
+            return { F, v, T, omega, M_actual, m_actual, r_actual };
         }
 
         // --- Format helpers ---
@@ -351,7 +356,7 @@
 
             // Planet position
             const px = cx + r_px * Math.cos(theta);
-            const py = cy + r_px * Math.sin(theta);
+            const py = cy - r_px * Math.sin(theta); // CCW on canvas
 
             // --- Draw orbit circle (dashed) ---
             ctx.save();
@@ -485,12 +490,12 @@
             document.getElementById('res-v').innerHTML = (phys.v / 1000).toFixed(2) + ' km/s';
             document.getElementById('res-T').innerHTML = fmtTime(phys.T);
 
-            // --- Update formula display with computed values ---
-            const fRoot = document.getElementById('formula-root');
-            fRoot.innerHTML =
-                '<span class="formula-item" style="color:#9b59b6;">F = G·M·m/r² = <b>' + fmtExp(phys.F, 'N', 2) + '</b></span>' +
-                '<span class="formula-item" style="color:#3498db;">v = √(GM/r) = <b>' + (phys.v / 1000).toFixed(2) + ' km/s</b></span>' +
-                '<span class="formula-item" style="color:#e67e22;">T = 2π√(r³/GM) = <b>' + fmtTime(phys.T) + '</b></span>';
+            // --- Update formula display ---
+            document.getElementById('formula-main').innerHTML =
+                'F = G·M·m / r² = <b>' + fmtExp(phys.F, 'N', 2) + '</b>';
+            document.getElementById('formula-sub').innerHTML =
+                'v = √(GM/r) = <b>' + (phys.v / 1000).toFixed(2) + ' km/s</b> &nbsp;|&nbsp; ' +
+                'T = 2π√(r³/GM) = <b>' + fmtTime(phys.T) + '</b>';
         }
 
         // --- Animation loop ---
@@ -525,9 +530,11 @@
         const sM = document.getElementById('slider-M');
         const sr = document.getElementById('slider-r');
         const sSpeed = document.getElementById('slider-speed');
+        const sm = document.getElementById('slider-m');
         const bM = document.getElementById('badge-M');
         const br = document.getElementById('badge-r');
         const bSpeed = document.getElementById('badge-speed');
+        const bm = document.getElementById('badge-m');
         const bStart = document.getElementById('btn-start');
         const bReset = document.getElementById('btn-reset');
 
@@ -535,10 +542,11 @@
             M_val = parseFloat(sM.value);
             r_val = parseFloat(sr.value);
             speed = parseFloat(sSpeed.value);
+            m_val = parseFloat(sm.value);
             bM.textContent = M_val.toFixed(1) + ' (10²⁴ kg)';
             br.textContent = r_val.toFixed(1);
             bSpeed.textContent = speed.toFixed(1) + 'x';
-            // Reset angle so orbit starts fresh
+            bm.textContent = m_val.toFixed(1) + ' (10²² kg)';
             theta = 0;
             lastTime = 0;
             draw();
@@ -547,6 +555,7 @@
         sM.addEventListener('input', onSliderChange);
         sr.addEventListener('input', onSliderChange);
         sSpeed.addEventListener('input', onSliderChange);
+        sm.addEventListener('input', onSliderChange);
 
         bStart.onclick = () => {
             playing = !playing;
