@@ -212,9 +212,10 @@ function draw() {
     ctx.beginPath(); ctx.arc(galvX, galvY, galvR, 0, Math.PI * 2);
     ctx.fillStyle = '#fff'; ctx.fill();
     ctx.strokeStyle = '#555'; ctx.lineWidth = 2; ctx.stroke();
-    // Needle — deflects left/right based on emf sign
-    const emfClamp = Math.max(Math.abs(emf), 1);
-    const needleAngle = (emf / emfClamp) * Math.PI * 0.35;
+    // Needle — proportional deflection, not on/off
+    const refEMF = S.N * S.B * S.speed * 5;
+    const rawAngle = (emf / Math.max(refEMF, 1)) * 0.6;
+    const needleAngle = Math.max(-0.35 * Math.PI, Math.min(0.35 * Math.PI, rawAngle));
     const nx = galvX + (galvR - 8) * Math.sin(needleAngle);
     const ny = galvY - (galvR - 8) * Math.cos(needleAngle);
     ctx.beginPath(); ctx.moveTo(galvX, galvY); ctx.lineTo(nx, ny);
