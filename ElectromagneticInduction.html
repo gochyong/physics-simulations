@@ -399,7 +399,7 @@ function draw() {
         ctxE.setLineDash([]);
 
         // Fixed reference scale so curve starts near zero, not at max
-        const refMax = S.N * S.B * S.speed * 6;
+        const refMax = S.N * S.B * S.speed * 3;
         const scale = (ph / 2) / Math.max(refMax, 1);
         // Actual max for labels
         let labelMax = 0.5;
