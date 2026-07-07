@@ -398,11 +398,13 @@ function draw() {
         ctxE.beginPath(); ctxE.moveTo(mL, midY); ctxE.lineTo(ew - mR, midY); ctxE.stroke();
         ctxE.setLineDash([]);
 
-        // Find max EMF in history for scaling
-        let histMax = 0.5;
-        for (const pt of EMF_POS) { const a = Math.abs(pt.emf); if (a > histMax) histMax = a; }
-        histMax = Math.max(histMax, 1);
-        const scale = (ph / 2) / histMax;
+        // Fixed reference scale so curve starts near zero, not at max
+        const refMax = S.N * S.B * S.speed * 6;
+        const scale = (ph / 2) / Math.max(refMax, 1);
+        // Actual max for labels
+        let labelMax = 0.5;
+        for (const pt of EMF_POS) { if (Math.abs(pt.emf) > labelMax) labelMax = Math.abs(pt.emf); }
+        labelMax = Math.max(labelMax, 1);
 
         // Draw filled area for recorded history
         ctxE.beginPath();
@@ -448,25 +450,24 @@ function draw() {
 
         // Axis labels with actual max
         ctxE.fillStyle = '#888'; ctxE.font = '9px Fredoka'; ctxE.textAlign = 'right';
-        ctxE.fillText('+' + histMax.toFixed(0) + 'mV', mL - 4, mT + 10);
+        ctxE.fillText('+' + labelMax.toFixed(0) + 'mV', mL - 4, mT + 10);
         ctxE.fillText('0', mL - 4, midY + 4);
-        ctxE.fillText('-' + histMax.toFixed(0) + 'mV', mL - 4, mT + ph);
+        ctxE.fillText('-' + labelMax.toFixed(0) + 'mV', mL - 4, mT + ph);
         ctxE.textAlign = 'center';
         ctxE.fillText('磁铁位置 Magnet Position', ew / 2, eh - 4);
     }
 
     // --- Update UI ---
     bSpeed.textContent = S.speed; bN.textContent = S.N; bB.textContent = S.B;
-    // Find actual max from history for display
-    let histMax = 0;
-    for (const pt of EMF_POS) { const a = Math.abs(pt.emf); if (a > histMax) histMax = a; }
+    let formulaMax = 0;
+    for (const pt of EMF_POS) { const a = Math.abs(pt.emf); if (a > formulaMax) formulaMax = a; }
     fRoot.innerHTML =
         '<span class="formula-item" style="color:#8e44ad"><b>ε = −N dΦ/dt</b></span>' +
         '<span class="formula-item" style="color:#3498db">Φ = BA (磁通量)</span>' +
-        '<span class="formula-item" style="color:var(--primary)">|ε_max| = ' + histMax.toFixed(1) + ' mV</span>';
+        '<span class="formula-item" style="color:var(--primary)">|ε_max| = ' + formulaMax.toFixed(1) + ' mV</span>';
     rRow.innerHTML =
         '<span>当前 ε = <b style="color:' + (emf > 0 ? '#e67e22' : '#2980b9') + '">' + emf.toFixed(1) + ' mV</b></span>' +
-        '<span>|ε_max| = <b style="color:#e74c3c">' + histMax.toFixed(1) + ' mV</b></span>';
+        '<span>|ε_max| = <b style="color:#e74c3c">' + formulaMax.toFixed(1) + ' mV</b></span>';
 }
 
 function loop(ts) {
