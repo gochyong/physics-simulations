@@ -372,76 +372,73 @@ function draw() {
     ctx.textBaseline = 'alphabetic';
     ctx.fillText('线圈 (' + S.N + '匝)', coilCx, coilCy + coilHalfH + 16);
 
-    // --- EMF vs Position graph ---
+    // --- EMF vs Position graph (progressive drawing) ---
     const ew = emfC.width, eh = emfC.height;
     ctxE.clearRect(0, 0, ew, eh);
     ctxE.fillStyle = '#fdfcf8'; ctxE.fillRect(0, 0, ew, eh);
-    if (ew > 10 && eh > 10) {
+
+    // Compute current EMF at magnet position for history
+    const spE = S.side === 'left' ? 1 : -1;
+    const magPoleSepE = magnetW * 0.8;
+    const mcE = S.magnetX + magnetW / 2;
+    const nXE = mcE + (isNLeft ? -magPoleSepE / 2 : magPoleSepE / 2);
+    const sXE = mcE + (isNLeft ? magPoleSepE / 2 : -magPoleSepE / 2);
+    const pNE = S.B * 3 * Math.exp(-(nXE - coilCx) * (nXE - coilCx) / (2 * sigmaP * sigmaP));
+    const pSE = S.B * 3 * Math.exp(-(sXE - coilCx) * (sXE - coilCx) / (2 * sigmaP * sigmaP));
+    const dNE = -pNE * (nXE - coilCx) / (sigmaP * sigmaP) * speedPx * spE;
+    const dSE = -pSE * (sXE - coilCx) / (sigmaP * sigmaP) * speedPx * spE;
+    const curEMF = S.N * (dNE + dSE);
+    if (S.playing) EMF_POS.push({ x: S.magnetX, emf: curEMF });
+    if (EMF_POS.length > 500) EMF_POS.shift();
+
+    if (ew > 10 && eh > 10 && EMF_POS.length > 1) {
         const mL = 45, mR = 15, mT = 10, mB = 25;
         const pw = ew - mL - mR, ph = eh - mT - mB, midY = mT + ph / 2;
         ctxE.strokeStyle = '#ddd'; ctxE.lineWidth = 1; ctxE.setLineDash([4, 4]);
         ctxE.beginPath(); ctxE.moveTo(mL, midY); ctxE.lineTo(ew - mR, midY); ctxE.stroke();
         ctxE.setLineDash([]);
 
-        // Compute EMF across full position range using dual-pole model
-        const nPts = 200;
-        let emfMax = 0.5;
-        const prePts = [];
-        const sp = S.side === 'left' ? 1 : -1;
-        const magPoleSep = magnetW * 0.8;
-        for (let i = 0; i <= nPts; i++) {
-            const px = startX + (i / nPts) * travelDist;
-            const mc = px + magnetW / 2;
-            const nX2 = mc + (isNLeft ? -magPoleSep / 2 : magPoleSep / 2);
-            const sX2 = mc + (isNLeft ? magPoleSep / 2 : -magPoleSep / 2);
-            const pN = S.B * 3 * Math.exp(-(nX2 - coilCx) * (nX2 - coilCx) / (2 * sigmaP * sigmaP));
-            const pS = S.B * 3 * Math.exp(-(sX2 - coilCx) * (sX2 - coilCx) / (2 * sigmaP * sigmaP));
-            const dN = -pN * (nX2 - coilCx) / (sigmaP * sigmaP) * speedPx * sp;
-            const dS = -pS * (sX2 - coilCx) / (sigmaP * sigmaP) * speedPx * sp;
-            const e = S.N * (dN + dS);
-            prePts.push({ x: px, emf: e });
-            if (Math.abs(e) > emfMax) emfMax = Math.abs(e);
-        }
+        // Find max EMF in history for scaling
+        let histMax = 0.5;
+        for (const pt of EMF_POS) { const a = Math.abs(pt.emf); if (a > histMax) histMax = a; }
+        histMax = Math.max(histMax, 1);
+        const scale = (ph / 2) / histMax;
 
-        emfMax = Math.max(emfMax, 1);
-        const scale = (ph / 2) / emfMax;
-
-        // Filled area
+        // Draw filled area for recorded history
         ctxE.beginPath();
-        let first = true;
-        for (let i = 0; i <= nPts; i++) {
-            const sx = mL + (i / nPts) * pw;
-            const sy = midY - prePts[i].emf * scale;
-            if (first) { ctxE.moveTo(sx, midY); ctxE.lineTo(sx, sy); first = false; }
-            else ctxE.lineTo(sx, sy);
+        ctxE.moveTo(mL, midY);
+        for (let i = 0; i < EMF_POS.length; i++) {
+            const xFrac = (EMF_POS[i].x - startX) / Math.max(travelDist, 1);
+            const sx = mL + xFrac * pw;
+            const sy = midY - EMF_POS[i].emf * scale;
+            ctxE.lineTo(sx, sy);
         }
         ctxE.lineTo(mL + pw, midY); ctxE.closePath();
         const gE = ctxE.createLinearGradient(0, mT, 0, mT + ph);
-        gE.addColorStop(0, 'rgba(255,140,66,0.25)');
-        gE.addColorStop(0.5, 'rgba(255,140,66,0.05)');
-        gE.addColorStop(1, 'rgba(52,152,219,0.25)');
+        gE.addColorStop(0, 'rgba(255,140,66,0.2)');
+        gE.addColorStop(0.5, 'rgba(255,140,66,0.03)');
+        gE.addColorStop(1, 'rgba(52,152,219,0.2)');
         ctxE.fillStyle = gE; ctxE.fill();
 
-        // Line
+        // Draw curve line
         ctxE.strokeStyle = '#FF8c42'; ctxE.lineWidth = 2.5; ctxE.lineCap = 'round';
         ctxE.beginPath();
-        for (let i = 0; i <= nPts; i++) {
-            const sx = mL + (i / nPts) * pw;
-            const sy = midY - prePts[i].emf * scale;
+        for (let i = 0; i < EMF_POS.length; i++) {
+            const xFrac = (EMF_POS[i].x - startX) / Math.max(travelDist, 1);
+            const sx = mL + xFrac * pw;
+            const sy = midY - EMF_POS[i].emf * scale;
             if (i === 0) ctxE.moveTo(sx, sy); else ctxE.lineTo(sx, sy);
         }
         ctxE.stroke();
 
-        // Current magnet position dot
-        const xFrac = (S.magnetX - startX) / travelDist;
-        const dotSx = mL + xFrac * pw;
-        const dotSy = midY - emf * scale;
+        // Current position dot
+        const xFrac = (S.magnetX - startX) / Math.max(travelDist, 1);
         ctxE.fillStyle = '#FF5E5B'; ctxE.beginPath();
-        ctxE.arc(dotSx, dotSy, 4.5, 0, Math.PI * 2); ctxE.fill();
+        ctxE.arc(mL + xFrac * pw, midY - curEMF * scale, 4.5, 0, Math.PI * 2); ctxE.fill();
         ctxE.strokeStyle = '#fff'; ctxE.lineWidth = 1.5; ctxE.stroke();
 
-        // Coil position marker
-        const coilFrac = (coilCx - magnetW / 2 - startX) / travelDist;
+        // Coil marker
+        const coilFrac = (coilCx - magnetW / 2 - startX) / Math.max(travelDist, 1);
         const coilSx = mL + coilFrac * pw;
         ctxE.strokeStyle = '#D4956B'; ctxE.lineWidth = 1.5; ctxE.setLineDash([3, 5]);
         ctxE.beginPath(); ctxE.moveTo(coilSx, mT); ctxE.lineTo(coilSx, mT + ph); ctxE.stroke();
@@ -449,24 +446,27 @@ function draw() {
         ctxE.fillStyle = '#D4956B'; ctxE.font = '9px Fredoka'; ctxE.textAlign = 'center';
         ctxE.fillText('线圈', coilSx, mT + ph + 14);
 
-        // Axis labels
+        // Axis labels with actual max
         ctxE.fillStyle = '#888'; ctxE.font = '9px Fredoka'; ctxE.textAlign = 'right';
-        ctxE.fillText('+' + emfMax.toFixed(0) + 'mV', mL - 4, mT + 10);
+        ctxE.fillText('+' + histMax.toFixed(0) + 'mV', mL - 4, mT + 10);
         ctxE.fillText('0', mL - 4, midY + 4);
-        ctxE.fillText('-' + emfMax.toFixed(0) + 'mV', mL - 4, mT + ph);
+        ctxE.fillText('-' + histMax.toFixed(0) + 'mV', mL - 4, mT + ph);
         ctxE.textAlign = 'center';
         ctxE.fillText('磁铁位置 Magnet Position', ew / 2, eh - 4);
     }
 
     // --- Update UI ---
     bSpeed.textContent = S.speed; bN.textContent = S.N; bB.textContent = S.B;
+    // Find actual max from history for display
+    let histMax = 0;
+    for (const pt of EMF_POS) { const a = Math.abs(pt.emf); if (a > histMax) histMax = a; }
     fRoot.innerHTML =
         '<span class="formula-item" style="color:#8e44ad"><b>ε = −N dΦ/dt</b></span>' +
         '<span class="formula-item" style="color:#3498db">Φ = BA (磁通量)</span>' +
-        '<span class="formula-item" style="color:var(--primary)">|ε_max| ≈ ' + (S.N * S.B * S.speed * 0.8).toFixed(1) + ' mV</span>';
+        '<span class="formula-item" style="color:var(--primary)">|ε_max| = ' + histMax.toFixed(1) + ' mV</span>';
     rRow.innerHTML =
         '<span>当前 ε = <b style="color:' + (emf > 0 ? '#e67e22' : '#2980b9') + '">' + emf.toFixed(1) + ' mV</b></span>' +
-        '<span>|ε_max| ≈ <b style="color:#e74c3c">' + (emfAbs).toFixed(1) + ' mV</b></span>';
+        '<span>|ε_max| = <b style="color:#e74c3c">' + histMax.toFixed(1) + ' mV</b></span>';
 }
 
 function loop(ts) {
