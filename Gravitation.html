@@ -467,10 +467,8 @@
                 ctx.fillText('F', flx, fly - 4);
             }
 
-            // Velocity vector: tangent (rotated 90° CW from radius, for clockwise orbit)
-            // radius unit vector in canvas: (cosθ, sinθ) from center to planet
-            // tangent (clockwise): (sinθ, -cosθ)
-            const vux = Math.sin(theta);
+            // Velocity vector: tangent CCW (planet at (cx+r·cosθ, cy−r·sinθ), deriv = (−sinθ, −cosθ))
+            const vux = -Math.sin(theta);
             const vuy = -Math.cos(theta);
 
             const velMag = Math.min(phys.v * velScale * 0.4, r_px * 0.6);
