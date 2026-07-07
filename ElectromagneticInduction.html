@@ -72,11 +72,6 @@
         <div class="param-section" style="border-left:5px solid #e74c3c;">
             <div class="param-section-header">🧲 磁铁 / Magnet</div>
             <div class="control-group"><div class="label-row"><span>磁铁速度 Speed</span><span id="badge-speed" class="val-badge">2</span></div><input type="range" id="slider-speed" min="1" max="5" step="1" value="2"></div>
-            <div class="toggle-row" style="margin-top:4px;">
-                <span style="font-size:0.8rem;font-weight:600;">起始位置 Start:</span>
-                <button class="tog-btn sel" id="btn-left" onclick="S.side='left';updateTog()">左侧 Left</button>
-                <button class="tog-btn" id="btn-right" onclick="S.side='right';updateTog()">右侧 Right</button>
-            </div>
             <div class="toggle-row" style="margin-top:2px;">
                 <span style="font-size:0.8rem;font-weight:600;">NS 方向 NS Dir:</span>
                 <button class="tog-btn sel" id="btn-nl" onclick="S.nsDir='N-left';updateTog()">N左S右</button>
@@ -114,8 +109,6 @@ let lt = 0;
 const EMF_POS = []; // {x, emf} — EMF vs magnet position
 
 function updateTog() {
-    document.getElementById('btn-left').className = 'tog-btn' + (S.side === 'left' ? ' sel' : '');
-    document.getElementById('btn-right').className = 'tog-btn' + (S.side === 'right' ? ' sel' : '');
     document.getElementById('btn-nl').className = 'tog-btn' + (S.nsDir === 'N-left' ? ' sel' : '');
     document.getElementById('btn-nr').className = 'tog-btn' + (S.nsDir === 'N-right' ? ' sel' : '');
     EMF_POS.length = 0;
