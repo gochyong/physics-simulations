@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>斜面运动 / Inclined Plane - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-color: #FFF9F0; --primary: #FF8c42; --secondary: #FFC75F; --accent: #FF5E5B; --text-dark: #4A403A; --card-bg: #FFFFFF; --shadow: 0 6px 30px rgba(255,140,66,0.18); }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Fredoka','Noto Sans SC',sans-serif; background: var(--bg-color); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 5px 40px 10px; }
+        .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
+        .logo { font-weight: 700; font-size: 1.3rem; color: #fff; background: var(--primary); padding: 6px 18px; border-radius: 16px; box-shadow: 4px 4px 15px rgba(255,140,66,0.3); }
+        .back-link { position: fixed; top: 10px; right: 20px; z-index: 1000; text-decoration: none; color: var(--primary); font-weight: 700; font-size: 0.9rem; background: rgba(255,255,255,0.9); padding: 6px 14px; border-radius: 16px; box-shadow: 0 2px 10px rgba(255,140,66,0.15); }
+        .container { width: 100%; max-width: 1400px; margin-top: 8px; display: grid; grid-template-areas:"header header" "formula formula" "diagram controls"; grid-template-columns: 1fr 400px; gap: 12px; }
+        header { grid-area: header; text-align: center; } h1 { font-size: 2rem; margin-bottom: 2px; }
+        .formula-display { grid-area: formula; background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb; }
+        .formula-container { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; min-height: 44px; }
+        .result-row { font-size: 0.95rem; font-weight: 600; margin-top: 4px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+        .legend { display: flex; gap: 16px; justify-content: center; border-top: 1px solid #eee; padding-top: 6px; width: 100%; flex-wrap: wrap; }
+        .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+        .diagram-section { grid-area: diagram; background: #fff; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; min-height: 400px; display: flex; flex-direction: column; border: 2px solid #fff5eb; }
+        #simCanvas { width: 100%; flex: 1; display: block; }
+        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
+        .control-panel { background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+        .control-group { display: flex; flex-direction: column; gap: 3px; }
+        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
+        .val-badge { background: #fff; padding: 1px 7px; border-radius: 7px; font-size: 0.85rem; border: 2px solid #f0f0f0; }
+        input[type=range] { width: 100%; appearance: none; height: 6px; background: #eee; border-radius: 3px; }
+        input[type=range]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--primary); cursor: pointer; }
+        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .ctrl-btn { padding: 10px; border: none; border-radius: 14px; font-size: 1rem; font-weight: 700; cursor: pointer; color: white; }
+        .start { background: var(--primary); } .pause { background: #2ecc71; } .reset { background: #95a5a6; }
+        .info-card { background: #fff; border-radius: 20px; padding: 12px 16px; box-shadow: var(--shadow); font-size: 0.9rem; line-height: 1.4; color: #5D6D7E; }
+        @media (max-width: 1100px) { .container { grid-template-areas:"header" "formula" "diagram" "controls"; grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="branding"><div class="logo">Wuli布雷克</div></div>
+<a href="mechanics.html" class="back-link">← 返回力学</a>
+<div class="container">
+    <header><h1>斜面运动 / Inclined Plane</h1></header>
+    <section class="formula-display">
+        <div class="formula-container" id="formula-root"></div>
+        <div class="result-row">
+            <span>a = <strong style="color:var(--accent)" id="res-a">—</strong> m/s²</span>
+            <span>F_net = <strong style="color:#3498db" id="res-fnet">—</strong> N</span>
+            <span>v = <strong style="color:#2ecc71" id="res-v">0.0</strong> m/s</span>
+        </div>
+        <div class="legend">
+            <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> mg sinθ 下滑力</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#9b59b6"></span> mg cosθ 正压力</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#e67e22"></span> f 摩擦力</div>
+        </div>
+    </section>
+    <section class="diagram-section"><canvas id="simCanvas"></canvas></section>
+    <section class="controls-section">
+        <div class="control-panel">
+            <div class="control-group">
+                <div class="label-row"><span>斜面角度 θ</span><span id="badge-theta" class="val-badge">30°</span></div>
+                <input type="range" id="slider-theta" min="5" max="80" value="30">
+            </div>
+            <div class="control-group">
+                <div class="label-row"><span>质量 m</span><span id="badge-m" class="val-badge">2.0 kg</span></div>
+                <input type="range" id="slider-m" min="0.5" max="10" step="0.1" value="2.0">
+            </div>
+            <div class="control-group">
+                <div class="label-row"><span>摩擦系数 μ</span><span id="badge-mu" class="val-badge">0.10</span></div>
+                <input type="range" id="slider-mu" min="0" max="0.5" step="0.01" value="0.10">
+            </div>
+            <div class="btn-row">
+                <button id="btn-start" class="ctrl-btn start">释放 Release</button>
+                <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
+            </div>
+        </div>
+        <div class="info-card">
+            <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem;">演示要点 / Key Points</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;">θ</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">下滑力 = mg sinθ</div><div style="font-size:0.78rem;color:#888;">重力沿斜面分量：θ越大，下滑力越大。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(155,89,182,0.1);color:#9b59b6;font-weight:700;">N</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">正压力 = mg cosθ</div><div style="font-size:0.78rem;color:#888;">垂直于斜面的分量：θ越大，正压力越小。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(230,126,34,0.1);color:#e67e22;font-weight:700;">f</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">摩擦力 = μN = μmg cosθ</div><div style="font-size:0.78rem;color:#888;">净加速度 a = g(sinθ − μcosθ)，当 tanθ>μ时物体下滑。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:#2ecc71;font-weight:700;">μ</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">μ=0 光滑，μ>0 粗糙</div><div style="font-size:0.78rem;color:#888;">无摩擦时 a=g sinθ；有摩擦时加速度减小甚至静止。</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<script>
+const canvas=document.getElementById('simCanvas'),ctx=canvas.getContext('2d');
+const sTh=document.getElementById('slider-theta'),sM=document.getElementById('slider-m'),sMu=document.getElementById('slider-mu');
+const bTh=document.getElementById('badge-theta'),bM=document.getElementById('badge-m'),bMu=document.getElementById('badge-mu');
+const resA=document.getElementById('res-a'),resFn=document.getElementById('res-fnet'),resV=document.getElementById('res-v');
+const fRoot=document.getElementById('formula-root');
+const G=9.8;
+const S={theta:30,m:2,mu:0.1,v:0,pos:0,playing:false};
+function resize(){canvas.width=canvas.clientWidth;canvas.height=canvas.clientHeight;}
+window.addEventListener('resize',resize);
+function update(){
+    S.theta=parseInt(sTh.value);S.m=parseFloat(sM.value);S.mu=parseFloat(sMu.value);
+    bTh.textContent=S.theta+'°';bM.textContent=S.m.toFixed(1)+' kg';bMu.textContent=S.mu.toFixed(2);
+    const thRad=S.theta*Math.PI/180;
+    const sinTh=Math.sin(thRad),cosTh=Math.cos(thRad);
+    const fric=S.mu*S.m*G*cosTh;
+    const netForce=S.m*G*sinTh-fric;
+    let accel=netForce/S.m;
+    if(accel<0)accel=0;
+    const dt=0.016;
+    if(S.playing){S.v+=accel*dt;S.pos+=S.v*dt;if(S.pos>1)S.pos=0;}
+    resA.textContent=accel.toFixed(2);
+    resFn.textContent=netForce.toFixed(2);
+    resV.textContent=S.v.toFixed(2);
+
+    fRoot.innerHTML=`<span style="font-size:22px;font-weight:700;color:var(--accent);">F<sub>net</sub>=mg(sinθ−μcosθ)</span>
+        <span style="font-size:22px;">= ${netForce.toFixed(1)} N</span>
+        <span style="font-size:20px;color:#888;">&nbsp; a = ${accel.toFixed(2)} m/s²</span>`;
+    draw();requestAnimationFrame(update);
+}
+function draw(){
+    const w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);ctx.fillStyle='#fafaf7';ctx.fillRect(0,0,w,h);
+    const thRad=S.theta*Math.PI/180;
+    // Inclined plane
+    const baseX=w*0.15,baseY=h*0.85,topX=w*0.7,topY=h*0.2;
+    ctx.fillStyle='#8B7355';ctx.beginPath();ctx.moveTo(baseX,baseY);ctx.lineTo(topX,topY);ctx.lineTo(topX,baseY);ctx.closePath();ctx.fill();
+    ctx.strokeStyle='#5D4E37';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(baseX,baseY);ctx.lineTo(topX,topY);ctx.stroke();
+    // Ground
+    ctx.strokeStyle='#333';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(baseX-30,baseY);ctx.lineTo(w-20,baseY);ctx.stroke();
+    // Angle arc
+    ctx.strokeStyle='#e67e22';ctx.lineWidth=2;ctx.beginPath();ctx.arc(baseX,baseY,40,-Math.PI,thRad-Math.PI,false);ctx.stroke();
+    ctx.fillStyle='#e67e22';ctx.font='bold 14px Fredoka';ctx.fillText('θ='+S.theta+'°',baseX+50,baseY-12);
+    // Block
+    const t=0.3+S.pos*0.6;
+    const bx=baseX+(topX-baseX)*t-20,by=baseY+(topY-baseY)*t-25;
+    ctx.save();ctx.translate(bx+20,by+12);ctx.rotate(-thRad);ctx.translate(-(bx+20),-(by+12));
+    ctx.fillStyle='#e74c3c';ctx.fillRect(bx,by,40,25);
+    ctx.fillStyle='#fff';ctx.font='bold 10px Fredoka';ctx.textAlign='center';ctx.fillText(S.m.toFixed(1)+'kg',bx+20,by+16);
+    ctx.restore();
+    // Force vectors on block
+    const fcX=bx+20,fcY=by+12;
+    // mg downward
+    arrow(ctx,fcX,fcY,fcX,fcY+40,'#333',2,'mg');
+    // mg sinθ along slope
+    arrow(ctx,fcX,fcY,fcX+30*Math.cos(thRad),fcY+30*Math.sin(thRad),'var(--accent)',2,'mg sinθ');
+    // N perpendicular
+    arrow(ctx,fcX,fcY,fcX+20*Math.sin(thRad),fcY-20*Math.cos(thRad),'#9b59b6',2,'N');
+    // Friction along slope (opposing)
+    if(S.mu>0)arrow(ctx,fcX,fcY,fcX-20*Math.cos(thRad),fcY-20*Math.sin(thRad),'#e67e22',1.5,'f');
+    // Speed display
+    ctx.fillStyle='#2ecc71';ctx.font='bold 14px Fredoka';ctx.textAlign='right';ctx.fillText('v='+S.v.toFixed(2)+' m/s',w-20,30);
+}
+function arrow(c,x1,y1,x2,y2,clr,lw,label){const a=Math.atan2(y2-y1,x2-x1),h=7;c.strokeStyle=clr;c.fillStyle=clr;c.lineWidth=lw||2;c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();c.beginPath();c.moveTo(x2,y2);c.lineTo(x2-h*Math.cos(a-Math.PI/6),y2-h*Math.sin(a-Math.PI/6));c.lineTo(x2-h*Math.cos(a+Math.PI/6),y2-h*Math.sin(a+Math.PI/6));c.closePath();c.fill();if(label){c.font='bold 11px Fredoka';c.fillText(label,x2+5,y2-3);}}
+function resetSim(){S.v=0;S.pos=0;S.playing=false;document.getElementById('btn-start').textContent='释放 Release';document.getElementById('btn-start').className='ctrl-btn start';}
+document.getElementById('btn-start').onclick=()=>{S.playing=!S.playing;const b=document.getElementById('btn-start');b.textContent=S.playing?'暂停 Pause':'释放 Release';b.classList.toggle('start',!S.playing);b.classList.toggle('pause',S.playing);};
+document.getElementById('btn-reset').onclick=resetSim;
+resize();requestAnimationFrame(update);
+</script>
+</body>
+</html>

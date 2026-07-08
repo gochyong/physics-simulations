@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>波的叠加原理 / Wave Superposition - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-color: #FFF9F0; --primary: #FF8c42; --secondary: #FFC75F; --accent: #FF5E5B; --text-dark: #4A403A; --card-bg: #FFFFFF; --shadow: 0 6px 30px rgba(255,140,66,0.18); }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Fredoka','Noto Sans SC',sans-serif; background: var(--bg-color); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 5px 40px 10px; }
+        .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
+        .logo { font-weight: 700; font-size: 1.3rem; color: #fff; background: var(--primary); padding: 6px 18px; border-radius: 16px; box-shadow: 4px 4px 15px rgba(255,140,66,0.3); }
+        .back-link { position: fixed; top: 10px; right: 20px; z-index: 1000; text-decoration: none; color: var(--primary); font-weight: 700; font-size: 0.9rem; background: rgba(255,255,255,0.9); padding: 6px 14px; border-radius: 16px; box-shadow: 0 2px 10px rgba(255,140,66,0.15); }
+        .container { width: 100%; max-width: 1400px; margin-top: 8px; display: grid; grid-template-areas:"header header" "formula formula" "diagram controls"; grid-template-columns: 1fr 400px; gap: 12px; }
+        header { grid-area: header; text-align: center; } h1 { font-size: 2rem; margin-bottom: 2px; }
+        .formula-display { grid-area: formula; background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb; }
+        .formula-container { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; min-height: 44px; }
+        .result-row { font-size: 0.95rem; font-weight: 600; margin-top: 4px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+        .legend { display: flex; gap: 16px; justify-content: center; border-top: 1px solid #eee; padding-top: 6px; width: 100%; flex-wrap: wrap; }
+        .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+        .diagram-section { grid-area: diagram; background: #1a1a2e; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; min-height: 400px; display: flex; flex-direction: column; border: 2px solid #fff5eb; }
+        #simCanvas { width: 100%; flex: 1; display: block; }
+        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
+        .control-panel { background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+        .control-group { display: flex; flex-direction: column; gap: 3px; }
+        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
+        .val-badge { background: #fff; padding: 1px 7px; border-radius: 7px; font-size: 0.85rem; border: 2px solid #f0f0f0; }
+        input[type=range] { width: 100%; appearance: none; height: 6px; background: #eee; border-radius: 3px; }
+        input[type=range]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--primary); cursor: pointer; }
+        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .ctrl-btn { padding: 10px; border: none; border-radius: 14px; font-size: 1rem; font-weight: 700; cursor: pointer; color: white; }
+        .start { background: var(--primary); } .pause { background: #2ecc71; } .reset { background: #95a5a6; }
+        .info-card { background: #fff; border-radius: 20px; padding: 12px 16px; box-shadow: var(--shadow); font-size: 0.9rem; line-height: 1.4; color: #5D6D7E; }
+        @media (max-width: 1100px) { .container { grid-template-areas:"header" "formula" "diagram" "controls"; grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="branding"><div class="logo">Wuli布雷克</div></div>
+<a href="waves.html" class="back-link">← 返回波</a>
+<div class="container">
+    <header><h1>波的叠加原理 / Wave Superposition</h1></header>
+    <section class="formula-display">
+        <div class="formula-container" id="formula-root"></div>
+        <div class="result-row">
+            <span>最大振幅: <strong style="color:#2ecc71" id="res-max">—</strong></span>
+            <span>最小振幅: <strong style="color:#e74c3c" id="res-min">—</strong></span>
+        </div>
+        <div class="legend">
+            <div class="legend-item"><span class="legend-dot" style="background:#e74c3c"></span> 波 1 Wave 1</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#3498db"></span> 波 2 Wave 2</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#2ecc71"></span> 叠加波 Resultant</div>
+        </div>
+    </section>
+    <section class="diagram-section"><canvas id="simCanvas"></canvas></section>
+    <section class="controls-section">
+        <div class="control-panel">
+            <div class="control-group">
+                <div class="label-row"><span>波1振幅 A₁</span><span id="badge-a1" class="val-badge">1.0</span></div>
+                <input type="range" id="slider-a1" min="0.2" max="2" step="0.1" value="1.0">
+            </div>
+            <div class="control-group">
+                <div class="label-row"><span>波2振幅 A₂</span><span id="badge-a2" class="val-badge">0.8</span></div>
+                <input type="range" id="slider-a2" min="0.2" max="2" step="0.1" value="0.8">
+            </div>
+            <div class="control-group">
+                <div class="label-row"><span>波长 λ (相同)</span><span id="badge-lambda" class="val-badge">200 px</span></div>
+                <input type="range" id="slider-lambda" min="80" max="300" value="200">
+            </div>
+            <div class="control-group">
+                <div class="label-row"><span>相位差 Δφ</span><span id="badge-phase" class="val-badge">0°</span></div>
+                <input type="range" id="slider-phase" min="0" max="360" step="5" value="0">
+            </div>
+            <div class="btn-row">
+                <button id="btn-start" class="ctrl-btn start">开始 Start</button>
+                <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
+            </div>
+        </div>
+        <div class="info-card">
+            <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem;">演示要点 / Key Points</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:#2ecc71;font-weight:700;">+</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">y = y₁ + y₂ 线性叠加</div><div style="font-size:0.78rem;color:#888;">任意时刻，合位移等于各分位移的代数和。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;">⇈</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">同相叠加：相长干涉</div><div style="font-size:0.78rem;color:#888;">Δφ=0°，振幅相加 A₁+A₂，波被增强。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(231,76,60,0.1);color:#e74c3c;font-weight:700;">⇅</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">反相叠加：相消干涉</div><div style="font-size:0.78rem;color:#888;">Δφ=180°，振幅相减 |A₁−A₂|，波被减弱。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:#3498db;font-weight:700;">↔</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">波传播互不干扰</div><div style="font-size:0.78rem;color:#888;">两列波叠加后各自保持原样继续传播（独立性原理）。</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<script>
+const canvas=document.getElementById('simCanvas'),ctx=canvas.getContext('2d');
+const sA1=document.getElementById('slider-a1'),sA2=document.getElementById('slider-a2'),sL=document.getElementById('slider-lambda'),sP=document.getElementById('slider-phase');
+const bA1=document.getElementById('badge-a1'),bA2=document.getElementById('badge-a2'),bL=document.getElementById('badge-lambda'),bP=document.getElementById('badge-phase');
+const resMax=document.getElementById('res-max'),resMin=document.getElementById('res-min');
+const fRoot=document.getElementById('formula-root');
+const S={a1:1,a2:0.8,lambda:200,phaseDeg:0,time:0,playing:false};
+function resize(){canvas.width=canvas.clientWidth;canvas.height=canvas.clientHeight;}
+window.addEventListener('resize',resize);
+function update(){
+    S.a1=parseFloat(sA1.value);S.a2=parseFloat(sA2.value);S.lambda=parseInt(sL.value);S.phaseDeg=parseInt(sP.value);
+    bA1.textContent=S.a1.toFixed(1);bA2.textContent=S.a2.toFixed(1);bL.textContent=S.lambda+' px';bP.textContent=S.phaseDeg+'°';
+    const phi=S.phaseDeg*Math.PI/180;
+    const maxA=S.a1+S.a2,minA=Math.abs(S.a1-S.a2);
+    resMax.textContent=maxA.toFixed(1);resMin.textContent=minA.toFixed(1);
+    if(S.playing)S.time+=0.02;
+    fRoot.innerHTML=`<span style="font-size:24px;font-weight:700;color:#2ecc71;">y</span>
+        <span style="font-size:24px;">=</span>
+        <span style="font-size:24px;font-weight:700;color:#e74c3c;">y₁</span>
+        <span style="font-size:24px;">+</span>
+        <span style="font-size:24px;font-weight:700;color:#3498db;">y₂</span>`;
+    draw();requestAnimationFrame(update);
+}
+function draw(){
+    const w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,w,h);
+    const phi=S.phaseDeg*Math.PI/180;
+    const ampPx=60;
+    // Three wave rows
+    function drawWave(yBase,amp,color,phase,label){
+        ctx.strokeStyle=color;ctx.lineWidth=2.5;ctx.beginPath();
+        for(let x=0;x<w;x++){
+            const val=amp*ampPx*Math.sin(2*Math.PI*x/S.lambda-phase-S.time*3);
+            const py=yBase-val;
+            if(x===0)ctx.moveTo(x,py);else ctx.lineTo(x,py);
+        }
+        ctx.stroke();
+        // Zero line
+        ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.lineWidth=1;ctx.setLineDash([4,8]);
+        ctx.beginPath();ctx.moveTo(0,yBase);ctx.lineTo(w,yBase);ctx.stroke();ctx.setLineDash([]);
+        ctx.fillStyle=color;ctx.font='bold 12px Fredoka';ctx.textAlign='left';ctx.fillText(label,10,yBase-amp*ampPx-8);
+    }
+    drawWave(h*0.18,S.a1,'#e74c3c',0,'Wave 1 (y₁)');
+    drawWave(h*0.45,S.a2,'#3498db',phi,'Wave 2 (y₂)');
+    // Sum wave
+    const yBase=h*0.78;
+    ctx.strokeStyle='#2ecc71';ctx.lineWidth=3;ctx.beginPath();
+    for(let x=0;x<w;x++){
+        const y1=S.a1*ampPx*Math.sin(2*Math.PI*x/S.lambda-S.time*3);
+        const y2=S.a2*ampPx*Math.sin(2*Math.PI*x/S.lambda-phi-S.time*3);
+        const py=yBase-(y1+y2);
+        if(x===0)ctx.moveTo(x,py);else ctx.lineTo(x,py);
+    }
+    ctx.stroke();
+    ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.lineWidth=1;ctx.setLineDash([4,8]);
+    ctx.beginPath();ctx.moveTo(0,yBase);ctx.lineTo(w,yBase);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#2ecc71';ctx.font='bold 12px Fredoka';ctx.textAlign='left';
+    ctx.fillText('Resultant (y₁+y₂)',10,yBase-(S.a1+S.a2)*ampPx-8);
+    // Phase info
+    ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='11px Fredoka';ctx.textAlign='right';
+    ctx.fillText('Δφ='+S.phaseDeg+'°',w-15,20);
+}
+document.getElementById('btn-start').onclick=()=>{S.playing=!S.playing;const b=document.getElementById('btn-start');b.textContent=S.playing?'暂停 Pause':'开始 Start';b.classList.toggle('start',!S.playing);b.classList.toggle('pause',S.playing);};
+document.getElementById('btn-reset').onclick=()=>{S.time=0;};
+resize();requestAnimationFrame(update);
+</script>
+</body>
+</html>

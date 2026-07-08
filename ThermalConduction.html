@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>热传导 / Thermal Conduction - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #FFF9F0;
+            --primary: #FF8c42;
+            --secondary: #FFC75F;
+            --accent: #FF5E5B;
+            --text-dark: #4A403A;
+            --card-bg: #FFFFFF;
+            --shadow: 0 6px 30px rgba(255,140,66,0.18);
+            --k-color: #9b59b6;
+            --A-color: #2ecc71;
+            --dT-color: #FF5E5B;
+            --L-color: #3498db;
+            --Qt-color: #e67e22;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 5px 40px 10px;
+        }
+
+        .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
+        .logo {
+            font-weight: 700; font-size: 1.3rem; color: #fff;
+            background: var(--primary); padding: 6px 18px; border-radius: 16px;
+            box-shadow: 4px 4px 15px rgba(255,140,66,0.3);
+        }
+        .back-link {
+            position: fixed; top: 10px; right: 20px; z-index: 1000;
+            text-decoration: none; color: var(--primary); font-weight: 700;
+            font-size: 0.95rem; background: rgba(255,255,255,0.9);
+            padding: 6px 16px; border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(255,140,66,0.15);
+            transition: all 0.3s;
+        }
+        .back-link:hover { background: #fff; box-shadow: 0 4px 18px rgba(255,140,66,0.3); }
+
+        .container {
+            width: 100%; max-width: 1400px; margin-top: 8px;
+            display: grid;
+            grid-template-areas:
+                "header header"
+                "formula formula"
+                "diagram controls";
+            grid-template-columns: 1fr 420px;
+            gap: 12px;
+        }
+
+        header { grid-area: header; text-align: center; }
+        h1 { font-size: 2rem; color: var(--text-dark); margin-bottom: 2px; }
+
+        .formula-display {
+            grid-area: formula; background: var(--card-bg);
+            border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px;
+            display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb;
+        }
+        .formula-container {
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px; flex-wrap: wrap; min-height: 48px;
+        }
+        .result-row {
+            font-size: 0.95rem; font-weight: 600; color: var(--text-dark);
+            margin-top: 4px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;
+        }
+        .legend {
+            display: flex; gap: 16px; justify-content: center;
+            border-top: 1px solid #eee; padding-top: 6px; width: 100%; flex-wrap: wrap;
+        }
+        .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+
+        .diagram-section {
+            grid-area: diagram; background: var(--card-bg); border-radius: 20px;
+            box-shadow: var(--shadow); position: relative; overflow: hidden;
+            min-height: 460px; display: flex; flex-direction: column; border: 2px solid #fff5eb;
+        }
+        #simCanvas { width: 100%; flex: 1; display: block; }
+
+        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
+        .control-panel {
+            background: var(--card-bg); border-radius: 20px; box-shadow: var(--shadow);
+            padding: 14px 18px; display: flex; flex-direction: column; gap: 10px;
+        }
+
+        .material-pills { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 2px; }
+        .mat-pill {
+            padding: 4px 10px; border-radius: 12px; font-size: 0.78rem; font-weight: 700;
+            border: 2px solid #e0e0e0; background: #fafafa; cursor: pointer;
+            transition: all 0.2s; color: #666;
+        }
+        .mat-pill:hover { border-color: var(--primary); background: #fff8f0; }
+        .mat-pill.active { background: var(--primary); color: #fff; border-color: var(--primary); box-shadow: 0 2px 8px rgba(255,140,66,0.3); }
+
+        .control-group { display: flex; flex-direction: column; gap: 3px; }
+        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
+        .val-badge {
+            background: #fff; padding: 1px 8px; border-radius: 8px;
+            font-size: 0.85rem; border: 2px solid #f0f0f0;
+        }
+
+        input[type=range] {
+            width: 100%; appearance: none; height: 6px;
+            background: #eee; border-radius: 3px; outline: none;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            appearance: none; width: 20px; height: 20px; border-radius: 50%;
+            cursor: pointer; background: var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        #k-slider::-webkit-slider-thumb { background: var(--k-color); }
+        #A-slider::-webkit-slider-thumb { background: var(--A-color); }
+        #L-slider::-webkit-slider-thumb { background: var(--L-color); }
+        #Th-slider::-webkit-slider-thumb { background: var(--dT-color); }
+
+        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .ctrl-btn {
+            padding: 10px; border: none; border-radius: 14px; font-size: 1.05rem;
+            font-weight: 700; cursor: pointer; transition: all 0.2s; color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .ctrl-btn:active { transform: translateY(2px); box-shadow: none; }
+        .start { background: var(--primary); }
+        .pause { background: #2ecc71; }
+        .reset { background: #95a5a6; }
+
+        .info-card {
+            background: var(--card-bg); border-radius: 20px;
+            padding: 12px 16px; box-shadow: var(--shadow);
+            font-size: 0.9rem; line-height: 1.4; color: #5D6D7E;
+            border: 2px solid #fff5eb;
+        }
+
+        .fraction { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; margin: 0 5px; }
+
+        @media (max-width: 1100px) {
+            .container {
+                grid-template-areas: "header" "formula" "diagram" "controls";
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="branding"><div class="logo">Wuli布雷克</div></div>
+    <a href="thermal.html" class="back-link">← 返回热学</a>
+
+    <div class="container">
+        <header>
+            <h1>热传导 / Thermal Conduction</h1>
+            <div style="font-size:0.9rem;color:#8d6e63;margin-top:4px;font-style:italic;line-height:1.5">
+                Fourier's Law of Heat Conduction — how heat flows through materials.<br>
+                傅里叶热传导定律 — 热量如何通过材料传递。
+            </div>
+        </header>
+
+        <section class="formula-display">
+            <div class="formula-container" id="formula-root"></div>
+            <div class="result-row">
+                <div class="fraction" style="font-size:0.95em;color:var(--Qt-color)">
+                    <div style="border-bottom:2px solid currentColor;padding:0 4px">Q</div>
+                    <div style="padding:0 4px">t</div>
+                </div>
+                <span>=</span>
+                <span style="color:var(--k-color);font-weight:700">k</span> &middot;
+                <span style="color:var(--A-color);font-weight:700">A</span> &middot;
+                (<span id="res-Th" style="color:var(--dT-color);font-weight:700">200</span>
+                &minus;
+                <span id="res-Tc" style="color:var(--L-color);font-weight:700">20</span>)
+                &divide;
+                <span id="res-L" style="color:var(--L-color);font-weight:700">0.50</span>
+                = <strong id="res-Qt" style="color:var(--Qt-color);font-size:1.1rem">0.00</strong> W
+            </div>
+            <div class="legend">
+                <div class="legend-item"><span class="legend-dot" style="background:var(--Qt-color)"></span> Q/t 热流率</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--k-color)"></span> k 导热系数</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--A-color)"></span> A 截面积</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--dT-color)"></span> &Delta;T 温差</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--L-color)"></span> L 长度</div>
+            </div>
+        </section>
+
+        <section class="diagram-section"><canvas id="simCanvas"></canvas></section>
+
+        <section class="controls-section">
+            <div class="control-panel">
+                <div class="control-group">
+                    <div class="label-row"><span>材料 Material (k)</span></div>
+                    <div class="material-pills" id="mat-pills">
+                        <button class="mat-pill" data-k="400" data-name="铜 Copper">铜 Cu</button>
+                        <button class="mat-pill active" data-k="237" data-name="铝 Aluminum">铝 Al</button>
+                        <button class="mat-pill" data-k="80" data-name="铁 Iron">铁 Fe</button>
+                        <button class="mat-pill" data-k="1.0" data-name="玻璃 Glass">玻璃</button>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:var(--k-color)">导热系数 k / Conductivity</span><span id="k-badge" class="val-badge">237 W/(m&middot;K)</span></div>
+                    <input type="range" id="k-slider" min="0.5" max="500" step="0.5" value="237">
+                </div>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:var(--A-color)">截面积 A / Area</span><span id="A-badge" class="val-badge">50 cm²</span></div>
+                    <input type="range" id="A-slider" min="1" max="200" step="1" value="50">
+                </div>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:var(--L-color)">棒长 L / Length</span><span id="L-badge" class="val-badge">50 cm</span></div>
+                    <input type="range" id="L-slider" min="10" max="100" step="1" value="50">
+                </div>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:var(--dT-color)">热端温度 T<sub>hot</sub></span><span id="Th-badge" class="val-badge">200 °C</span></div>
+                    <input type="range" id="Th-slider" min="50" max="500" step="5" value="200">
+                </div>
+                <div style="font-size:0.82rem;color:#888;">冷端温度 T<sub>cold</sub> = 20 °C (室温 / Room temp.)</div>
+                <div class="btn-row">
+                    <button id="btn-start" class="ctrl-btn start">开始 Start</button>
+                    <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem">演示要点 / Key Points</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(230,126,34,0.1);color:var(--Qt-color);font-weight:700;font-size:0.8rem">Q/t</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">傅里叶定律 Fourier's Law</div><div style="font-size:0.78rem;color:#888">Q/t = kA&middot;&Delta;T/L — 热流率正比于 k、A、&Delta;T，反比于 L。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(155,89,182,0.1);color:var(--k-color);font-weight:700;font-size:0.8rem">k</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">导热系数越大，传热越快</div><div style="font-size:0.78rem;color:#888">金属 k 值高（铜 400、铝 237），绝缘体 k 值低（玻璃 ~1）。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:var(--L-color);font-weight:700;font-size:0.8rem">&harr;</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">稳态：线性温度梯度</div><div style="font-size:0.78rem;color:#888">当热流恒定时，沿棒的温度分布呈线性 — 从热端均匀递减至冷端。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:var(--A-color);font-weight:700;font-size:0.8rem">A</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">截面积影响热流</div><div style="font-size:0.78rem;color:#888">棒的截面积越大，传导的热量越多 — 粗棒比细棒传热快。</div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas'), ctx = canvas.getContext('2d');
+
+        const sK = document.getElementById('k-slider'), sA = document.getElementById('A-slider'),
+              sL = document.getElementById('L-slider'), sTh = document.getElementById('Th-slider');
+        const bK = document.getElementById('k-badge'), bA = document.getElementById('A-badge'),
+              bL = document.getElementById('L-badge'), bTh = document.getElementById('Th-badge');
+        const resQt = document.getElementById('res-Qt'), resTh = document.getElementById('res-Th'),
+              resTc = document.getElementById('res-Tc'), resL_el = document.getElementById('res-L');
+        const fRoot = document.getElementById('formula-root');
+        const btnStart = document.getElementById('btn-start'), btnReset = document.getElementById('btn-reset');
+        const matPills = document.getElementById('mat-pills');
+
+        const T_COLD = 20;
+        const N_SEG = 60;
+
+        const state = {
+            k: 237,
+            A_cm2: 50,
+            L_cm: 50,
+            T_hot: 200,
+            temperatures: [],
+            isPlaying: true,
+            flameParticles: [],
+            simTime: 0,
+            steady: false
+        };
+
+        function Am2() { return state.A_cm2 / 10000; }
+        function Lm()  { return state.L_cm / 100; }
+
+        function initTemps() {
+            state.temperatures = new Array(N_SEG + 1).fill(T_COLD);
+            state.temperatures[0] = state.T_hot;
+            state.steady = false;
+        }
+
+        function makeFlameParticles() {
+            const arr = [];
+            for (let i = 0; i < 120; i++) {
+                arr.push({ x: 0, y: 0, vx: 0, vy: 0, life: 0, maxLife: 0, size: 3, hue: 20 });
+            }
+            return arr;
+        }
+        state.flameParticles = makeFlameParticles();
+
+        function resetFP(p) {
+            p.x = (Math.random() - 0.5) * 26;
+            p.y = (Math.random() - 0.15) * 10;
+            p.vx = (Math.random() - 0.5) * 20;
+            p.vy = -(35 + Math.random() * 70);
+            p.maxLife = 0.3 + Math.random() * 0.55;
+            p.life = p.maxLife;
+            p.size = 3 + Math.random() * 11;
+            p.hue = 14 + Math.random() * 28;
+        }
+        for (const p of state.flameParticles) { resetFP(p); p.life = Math.random() * p.maxLife; }
+
+        initTemps();
+
+        function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+        window.addEventListener('resize', resize);
+
+        /* ---------- temperature -> color ---------- */
+        function tempColor(t, tMin, tMax) {
+            if (tMax <= tMin) return 'rgb(33,102,172)';
+            let v = (t - tMin) / (tMax - tMin);
+            v = Math.max(0, Math.min(1, v));
+            const stops = [
+                { p: 0.0,  r: 33,  g: 102, b: 172 },
+                { p: 0.2,  r: 67,  g: 147, b: 195 },
+                { p: 0.45, r: 171, g: 217, b: 233 },
+                { p: 0.6,  r: 253, g: 184, b: 99  },
+                { p: 0.8,  r: 224, g: 130, b: 20  },
+                { p: 1.0,  r: 178, g: 24,  b: 43  }
+            ];
+            let lo = stops[0], hi = stops[stops.length - 1];
+            for (let i = 0; i < stops.length - 1; i++) {
+                if (v >= stops[i].p && v <= stops[i + 1].p) { lo = stops[i]; hi = stops[i + 1]; break; }
+            }
+            if (hi.p === lo.p) return `rgb(${lo.r},${lo.g},${lo.b})`;
+            const f = (v - lo.p) / (hi.p - lo.p);
+            return `rgb(${Math.round(lo.r + (hi.r - lo.r) * f)},${Math.round(lo.g + (hi.g - lo.g) * f)},${Math.round(lo.b + (hi.b - lo.b) * f)})`;
+        }
+
+        /* ---------- simulation ---------- */
+        function simStep(dt) {
+            if (!state.isPlaying) return;
+            const dx = Lm() / N_SEG;
+            const alpha = state.k * 5e-7;          // scaled diffusivity
+            let rate = alpha * dt / (dx * dx);
+            rate = Math.min(rate, 0.48);
+
+            const sub = 8;
+            const sr = rate / sub;
+            for (let s = 0; s < sub; s++) {
+                const cur = state.temperatures;
+                const nx = new Array(N_SEG + 1);
+                nx[0] = state.T_hot;
+                nx[N_SEG] = T_COLD;
+                for (let i = 1; i < N_SEG; i++) {
+                    nx[i] = cur[i] + sr * (cur[i - 1] - 2 * cur[i] + cur[i + 1]);
+                }
+                state.temperatures = nx;
+            }
+
+            let maxErr = 0;
+            for (let i = 0; i <= N_SEG; i++) {
+                const exp = state.T_hot + (T_COLD - state.T_hot) * i / N_SEG;
+                maxErr = Math.max(maxErr, Math.abs(state.temperatures[i] - exp));
+            }
+            state.steady = maxErr < 0.3;
+        }
+
+        /* ---------- update flame particles ---------- */
+        function updateFlame(dt) {
+            for (const p of state.flameParticles) {
+                p.life -= dt;
+                if (p.life <= 0) resetFP(p);
+                p.x += p.vx * dt;
+                p.y += p.vy * dt;
+                p.vy -= 25 * dt;
+                p.size *= (1 - 0.4 * dt);
+            }
+        }
+
+        /* ---------- formula UI ---------- */
+        function updateFormula() {
+            const A = Am2(), L = Lm();
+            const Qt = state.k * A * (state.T_hot - T_COLD) / L;
+            resQt.textContent = Qt.toFixed(2);
+            resTh.textContent = state.T_hot;
+            resTc.textContent = T_COLD;
+            resL_el.textContent = L.toFixed(2);
+
+            const sz = 42;
+            const html = `<span style="color:var(--Qt-color);font-weight:700;font-size:${sz}px"><span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:0.75em;line-height:1"><span style="border-bottom:2px solid currentColor;padding:0 3px">Q</span><span style="padding:0 3px">t</span></span></span><span style="color:var(--text-dark);font-size:${sz}px">=</span><span style="color:var(--k-color);font-weight:700;font-size:${sz}px">k</span><span style="color:var(--text-dark);font-size:${Math.round(sz*0.7)}px">&middot;</span><span style="color:var(--A-color);font-weight:700;font-size:${sz}px">A</span><span style="color:var(--text-dark);font-size:${Math.round(sz*0.7)}px">&middot;</span><span style="color:var(--dT-color);font-weight:700;font-size:${sz}px">&Delta;T</span><div class="fraction" style="font-size:${sz}px;color:var(--text-dark)"><div style="border-top:2px solid currentColor;padding:0 4px">L</div></div>`;
+            if (fRoot.innerHTML !== html) fRoot.innerHTML = html;
+        }
+
+        /* ---------- drawing ---------- */
+        function rodCoords() {
+            const ml = 100, mr = 70;
+            const rl = ml, rr = canvas.width - mr, rw = rr - rl;
+            const ry = canvas.height * 0.28;
+            const thick = Math.sqrt(Am2() / Math.PI) * 200;
+            const rh = Math.max(18, Math.min(60, thick));
+            return { rl, rr, rw, ry, rh };
+        }
+
+        function drawRod() {
+            const { rl, rr, rw, ry, rh } = rodCoords();
+            const sw = rw / N_SEG;
+            for (let i = 0; i < N_SEG; i++) {
+                ctx.fillStyle = tempColor(state.temperatures[i], T_COLD, state.T_hot);
+                ctx.fillRect(rl + i * sw, ry - rh / 2, sw + 0.5, rh);
+            }
+            // outline
+            ctx.strokeStyle = '#bbb'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.roundRect(rl, ry - rh / 2, rw, rh, 6); ctx.stroke();
+            // top highlight
+            ctx.beginPath(); ctx.moveTo(rl + 6, ry - rh / 2); ctx.lineTo(rr - 6, ry - rh / 2);
+            ctx.strokeStyle = 'rgba(255,255,255,0.45)'; ctx.lineWidth = 3; ctx.stroke();
+            // bottom shadow
+            ctx.beginPath(); ctx.moveTo(rl + 6, ry + rh / 2); ctx.lineTo(rr - 6, ry + rh / 2);
+            ctx.strokeStyle = 'rgba(0,0,0,0.13)'; ctx.lineWidth = 3; ctx.stroke();
+        }
+
+        function drawFlame(rl, ry, rh) {
+            const fx = rl, fby = ry + rh / 2 + 2;
+            // burner
+            ctx.fillStyle = '#555';
+            ctx.beginPath(); ctx.roundRect(fx - 14, fby, 28, 10, 4); ctx.fill();
+            ctx.fillStyle = '#3a3a3a';
+            ctx.fillRect(fx - 18, fby + 8, 36, 8);
+            // particles
+            for (const p of state.flameParticles) {
+                const a = p.life / p.maxLife;
+                const px = fx + p.x, py = fby - 5 + p.y;
+                const sz = p.size * a;
+                if (sz < 0.5) continue;
+                const grad = ctx.createRadialGradient(px, py, 0, px, py, sz);
+                grad.addColorStop(0, `rgba(255,255,210,${a})`);
+                grad.addColorStop(0.35, `hsla(${p.hue},100%,58%,${a * 0.75})`);
+                grad.addColorStop(0.75, `hsla(${p.hue},100%,38%,${a * 0.35})`);
+                grad.addColorStop(1, `hsla(${p.hue},100%,28%,0)`);
+                ctx.fillStyle = grad;
+                ctx.beginPath(); ctx.arc(px, py, sz, 0, Math.PI * 2); ctx.fill();
+            }
+        }
+
+        function drawCold(rr, ry, rh) {
+            const cx = rr + 8, cy = ry;
+            const grad = ctx.createRadialGradient(cx, cy, 5, cx, cy, 28);
+            grad.addColorStop(0, 'rgba(52,152,219,0.30)');
+            grad.addColorStop(1, 'rgba(52,152,219,0)');
+            ctx.fillStyle = grad;
+            ctx.beginPath(); ctx.arc(cx, cy, 28, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#3498db';
+            ctx.font = 'bold 16px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillText('❄', cx, cy + 6);
+            ctx.font = '600 11px Fredoka';
+            ctx.fillText(T_COLD + '°C', cx, cy + rh / 2 + 16);
+        }
+
+        function drawSensors(rl, rr, rw, ry, rh) {
+            const pos = [0.08, 0.25, 0.50, 0.75, 0.92];
+            for (const frac of pos) {
+                const x = rl + rw * frac;
+                const idx = Math.round(frac * N_SEG);
+                const t = state.temperatures[Math.min(idx, N_SEG)];
+
+                ctx.beginPath();
+                ctx.moveTo(x, ry - rh / 2 - 4);
+                ctx.lineTo(x, ry - rh / 2 - 26);
+                ctx.strokeStyle = '#ccc'; ctx.lineWidth = 1.5;
+                ctx.setLineDash([3, 3]); ctx.stroke(); ctx.setLineDash([]);
+
+                ctx.beginPath(); ctx.arc(x, ry, 5, 0, Math.PI * 2);
+                ctx.fillStyle = '#fff'; ctx.fill();
+                ctx.strokeStyle = '#666'; ctx.lineWidth = 1.5; ctx.stroke();
+
+                const bg = tempColor(t, T_COLD, state.T_hot);
+                ctx.fillStyle = bg;
+                ctx.beginPath(); ctx.roundRect(x - 18, ry - rh / 2 - 52, 36, 22, 8); ctx.fill();
+                ctx.fillStyle = (t > (state.T_hot + T_COLD) / 2) ? '#fff' : '#222';
+                ctx.font = 'bold 11px Fredoka'; ctx.textAlign = 'center';
+                ctx.fillText(t.toFixed(0) + '°C', x, ry - rh / 2 - 39);
+            }
+        }
+
+        function drawGraph(rl, rr, rw, ry, rh) {
+            const gx = rl + 10, gw = rw - 20;
+            const gy = ry + rh / 2 + 100, gh = 130;
+            if (gy + gh > canvas.height - 8) return;
+
+            // bg
+            ctx.fillStyle = 'rgba(255,255,255,0.92)';
+            ctx.strokeStyle = '#e0e0e0'; ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.roundRect(gx - 5, gy - 5, gw + 10, gh + 10, 10); ctx.fill(); ctx.stroke();
+
+            ctx.fillStyle = '#555'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'left';
+            ctx.fillText('温度分布 Temperature Profile', gx + 6, gy + 14);
+
+            const pl = 50, pr = 15, pt = 28, pb = 32;
+            const px = gx + pl, py = gy + pt, pw = gw - pl - pr, ph = gh - pt - pb;
+
+            // axes
+            ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px, py + ph); ctx.strokeStyle = '#999'; ctx.lineWidth = 1.5; ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(px, py + ph); ctx.lineTo(px + pw, py + ph); ctx.stroke();
+
+            // Y
+            ctx.fillStyle = '#888'; ctx.font = '10px Fredoka'; ctx.textAlign = 'right';
+            const nY = 4;
+            for (let i = 0; i <= nY; i++) {
+                const f = i / nY, y = py + ph - f * ph;
+                const val = T_COLD + f * (state.T_hot - T_COLD);
+                ctx.fillText(val.toFixed(0) + '°', px - 6, y + 4);
+                ctx.beginPath(); ctx.moveTo(px + 1, y); ctx.lineTo(px + pw, y);
+                ctx.strokeStyle = '#f0f0f0'; ctx.lineWidth = 0.8; ctx.stroke();
+            }
+
+            // X
+            ctx.textAlign = 'center';
+            const nX = 5;
+            for (let i = 0; i <= nX; i++) {
+                const f = i / nX, x = px + f * pw;
+                ctx.fillText((f * Lm() * 100).toFixed(0) + ' cm', x, py + ph + 16);
+            }
+
+            // Y label
+            ctx.save(); ctx.translate(px - 42, py + ph / 2); ctx.rotate(-Math.PI / 2);
+            ctx.fillStyle = '#888'; ctx.font = '10px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillText('T (°C)', 0, 0); ctx.restore();
+
+            // X label
+            ctx.fillStyle = '#888'; ctx.font = '10px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillText('Position', px + pw / 2, py + ph + 30);
+
+            // steady-state dashed
+            ctx.beginPath(); ctx.setLineDash([6, 4]);
+            ctx.strokeStyle = 'rgba(150,150,150,0.55)'; ctx.lineWidth = 1.5;
+            ctx.moveTo(px, py + ph - ph);
+            ctx.lineTo(px + pw, py + ph);
+            ctx.stroke(); ctx.setLineDash([]);
+            ctx.fillStyle = '#aaa'; ctx.font = 'italic 10px Fredoka'; ctx.textAlign = 'right';
+            ctx.fillText('稳态', px + pw - 4, py + ph - 4);
+
+            // current profile
+            ctx.beginPath();
+            for (let i = 0; i <= N_SEG; i++) {
+                const f = i / N_SEG, x = px + f * pw;
+                const tn = (state.temperatures[i] - T_COLD) / (state.T_hot - T_COLD);
+                const y = py + ph - tn * ph;
+                if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            }
+            ctx.strokeStyle = '#FF5E5B'; ctx.lineWidth = 2.5; ctx.stroke();
+
+            const step = Math.max(1, Math.floor(N_SEG / 12));
+            for (let i = 0; i <= N_SEG; i += step) {
+                const f = i / N_SEG, x = px + f * pw;
+                const tn = (state.temperatures[i] - T_COLD) / (state.T_hot - T_COLD);
+                ctx.beginPath(); ctx.arc(x, py + ph - tn * ph, 3, 0, Math.PI * 2);
+                ctx.fillStyle = '#FF5E5B'; ctx.fill();
+            }
+            ctx.fillStyle = '#FF5E5B'; ctx.font = 'italic 10px Fredoka'; ctx.textAlign = 'left';
+            ctx.fillText('当前', px + 6, py + ph - 4);
+        }
+
+        function drawArrows(rl, rr, rw, ry, rh) {
+            const ay = ry - rh / 2 - 38;
+            const n = 4;
+            for (let i = 0; i < n; i++) {
+                const x = rl + rw * (0.15 + i * 0.2);
+                const alpha = 0.22 + 0.12 * Math.sin(state.simTime * 3 + i * 1.5);
+                ctx.fillStyle = `rgba(230,126,34,${alpha})`;
+                ctx.beginPath();
+                ctx.moveTo(x - 14, ay); ctx.lineTo(x + 14, ay);
+                ctx.lineTo(x + 4, ay - 6); ctx.lineTo(x + 14, ay);
+                ctx.lineTo(x + 4, ay + 6); ctx.closePath(); ctx.fill();
+                ctx.fillStyle = `rgba(230,126,34,${alpha + 0.15})`;
+                ctx.font = 'italic 10px Fredoka'; ctx.textAlign = 'center';
+                ctx.fillText('heat →', x, ay + 14);
+            }
+        }
+
+        function drawStatus(rl, ry, rh) {
+            const x = rl, y = ry - rh / 2 - 68;
+            let txt, clr;
+            if (!state.isPlaying) { txt = '已暂停 Paused'; clr = '#95a5a6'; }
+            else if (state.steady) { txt = '已达到稳态 Steady State ✓'; clr = '#2ecc71'; }
+            else { txt = '热传导中... Heating...'; clr = '#FF5E5B'; }
+            ctx.fillStyle = clr; ctx.font = 'bold 13px Fredoka'; ctx.textAlign = 'left';
+            ctx.fillText(txt, x, y);
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const { rl, rr, rw, ry, rh } = rodCoords();
+            drawArrows(rl, rr, rw, ry, rh);
+            drawStatus(rl, ry, rh);
+            drawRod();
+            drawFlame(rl, ry, rh);
+            drawCold(rr, ry, rh);
+            drawSensors(rl, rr, rw, ry, rh);
+            drawGraph(rl, rr, rw, ry, rh);
+        }
+
+        /* ---------- sliders ---------- */
+        function syncSliders() {
+            state.k = parseFloat(sK.value);
+            state.A_cm2 = parseFloat(sA.value);
+            state.L_cm = parseFloat(sL.value);
+            state.T_hot = parseFloat(sTh.value);
+            bK.innerHTML = state.k + ' W/(m&middot;K)';
+            bA.textContent = state.A_cm2 + ' cm²';
+            bL.textContent = state.L_cm + ' cm';
+            bTh.textContent = state.T_hot + ' °C';
+            state.temperatures[0] = state.T_hot;
+        }
+        sK.oninput = syncSliders; sA.oninput = syncSliders;
+        sL.oninput = syncSliders; sTh.oninput = syncSliders;
+
+        /* ---------- material pills ---------- */
+        matPills.addEventListener('click', e => {
+            const pill = e.target.closest('.mat-pill');
+            if (!pill) return;
+            sK.value = pill.dataset.k;
+            syncSliders();
+            document.querySelectorAll('.mat-pill').forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+        });
+
+        /* ---------- buttons ---------- */
+        btnStart.onclick = () => {
+            state.isPlaying = !state.isPlaying;
+            btnStart.textContent = state.isPlaying ? '暂停 Pause' : '开始 Start';
+            btnStart.classList.toggle('start', !state.isPlaying);
+            btnStart.classList.toggle('pause', state.isPlaying);
+        };
+        btnReset.onclick = () => { initTemps(); state.simTime = 0; state.steady = false; };
+
+        /* ---------- animation loop ---------- */
+        let lastT = performance.now();
+        function loop(now) {
+            let dt = (now - lastT) / 1000;
+            if (dt <= 0) dt = 0.016;
+            if (dt > 0.1) dt = 0.1;
+            lastT = now;
+
+            state.simTime += dt;
+            syncSliders();
+            simStep(dt);
+            updateFlame(dt);
+            updateFormula();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        resize();
+        requestAnimationFrame(loop);
+    </script>
+</body>
+</html>

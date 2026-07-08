@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电容充放电 / Capacitor Charge & Discharge - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-color: #FFF9F0; --primary: #FF8c42; --secondary: #FFC75F; --accent: #FF5E5B; --text-dark: #4A403A; --card-bg: #FFFFFF; --shadow: 0 6px 30px rgba(255,140,66,0.18); }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Fredoka','Noto Sans SC',sans-serif; background: var(--bg-color); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 5px 40px 10px; }
+        .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
+        .logo { font-weight: 700; font-size: 1.3rem; color: #fff; background: var(--primary); padding: 6px 18px; border-radius: 16px; box-shadow: 4px 4px 15px rgba(255,140,66,0.3); }
+        .back-link { position: fixed; top: 10px; right: 20px; z-index: 1000; text-decoration: none; color: var(--primary); font-weight: 700; font-size: 0.9rem; background: rgba(255,255,255,0.9); padding: 6px 14px; border-radius: 16px; box-shadow: 0 2px 10px rgba(255,140,66,0.15); }
+        .container { width: 100%; max-width: 1400px; margin-top: 8px; display: grid; grid-template-areas:"header header" "formula formula" "diagram controls"; grid-template-columns: 1fr 400px; gap: 12px; }
+        header { grid-area: header; text-align: center; } h1 { font-size: 2rem; margin-bottom: 2px; }
+        .formula-display { grid-area: formula; background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb; }
+        .formula-container { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; min-height: 44px; }
+        .result-row { font-size: 0.95rem; font-weight: 600; margin-top: 4px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+        .legend { display: flex; gap: 16px; justify-content: center; border-top: 1px solid #eee; padding-top: 6px; width: 100%; flex-wrap: wrap; }
+        .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+        .diagram-section { grid-area: diagram; background: #fff; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; min-height: 400px; display: flex; flex-direction: column; border: 2px solid #fff5eb; }
+        #simCanvas { width: 100%; flex: 1; display: block; }
+        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
+        .control-panel { background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+        .control-group { display: flex; flex-direction: column; gap: 3px; }
+        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
+        .val-badge { background: #fff; padding: 1px 7px; border-radius: 7px; font-size: 0.85rem; border: 2px solid #f0f0f0; }
+        input[type=range] { width: 100%; appearance: none; height: 6px; background: #eee; border-radius: 3px; }
+        input[type=range]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--primary); cursor: pointer; }
+        .btn-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        .ctrl-btn { padding: 10px; border: none; border-radius: 14px; font-size: 0.95rem; font-weight: 700; cursor: pointer; color: white; }
+        .start { background: var(--primary); } .pause { background: #2ecc71; } .reset { background: #95a5a6; }
+        .info-card { background: #fff; border-radius: 20px; padding: 12px 16px; box-shadow: var(--shadow); font-size: 0.9rem; line-height: 1.4; color: #5D6D7E; }
+        @media (max-width: 1100px) { .container { grid-template-areas:"header" "formula" "diagram" "controls"; grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="branding"><div class="logo">Wuli布雷克</div></div>
+<a href="electricity.html" class="back-link">← 返回电磁学</a>
+<div class="container">
+    <header><h1>电容充放电 / Capacitor Charge & Discharge</h1></header>
+    <section class="formula-display">
+        <div class="formula-container" id="formula-root"></div>
+        <div class="result-row">
+            <span>V<sub>C</sub> = <strong style="color:var(--accent)" id="res-vc">0.00</strong> V</span>
+            <span>τ = RC = <strong style="color:#3498db" id="res-tau">—</strong> s</span>
+            <span>t = <strong style="color:#2ecc71" id="res-time">0.00</strong> s</span>
+        </div>
+        <div class="legend">
+            <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> V_C 电容电压</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#3498db"></span> τ 时间常数</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#2ecc71"></span> t 时间</div>
+        </div>
+    </section>
+    <section class="diagram-section"><canvas id="simCanvas"></canvas></section>
+    <section class="controls-section">
+        <div class="control-panel">
+            <div class="control-group">
+                <div class="label-row"><span>电阻 R</span><span id="badge-r" class="val-badge">10 kΩ</span></div>
+                <input type="range" id="slider-r" min="1" max="50" value="10">
+            </div>
+            <div class="control-group">
+                <div class="label-row"><span>电容 C</span><span id="badge-c" class="val-badge">100 μF</span></div>
+                <input type="range" id="slider-c" min="10" max="500" step="10" value="100">
+            </div>
+            <div class="control-group">
+                <div class="label-row"><span>电源电压 V₀</span><span id="badge-v0" class="val-badge">10 V</span></div>
+                <input type="range" id="slider-v0" min="3" max="20" value="10">
+            </div>
+            <div class="btn-row">
+                <button id="btn-charge" class="ctrl-btn start">充电 Charge</button>
+                <button id="btn-discharge" class="ctrl-btn pause">放电 Discharge</button>
+                <button id="btn-reset" class="ctrl-btn reset">重置</button>
+            </div>
+        </div>
+        <div class="info-card">
+            <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem;">演示要点 / Key Points</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;">τ</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">时间常数 τ = RC</div><div style="font-size:0.78rem;color:#888;">τ 决定充放电速度。τ 越大，充放电越慢。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:#2ecc71;font-weight:700;">↑</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">充电：Vc = V₀(1−e^(−t/RC))</div><div style="font-size:0.78rem;color:#888;">电压按指数律上升，t=τ时达到63.2%V₀，t=5τ时≈99.3%V₀。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(231,76,60,0.1);color:#e74c3c;font-weight:700;">↓</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">放电：Vc = V₀e^(−t/RC)</div><div style="font-size:0.78rem;color:#888;">电压按指数律衰减，t=τ时降至36.8%V₀。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:#3498db;font-weight:700;">C</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">电容储能 E=½CV²</div><div style="font-size:0.78rem;color:#888;">电容越大、电压越高，储存的能量越多。</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<script>
+const canvas=document.getElementById('simCanvas'),ctx=canvas.getContext('2d');
+const sR=document.getElementById('slider-r'),sC=document.getElementById('slider-c'),sV0=document.getElementById('slider-v0');
+const bR=document.getElementById('badge-r'),bC=document.getElementById('badge-c'),bV0=document.getElementById('badge-v0');
+const resVc=document.getElementById('res-vc'),resTau=document.getElementById('res-tau'),resTime=document.getElementById('res-time');
+const fRoot=document.getElementById('formula-root');
+const S={r:10,c:100,v0:10,vc:0,time:0,charging:true,playing:false};
+function resize(){canvas.width=canvas.clientWidth;canvas.height=canvas.clientHeight;}
+window.addEventListener('resize',resize);
+function update(){
+    S.r=parseInt(sR.value);S.c=parseInt(sC.value);S.v0=parseInt(sV0.value);
+    bR.textContent=S.r+' kΩ';bC.textContent=S.c+' μF';bV0.textContent=S.v0+' V';
+    const R=S.r*1000,C=S.c*1e-6,tau=R*C;
+    resTau.textContent=(tau*1000).toFixed(1)+' ms';
+    const dt=0.016;
+    if(S.playing){
+        S.time+=dt;
+        if(S.charging)S.vc=S.v0*(1-Math.exp(-S.time/tau));
+        else S.vc=S.v0*Math.exp(-S.time/tau);
+    }
+    resVc.textContent=S.vc.toFixed(2);
+    resTime.textContent=S.time.toFixed(2);
+    fRoot.innerHTML=S.charging?
+        `<span style="font-size:22px;font-weight:700;color:#2ecc71;">V<sub>c</sub>=V₀(1−e<sup>−t/RC</sup>)</span><span style="font-size:18px;">τ=RC=${(tau*1000).toFixed(1)}ms</span>`:
+        `<span style="font-size:22px;font-weight:700;color:#e74c3c;">V<sub>c</sub>=V₀e<sup>−t/RC</sup></span><span style="font-size:18px;">τ=RC=${(tau*1000).toFixed(1)}ms</span>`;
+    draw();requestAnimationFrame(update);
+}
+function draw(){
+    const w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);ctx.fillStyle='#fafaf7';ctx.fillRect(0,0,w,h);
+    // Circuit diagram
+    const cx=w*0.25,cy=h*0.4;
+    ctx.strokeStyle='#333';ctx.lineWidth=3;
+    // Battery
+    ctx.fillStyle='#2ecc71';ctx.fillRect(cx-15,cy-100,30,20);
+    // Wires
+    ctx.beginPath();ctx.moveTo(cx,cy-80);ctx.lineTo(cx,cy-30);ctx.stroke();
+    // Resistor (zigzag)
+    ctx.beginPath();ctx.moveTo(cx,cy-30);ctx.lineTo(cx-20,cy-20);ctx.lineTo(cx+20,cy-10);ctx.lineTo(cx-20,cy);ctx.lineTo(cx+20,cy+10);ctx.lineTo(cx,cy+20);ctx.stroke();
+    ctx.fillText('R='+S.r+'kΩ',cx+25,cy-5);
+    // Capacitor
+    ctx.beginPath();ctx.moveTo(cx,cy+20);ctx.lineTo(cx,cy+50);ctx.stroke();
+    ctx.fillStyle='#3498db';ctx.fillRect(cx-20,cy+50,40,8);ctx.fillRect(cx-20,cy+62,40,8);
+    ctx.fillText('C='+S.c+'μF',cx+25,cy+65);
+    ctx.beginPath();ctx.moveTo(cx,cy+70);ctx.lineTo(cx,cy+100);ctx.lineTo(cx-40,cy+100);ctx.lineTo(cx-40,cy-100);ctx.stroke();
+    // Voltage across capacitor
+    const barH=100*(S.vc/S.v0);
+    ctx.fillStyle='var(--accent)';ctx.fillRect(cx-60,cy+100-barH,15,barH);
+    ctx.strokeStyle='#333';ctx.strokeRect(cx-60,cy,15,100);
+    ctx.fillStyle='#333';ctx.font='bold 11px';ctx.textAlign='center';
+    ctx.fillText('Vc',cx-52,cy-10);
+    ctx.fillText(S.vc.toFixed(1)+'V',cx-52,cy+115);
+    // V-t graph on right
+    const gx=w*0.45,gy=h*0.2,gw=w*0.5,gh=h*0.55;
+    ctx.strokeStyle='#ddd';ctx.strokeRect(gx,gy,gw,gh);
+    ctx.fillStyle='#888';ctx.font='bold 11px Fredoka';ctx.fillText('Vc vs t',gx+gw/2,gy-8);
+    // Draw Vc curve
+    const R=S.r*1000,C=S.c*1e-6,tau=R*C;
+    ctx.beginPath();ctx.strokeStyle='var(--accent)';ctx.lineWidth=2;
+    const maxT=tau*5;
+    for(let i=0;i<=100;i++){
+        const t=maxT*i/100;
+        let v;
+        if(S.charging)v=S.v0*(1-Math.exp(-t/tau));
+        else v=S.v0*Math.exp(-t/tau);
+        const px=gx+(t/maxT)*gw;
+        const py=gy+gh-(v/S.v0)*gh;
+        if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+    }
+    ctx.stroke();
+    // Current time marker
+    const tx=gx+(S.time/maxT)*gw;
+    if(tx<gx+gw){ctx.strokeStyle='#333';ctx.beginPath();ctx.moveTo(tx,gy);ctx.lineTo(tx,gy+gh);ctx.setLineDash([3,3]);ctx.stroke();ctx.setLineDash([]);}
+    // Tau marker
+    const taux=gx+(tau/maxT)*gw;
+    if(taux<gx+gw){ctx.strokeStyle='#3498db';ctx.beginPath();ctx.moveTo(taux,gy);ctx.lineTo(taux,gy+gh);ctx.setLineDash([3,3]);ctx.stroke();ctx.setLineDash([]);ctx.fillText('τ',taux,gy-5);}
+}
+document.getElementById('btn-charge').onclick=()=>{S.charging=true;S.time=0;S.vc=0;S.playing=true;};
+document.getElementById('btn-discharge').onclick=()=>{S.charging=false;S.time=0;S.vc=S.v0;S.playing=true;};
+document.getElementById('btn-reset').onclick=()=>{S.time=0;S.vc=0;S.playing=false;};
+resize();requestAnimationFrame(update);
+</script>
+</body>
+</html>

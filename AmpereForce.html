@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>安培力 / Ampère Force - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-color: #FFF9F0; --primary: #FF8c42; --secondary: #FFC75F; --accent: #FF5E5B; --text-dark: #4A403A; --card-bg: #FFFFFF; --shadow: 0 6px 30px rgba(255,140,66,0.18); }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Fredoka','Noto Sans SC',sans-serif; background: var(--bg-color); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 5px 40px 10px; }
+        .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
+        .logo { font-weight: 700; font-size: 1.3rem; color: #fff; background: var(--primary); padding: 6px 18px; border-radius: 16px; box-shadow: 4px 4px 15px rgba(255,140,66,0.3); }
+        .back-link { position: fixed; top: 10px; right: 20px; z-index: 1000; text-decoration: none; color: var(--primary); font-weight: 700; font-size: 0.9rem; background: rgba(255,255,255,0.9); padding: 6px 14px; border-radius: 16px; box-shadow: 0 2px 10px rgba(255,140,66,0.15); }
+        .container { width: 100%; max-width: 1400px; margin-top: 8px; display: grid; grid-template-areas:"header header" "formula formula" "diagram controls"; grid-template-columns: 1fr 400px; gap: 12px; }
+        header { grid-area: header; text-align: center; } h1 { font-size: 2rem; margin-bottom: 2px; }
+        .formula-display { grid-area: formula; background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb; }
+        .formula-container { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; min-height: 44px; }
+        .result-row { font-size: 0.95rem; font-weight: 600; margin-top: 4px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+        .legend { display: flex; gap: 16px; justify-content: center; border-top: 1px solid #eee; padding-top: 6px; width: 100%; flex-wrap: wrap; }
+        .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+        .diagram-section { grid-area: diagram; background: #fff; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; min-height: 400px; display: flex; flex-direction: column; border: 2px solid #fff5eb; }
+        #simCanvas { width: 100%; flex: 1; display: block; }
+        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
+        .control-panel { background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+        .control-group { display: flex; flex-direction: column; gap: 3px; }
+        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
+        .val-badge { background: #fff; padding: 1px 7px; border-radius: 7px; font-size: 0.85rem; border: 2px solid #f0f0f0; }
+        input[type=range] { width: 100%; appearance: none; height: 6px; background: #eee; border-radius: 3px; }
+        input[type=range]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--primary); cursor: pointer; }
+        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .ctrl-btn { padding: 10px; border: none; border-radius: 14px; font-size: 1rem; font-weight: 700; cursor: pointer; color: white; }
+        .start { background: var(--primary); } .pause { background: #2ecc71; } .reset { background: #95a5a6; }
+        .info-card { background: #fff; border-radius: 20px; padding: 12px 16px; box-shadow: var(--shadow); font-size: 0.9rem; line-height: 1.4; color: #5D6D7E; }
+        @media (max-width: 1100px) { .container { grid-template-areas:"header" "formula" "diagram" "controls"; grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="branding"><div class="logo">Wuli布雷克</div></div>
+<a href="electricity.html" class="back-link">← 返回电磁学</a>
+<div class="container">
+    <header><h1>安培力 / Ampère Force</h1></header>
+    <section class="formula-display">
+        <div class="formula-container" id="formula-root"></div>
+        <div class="result-row">
+            <span>F = <strong style="color:var(--accent)" id="res-f">—</strong> N</span>
+            <span>B = <strong style="color:#9b59b6" id="res-bval">1.0</strong> T</span>
+            <span>θ = <strong style="color:#e67e22" id="res-theta">90</strong>°</span>
+        </div>
+        <div class="legend">
+            <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> F 安培力</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#9b59b6"></span> B 磁场</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#3498db"></span> I 电流</div>
+        </div>
+    </section>
+    <section class="diagram-section"><canvas id="simCanvas"></canvas></section>
+    <section class="controls-section">
+        <div class="control-panel">
+            <div class="control-group">
+                <div class="label-row"><span>电流 I</span><span id="badge-i" class="val-badge">5 A</span></div>
+                <input type="range" id="slider-i" min="1" max="10" value="5">
+            </div>
+            <div class="control-group">
+                <div class="label-row"><span>磁感应强度 B</span><span id="badge-b" class="val-badge">1.0 T</span></div>
+                <input type="range" id="slider-b" min="0.2" max="3" step="0.1" value="1.0">
+            </div>
+            <div class="control-group">
+                <div class="label-row"><span>导线长度 L</span><span id="badge-l" class="val-badge">0.5 m</span></div>
+                <input type="range" id="slider-l" min="0.1" max="1.5" step="0.05" value="0.5">
+            </div>
+            <div class="control-group">
+                <div class="label-row"><span>夹角 θ (B与I)</span><span id="badge-theta" class="val-badge">90°</span></div>
+                <input type="range" id="slider-theta" min="0" max="90" value="90">
+            </div>
+            <div class="btn-row">
+                <button id="btn-start" class="ctrl-btn start">开始 Start</button>
+                <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
+            </div>
+        </div>
+        <div class="info-card">
+            <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem;">演示要点 / Key Points</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;">F</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">F = BIL sinθ</div><div style="font-size:0.78rem;color:#888;">安培力大小正比于B、I、L及sinθ。θ=90°时最大。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:#3498db;font-weight:700;">✋</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">左手定则判断方向</div><div style="font-size:0.78rem;color:#888;">伸开左手，B穿入手心，四指指向I，拇指指向F。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(155,89,182,0.1);color:#9b59b6;font-weight:700;">B</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">B ⟂ I ⟂ F 三者正交</div><div style="font-size:0.78rem;color:#888;">力方向始终垂直于B和I所在平面。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:#2ecc71;font-weight:700;">📐</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">θ=0时 F=0</div><div style="font-size:0.78rem;color:#888;">当导线平行于磁场方向时，不受安培力。</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<script>
+const canvas=document.getElementById('simCanvas'),ctx=canvas.getContext('2d');
+const sI=document.getElementById('slider-i'),sB=document.getElementById('slider-b'),sL=document.getElementById('slider-l'),sTheta=document.getElementById('slider-theta');
+const bI=document.getElementById('badge-i'),bB=document.getElementById('badge-b'),bL=document.getElementById('badge-l'),bTheta=document.getElementById('badge-theta');
+const resF=document.getElementById('res-f'),resBv=document.getElementById('res-bval'),resT=document.getElementById('res-theta');
+const fRoot=document.getElementById('formula-root');
+const S={i:5,b:1.0,l:0.5,theta:90,playing:false,wireY:0};
+function resize(){canvas.width=canvas.clientWidth;canvas.height=canvas.clientHeight;}
+window.addEventListener('resize',resize);
+function update(){
+    S.i=parseInt(sI.value);S.b=parseFloat(sB.value);S.l=parseFloat(sL.value);S.theta=parseInt(sTheta.value);
+    bI.textContent=S.i+' A';bB.textContent=S.b.toFixed(1)+' T';bL.textContent=S.l.toFixed(2)+' m';bTheta.textContent=S.theta+'°';
+    const thetaRad=S.theta*Math.PI/180;
+    const force=S.b*S.i*S.l*Math.sin(thetaRad);
+    resF.textContent=force.toFixed(3);
+    resBv.textContent=S.b.toFixed(1);
+    resT.textContent=S.theta;
+    if(S.playing){S.wireY+=(force*10-S.wireY)*0.05;}
+    fRoot.innerHTML=`<span style="font-size:24px;font-weight:700;color:var(--accent);">F</span>
+        <span style="font-size:24px;">=</span>
+        <span style="font-size:24px;font-weight:700;color:#9b59b6;">B</span>
+        <span style="font-size:24px;font-weight:700;color:#3498db;">I</span>
+        <span style="font-size:24px;font-weight:700;">L</span>
+        <span style="font-size:24px;">sin</span><span style="font-size:24px;color:#e67e22;">θ</span>
+        <span style="font-size:24px;">= ${force.toFixed(3)} N</span>`;
+    draw();requestAnimationFrame(update);
+}
+function draw(){
+    const w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);ctx.fillStyle='#fafaf7';ctx.fillRect(0,0,w,h);
+    const cx=w*0.4,cy=h*0.5;
+    // B field dots (into page)
+    for(let x=50;x<w*0.8;x+=30)for(let y=30;y<h*0.85;y+=25){
+        ctx.fillStyle='rgba(155,89,182,0.2)';ctx.beginPath();ctx.arc(x,y,2.5,0,Math.PI*2);ctx.fill();
+    }
+    // Wire (horizontal)
+    const wireY=cy+S.wireY;
+    ctx.strokeStyle='#e74c3c';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(cx-120,wireY);ctx.lineTo(cx+120,wireY);ctx.stroke();
+    // Current arrow
+    const ax=cx+100;arrow(ctx,ax-30,wireY,ax,wireY,'#3498db',2.5);
+    ctx.fillStyle='#3498db';ctx.font='bold 12px Fredoka';ctx.textAlign='left';ctx.fillText('I='+S.i+'A',cx+80,wireY-12);
+    // Force arrow (upward for standard B into page + I right)
+    const fy=wireY-40-S.wireY*2;
+    arrow(ctx,cx,wireY,cx,fy,'var(--accent)',2.5);
+    ctx.fillStyle='var(--accent)';ctx.font='bold 12px Fredoka';ctx.fillText('F',cx+5,fy-5);
+    // Angle arc
+    ctx.strokeStyle='#e67e22';ctx.lineWidth=2;ctx.beginPath();
+    const arcR=30,arcStart=-Math.PI/2,arcEnd=arcStart+(S.theta*Math.PI/180);
+    ctx.arc(cx-60,wireY,arcR,arcStart,arcEnd);ctx.stroke();
+    ctx.fillStyle='#e67e22';ctx.font='bold 11px';ctx.fillText('θ='+S.theta+'°',cx-85,wireY-15);
+    // B field indicator
+    ctx.fillStyle='#9b59b6';ctx.font='bold 13px Fredoka';ctx.textAlign='right';ctx.fillText('B='+S.b.toFixed(1)+'T (垂直纸面向里)',w-20,30);
+}
+function arrow(c,x1,y1,x2,y2,clr,lw){const a=Math.atan2(y2-y1,x2-x1),h=8;c.strokeStyle=clr;c.fillStyle=clr;c.lineWidth=lw||2;c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();c.beginPath();c.moveTo(x2,y2);c.lineTo(x2-h*Math.cos(a-Math.PI/6),y2-h*Math.sin(a-Math.PI/6));c.lineTo(x2-h*Math.cos(a+Math.PI/6),y2-h*Math.sin(a+Math.PI/6));c.closePath();c.fill();}
+document.getElementById('btn-start').onclick=()=>{S.playing=!S.playing;const b=document.getElementById('btn-start');b.textContent=S.playing?'暂停 Pause':'开始 Start';b.classList.toggle('start',!S.playing);b.classList.toggle('pause',S.playing);};
+document.getElementById('btn-reset').onclick=()=>{S.wireY=0;S.playing=false;document.getElementById('btn-start').textContent='开始 Start';document.getElementById('btn-start').className='ctrl-btn start';};
+resize();requestAnimationFrame(update);
+</script>
+</body>
+</html>

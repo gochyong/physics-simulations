@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>力的合成与分解 / Vector Addition of Forces - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-color: #FFF9F0; --primary: #FF8c42; --secondary: #FFC75F; --accent: #FF5E5B; --text-dark: #4A403A; --card-bg: #FFFFFF; --shadow: 0 6px 30px rgba(255,140,66,0.18); }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Fredoka','Noto Sans SC',sans-serif; background: var(--bg-color); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 5px 40px 10px; }
+        .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
+        .logo { font-weight: 700; font-size: 1.3rem; color: #fff; background: var(--primary); padding: 6px 18px; border-radius: 16px; box-shadow: 4px 4px 15px rgba(255,140,66,0.3); }
+        .back-link { position: fixed; top: 10px; right: 20px; z-index: 1000; text-decoration: none; color: var(--primary); font-weight: 700; font-size: 0.9rem; background: rgba(255,255,255,0.9); padding: 6px 14px; border-radius: 16px; box-shadow: 0 2px 10px rgba(255,140,66,0.15); }
+        .container { width: 100%; max-width: 1400px; margin-top: 8px; display: grid; grid-template-areas:"header header" "formula formula" "diagram controls"; grid-template-columns: 1fr 400px; gap: 12px; }
+        header { grid-area: header; text-align: center; } h1 { font-size: 2rem; margin-bottom: 2px; }
+        .formula-display { grid-area: formula; background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb; }
+        .formula-container { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; min-height: 44px; }
+        .result-row { font-size: 0.95rem; font-weight: 600; margin-top: 4px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+        .legend { display: flex; gap: 16px; justify-content: center; border-top: 1px solid #eee; padding-top: 6px; width: 100%; flex-wrap: wrap; }
+        .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+        .diagram-section { grid-area: diagram; background: #fff; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; min-height: 400px; display: flex; flex-direction: column; border: 2px solid #fff5eb; }
+        #simCanvas { width: 100%; flex: 1; display: block; }
+        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
+        .control-panel { background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+        .control-group { display: flex; flex-direction: column; gap: 3px; }
+        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
+        .val-badge { background: #fff; padding: 1px 7px; border-radius: 7px; font-size: 0.85rem; border: 2px solid #f0f0f0; }
+        input[type=range] { width: 100%; appearance: none; height: 6px; background: #eee; border-radius: 3px; }
+        input[type=range]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--primary); cursor: pointer; }
+        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .ctrl-btn { padding: 10px; border: none; border-radius: 14px; font-size: 1rem; font-weight: 700; cursor: pointer; color: white; }
+        .start { background: var(--primary); } .reset { background: #95a5a6; }
+        .info-card { background: #fff; border-radius: 20px; padding: 12px 16px; box-shadow: var(--shadow); font-size: 0.9rem; line-height: 1.4; color: #5D6D7E; }
+        @media (max-width: 1100px) { .container { grid-template-areas:"header" "formula" "diagram" "controls"; grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="branding"><div class="logo">Wuli布雷克</div></div>
+<a href="mechanics.html" class="back-link">← 返回力学</a>
+<div class="container">
+    <header><h1>力的合成与分解 / Vector Addition of Forces</h1></header>
+    <section class="formula-display">
+        <div class="formula-container" id="formula-root"></div>
+        <div class="result-row">
+            <span>|F₁| = <strong style="color:#e74c3c" id="res-f1">5.0</strong> N</span>
+            <span>|F₂| = <strong style="color:#3498db" id="res-f2">3.0</strong> N</span>
+            <span>|F_合| = <strong style="color:#2ecc71" id="res-fr">—</strong> N</span>
+            <span>θ = <strong style="color:#e67e22" id="res-angle">60</strong>°</span>
+        </div>
+        <div class="legend">
+            <div class="legend-item"><span class="legend-dot" style="background:#e74c3c"></span> F₁</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#3498db"></span> F₂</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#2ecc71"></span> F_合</div>
+        </div>
+    </section>
+    <section class="diagram-section"><canvas id="simCanvas"></canvas></section>
+    <section class="controls-section">
+        <div class="control-panel">
+            <div class="control-group">
+                <div class="label-row"><span style="color:#e74c3c;">F₁ 大小</span><span id="badge-f1" class="val-badge">5.0 N</span></div>
+                <input type="range" id="slider-f1" min="1" max="10" step="0.1" value="5.0">
+            </div>
+            <div class="control-group">
+                <div class="label-row"><span style="color:#3498db;">F₂ 大小</span><span id="badge-f2" class="val-badge">3.0 N</span></div>
+                <input type="range" id="slider-f2" min="1" max="10" step="0.1" value="3.0">
+            </div>
+            <div class="control-group">
+                <div class="label-row"><span>夹角 θ</span><span id="badge-angle" class="val-badge">60°</span></div>
+                <input type="range" id="slider-angle" min="0" max="180" value="60">
+            </div>
+            <div class="btn-row">
+                <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
+            </div>
+        </div>
+        <div class="info-card">
+            <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem;">演示要点 / Key Points</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:#2ecc71;font-weight:700;">▱</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">平行四边形法则</div><div style="font-size:0.78rem;color:#888;">以F₁、F₂为邻边作平行四边形，对角线即为合力。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;">0°</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">同向最大：F = F₁+F₂</div><div style="font-size:0.78rem;color:#888;">θ=0°，合力最大，等于两力之和。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(231,76,60,0.1);color:#e74c3c;font-weight:700;">180°</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">反向最小：F = |F₁−F₂|</div><div style="font-size:0.78rem;color:#888;">θ=180°，合力最小，等于两力之差。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(155,89,182,0.1);color:#9b59b6;font-weight:700;">⊥</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">正交分解法</div><div style="font-size:0.78rem;color:#888;">任意力可分解为互相垂直的两个分力 Fx=Fcosθ, Fy=Fsinθ。</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<script>
+const canvas=document.getElementById('simCanvas'),ctx=canvas.getContext('2d');
+const sF1=document.getElementById('slider-f1'),sF2=document.getElementById('slider-f2'),sA=document.getElementById('slider-angle');
+const bF1=document.getElementById('badge-f1'),bF2=document.getElementById('badge-f2'),bA=document.getElementById('badge-angle');
+const resF1=document.getElementById('res-f1'),resF2=document.getElementById('res-f2'),resFr=document.getElementById('res-fr'),resAng=document.getElementById('res-angle');
+const fRoot=document.getElementById('formula-root');
+const S={f1:5,f2:3,angle:60};
+let time=0;
+function resize(){canvas.width=canvas.clientWidth;canvas.height=canvas.clientHeight;}
+window.addEventListener('resize',resize);
+const SCALE=30;
+function update(){
+    S.f1=parseFloat(sF1.value);S.f2=parseFloat(sF2.value);S.angle=parseInt(sA.value);
+    bF1.textContent=S.f1.toFixed(1)+' N';bF2.textContent=S.f2.toFixed(1)+' N';bA.textContent=S.angle+'°';
+    resF1.textContent=S.f1.toFixed(1);resF2.textContent=S.f2.toFixed(1);resAng.textContent=S.angle;
+    const rad=S.angle*Math.PI/180;
+    const rx=S.f1+S.f2*Math.cos(rad),ry=S.f2*Math.sin(rad);
+    const r=Math.sqrt(rx*rx+ry*ry);
+    resFr.textContent=r.toFixed(1);
+    time+=0.016;
+    fRoot.innerHTML=`<span style="font-size:24px;font-weight:700;color:#2ecc71;">F<sub>合</sub></span>
+        <span style="font-size:24px;">=</span>
+        <span style="font-size:24px;">√(F₁²+F₂²+2F₁F₂cosθ)</span>
+        <span style="font-size:24px;">= <b>${r.toFixed(1)} N</b></span>`;
+    draw();requestAnimationFrame(update);
+}
+function draw(){
+    const w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);ctx.fillStyle='#fafaf7';ctx.fillRect(0,0,w,h);
+    const cx=w*0.35,cy=h*0.55;
+    const rad=S.angle*Math.PI/180;
+    const f1px=S.f1*SCALE,f2px=S.f2*SCALE;
+    // F1 horizontal
+    arrow(ctx,cx,cy,cx+f1px,cy,'#e74c3c',3,'F₁='+S.f1.toFixed(1)+'N');
+    // F2 at angle
+    const f2ex=cx+f2px*Math.cos(rad),f2ey=cy-f2px*Math.sin(rad);
+    arrow(ctx,cx,cy,f2ex,f2ey,'#3498db',3,'F₂='+S.f2.toFixed(1)+'N');
+    // Resultant (diagonal of parallelogram)
+    const rex=cx+f1px+f2px*Math.cos(rad),rey=cy-f2px*Math.sin(rad);
+    // Parallelogram dashed lines
+    ctx.strokeStyle='rgba(0,0,0,0.15)';ctx.lineWidth=1;ctx.setLineDash([5,5]);
+    ctx.beginPath();ctx.moveTo(cx+f1px,cy);ctx.lineTo(rex,rey);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(f2ex,f2ey);ctx.lineTo(rex,rey);ctx.stroke();
+    ctx.setLineDash([]);
+    // Resultant arrow
+    const r=Math.sqrt(S.f1*S.f1+S.f2*S.f2+2*S.f1*S.f2*Math.cos(rad));
+    arrow(ctx,cx,cy,cx+r*SCALE*Math.cos(Math.atan2(rey-cy,rex-cx)),cy+r*SCALE*Math.sin(Math.atan2(rey-cy,rex-cx)),'#2ecc71',4,'F_合='+r.toFixed(1)+'N');
+    // Angle arc
+    ctx.strokeStyle='#e67e22';ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,35,0,-rad,true);ctx.stroke();
+    ctx.fillStyle='#e67e22';ctx.font='bold 12px Fredoka';ctx.textAlign='left';ctx.fillText('θ='+S.angle+'°',cx+40,cy-10);
+    // Grid
+    ctx.strokeStyle='rgba(0,0,0,0.04)';ctx.lineWidth=1;
+    for(let gx=cx-200;gx<cx+400;gx+=30){ctx.beginPath();ctx.moveTo(gx,0);ctx.lineTo(gx,h);ctx.stroke();}
+    for(let gy=0;gy<h;gy+=30){ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(w,gy);ctx.stroke();}
+}
+function arrow(c,x1,y1,x2,y2,clr,lw,label){const a=Math.atan2(y2-y1,x2-x1),h=8;c.strokeStyle=clr;c.fillStyle=clr;c.lineWidth=lw||2;c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();c.beginPath();c.moveTo(x2,y2);c.lineTo(x2-h*Math.cos(a-Math.PI/6),y2-h*Math.sin(a-Math.PI/6));c.lineTo(x2-h*Math.cos(a+Math.PI/6),y2-h*Math.sin(a+Math.PI/6));c.closePath();c.fill();if(label){c.font='bold 11px Fredoka';c.fillText(label,x2+6,y2-4);}}
+document.getElementById('btn-reset').onclick=()=>{sF1.value=5;sF2.value=3;sA.value=60;};
+resize();requestAnimationFrame(update);
+</script>
+</body>
+</html>

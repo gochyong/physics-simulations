@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>质能方程 / Mass-Energy Equivalence - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-color: #FFF9F0; --primary: #FF8c42; --secondary: #FFC75F; --accent: #FF5E5B; --text-dark: #4A403A; --card-bg: #FFFFFF; --shadow: 0 6px 30px rgba(255,140,66,0.18); }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Fredoka','Noto Sans SC',sans-serif; background: var(--bg-color); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 5px 40px 10px; }
+        .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
+        .logo { font-weight: 700; font-size: 1.3rem; color: #fff; background: var(--primary); padding: 6px 18px; border-radius: 16px; box-shadow: 4px 4px 15px rgba(255,140,66,0.3); }
+        .back-link { position: fixed; top: 10px; right: 20px; z-index: 1000; text-decoration: none; color: var(--primary); font-weight: 700; font-size: 0.9rem; background: rgba(255,255,255,0.9); padding: 6px 14px; border-radius: 16px; box-shadow: 0 2px 10px rgba(255,140,66,0.15); }
+        .container { width: 100%; max-width: 1400px; margin-top: 8px; display: grid; grid-template-areas:"header header" "formula formula" "diagram controls"; grid-template-columns: 1fr 400px; gap: 12px; }
+        header { grid-area: header; text-align: center; } h1 { font-size: 2rem; margin-bottom: 2px; }
+        .formula-display { grid-area: formula; background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb; }
+        .formula-container { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; min-height: 44px; }
+        .result-row { font-size: 0.95rem; font-weight: 600; margin-top: 4px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+        .legend { display: flex; gap: 16px; justify-content: center; border-top: 1px solid #eee; padding-top: 6px; width: 100%; flex-wrap: wrap; }
+        .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+        .diagram-section { grid-area: diagram; background: #1a1a2e; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; min-height: 400px; display: flex; flex-direction: column; border: 2px solid #fff5eb; }
+        #simCanvas { width: 100%; flex: 1; display: block; }
+        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
+        .control-panel { background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+        .control-group { display: flex; flex-direction: column; gap: 3px; }
+        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
+        .val-badge { background: #fff; padding: 1px 7px; border-radius: 7px; font-size: 0.85rem; border: 2px solid #f0f0f0; }
+        input[type=range] { width: 100%; appearance: none; height: 6px; background: #eee; border-radius: 3px; }
+        input[type=range]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--primary); cursor: pointer; }
+        .mode-pills { display: flex; gap: 6px; }
+        .mode-pill { flex: 1; padding: 8px; border-radius: 12px; font-size: 0.82rem; font-weight: 700; border: 2px solid #e0e0e0; background: #fafafa; cursor: pointer; text-align: center; color: #666; }
+        .mode-pill.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .ctrl-btn { padding: 10px; border: none; border-radius: 14px; font-size: 1rem; font-weight: 700; cursor: pointer; color: white; }
+        .start { background: var(--primary); } .pause { background: #2ecc71; } .reset { background: #95a5a6; }
+        .info-card { background: #fff; border-radius: 20px; padding: 12px 16px; box-shadow: var(--shadow); font-size: 0.9rem; line-height: 1.4; color: #5D6D7E; }
+        @media (max-width: 1100px) { .container { grid-template-areas:"header" "formula" "diagram" "controls"; grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="branding"><div class="logo">Wuli布雷克</div></div>
+<a href="modern-physics.html" class="back-link">← 返回近代物理</a>
+<div class="container">
+    <header><h1>质能方程 / Mass-Energy Equivalence</h1></header>
+    <section class="formula-display">
+        <div class="formula-container" id="formula-root"></div>
+        <div class="result-row">
+            <span>E = <strong style="color:var(--accent)" id="res-e">—</strong> J</span>
+            <span>m = <strong style="color:#9b59b6" id="res-mval">1.0</strong> kg</span>
+        </div>
+        <div class="legend">
+            <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> E 能量</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#9b59b6"></span> m 质量</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#3498db"></span> c 光速</div>
+        </div>
+    </section>
+    <section class="diagram-section"><canvas id="simCanvas"></canvas></section>
+    <section class="controls-section">
+        <div class="control-panel">
+            <div class="control-group">
+                <div class="label-row"><span>质量亏损 Δm</span><span id="badge-m" class="val-badge">0.001 kg</span></div>
+                <input type="range" id="slider-m" min="0.0001" max="0.01" step="0.0001" value="0.001">
+            </div>
+            <div class="control-group">
+                <div class="label-row"><span>场景</span></div>
+                <div class="mode-pills" id="mode-pills">
+                    <button class="mode-pill active" data-mode="fission">核裂变 Fission</button>
+                    <button class="mode-pill" data-mode="fusion">核聚变 Fusion</button>
+                    <button class="mode-pill" data-mode="annihilation">正反物质湮灭</button>
+                </div>
+            </div>
+            <div class="btn-row">
+                <button id="btn-start" class="ctrl-btn start">演示 Demo</button>
+                <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
+            </div>
+        </div>
+        <div class="info-card">
+            <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem;">演示要点 / Key Points</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;">E</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">E = mc² 质量即能量</div><div style="font-size:0.78rem;color:#888;">1kg质量对应9×10¹⁶J能量，相当于燃烧300万吨煤。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(231,76,60,0.1);color:#e74c3c;font-weight:700;">⚛</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">核裂变：重核分裂释放能量</div><div style="font-size:0.78rem;color:#888;">²³⁵U裂变质量亏损~0.1%，释放巨大能量（原子弹、核电站）。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:#2ecc71;font-weight:700;">☀</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">核聚变：轻核结合释放能量</div><div style="font-size:0.78rem;color:#888;">氢→氦聚变是太阳的能量来源，质量亏损~0.7%。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(155,89,182,0.1);color:#9b59b6;font-weight:700;">c²</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">c²是巨大的转换因子</div><div style="font-size:0.78rem;color:#888;">c≈3×10⁸ m/s，c²≈9×10¹⁶，极小质量对应极大能量。</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<script>
+const canvas=document.getElementById('simCanvas'),ctx=canvas.getContext('2d');
+const sM=document.getElementById('slider-m');
+const bM=document.getElementById('badge-m');
+const resE=document.getElementById('res-e'),resMv=document.getElementById('res-mval');
+const fRoot=document.getElementById('formula-root');
+const modePills=document.getElementById('mode-pills');
+const C=3e8;
+const S={mass:0.001,mode:'fission',particles:[],exploding:false,explodeTime:0};
+function initParticles(){
+    S.particles=[];
+    for(let i=0;i<20;i++)S.particles.push({x:0.5,y:0.5,vx:(Math.random()-0.5)*2,vy:(Math.random()-0.5)*2,life:1});
+}
+initParticles();
+function resize(){canvas.width=canvas.clientWidth;canvas.height=canvas.clientHeight;}
+window.addEventListener('resize',resize);
+modePills.onclick=e=>{const p=e.target.closest('.mode-pill');if(!p)return;modePills.querySelectorAll('.mode-pill').forEach(x=>x.classList.remove('active'));p.classList.add('active');S.mode=p.dataset.mode;initParticles();S.exploding=false;};
+function update(){
+    S.mass=parseFloat(sM.value);bM.textContent=(S.mass*1000).toFixed(0)+' g';
+    const energy=S.mass*C*C;
+    resE.textContent=energy.toExponential(2);
+    resMv.textContent=S.mass.toFixed(4);
+
+    if(S.exploding){S.explodeTime+=0.016;for(let p of S.particles){p.x+=p.vx*0.02;p.y+=p.vy*0.02;p.life-=0.01;}if(S.explodeTime>2){S.exploding=false;initParticles();}}
+
+    fRoot.innerHTML=`<span style="font-size:28px;font-weight:700;color:var(--accent);">E</span>
+        <span style="font-size:28px;">=</span>
+        <span style="font-size:28px;font-weight:700;color:#9b59b6;">m</span>
+        <span style="font-size:28px;font-weight:700;color:#3498db;">c</span>
+        <span style="font-size:20px;vertical-align:super;">2</span>
+        <span style="font-size:28px;">= ${energy.toExponential(2)} J</span>`;
+    draw();requestAnimationFrame(update);
+}
+function draw(){
+    const w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,w,h);
+    const cx=w*0.5,cy=h*0.55;
+    // Central nucleus / mass
+    const modes={fission:'核裂变 Fission (²³⁵U → …)',fusion:'核聚变 Fusion (²H+³H → ⁴He+n)',annihilation:'正反物质湮灭 Annihilation'};
+    ctx.fillStyle='#fff';ctx.font='bold 12px Fredoka';ctx.textAlign='center';ctx.fillText(modes[S.mode],cx,25);
+    // Mass representation: glow circle
+    if(!S.exploding||S.explodeTime<0.3){
+        const r=20+S.mass*2000;
+        const glow=ctx.createRadialGradient(cx,cy,r*0.3,cx,cy,r*1.2);
+        glow.addColorStop(0,'rgba(255,200,100,0.8)');glow.addColorStop(0.5,'rgba(255,140,42,0.4)');glow.addColorStop(1,'rgba(26,26,46,0)');
+        ctx.fillStyle=glow;ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle='#fff';ctx.font='bold 14px Fredoka';ctx.fillText('m='+(S.mass*1000).toFixed(0)+'g',cx,cy+4);
+    }
+    // Explosion particles
+    if(S.exploding){
+        for(let p of S.particles){
+            if(p.life<=0)continue;
+            const px=cx+p.x*200*S.explodeTime,py=cy+p.y*200*S.explodeTime;
+            ctx.fillStyle=`rgba(255,${Math.floor(200*p.life)},${Math.floor(50*p.life)},${p.life})`;
+            ctx.beginPath();ctx.arc(px,py,4*p.life,0,Math.PI*2);ctx.fill();
+        }
+    }
+    // Energy text
+    const energy=S.mass*C*C;
+    ctx.fillStyle='rgba(255,255,255,0.6)';ctx.font='bold 16px Fredoka';ctx.textAlign='center';
+    ctx.fillText('E = mc² = '+energy.toExponential(2)+' J',cx,h-30);
+    ctx.fillText('≈ '+ (energy/3.6e13).toFixed(1) +' 万吨TNT当量',cx,h-10);
+}
+document.getElementById('btn-start').onclick=()=>{S.exploding=true;S.explodeTime=0;initParticles();};
+document.getElementById('btn-reset').onclick=()=>{S.exploding=false;initParticles();};
+resize();requestAnimationFrame(update);
+</script>
+</body>
+</html>

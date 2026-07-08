@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>放射性衰变 / Radioactive Decay - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-color: #FFF9F0; --primary: #FF8c42; --secondary: #FFC75F; --accent: #FF5E5B; --text-dark: #4A403A; --card-bg: #FFFFFF; --shadow: 0 6px 30px rgba(255,140,66,0.18); }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Fredoka','Noto Sans SC',sans-serif; background: var(--bg-color); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 5px 40px 10px; }
+        .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
+        .logo { font-weight: 700; font-size: 1.3rem; color: #fff; background: var(--primary); padding: 6px 18px; border-radius: 16px; box-shadow: 4px 4px 15px rgba(255,140,66,0.3); }
+        .back-link { position: fixed; top: 10px; right: 20px; z-index: 1000; text-decoration: none; color: var(--primary); font-weight: 700; font-size: 0.9rem; background: rgba(255,255,255,0.9); padding: 6px 14px; border-radius: 16px; box-shadow: 0 2px 10px rgba(255,140,66,0.15); }
+        .container { width: 100%; max-width: 1400px; margin-top: 8px; display: grid; grid-template-areas:"header header" "formula formula" "diagram controls"; grid-template-columns: 1fr 400px; gap: 12px; }
+        header { grid-area: header; text-align: center; } h1 { font-size: 2rem; margin-bottom: 2px; }
+        .formula-display { grid-area: formula; background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb; }
+        .formula-container { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; min-height: 44px; }
+        .result-row { font-size: 0.95rem; font-weight: 600; margin-top: 4px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+        .legend { display: flex; gap: 16px; justify-content: center; border-top: 1px solid #eee; padding-top: 6px; width: 100%; flex-wrap: wrap; }
+        .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+        .diagram-section { grid-area: diagram; background: #fff; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; min-height: 400px; display: flex; flex-direction: column; border: 2px solid #fff5eb; }
+        #simCanvas { width: 100%; flex: 1; display: block; }
+        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
+        .control-panel { background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+        .control-group { display: flex; flex-direction: column; gap: 3px; }
+        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
+        .val-badge { background: #fff; padding: 1px 7px; border-radius: 7px; font-size: 0.85rem; border: 2px solid #f0f0f0; }
+        input[type=range] { width: 100%; appearance: none; height: 6px; background: #eee; border-radius: 3px; }
+        input[type=range]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--primary); cursor: pointer; }
+        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .ctrl-btn { padding: 10px; border: none; border-radius: 14px; font-size: 1rem; font-weight: 700; cursor: pointer; color: white; }
+        .start { background: var(--primary); } .pause { background: #2ecc71; } .reset { background: #95a5a6; }
+        .info-card { background: #fff; border-radius: 20px; padding: 12px 16px; box-shadow: var(--shadow); font-size: 0.9rem; line-height: 1.4; color: #5D6D7E; }
+        @media (max-width: 1100px) { .container { grid-template-areas:"header" "formula" "diagram" "controls"; grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="branding"><div class="logo">Wuli布雷克</div></div>
+<a href="modern-physics.html" class="back-link">← 返回近代物理</a>
+<div class="container">
+    <header><h1>放射性衰变 / Radioactive Decay</h1></header>
+    <section class="formula-display">
+        <div class="formula-container" id="formula-root"></div>
+        <div class="result-row">
+            <span>剩余核数 N = <strong style="color:var(--accent)" id="res-n">1000</strong></span>
+            <span>半衰期 T½ = <strong style="color:#9b59b6" id="res-half">5.0</strong> s</span>
+            <span>时间 t = <strong style="color:#2ecc71" id="res-t">0.0</strong> s</span>
+        </div>
+        <div class="legend">
+            <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> 未衰变核</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#95a5a6"></span> 已衰变核</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#2ecc71"></span> 衰变曲线</div>
+        </div>
+    </section>
+    <section class="diagram-section"><canvas id="simCanvas"></canvas></section>
+    <section class="controls-section">
+        <div class="control-panel">
+            <div class="control-group">
+                <div class="label-row"><span>初始核数 N₀</span><span id="badge-n0" class="val-badge">1000</span></div>
+                <input type="range" id="slider-n0" min="100" max="2000" step="50" value="1000">
+            </div>
+            <div class="control-group">
+                <div class="label-row"><span>半衰期 T½</span><span id="badge-half" class="val-badge">5.0 s</span></div>
+                <input type="range" id="slider-half" min="1" max="15" step="0.5" value="5">
+            </div>
+            <div class="btn-row">
+                <button id="btn-start" class="ctrl-btn start">开始 Start</button>
+                <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
+            </div>
+        </div>
+        <div class="info-card">
+            <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem;">演示要点 / Key Points</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;">N</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">N = N₀·e^(−λt)</div><div style="font-size:0.78rem;color:#888;">指数衰变律，λ=ln2/T½为衰变常数。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(155,89,182,0.1);color:#9b59b6;font-weight:700;">½</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">半衰期 T½ = ln2/λ</div><div style="font-size:0.78rem;color:#888;">每过一个半衰期，核数减少一半。与初始数量无关。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:#2ecc71;font-weight:700;">📊</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">随机性 vs 统计规律</div><div style="font-size:0.78rem;color:#888;">单个核衰变是随机的，大量核整体遵循指数衰变规律。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:#3498db;font-weight:700;">∞</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">¹⁴C定年应用</div><div style="font-size:0.78rem;color:#888;">利用¹⁴C半衰期5730年测定考古样品年代。</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<script>
+const canvas=document.getElementById('simCanvas'),ctx=canvas.getContext('2d');
+const sN0=document.getElementById('slider-n0'),sHalf=document.getElementById('slider-half');
+const bN0=document.getElementById('badge-n0'),bHalf=document.getElementById('badge-half');
+const resN=document.getElementById('res-n'),resHalf=document.getElementById('res-half'),resT=document.getElementById('res-t');
+const fRoot=document.getElementById('formula-root');
+const S={n0:1000,halfLife:5,time:0,playing:false,nuclei:[],history:[]};
+function initNuclei(){S.nuclei=[];for(let i=0;i<S.n0;i++)S.nuclei.push({decayed:false,decayTime:Infinity});S.history=[];}
+initNuclei();
+function resize(){canvas.width=canvas.clientWidth;canvas.height=canvas.clientHeight;}
+window.addEventListener('resize',resize);
+function update(){
+    S.n0=parseInt(sN0.value);S.halfLife=parseFloat(sHalf.value);
+    bN0.textContent=S.n0;bHalf.textContent=S.halfLife.toFixed(1)+' s';
+    const lambda=Math.log(2)/S.halfLife;
+    const dt=0.05;
+    if(S.playing){
+        S.time+=dt;
+        for(let n of S.nuclei){if(!n.decayed&&Math.random()<lambda*dt){n.decayed=true;n.decayTime=S.time;}}
+        const remaining=S.nuclei.filter(n=>!n.decayed).length;
+        S.history.push({t:S.time,n:remaining});
+        if(S.history.length>300)S.history.shift();
+        resN.textContent=remaining;
+        resT.textContent=S.time.toFixed(1);
+    }
+    resHalf.textContent=S.halfLife.toFixed(1);
+    resN.textContent=S.playing?S.nuclei.filter(n=>!n.decayed).length:S.n0;
+    resT.textContent=S.time.toFixed(1);
+    fRoot.innerHTML=`<span style="font-size:24px;font-weight:700;color:var(--accent);">N</span>
+        <span style="font-size:24px;">=</span>
+        <span style="font-size:24px;font-weight:700;">N₀</span>
+        <span style="font-size:24px;">e</span>
+        <span style="font-size:18px;vertical-align:super;">−λt</span>
+        <span style="font-size:22px;">&nbsp; T½=${S.halfLife.toFixed(1)}s</span>`;
+    draw();requestAnimationFrame(update);
+}
+function draw(){
+    const w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);ctx.fillStyle='#fafaf7';ctx.fillRect(0,0,w,h);
+    // Decay curve graph
+    const gx=w*0.08,gy=h*0.1,gw=w*0.55,gh=h*0.78;
+    ctx.strokeStyle='#ddd';ctx.strokeRect(gx,gy,gw,gh);
+    ctx.fillStyle='#888';ctx.font='bold 11px Fredoka';ctx.textAlign='center';ctx.fillText('衰变曲线 Decay Curve',gx+gw/2,gy-5);
+    // Theoretical curve
+    const lambda=Math.log(2)/S.halfLife;
+    ctx.beginPath();ctx.strokeStyle='#2ecc71';ctx.lineWidth=2;
+    const maxT=S.halfLife*5;
+    for(let i=0;i<=100;i++){
+        const t=maxT*i/100;
+        const n=S.n0*Math.exp(-lambda*t);
+        const px=gx+(t/maxT)*gw;
+        const py=gy+gh-(n/S.n0)*gh;
+        if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+    }
+    ctx.stroke();
+    // History data points
+    if(S.history.length>1){
+        ctx.strokeStyle='var(--accent)';ctx.lineWidth=2;
+        ctx.beginPath();
+        for(let i=0;i<S.history.length;i++){
+            const h=S.history[i];
+            const px=gx+(h.t/maxT)*gw;
+            const py=gy+gh-(h.n/S.n0)*gh;
+            if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+        }
+        ctx.stroke();
+    }
+    // Half-life markers
+    for(let hl=1;hl<=4;hl++){
+        const tx=gx+(hl*S.halfLife/maxT)*gw;
+        if(tx>gx+gw)break;
+        ctx.strokeStyle='#9b59b6';ctx.setLineDash([3,3]);ctx.lineWidth=1;
+        ctx.beginPath();ctx.moveTo(tx,gy);ctx.lineTo(tx,gy+gh);ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle='#9b59b6';ctx.font='10px Fredoka';ctx.fillText(hl+'T½',tx,gy-3);
+    }
+    // Nuclei visualization
+    const nx=w*0.7,ny=h*0.05,nw=w*0.28,nh=h*0.9;
+    const cols=10,rows=Math.ceil(S.n0/cols);
+    const cellW=nw/cols,cellH=Math.min(14,nh/rows);
+    const shownNuclei=S.playing?S.nuclei:Array.from({length:S.n0},()=>({decayed:false}));
+    const startIdx=0;
+    for(let i=startIdx;i<Math.min(shownNuclei.length,startIdx+rows*cols);i++){
+        const col=(i-startIdx)%cols,row=Math.floor((i-startIdx)/cols);
+        const px=nx+col*cellW,py=ny+row*cellH;
+        ctx.fillStyle=shownNuclei[i].decayed?'#95a5a6':'var(--accent)';
+        ctx.fillRect(px+1,py+1,cellW-2,cellH-2);
+    }
+}
+function resetSim(){S.time=0;S.history=[];initNuclei();S.playing=false;document.getElementById('btn-start').textContent='开始 Start';document.getElementById('btn-start').className='ctrl-btn start';}
+document.getElementById('btn-start').onclick=()=>{if(!S.playing&&S.time===0)initNuclei();S.playing=!S.playing;const b=document.getElementById('btn-start');b.textContent=S.playing?'暂停 Pause':'开始 Start';b.classList.toggle('start',!S.playing);b.classList.toggle('pause',S.playing);};
+document.getElementById('btn-reset').onclick=resetSim;
+resize();requestAnimationFrame(update);
+</script>
+</body>
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>热力学第一定律 / First Law of Thermodynamics - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-color: #FFF9F0; --primary: #FF8c42; --secondary: #FFC75F; --accent: #FF5E5B; --text-dark: #4A403A; --card-bg: #FFFFFF; --shadow: 0 6px 30px rgba(255,140,66,0.18); }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Fredoka','Noto Sans SC',sans-serif; background: var(--bg-color); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 5px 40px 10px; }
+        .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
+        .logo { font-weight: 700; font-size: 1.3rem; color: #fff; background: var(--primary); padding: 6px 18px; border-radius: 16px; box-shadow: 4px 4px 15px rgba(255,140,66,0.3); }
+        .back-link { position: fixed; top: 10px; right: 20px; z-index: 1000; text-decoration: none; color: var(--primary); font-weight: 700; font-size: 0.9rem; background: rgba(255,255,255,0.9); padding: 6px 14px; border-radius: 16px; box-shadow: 0 2px 10px rgba(255,140,66,0.15); }
+        .container { width: 100%; max-width: 1400px; margin-top: 8px; display: grid; grid-template-areas:"header header" "formula formula" "diagram controls"; grid-template-columns: 1fr 400px; gap: 12px; }
+        header { grid-area: header; text-align: center; } h1 { font-size: 2rem; margin-bottom: 2px; }
+        .formula-display { grid-area: formula; background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb; }
+        .formula-container { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; min-height: 44px; }
+        .result-row { font-size: 0.95rem; font-weight: 600; margin-top: 4px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+        .legend { display: flex; gap: 16px; justify-content: center; border-top: 1px solid #eee; padding-top: 6px; width: 100%; flex-wrap: wrap; }
+        .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+        .diagram-section { grid-area: diagram; background: #fff; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; min-height: 420px; display: flex; flex-direction: column; border: 2px solid #fff5eb; }
+        #simCanvas { width: 100%; flex: 1; display: block; }
+        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
+        .control-panel { background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+        .control-group { display: flex; flex-direction: column; gap: 3px; }
+        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
+        .val-badge { background: #fff; padding: 1px 7px; border-radius: 7px; font-size: 0.85rem; border: 2px solid #f0f0f0; }
+        input[type=range] { width: 100%; appearance: none; height: 6px; background: #eee; border-radius: 3px; }
+        input[type=range]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--primary); cursor: pointer; }
+        .mode-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+        .mode-pill { flex: 1; padding: 6px 8px; border-radius: 12px; font-size: 0.78rem; font-weight: 700; border: 2px solid #e0e0e0; background: #fafafa; cursor: pointer; text-align: center; color: #666; transition: all 0.2s; }
+        .mode-pill:hover { border-color: var(--primary); }
+        .mode-pill.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .ctrl-btn { padding: 10px; border: none; border-radius: 14px; font-size: 1.05rem; font-weight: 700; cursor: pointer; color: white; }
+        .start { background: var(--primary); } .pause { background: #2ecc71; } .reset { background: #95a5a6; }
+        .info-card { background: #fff; border-radius: 20px; padding: 12px 16px; box-shadow: var(--shadow); font-size: 0.9rem; line-height: 1.4; color: #5D6D7E; }
+        @media (max-width: 1100px) { .container { grid-template-areas:"header" "formula" "diagram" "controls"; grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="branding"><div class="logo">Wuli布雷克</div></div>
+<a href="thermal.html" class="back-link">← 返回热学</a>
+<div class="container">
+    <header><h1>热力学第一定律 / First Law of Thermodynamics</h1></header>
+    <section class="formula-display">
+        <div class="formula-container" id="formula-root"></div>
+        <div class="result-row">
+            <span>ΔU = <strong style="color:#9b59b6" id="res-dU">0</strong> J</span>
+            <span>Q = <strong style="color:var(--accent)" id="res-Qval">0</strong> J</span>
+            <span>W = <strong style="color:#2ecc71" id="res-W">0</strong> J</span>
+        </div>
+        <div class="legend">
+            <div class="legend-item"><span class="legend-dot" style="background:#9b59b6"></span> ΔU 内能变化</div>
+            <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> Q 吸热</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#2ecc71"></span> W 做功</div>
+        </div>
+    </section>
+    <section class="diagram-section"><canvas id="simCanvas"></canvas></section>
+    <section class="controls-section">
+        <div class="control-panel">
+            <div class="control-group">
+                <div class="label-row"><span>过程模式</span></div>
+                <div class="mode-pills" id="mode-pills">
+                    <button class="mode-pill active" data-mode="iso">等温 Isothermal</button>
+                    <button class="mode-pill" data-mode="isochoric">等容 Isochoric</button>
+                    <button class="mode-pill" data-mode="adiabatic">绝热 Adiabatic</button>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="label-row"><span>加热功率</span><span id="badge-power" class="val-badge">100 W</span></div>
+                <input type="range" id="slider-power" min="0" max="300" value="100">
+            </div>
+            <div class="control-group">
+                <div class="label-row"><span>初始温度</span><span id="badge-temp" class="val-badge">300 K</span></div>
+                <input type="range" id="slider-temp" min="200" max="500" value="300">
+            </div>
+            <div class="btn-row">
+                <button id="btn-start" class="ctrl-btn start">开始 Start</button>
+                <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
+            </div>
+        </div>
+        <div class="info-card">
+            <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem;">演示要点 / Key Points</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(155,89,182,0.1);color:#9b59b6;font-weight:700;">U</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">ΔU = Q − W</div><div style="font-size:0.78rem;color:#888;">内能变化 = 吸收的热量 − 气体对外做的功（工程符号约定）。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;">T</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">等温：ΔU=0, Q=W</div><div style="font-size:0.78rem;color:#888;">温度不变，内能不变；吸收的热量全部转化为对外做功。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:#2ecc71;font-weight:700;">V</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">等容：W=0, ΔU=Q</div><div style="font-size:0.78rem;color:#888;">体积不变无做功；吸收的热量全部用于增加内能。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(231,76,60,0.1);color:#e74c3c;font-weight:700;">Q=0</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">绝热：Q=0, ΔU=−W</div><div style="font-size:0.78rem;color:#888;">无热交换；气体膨胀对外做功时内能减少、温度降低。</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<script>
+const canvas = document.getElementById('simCanvas'), ctx = canvas.getContext('2d');
+const sPower = document.getElementById('slider-power'), sTemp = document.getElementById('slider-temp');
+const bPower = document.getElementById('badge-power'), bTemp = document.getElementById('badge-temp');
+const resDU = document.getElementById('res-dU'), resQval = document.getElementById('res-Qval'), resW = document.getElementById('res-W');
+const fRoot = document.getElementById('formula-root');
+const modePills = document.getElementById('mode-pills');
+const bStart = document.getElementById('btn-start'), bReset = document.getElementById('btn-reset');
+
+const S = { mode: 'iso', power: 100, temp: 300, playing: false, pistonY: 0, totalQ: 0, totalW: 0, dU: 0, particles: [] };
+
+function initParticles() {
+    S.particles = [];
+    for (let i = 0; i < 30; i++) {
+        S.particles.push({ x: 0.3 + Math.random() * 0.4, y: 0.2 + Math.random() * 0.6, vx: (Math.random()-0.5)*80, vy: (Math.random()-0.5)*80 });
+    }
+}
+initParticles();
+
+function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+window.addEventListener('resize', resize);
+
+modePills.onclick = (e) => {
+    const p = e.target.closest('.mode-pill'); if (!p) return;
+    modePills.querySelectorAll('.mode-pill').forEach(x => x.classList.remove('active'));
+    p.classList.add('active'); S.mode = p.dataset.mode;
+    resetSim();
+};
+
+function updateFormulaUI() {
+    fRoot.innerHTML = `<span style="font-size:26px;font-weight:700;color:#9b59b6;">ΔU</span>
+        <span style="font-size:26px;">=</span>
+        <span style="font-size:26px;font-weight:700;color:var(--accent);">Q</span>
+        <span style="font-size:26px;">−</span>
+        <span style="font-size:26px;font-weight:700;color:#2ecc71;">W</span>`;
+}
+
+function update() {
+    S.power = parseInt(sPower.value); S.temp = parseInt(sTemp.value);
+    bPower.textContent = S.power + ' W'; bTemp.textContent = S.temp + ' K';
+
+    const dt = 0.016;
+    if (S.playing) {
+        S.totalQ += S.power * dt;
+        const pistonMax = 120;
+        if (S.mode === 'iso') {
+            // piston moves to maintain temperature — W = Q
+            S.pistonY = Math.min(pistonMax, S.totalQ * 0.05);
+            S.totalW = S.pistonY * 2;
+            S.dU = 0;
+        } else if (S.mode === 'isochoric') {
+            S.pistonY = 0;
+            S.totalW = 0;
+            S.dU = S.totalQ;
+        } else if (S.mode === 'adiabatic') {
+            S.pistonY = Math.min(pistonMax, S.totalQ * 0.03);
+            S.totalW = S.pistonY * 2;
+            S.dU = -S.totalW;
+        }
+        // Particles speed based on effective temperature
+        const Teff = S.temp + S.dU * 0.05;
+        const speed = Math.sqrt(Teff / 300) * 60;
+        for (let p of S.particles) {
+            p.x += p.vx * dt * speed/60;
+            p.y += p.vy * dt * speed/60;
+            if (p.x < 0.25 || p.x > 0.65 - S.pistonY/600) p.vx *= -1;
+            if (p.y < 0.15 || p.y > 0.85) p.vy *= -1;
+        }
+    }
+
+    resDU.textContent = S.dU.toFixed(0);
+    resQval.textContent = S.totalQ.toFixed(0);
+    resW.textContent = S.totalW.toFixed(0);
+    updateFormulaUI();
+    draw();
+    requestAnimationFrame(update);
+}
+
+function draw() {
+    const w = canvas.width, h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = '#fafaf7'; ctx.fillRect(0, 0, w, h);
+
+    const cx = w * 0.3, cy = h * 0.5, cylW = 220, cylH = 180;
+    const cylLeft = cx, cylTop = cy - cylH/2, cylRight = cx + cylW;
+
+    // Cylinder wall
+    ctx.strokeStyle = '#555'; ctx.lineWidth = 3;
+    ctx.strokeRect(cylLeft, cylTop, cylW - S.pistonY, cylH);
+    ctx.fillStyle = 'rgba(200,220,240,0.1)'; ctx.fillRect(cylLeft, cylTop, cylW - S.pistonY, cylH);
+
+    // Gas particles
+    for (let p of S.particles) {
+        const px = cylLeft + p.x * (cylW - S.pistonY);
+        const py = cylTop + p.y * cylH;
+        ctx.beginPath(); ctx.arc(px, py, 3, 0, Math.PI*2);
+        ctx.fillStyle = '#e74c3c'; ctx.fill();
+    }
+
+    // Piston (right side)
+    const pistonX = cylRight - S.pistonY;
+    ctx.fillStyle = '#7f8c8d'; ctx.fillRect(pistonX, cylTop - 15, 18, cylH + 30);
+    ctx.fillStyle = '#95a5a6'; ctx.fillRect(pistonX + 2, cylTop - 10, 14, cylH + 20);
+    ctx.fillStyle = '#333'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'center';
+    ctx.fillText('活塞', pistonX + 9, cylTop - 20);
+
+    // Flame below
+    if (S.playing && S.power > 0) {
+        const fcx = cylLeft + (cylW - S.pistonY)/2;
+        for (let fi = 0; fi < 4; fi++) {
+            const fh = 20 + Math.sin(Date.now()*0.03+fi)*6;
+            ctx.fillStyle = `rgba(255,${130+fi*20},${20+fi*10},0.7)`;
+            ctx.beginPath(); ctx.arc(fcx - 10 + fi*8, cylTop + cylH + 15, 7, 0, Math.PI*2); ctx.fill();
+        }
+    }
+
+    // Labels
+    ctx.fillStyle = '#9b59b6'; ctx.font = 'bold 14px Fredoka'; ctx.textAlign = 'left';
+    ctx.fillText('ΔU='+S.dU.toFixed(0)+' J', cylRight + 40, cylTop + 30);
+    ctx.fillStyle = 'var(--accent)'; ctx.fillText('Q='+S.totalQ.toFixed(0)+' J', cylRight + 40, cylTop + 55);
+    ctx.fillStyle = '#2ecc71'; ctx.fillText('W='+S.totalW.toFixed(0)+' J', cylRight + 40, cylTop + 80);
+
+    ctx.fillStyle = '#888'; ctx.font = 'bold 13px Fredoka'; ctx.textAlign = 'center';
+    const modeNames = { iso: '等温 Isothermal (ΔU=0)', isochoric: '等容 Isochoric (W=0)', adiabatic: '绝热 Adiabatic (Q=0)' };
+    ctx.fillText(modeNames[S.mode], w/2, 30);
+}
+
+function resetSim() { S.totalQ = 0; S.totalW = 0; S.dU = 0; S.pistonY = 0; S.playing = false; bStart.textContent = '开始 Start'; bStart.className = 'ctrl-btn start'; initParticles(); }
+bStart.onclick = () => { S.playing = !S.playing; bStart.textContent = S.playing ? '暂停 Pause' : '开始 Start'; bStart.classList.toggle('start',!S.playing); bStart.classList.toggle('pause',S.playing); };
+bReset.onclick = resetSim;
+resize(); updateFormulaUI(); requestAnimationFrame(update);
+</script>
+</body>
+</html>
