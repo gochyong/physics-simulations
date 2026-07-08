@@ -130,7 +130,6 @@
             <div class="result-row">
                 <span>第一暗纹角 θ₁ = <strong style="color:var(--primary)" id="res-theta">—</strong></span>
                 <span>中央明纹宽: <strong style="color:var(--accent)" id="res-cenw">—</strong></span>
-                <span>可见暗纹数: <strong style="color:#2ecc71" id="res-orders">—</strong></span>
             </div>
             <div class="legend">
                 <div class="legend-item"><span class="legend-dot" style="background:#ffdd57"></span> 亮纹 Bright</div>
@@ -203,7 +202,7 @@
         const canvas = document.getElementById('simCanvas'), ctx = canvas.getContext('2d');
         const sLambda = document.getElementById('lambda-slider'), sA = document.getElementById('a-slider'), sD = document.getElementById('d-slider');
         const bLambda = document.getElementById('lambda-badge'), bA = document.getElementById('a-badge'), bD = document.getElementById('d-badge');
-        const resTheta = document.getElementById('res-theta'), resCenW = document.getElementById('res-cenw'), resOrders = document.getElementById('res-orders');
+        const resTheta = document.getElementById('res-theta'), resCenW = document.getElementById('res-cenw');
         const fRoot = document.getElementById('formula-root');
         const swatchLight = document.getElementById('swatch-light'), swatchLegend = document.getElementById('swatch-legend');
         const bStart = document.getElementById('btn-start'), bReset = document.getElementById('btn-reset');
@@ -229,27 +228,19 @@
         window.addEventListener('resize', resize);
 
         function updateFormulaUI() {
-            const base = 22, lc = lCSS(state.lambdaNm);
+            const base = 26, lc = lCSS(state.lambdaNm);
             fRoot.innerHTML = `
-                <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;justify-content:center;">
-                    <span style="font-size:${base}px;font-weight:700;">I</span>
-                    <span style="font-size:${base}px;">=</span>
-                    <span style="font-size:${base}px;">I</span>
-                    <span style="font-size:${base*0.6}px;">0</span>
-                    <span style="font-size:${base*1.4}px;font-weight:700;">(</span>
-                    <span style="font-size:${base*1.4}px;font-weight:700;">sin β / β</span>
-                    <span style="font-size:${base*1.4}px;font-weight:700;">)</span>
-                    <span style="font-size:${base*0.6}px;vertical-align:super;font-weight:700;">2</span>
-                    <span style="margin:0 8px;color:#ccc;">|</span>
-                    <span style="font-size:${base}px;font-weight:700;">β</span>
-                    <span style="font-size:${base}px;">=</span>
-                    <span style="font-size:${base*1.2}px;">π</span>
+                <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center;">
                     <span style="color:${lc};font-size:${base*1.1}px;font-weight:700;">a</span>
-                    <span style="font-size:${base}px;">sinθ /</span>
+                    <span style="font-size:${base}px;font-weight:700;">sinθ</span>
+                    <span style="font-size:${base}px;">=</span>
+                    <span style="font-size:${base}px;font-weight:700;">n</span>
                     <span style="color:${lc};font-size:${base*1.1}px;font-weight:700;">λ</span>
+                    <span style="margin:0 8px;color:#ccc;">|</span>
+                    <span style="font-size:${base*0.85}px;">n = ±1, ±2, ±3, …</span>
                 </div>
-                <div style="font-size:0.78rem;color:#999;margin-top:3px;text-align:center;">
-                    暗纹条件 Dark fringes: a sinθ = nλ &nbsp;|&nbsp; 中央明纹半角宽: λ/a
+                <div style="font-size:0.82rem;color:#888;margin-top:4px;text-align:center;">
+                    暗纹条件 Dark fringe condition &nbsp;|&nbsp; 中央明纹半角宽: θ₁ ≈ λ/a
                 </div>`;
         }
 
@@ -275,23 +266,12 @@
             }
             resTheta.textContent = theta1Deg;
             // Central max width on screen: 2 * λD/a
-            const cenWidth = 2 * lm * state.Dm / am; // in meters
+            const cenWidth = 2 * lm * state.Dm / am;
             const cenWidthMm = cenWidth * 1000;
             if (cenWidthMm < 1000) {
                 resCenW.textContent = cenWidthMm.toFixed(2) + ' mm';
             } else {
                 resCenW.textContent = (cenWidthMm / 1000).toFixed(2) + ' m';
-            }
-            // Visible dark fringe orders
-            const maxOrder = Math.floor(am / lm);
-            if (maxOrder < 1) {
-                resOrders.textContent = '0 (仅中央极大)';
-            } else if (maxOrder <= 6) {
-                const o = [];
-                for (let n = -maxOrder; n <= maxOrder; n++) if (n !== 0) o.push((n > 0 ? '+' : '') + n);
-                resOrders.textContent = o.join(', ');
-            } else {
-                resOrders.textContent = '±1,±2,…,±' + maxOrder;
             }
 
             draw(); requestAnimationFrame(update);
