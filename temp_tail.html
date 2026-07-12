@@ -1,0 +1,73 @@
+            // Horizontal
+            const hw = hC.width, hh = hC.height;
+            ctxH.clearRect(0, 0, hw, hh);
+            ctxH.fillStyle = '#fdfcf8'; ctxH.fillRect(0, 0, hw, hh);
+            const hm = 30, hy = hh * 0.55, hlen = hw - 2 * hm;
+            ctxH.strokeStyle = '#ddd'; ctxH.lineWidth = 2;
+            ctxH.beginPath(); ctxH.moveTo(hm, hy); ctxH.lineTo(hw - hm, hy); ctxH.stroke();
+            const hxFrac = p.R > 0 ? (state.v0 * p.cs * Math.min(t, p.T)) / p.R : 0;
+            const hx = hm + hxFrac * hlen;
+            const hgrad = ctxH.createRadialGradient(hx - 1, hy - 2, 2, hx, hy, 9);
+            hgrad.addColorStop(0, '#85c1e9'); hgrad.addColorStop(1, '#2471a3');
+            ctxH.fillStyle = hgrad; ctxH.beginPath(); ctxH.arc(hx, hy, 8, 0, Math.PI * 2); ctxH.fill();
+            ctxH.strokeStyle = '#fff'; ctxH.lineWidth = 1.5; ctxH.stroke();
+            arrow(ctxH, hx, hy, 30, 0, '#3498db', 2.5);
+            ctxH.fillStyle = '#3498db'; ctxH.font = 'bold 10px Fredoka'; ctxH.textAlign = 'left';
+            ctxH.fillText('Vh = ' + (state.v0 * p.cs).toFixed(1) + ' m/s（恒定）', hm + 4, hh - 4);
+
+            // Vertical
+            const vw = vC.width, vh2 = vC.height;
+            ctxV.clearRect(0, 0, vw, vh2);
+            ctxV.fillStyle = '#fdfcf8'; ctxV.fillRect(0, 0, vw, vh2);
+            const vm = 20, vx0 = vw * 0.35, vlen = vh2 - 2 * vm;
+            const vtop = vm, vbot = vh2 - vm;
+            ctxV.strokeStyle = '#ddd'; ctxV.lineWidth = 2;
+            ctxV.beginPath(); ctxV.moveTo(vx0, vtop); ctxV.lineTo(vx0, vbot); ctxV.stroke();
+            const yNow = Math.max(0, state.v0 * p.s * Math.min(t, p.T) - 0.5 * G * Math.pow(Math.min(t, p.T), 2));
+            const vby = vbot - (yNow / p.H) * vlen;
+            const vgrad = ctxV.createRadialGradient(vx0 - 1, vby - 2, 2, vx0, vby, 9);
+            vgrad.addColorStop(0, '#82e0aa'); vgrad.addColorStop(1, '#1e8449');
+            ctxV.fillStyle = vgrad; ctxV.beginPath(); ctxV.arc(vx0, vby, 8, 0, Math.PI * 2); ctxV.fill();
+            ctxV.strokeStyle = '#fff'; ctxV.lineWidth = 1.5; ctxV.stroke();
+            const vvy = state.v0 * p.s - G * Math.min(t, p.T);
+            const vvLen = Math.min(Math.abs(vvy) * 5, 50);
+            arrow(ctxV, vx0, vby, 0, (vvy >= 0 ? -1 : 1) * vvLen, '#2ecc71', 2.5);
+            ctxV.fillStyle = '#2ecc71'; ctxV.font = 'bold 10px Fredoka'; ctxV.textAlign = 'left';
+            ctxV.fillText('Vv = ' + vvy.toFixed(1) + ' m/s', vx0 + 10, vm + 12);
+            ctxV.fillText('a = -' + G.toFixed(1) + ' m/s²', vx0 + 10, vm + 24);
+        }
+
+        let lt = 0;
+        function loop(ts) {
+            if (!lt) lt = ts;
+            let dt = (ts - lt) / 1000; lt = ts;
+            if (dt > 0.1) dt = 0.016;
+            if (state.playing) { state.time += dt * state.ts; if (state.time >= calc().T) state.time = 0; }
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        function refresh() {
+            state.v0 = parseFloat(sV0.value);
+            state.angle = parseInt(sAng.value);
+            state.time = 0; lt = 0;
+            resize();
+            updateUI();
+            draw();
+        }
+
+        sV0.addEventListener('input', refresh);
+        sAng.addEventListener('input', refresh);
+
+        bStart.onclick = () => {
+            state.playing = !state.playing;
+            bStart.textContent = state.playing ? '暂停 Pause' : '开始 Start';
+            bStart.className = 'ctrl-btn ' + (state.playing ? 'pause' : 'start');
+        };
+        bReset.onclick = () => { state.time = 0; state.playing = false; bStart.textContent = '开始 Start'; bStart.className = 'ctrl-btn start'; draw(); };
+
+        resize(); updateUI(); draw();
+        requestAnimationFrame(loop);
+    </script>
+</body>
+</html>
