@@ -50,11 +50,6 @@
             <span>半衰期 T½ = <strong style="color:#9b59b6" id="res-half">5.0</strong> s</span>
             <span>时间 t = <strong style="color:#2ecc71" id="res-t">0.0</strong> s</span>
         </div>
-        <div class="legend">
-            <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> 未衰变核</div>
-            <div class="legend-item"><span class="legend-dot" style="background:#95a5a6"></span> 已衰变核</div>
-            <div class="legend-item"><span class="legend-dot" style="background:#2ecc71"></span> 衰变曲线</div>
-        </div>
     </section>
     <section class="diagram-section"><canvas id="simCanvas"></canvas></section>
     <section class="controls-section">
@@ -89,7 +84,7 @@
                 </div>
                 <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
                     <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:#3498db;font-weight:700;">∞</div>
-                    <div><div style="font-weight:700;font-size:0.9rem;">¹⁴C定年应用</div><div style="font-size:0.78rem;color:#888;">利用¹⁴C半衰期5730年测定考古样品年代。</div></div>
+                    <div><div style="font-weight:700;font-size:0.9rem;"><sup>14</sup>C定年应用</div><div style="font-size:0.78rem;color:#888;">利用<sup>14</sup>C半衰期5730年测定考古样品年代。</div></div>
                 </div>
             </div>
         </div>
@@ -102,21 +97,42 @@ const bN0=document.getElementById('badge-n0'),bHalf=document.getElementById('bad
 const resN=document.getElementById('res-n'),resHalf=document.getElementById('res-half'),resT=document.getElementById('res-t');
 const fRoot=document.getElementById('formula-root');
 const S={n0:1000,halfLife:5,time:0,playing:false,nuclei:[],history:[]};
-function initNuclei(){S.nuclei=[];for(let i=0;i<S.n0;i++)S.nuclei.push({decayed:false,decayTime:Infinity});S.history=[];}
+function initNuclei(){
+    S.nuclei=[];S.history=[];
+    const lambda=Math.log(2)/S.halfLife;
+    for(let i=0;i<S.n0;i++){
+        // Exponential distribution: decayTime = -ln(U)/λ
+        S.nuclei.push({decayed:false,decayTime:-Math.log(Math.max(1e-9,Math.random()))/lambda});
+    }
+}
 initNuclei();
 function resize(){canvas.width=canvas.clientWidth;canvas.height=canvas.clientHeight;}
 window.addEventListener('resize',resize);
-function update(){
-    S.n0=parseInt(sN0.value);S.halfLife=parseFloat(sHalf.value);
+let lastTs=0;
+function update(ts){
+    const newN0=parseInt(sN0.value);
+    const newHalf=parseFloat(sHalf.value);
+    if(newHalf!==S.halfLife){
+        S.time=0;S.halfLife=newHalf;initNuclei();S.playing=false;
+        document.getElementById('btn-start').textContent='开始 Start';
+        document.getElementById('btn-start').className='ctrl-btn start';
+    }
+    if(newN0!==S.n0){
+        S.n0=newN0;S.time=0;initNuclei();S.playing=false;
+        document.getElementById('btn-start').textContent='开始 Start';
+        document.getElementById('btn-start').className='ctrl-btn start';
+    }
+    S.n0=newN0;S.halfLife=newHalf;
     bN0.textContent=S.n0;bHalf.textContent=S.halfLife.toFixed(1)+' s';
     const lambda=Math.log(2)/S.halfLife;
-    const dt=0.05;
+    if(!lastTs)lastTs=ts;
+    const dt=Math.min((ts-lastTs)/1000,0.05);
+    lastTs=ts;
     if(S.playing){
         S.time+=dt;
-        for(let n of S.nuclei){if(!n.decayed&&Math.random()<lambda*dt){n.decayed=true;n.decayTime=S.time;}}
+        for(let n of S.nuclei){if(!n.decayed&&S.time>=n.decayTime){n.decayed=true;}}
         const remaining=S.nuclei.filter(n=>!n.decayed).length;
         S.history.push({t:S.time,n:remaining});
-        if(S.history.length>300)S.history.shift();
         resN.textContent=remaining;
         resT.textContent=S.time.toFixed(1);
     }
@@ -126,21 +142,39 @@ function update(){
     fRoot.innerHTML=`<span style="font-size:24px;font-weight:700;color:var(--accent);">N</span>
         <span style="font-size:24px;">=</span>
         <span style="font-size:24px;font-weight:700;">N₀</span>
-        <span style="font-size:24px;">e</span>
-        <span style="font-size:18px;vertical-align:super;">−λt</span>
+        <span style="font-size:24px;">e<sup style="font-size:0.7em;">−λt</sup></span>
         <span style="font-size:22px;">&nbsp; T½=${S.halfLife.toFixed(1)}s</span>`;
     draw();requestAnimationFrame(update);
 }
 function draw(){
     const w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);ctx.fillStyle='#fafaf7';ctx.fillRect(0,0,w,h);
     // Decay curve graph
-    const gx=w*0.08,gy=h*0.1,gw=w*0.55,gh=h*0.78;
-    ctx.strokeStyle='#ddd';ctx.strokeRect(gx,gy,gw,gh);
-    ctx.fillStyle='#888';ctx.font='bold 11px Fredoka';ctx.textAlign='center';ctx.fillText('衰变曲线 Decay Curve',gx+gw/2,gy-5);
-    // Theoretical curve
+    const gx=w*0.08,gy=h*0.08,gw=w*0.84,gh=h*0.75;
     const lambda=Math.log(2)/S.halfLife;
-    ctx.beginPath();ctx.strokeStyle='#2ecc71';ctx.lineWidth=2;
     const maxT=S.halfLife*5;
+    const remaining=S.playing?S.nuclei.filter(n=>!n.decayed).length:S.n0;
+
+    // Axes
+    ctx.strokeStyle='#888';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(gx,gy);ctx.lineTo(gx,gy+gh);ctx.lineTo(gx+gw,gy+gh);ctx.stroke();
+    // Y-axis label
+    ctx.fillStyle='#888';ctx.font='bold 11px Fredoka';ctx.textAlign='center';
+    ctx.fillText('N',gx-4,gy-8);
+    ctx.fillText('0',gx-4,gy+gh+12);
+    ctx.fillText(S.n0,gx-4,gy+4);
+    // X-axis label and ticks
+    ctx.fillText('t',gx+gw+10,gy+gh+4);
+    ctx.textAlign='center';
+    for(let hl=0;hl<=5;hl++){
+        const tx=gx+(hl*S.halfLife/maxT)*gw;
+        if(tx>gx+gw)break;
+        ctx.fillText(hl===0?'0':hl+'T½',tx,gy+gh+14);
+        // tick mark
+        ctx.beginPath();ctx.moveTo(tx,gy+gh);ctx.lineTo(tx,gy+gh+4);ctx.stroke();
+    }
+
+    // Theoretical curve
+    ctx.beginPath();ctx.strokeStyle='#2ecc71';ctx.lineWidth=2;
     for(let i=0;i<=100;i++){
         const t=maxT*i/100;
         const n=S.n0*Math.exp(-lambda*t);
@@ -149,39 +183,31 @@ function draw(){
         if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
     }
     ctx.stroke();
-    // History data points
+
+    // History data points as colored dots
     if(S.history.length>1){
-        ctx.strokeStyle='var(--accent)';ctx.lineWidth=2;
-        ctx.beginPath();
-        for(let i=0;i<S.history.length;i++){
+        for(let i=0;i<S.history.length;i+=Math.max(1,Math.floor(S.history.length/200))){
             const h=S.history[i];
             const px=gx+(h.t/maxT)*gw;
             const py=gy+gh-(h.n/S.n0)*gh;
-            if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+            ctx.fillStyle='var(--accent)';ctx.beginPath();ctx.arc(px,py,2.5,0,Math.PI*2);ctx.fill();
         }
-        ctx.stroke();
     }
-    // Half-life markers
+
+    // Half-life markers with y-values
     for(let hl=1;hl<=4;hl++){
         const tx=gx+(hl*S.halfLife/maxT)*gw;
         if(tx>gx+gw)break;
+        const nAtHL=S.n0*Math.exp(-lambda*hl*S.halfLife);
+        const ny=gy+gh-(nAtHL/S.n0)*gh;
         ctx.strokeStyle='#9b59b6';ctx.setLineDash([3,3]);ctx.lineWidth=1;
         ctx.beginPath();ctx.moveTo(tx,gy);ctx.lineTo(tx,gy+gh);ctx.stroke();
         ctx.setLineDash([]);
-        ctx.fillStyle='#9b59b6';ctx.font='10px Fredoka';ctx.fillText(hl+'T½',tx,gy-3);
+        // Y value at this half-life
+        ctx.fillStyle='#9b59b6';ctx.font='bold 10px Fredoka';ctx.textAlign='left';
+        ctx.fillText('N≈'+Math.round(nAtHL),tx+2,ny-2);
     }
-    // Nuclei visualization
-    const nx=w*0.7,ny=h*0.05,nw=w*0.28,nh=h*0.9;
-    const cols=10,rows=Math.ceil(S.n0/cols);
-    const cellW=nw/cols,cellH=Math.min(14,nh/rows);
-    const shownNuclei=S.playing?S.nuclei:Array.from({length:S.n0},()=>({decayed:false}));
-    const startIdx=0;
-    for(let i=startIdx;i<Math.min(shownNuclei.length,startIdx+rows*cols);i++){
-        const col=(i-startIdx)%cols,row=Math.floor((i-startIdx)/cols);
-        const px=nx+col*cellW,py=ny+row*cellH;
-        ctx.fillStyle=shownNuclei[i].decayed?'#95a5a6':'var(--accent)';
-        ctx.fillRect(px+1,py+1,cellW-2,cellH-2);
-    }
+
 }
 function resetSim(){S.time=0;S.history=[];initNuclei();S.playing=false;document.getElementById('btn-start').textContent='开始 Start';document.getElementById('btn-start').className='ctrl-btn start';}
 document.getElementById('btn-start').onclick=()=>{if(!S.playing&&S.time===0)initNuclei();S.playing=!S.playing;const b=document.getElementById('btn-start');b.textContent=S.playing?'暂停 Pause':'开始 Start';b.classList.toggle('start',!S.playing);b.classList.toggle('pause',S.playing);};

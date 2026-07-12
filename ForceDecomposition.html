@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>力的正交分解 / Orthogonal Decomposition of Forces - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-color: #FFF9F0; --primary: #FF8c42; --secondary: #FFC75F; --accent: #FF5E5B; --text-dark: #4A403A; --card-bg: #FFFFFF; --shadow: 0 6px 30px rgba(255,140,66,0.18); }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Fredoka','Noto Sans SC',sans-serif; background: var(--bg-color); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 5px 40px 10px; }
+        .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
+        .logo { font-weight: 700; font-size: 1.3rem; color: #fff; background: var(--primary); padding: 6px 18px; border-radius: 16px; box-shadow: 4px 4px 15px rgba(255,140,66,0.3); }
+        .back-link { position: fixed; top: 10px; right: 20px; z-index: 1000; text-decoration: none; color: var(--primary); font-weight: 700; font-size: 0.9rem; background: rgba(255,255,255,0.9); padding: 6px 14px; border-radius: 16px; box-shadow: 0 2px 10px rgba(255,140,66,0.15); }
+        .container { width: 100%; max-width: 1400px; margin-top: 8px; display: grid; grid-template-areas:"header header" "formula formula" "diagram controls"; grid-template-columns: 1fr 400px; gap: 12px; }
+        header { grid-area: header; text-align: center; } h1 { font-size: 2rem; margin-bottom: 2px; }
+        .formula-display { grid-area: formula; background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb; }
+        .formula-container { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; min-height: 44px; }
+        .result-row { font-size: 0.95rem; font-weight: 600; margin-top: 4px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+        .legend { display: flex; gap: 16px; justify-content: center; border-top: 1px solid #eee; padding-top: 6px; width: 100%; flex-wrap: wrap; }
+        .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+        .diagram-section { grid-area: diagram; background: #fff; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; min-height: 400px; display: flex; flex-direction: column; border: 2px solid #fff5eb; }
+        #simCanvas { width: 100%; flex: 1; display: block; }
+        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
+        .control-panel { background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+        .control-group { display: flex; flex-direction: column; gap: 3px; }
+        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
+        .val-badge { background: #fff; padding: 1px 7px; border-radius: 7px; font-size: 0.85rem; border: 2px solid #f0f0f0; }
+        input[type=range] { width: 100%; appearance: none; height: 6px; background: #eee; border-radius: 3px; }
+        input[type=range]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--primary); cursor: pointer; }
+        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .ctrl-btn { padding: 10px; border: none; border-radius: 14px; font-size: 1rem; font-weight: 700; cursor: pointer; color: white; }
+        .start { background: var(--primary); } .reset { background: #95a5a6; }
+        .info-card { background: #fff; border-radius: 20px; padding: 12px 16px; box-shadow: var(--shadow); font-size: 0.9rem; line-height: 1.4; color: #5D6D7E; }
+        @media (max-width: 1100px) { .container { grid-template-areas:"header" "formula" "diagram" "controls"; grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="branding"><div class="logo">Wuli布雷克</div></div>
+<a href="mechanics.html" class="back-link">← 返回力学</a>
+<div class="container">
+    <header><h1>力的正交分解 / Orthogonal Decomposition of Forces</h1></header>
+    <section class="formula-display">
+        <div class="formula-container" id="formula-root"></div>
+        <div class="result-row">
+            <span>|F| = <strong style="color:#e74c3c" id="res-f">10.0</strong> N</span>
+            <span>Fx = <strong style="color:#3498db" id="res-fx">—</strong> N</span>
+            <span>Fy = <strong style="color:#2ecc71" id="res-fy">—</strong> N</span>
+            <span>θ = <strong style="color:#e67e22" id="res-angle">30</strong>°</span>
+        </div>
+        <div class="legend">
+            <div class="legend-item"><span class="legend-dot" style="background:#e74c3c"></span> F 合力</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#3498db"></span> Fx 水平分量</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#2ecc71"></span> Fy 竖直分量</div>
+        </div>
+    </section>
+    <section class="diagram-section"><canvas id="simCanvas"></canvas></section>
+    <section class="controls-section">
+        <div class="control-panel">
+            <div class="control-group">
+                <div class="label-row"><span style="color:#e74c3c;">力的大小 |F|</span><span id="badge-f" class="val-badge">10.0 N</span></div>
+                <input type="range" id="slider-f" min="1" max="20" step="0.1" value="10.0">
+            </div>
+            <div class="control-group">
+                <div class="label-row"><span>与水平夹角 θ</span><span id="badge-angle" class="val-badge">30°</span></div>
+                <input type="range" id="slider-angle" min="0" max="90" value="30">
+            </div>
+            <div class="btn-row">
+                <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
+            </div>
+        </div>
+        <div class="info-card">
+            <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem;">演示要点 / Key Points</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;">⊥</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">正交分解法</div><div style="font-size:0.78rem;color:#888;">将任意力分解为互相垂直的 x、y 分量：Fx=Fcosθ, Fy=Fsinθ。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:#3498db;font-weight:700;">Fx</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">Fx = F cosθ</div><div style="font-size:0.78rem;color:#888;">水平分量：θ=0°时最大(Fx=F)，θ=90°时为零。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:#2ecc71;font-weight:700;">Fy</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">Fy = F sinθ</div><div style="font-size:0.78rem;color:#888;">竖直分量：θ=90°时最大(Fy=F)，θ=0°时为零。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(155,89,182,0.1);color:#9b59b6;font-weight:700;">F</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">F = √(Fx²+Fy²)</div><div style="font-size:0.78rem;color:#888;">合力与分力的关系满足勾股定理，分力是合力的矩形投影。</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<script>
+const canvas=document.getElementById('simCanvas'),ctx=canvas.getContext('2d');
+const sF=document.getElementById('slider-f'),sA=document.getElementById('slider-angle');
+const bF=document.getElementById('badge-f'),bA=document.getElementById('badge-angle');
+const resF=document.getElementById('res-f'),resFx=document.getElementById('res-fx'),resFy=document.getElementById('res-fy'),resAng=document.getElementById('res-angle');
+const fRoot=document.getElementById('formula-root');
+const S={force:10,angle:30};
+const MAX_FORCE=20; // max slider value
+let SCALE=25;
+
+function resize(){canvas.width=canvas.clientWidth;canvas.height=canvas.clientHeight;}
+window.addEventListener('resize',resize);
+
+function update(){
+    S.force=parseFloat(sF.value);S.angle=parseInt(sA.value);
+    bF.textContent=S.force.toFixed(1)+' N';bA.textContent=S.angle+'°';
+    const rad=S.angle*Math.PI/180;
+    const fx=S.force*Math.cos(rad),fy=S.force*Math.sin(rad);
+    resF.textContent=S.force.toFixed(1);resFx.textContent=fx.toFixed(2);resFy.textContent=fy.toFixed(2);resAng.textContent=S.angle;
+
+    fRoot.innerHTML='<span style="font-size:22px;font-weight:700;color:#3498db;">F<sub>x</sub>=Fcosθ</span>'+
+        '<span style="font-size:22px;">= '+fx.toFixed(2)+' N</span>'+
+        '<span style="font-size:22px;margin-left:12px;font-weight:700;color:#2ecc71;">F<sub>y</sub>=Fsinθ</span>'+
+        '<span style="font-size:22px;">= '+fy.toFixed(2)+' N</span>';
+    draw();requestAnimationFrame(update);
+}
+
+function draw(){
+    const w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);ctx.fillStyle='#fafaf7';ctx.fillRect(0,0,w,h);
+
+    // Dynamic scale: ensure max force (20N) fits in available space
+    const originX=w*0.25,originY=h*0.65;
+    const maxXPx=w-originX-60;  // space to the right
+    const maxYPx=originY-40;     // space upward
+    SCALE=Math.min(maxXPx,maxYPx)/MAX_FORCE;
+
+    const rad=S.angle*Math.PI/180;
+    const fpx=S.force*SCALE;
+    const fxe=fpx*Math.cos(rad),fye=-fpx*Math.sin(rad); // canvas y-up
+    const cx=originX,cy=originY;
+
+    // Grid
+    ctx.strokeStyle='rgba(0,0,0,0.04)';ctx.lineWidth=1;
+    const gSize=30;
+    for(let gx=cx-maxXPx;gx<cx+maxXPx;gx+=gSize){ctx.beginPath();ctx.moveTo(gx,cy-maxYPx-gSize);ctx.lineTo(gx,cy+gSize);ctx.stroke();}
+    for(let gy=cy-maxYPx-gSize;gy<cy+gSize;gy+=gSize){ctx.beginPath();ctx.moveTo(cx-maxXPx,gy);ctx.lineTo(cx+maxXPx,gy);ctx.stroke();}
+
+    // Coordinate axes
+    ctx.strokeStyle='rgba(0,0,0,0.35)';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(cx,cy-maxYPx-20);ctx.lineTo(cx,cy+20);ctx.stroke(); // y
+    ctx.beginPath();ctx.moveTo(cx-20,cy);ctx.lineTo(cx+maxXPx+20,cy);ctx.stroke();  // x
+    ctx.fillStyle='#888';ctx.font='bold 12px Fredoka';ctx.textAlign='center';
+    ctx.fillText('x',cx+maxXPx+30,cy+4);ctx.fillText('y',cx,cy-maxYPx-25);
+    // Arrowheads on axes
+    arrowHead(ctx,cx+maxXPx+10,cy,0,'#888');
+    arrowHead(ctx,cx,cy-maxYPx-10,-Math.PI/2,'#888');
+
+    // Fx component — from origin along x-axis (blue)
+    const fxEndX=cx+fxe,fxEndY=cy;
+    arrow(ctx,cx,cy,fxEndX,fxEndY,'#3498db',3,'Fx='+(S.force*Math.cos(rad)).toFixed(2)+'N');
+
+    // Fy component — from origin along y-axis (green), upward
+    const fyEndX=cx,fyEndY=cy+fye;
+    arrow(ctx,cx,cy,fyEndX,fyEndY,'#2ecc71',3,'Fy='+(S.force*Math.sin(rad)).toFixed(2)+'N');
+
+    // Dashed lines completing the rectangle
+    const tipX=cx+fxe,tipY=cy+fye;
+    ctx.strokeStyle='rgba(0,0,0,0.15)';ctx.lineWidth=1;ctx.setLineDash([4,5]);
+    ctx.beginPath();ctx.moveTo(fxEndX,cy);ctx.lineTo(tipX,tipY);ctx.stroke();  // vertical from Fx tip
+    ctx.beginPath();ctx.moveTo(cx,fyEndY);ctx.lineTo(tipX,tipY);ctx.stroke();  // horizontal from Fy tip
+    ctx.setLineDash([]);
+
+    // Resultant F (red diagonal from origin to tip)
+    arrow(ctx,cx,cy,tipX,tipY,'#e74c3c',4,'F='+S.force.toFixed(1)+'N');
+
+    // Angle arc
+    ctx.strokeStyle='#e67e22';ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,38,0,-rad,true);ctx.stroke();
+    ctx.fillStyle='#e67e22';ctx.font='bold 13px Fredoka';ctx.textAlign='left';ctx.fillText('θ='+S.angle+'°',cx+43,cy-8);
+
+    // Right-angle markers at Fx and Fy tips
+    const sq=8;
+    ctx.strokeStyle='rgba(0,0,0,0.25)';ctx.lineWidth=1;
+    // At Fx tip: corner of rectangle
+    ctx.beginPath();ctx.moveTo(fxEndX-sq,cy);ctx.lineTo(fxEndX-sq,cy-sq);ctx.lineTo(fxEndX,cy-sq);ctx.stroke();
+    // At Fy tip: corner of rectangle
+    ctx.beginPath();ctx.moveTo(cx+sq,fyEndY);ctx.lineTo(cx+sq,fyEndY+sq);ctx.lineTo(cx,fyEndY+sq);ctx.stroke();
+
+    // Origin dot
+    ctx.fillStyle='#333';ctx.beginPath();ctx.arc(cx,cy,4,0,Math.PI*2);ctx.fill();
+}
+
+function arrowHead(c,x,y,angle,clr){
+    const h=7;
+    c.fillStyle=clr;
+    c.beginPath();c.moveTo(x,y);
+    c.lineTo(x-h*Math.cos(angle-Math.PI/6),y-h*Math.sin(angle-Math.PI/6));
+    c.lineTo(x-h*Math.cos(angle+Math.PI/6),y-h*Math.sin(angle+Math.PI/6));
+    c.closePath();c.fill();
+}
+
+function arrow(c,x1,y1,x2,y2,clr,lw,label){
+    const a=Math.atan2(y2-y1,x2-x1),h=9;
+    c.strokeStyle=clr;c.fillStyle=clr;c.lineWidth=lw||2;
+    c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();
+    c.beginPath();c.moveTo(x2,y2);
+    c.lineTo(x2-h*Math.cos(a-Math.PI/6),y2-h*Math.sin(a-Math.PI/6));
+    c.lineTo(x2-h*Math.cos(a+Math.PI/6),y2-h*Math.sin(a+Math.PI/6));
+    c.closePath();c.fill();
+    if(label){c.font='bold 12px Fredoka';c.fillText(label,x2+6,y2-4);}
+}
+
+document.getElementById('btn-reset').onclick=()=>{sF.value=10;sA.value=30;};
+resize();requestAnimationFrame(update);
+</script>
+</body>
+</html>

@@ -133,36 +133,116 @@ function update(){
     draw(S.mode,req,i1,i2,v1,v2);
     requestAnimationFrame(update);
 }
+function drawBatteryAt(x,y){
+    ctx.strokeStyle='#333';ctx.lineWidth=2.5;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(x-10,y-10);ctx.lineTo(x+10,y-10);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x-6,y+10);ctx.lineTo(x+6,y+10);ctx.stroke();
+}
+function drawSwitchAt(x,y){
+    ctx.strokeStyle='#333';ctx.lineWidth=2.5;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(x-8,y);ctx.lineTo(x-8,y-16);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x+8,y);ctx.lineTo(x+8,y-16);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x-8,y-16);ctx.lineTo(x-5,y-10);ctx.stroke();
+}
+function drawRectR(x,y,rw,rh,label){
+    ctx.strokeStyle='#333';ctx.lineWidth=2.5;ctx.strokeRect(x-rw/2,y-rh/2,rw,rh);
+    ctx.fillStyle='#333';ctx.font='bold 14px Fredoka';ctx.textAlign='center';
+    ctx.fillText(label,x,y+rh/2+18);
+}
+
 function draw(mode,req,i1,i2,v1,v2){
     const w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);ctx.fillStyle='#fafaf7';ctx.fillRect(0,0,w,h);
-    const mx=w*0.3,my=h*0.5;
-    // Battery
-    ctx.fillStyle='#2ecc71';ctx.fillRect(mx-15,my-120,30,20);
-    ctx.fillStyle='#333';ctx.font='bold 14px Fredoka';ctx.textAlign='center';ctx.fillText(S.voltage+'V',mx,my-110);
-    ctx.strokeStyle='#333';ctx.lineWidth=3;
-    // Wires
-    ctx.beginPath();ctx.moveTo(mx,my-100);ctx.lineTo(mx,my-50);ctx.stroke();
+
+    ctx.strokeStyle='#333';ctx.lineWidth=2.5;ctx.lineCap='round';ctx.lineJoin='round';
+    const LX=w*0.14,RX=w*0.62;
+
     if(mode==='series'){
-        ctx.beginPath();ctx.moveTo(mx,my-50);ctx.lineTo(mx-80,my-50);ctx.lineTo(mx-80,my);ctx.stroke();
-        ctx.fillStyle='#e74c3c';ctx.fillRect(mx-100,my-60,40,20);ctx.fillStyle='#333';ctx.font='bold 11px';ctx.fillText('R₁='+S.r1,mx-80,my-70);
-        ctx.beginPath();ctx.moveTo(mx-80,my);ctx.lineTo(mx+80,my);ctx.stroke();
-        ctx.fillStyle='#e74c3c';ctx.fillRect(mx+60,my-10,40,20);ctx.fillStyle='#333';ctx.fillText('R₂='+S.r2,mx+80,my-25);
-        ctx.beginPath();ctx.moveTo(mx+80,my);ctx.lineTo(mx+80,my+50);ctx.lineTo(mx,my+50);ctx.lineTo(mx,my+80);ctx.stroke();
-        ctx.fillStyle='#3498db';ctx.font='bold 12px';
-        ctx.fillText('I='+(S.voltage/req).toFixed(3)+'A 处处相等',mx+120,my-5);
+        const TY=h*0.22, BY=h*0.68;
+        // === SERIES: battery top-center, resistors on bottom wire ===
+        // Battery: long vertical (+) and short vertical (-) side by side
+        const bCX=w*0.42, bCY=TY+15;
+        const longH=22, shortH=12, bGap=8;  // heights and gap between lines
+        // Long line (+) on left, short (-) on right
+        ctx.beginPath();ctx.moveTo(bCX-bGap,bCY-longH);ctx.lineTo(bCX-bGap,bCY);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(bCX+bGap,bCY-shortH);ctx.lineTo(bCX+bGap,bCY);ctx.stroke();
+        // + and - labels
+        ctx.fillStyle='#333';ctx.font='bold 11px Fredoka';ctx.textAlign='center';
+        ctx.fillStyle='#333';ctx.font='bold 13px Fredoka';ctx.textAlign='center';
+        ctx.fillText('+',bCX-bGap,bCY-longH-6);
+        ctx.fillText('−',bCX+bGap,bCY-shortH-6);
+        ctx.fillText(S.voltage+'V',bCX,bCY-longH-16);
+
+        // Horizontal wires from battery midpoint → left and right
+        const midY=bCY-longH/2;
+        ctx.beginPath();ctx.moveTo(bCX-bGap,midY);ctx.lineTo(LX,midY);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(bCX+bGap,midY);ctx.lineTo(RX,midY);ctx.stroke();
+
+        // Vertical wires down at ends (equal length)
+        const vBot=BY;
+        ctx.beginPath();ctx.moveTo(LX,midY);ctx.lineTo(LX,vBot);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(RX,midY);ctx.lineTo(RX,vBot);ctx.stroke();
+
+        // Bottom horizontal wire with R1 and R2 in series
+        const bWY=vBot;
+        const seg=(RX-LX-160)/3;  // spacing
+        ctx.beginPath();ctx.moveTo(LX,bWY);ctx.lineTo(LX+seg,bWY);ctx.stroke();
+        drawRectR(LX+seg+19,bWY,38,28,'R₁');
+        ctx.beginPath();ctx.moveTo(LX+seg+38,bWY);ctx.lineTo(LX+seg*2+38,bWY);ctx.stroke();
+        drawRectR(LX+seg*2+57,bWY,38,28,'R₂');
+        ctx.beginPath();ctx.moveTo(LX+seg*2+76,bWY);ctx.lineTo(RX,bWY);ctx.stroke();
+
     }else{
-        ctx.beginPath();ctx.moveTo(mx,my-50);ctx.lineTo(mx-80,my-50);ctx.lineTo(mx-80,my+50);ctx.lineTo(mx-20,my+50);ctx.stroke();
-        ctx.fillStyle='#e74c3c';ctx.fillRect(mx-100,my-10,40,20);ctx.fillStyle='#333';ctx.fillText('R₁='+S.r1,mx-80,my-25);
-        ctx.beginPath();ctx.moveTo(mx,my-50);ctx.lineTo(mx+80,my-50);ctx.lineTo(mx+80,my+50);ctx.lineTo(mx+20,my+50);ctx.stroke();
-        ctx.fillStyle='#e74c3c';ctx.fillRect(mx+60,my-10,40,20);ctx.fillStyle='#333';ctx.fillText('R₂='+S.r2,mx+80,my-25);
-        ctx.beginPath();ctx.moveTo(mx,my+50);ctx.lineTo(mx,my+80);ctx.stroke();
-        ctx.fillStyle='#3498db';ctx.font='bold 11px';
-        ctx.fillText('I₁='+i1.toFixed(3)+'A',mx-90,my+75);
-        ctx.fillText('I₂='+i2.toFixed(3)+'A',mx+30,my+75);
+        const TY=h*0.18, BY=h*0.80;
+        // === PARALLEL: same frame as series, two resistor rows ===
+        const bCX=w*0.42, bCY=TY+15;
+        const longH=22, shortH=12, bGap=8;
+        // Battery (same as series)
+        ctx.beginPath();ctx.moveTo(bCX-bGap,bCY-longH);ctx.lineTo(bCX-bGap,bCY);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(bCX+bGap,bCY-shortH);ctx.lineTo(bCX+bGap,bCY);ctx.stroke();
+        ctx.fillStyle='#333';ctx.font='bold 13px Fredoka';ctx.textAlign='center';
+        ctx.fillText('+',bCX-bGap,bCY-longH-6);
+        ctx.fillText('−',bCX+bGap,bCY-shortH-6);
+        ctx.fillText(S.voltage+'V',bCX,bCY-longH-16);
+
+        // Horizontal wires from battery midpoint → left and right
+        const midY=bCY-longH/2;
+        ctx.beginPath();ctx.moveTo(bCX-bGap,midY);ctx.lineTo(LX,midY);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(bCX+bGap,midY);ctx.lineTo(RX,midY);ctx.stroke();
+
+        // Vertical wires down to the last resistor row
+        const row1Y=midY+70;
+        const row2Y=row1Y+100;
+        const vBot=row2Y;
+
+        ctx.beginPath();ctx.moveTo(LX,midY);ctx.lineTo(LX,vBot);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(RX,midY);ctx.lineTo(RX,vBot);ctx.stroke();
+
+        // R1 on upper row: wire from left→resistor→wire to right
+        ctx.beginPath();ctx.moveTo(LX,row1Y);ctx.lineTo((LX+RX)/2-19,row1Y);ctx.stroke();
+        drawRectR((LX+RX)/2,row1Y,38,28,'R₁');
+        ctx.beginPath();ctx.moveTo((LX+RX)/2+19,row1Y);ctx.lineTo(RX,row1Y);ctx.stroke();
+        ctx.fillStyle='#3498db';ctx.font='bold 14px Fredoka';ctx.textAlign='center';
+        ctx.fillText('I₁='+i1.toFixed(3)+'A',(LX+RX)/2,row1Y-26);
+
+        // R2 on lower row: wire from left→resistor→wire to right
+        ctx.beginPath();ctx.moveTo(LX,row2Y);ctx.lineTo((LX+RX)/2-19,row2Y);ctx.stroke();
+        drawRectR((LX+RX)/2,row2Y,38,28,'R₂');
+        ctx.beginPath();ctx.moveTo((LX+RX)/2+19,row2Y);ctx.lineTo(RX,row2Y);ctx.stroke();
+        ctx.fillText('I₂='+i2.toFixed(3)+'A',(LX+RX)/2,row2Y-26);
     }
-    ctx.fillStyle='#333';ctx.font='bold 13px Fredoka';ctx.textAlign='center';
-    ctx.fillText(mode==='series'?'串联 Series':'并联 Parallel',mx,30);
-    ctx.fillText('R_eq='+req.toFixed(1)+' Ω',mx,50);
+
+    ctx.textAlign='center';
+    if(mode==='series'){
+        ctx.fillStyle='#333';ctx.font='bold 20px Fredoka';
+        ctx.fillText('串联 Series    R_eq = '+req.toFixed(1)+' Ω',w/2,24);
+        ctx.fillStyle='#3498db';ctx.font='bold 16px Fredoka';
+        ctx.fillText('I = '+(S.voltage/req).toFixed(3)+' A（处处相等）',w/2,52);
+    }else{
+        ctx.fillStyle='#333';ctx.font='bold 20px Fredoka';
+        ctx.fillText('并联 Parallel    R_eq = '+req.toFixed(1)+' Ω',w/2,24);
+        ctx.fillStyle='#3498db';ctx.font='bold 14px Fredoka';
+        ctx.fillText('I_total = '+(S.voltage/req).toFixed(3)+' A',w/2,48);
+    }
 }
 function resetSim(){sR1.value=100;sR2.value=200;sV.value=12;S.r1=100;S.r2=200;S.voltage=12;}
 document.getElementById('btn-reset').onclick=resetSim;

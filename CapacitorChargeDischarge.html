@@ -68,6 +68,10 @@
                 <input type="range" id="slider-c" min="10" max="500" step="10" value="100">
             </div>
             <div class="control-group">
+                <div class="label-row"><span>放电电阻 Rd</span><span id="badge-rd" class="val-badge">20 kΩ</span></div>
+                <input type="range" id="slider-rd" min="1" max="50" value="20">
+            </div>
+            <div class="control-group">
                 <div class="label-row"><span>电源电压 V₀</span><span id="badge-v0" class="val-badge">10 V</span></div>
                 <input type="range" id="slider-v0" min="3" max="20" value="10">
             </div>
@@ -102,17 +106,19 @@
 </div>
 <script>
 const canvas=document.getElementById('simCanvas'),ctx=canvas.getContext('2d');
-const sR=document.getElementById('slider-r'),sC=document.getElementById('slider-c'),sV0=document.getElementById('slider-v0');
-const bR=document.getElementById('badge-r'),bC=document.getElementById('badge-c'),bV0=document.getElementById('badge-v0');
+const sR=document.getElementById('slider-r'),sC=document.getElementById('slider-c'),sRd=document.getElementById('slider-rd'),sV0=document.getElementById('slider-v0');
+const bR=document.getElementById('badge-r'),bC=document.getElementById('badge-c'),bRd=document.getElementById('badge-rd'),bV0=document.getElementById('badge-v0');
 const resVc=document.getElementById('res-vc'),resTau=document.getElementById('res-tau'),resTime=document.getElementById('res-time');
 const fRoot=document.getElementById('formula-root');
-const S={r:10,c:100,v0:10,vc:0,time:0,charging:true,playing:false};
+const S={r:10,c:100,rd:20,v0:10,vc:0,time:0,charging:true,playing:false};
 function resize(){canvas.width=canvas.clientWidth;canvas.height=canvas.clientHeight;}
 window.addEventListener('resize',resize);
 function update(){
-    S.r=parseInt(sR.value);S.c=parseInt(sC.value);S.v0=parseInt(sV0.value);
-    bR.textContent=S.r+' kΩ';bC.textContent=S.c+' μF';bV0.textContent=S.v0+' V';
-    const R=S.r*1000,C=S.c*1e-6,tau=R*C;
+    S.r=parseInt(sR.value);S.c=parseInt(sC.value);S.rd=parseInt(sRd.value);S.v0=parseInt(sV0.value);
+    bR.textContent=S.r+' kΩ';bC.textContent=S.c+' μF';bRd.textContent=S.rd+' kΩ';bV0.textContent=S.v0+' V';
+    const R=S.r*1000,Rd=S.rd*1000,C=S.c*1e-6;
+    const tauCharge=R*C,tauDischarge=Rd*C;
+    const tau=S.charging?tauCharge:tauDischarge;
     resTau.textContent=(tau*1000).toFixed(1)+' ms';
     const dt=0.016;
     if(S.playing){
@@ -122,43 +128,107 @@ function update(){
     }
     resVc.textContent=S.vc.toFixed(2);
     resTime.textContent=S.time.toFixed(2);
+    const tauLabel=S.charging?('τ_充=RC='+(tauCharge*1000).toFixed(1)+'ms'):('τ_放=RdC='+(tauDischarge*1000).toFixed(1)+'ms');
     fRoot.innerHTML=S.charging?
-        `<span style="font-size:22px;font-weight:700;color:#2ecc71;">V<sub>c</sub>=V₀(1−e<sup>−t/RC</sup>)</span><span style="font-size:18px;">τ=RC=${(tau*1000).toFixed(1)}ms</span>`:
-        `<span style="font-size:22px;font-weight:700;color:#e74c3c;">V<sub>c</sub>=V₀e<sup>−t/RC</sup></span><span style="font-size:18px;">τ=RC=${(tau*1000).toFixed(1)}ms</span>`;
+        `<span style="font-size:22px;font-weight:700;color:#2ecc71;">V<sub>c</sub>=V₀(1−e<sup>−t/RC</sup>)</span><span style="font-size:18px;">${tauLabel}</span>`:
+        `<span style="font-size:22px;font-weight:700;color:#e74c3c;">V<sub>c</sub>=V₀e<sup>−t/RdC</sup></span><span style="font-size:18px;">${tauLabel}</span>`;
     draw();requestAnimationFrame(update);
 }
 function draw(){
     const w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);ctx.fillStyle='#fafaf7';ctx.fillRect(0,0,w,h);
-    // Circuit diagram
-    const cx=w*0.25,cy=h*0.4;
-    ctx.strokeStyle='#333';ctx.lineWidth=3;
+
+    // === Circuit: battery top-center, R+C upper row, Rd lower row (parallel) ===
+    const LX=w*0.10,RX=w*0.44;
+    const bCX=(LX+RX)/2,bCY=h*0.20;
+    const longH=20,shortH=11,bGap=8;
+    ctx.strokeStyle='#333';ctx.lineWidth=2.5;ctx.lineCap='round';ctx.lineJoin='round';
+
     // Battery
-    ctx.fillStyle='#2ecc71';ctx.fillRect(cx-15,cy-100,30,20);
-    // Wires
-    ctx.beginPath();ctx.moveTo(cx,cy-80);ctx.lineTo(cx,cy-30);ctx.stroke();
-    // Resistor (zigzag)
-    ctx.beginPath();ctx.moveTo(cx,cy-30);ctx.lineTo(cx-20,cy-20);ctx.lineTo(cx+20,cy-10);ctx.lineTo(cx-20,cy);ctx.lineTo(cx+20,cy+10);ctx.lineTo(cx,cy+20);ctx.stroke();
-    ctx.fillText('R='+S.r+'kΩ',cx+25,cy-5);
-    // Capacitor
-    ctx.beginPath();ctx.moveTo(cx,cy+20);ctx.lineTo(cx,cy+50);ctx.stroke();
-    ctx.fillStyle='#3498db';ctx.fillRect(cx-20,cy+50,40,8);ctx.fillRect(cx-20,cy+62,40,8);
-    ctx.fillText('C='+S.c+'μF',cx+25,cy+65);
-    ctx.beginPath();ctx.moveTo(cx,cy+70);ctx.lineTo(cx,cy+100);ctx.lineTo(cx-40,cy+100);ctx.lineTo(cx-40,cy-100);ctx.stroke();
-    // Voltage across capacitor
-    const barH=100*(S.vc/S.v0);
-    ctx.fillStyle='var(--accent)';ctx.fillRect(cx-60,cy+100-barH,15,barH);
-    ctx.strokeStyle='#333';ctx.strokeRect(cx-60,cy,15,100);
-    ctx.fillStyle='#333';ctx.font='bold 11px';ctx.textAlign='center';
-    ctx.fillText('Vc',cx-52,cy-10);
-    ctx.fillText(S.vc.toFixed(1)+'V',cx-52,cy+115);
+    ctx.beginPath();ctx.moveTo(bCX-bGap,bCY-longH);ctx.lineTo(bCX-bGap,bCY);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(bCX+bGap,bCY-shortH);ctx.lineTo(bCX+bGap,bCY);ctx.stroke();
+    ctx.fillStyle='#333';ctx.font='bold 13px Fredoka';ctx.textAlign='center';
+    ctx.fillText('+',bCX-bGap,bCY-longH-6);
+    ctx.fillText('−',bCX+bGap,bCY-shortH-6);
+    ctx.fillText(S.v0+'V',bCX,bCY-longH-16);
+
+    // Layout variables
+    const midY=bCY-longH/2;
+    const row1Y=midY+70, row2Y=row1Y+90;
+    const vBot=row2Y;
+
+    // Right horizontal: battery- → R → RX
+    ctx.beginPath();ctx.moveTo(bCX+bGap,midY);ctx.lineTo(bCX+bGap+40,midY);ctx.stroke();
+    ctx.strokeRect(bCX+bGap+40,midY-14,38,28);
+    ctx.fillStyle='#333';ctx.font='bold 12px Fredoka';ctx.textAlign='center';
+    ctx.fillText('R',bCX+bGap+59,midY+30);
+    ctx.fillText(S.r+'kΩ',bCX+bGap+59,midY+44);
+    ctx.beginPath();ctx.moveTo(bCX+bGap+78,midY);ctx.lineTo(RX,midY);ctx.stroke();
+
+    // Left horizontal: battery+ → LX
+    ctx.beginPath();ctx.moveTo(bCX-bGap,midY);ctx.lineTo(LX,midY);ctx.stroke();
+    // Left vertical: midY → row1Y-12 (gap before switch at row1Y)
+    ctx.beginPath();ctx.moveTo(LX,midY);ctx.lineTo(LX,row1Y-12);ctx.stroke();
+    // Left vertical below switch: row1Y+12 → vBot (to Rd)
+    ctx.beginPath();ctx.moveTo(LX,row1Y+12);ctx.lineTo(LX,vBot);ctx.stroke();
+    // Right vertical: full length
+    ctx.beginPath();ctx.moveTo(RX,midY);ctx.lineTo(RX,vBot);ctx.stroke();
+
+    // === SPDT switch at left-middle junction (LX, row1Y) ===
+    const swX=LX, swY=row1Y;
+    const swColor=S.playing?(S.charging?'#2ecc71':'#e74c3c'):'#333';
+    ctx.fillStyle=swColor;ctx.beginPath();ctx.arc(swX,swY,5,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='#333';ctx.lineWidth=2.5;
+    if(S.playing){
+        if(S.charging){
+            ctx.beginPath();ctx.moveTo(swX,swY);ctx.lineTo(swX,swY-18);ctx.stroke();
+        }else{
+            ctx.beginPath();ctx.moveTo(swX,swY);ctx.lineTo(swX,swY+18);ctx.stroke();
+        }
+    }
+    // else: blade stays horizontal/middle, not connected to either side
+
+    // === Upper row: C only (R moved to top) ===
+    const midX=(LX+RX)/2;
+    ctx.beginPath();ctx.moveTo(swX,row1Y);ctx.lineTo(midX-10,row1Y);ctx.stroke();
+    // C centered
+    ctx.beginPath();ctx.moveTo(midX-10,row1Y-16);ctx.lineTo(midX-10,row1Y+16);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(midX,row1Y-16);ctx.lineTo(midX,row1Y+16);ctx.stroke();
+    ctx.fillText('C',midX-5,row1Y+30);
+    ctx.fillText(S.c+'μF',midX-5,row1Y+44);
+    // Wire C→right
+    ctx.beginPath();ctx.moveTo(midX,row1Y);ctx.lineTo(RX,row1Y);ctx.stroke();
+
+    // === Lower row: discharge resistor Rd ===
+    ctx.beginPath();ctx.moveTo(LX,row2Y);ctx.lineTo((LX+RX)/2-19,row2Y);ctx.stroke();
+    ctx.strokeRect((LX+RX)/2-19,row2Y-14,38,28);
+    ctx.fillText('Rd',(LX+RX)/2,row2Y+30);
+    ctx.fillText(S.rd+'kΩ',(LX+RX)/2,row2Y+44);
+    ctx.beginPath();ctx.moveTo((LX+RX)/2+19,row2Y);ctx.lineTo(RX,row2Y);ctx.stroke();
+
+    // Title
+    ctx.fillStyle='#333';ctx.font='bold 16px Fredoka';ctx.textAlign='center';
+    const R=S.r*1000,Rd=S.rd*1000,C=S.c*1e-6;
+    const tauVc=S.charging?(R*C):(Rd*C);
+    ctx.fillText((S.charging?'充电 Charging':'放电 Discharging')+'    τ = '+(S.charging?'RC':'RdC')+' = '+(tauVc*1000).toFixed(1)+' ms',(LX+RX)/2,h*0.06);
+
     // V-t graph on right
-    const gx=w*0.45,gy=h*0.2,gw=w*0.5,gh=h*0.55;
-    ctx.strokeStyle='#ddd';ctx.strokeRect(gx,gy,gw,gh);
-    ctx.fillStyle='#888';ctx.font='bold 11px Fredoka';ctx.fillText('Vc vs t',gx+gw/2,gy-8);
+    const gx=w*0.50,gy=h*0.15,gw=w*0.45,gh=h*0.55;
+    // Axes: y-axis left, x-axis bottom
+    ctx.strokeStyle='#888';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(gx,gy);ctx.lineTo(gx,gy+gh);ctx.lineTo(gx+gw,gy+gh);ctx.stroke();
+    // Axis labels at ends
+    ctx.fillStyle='#888';ctx.font='bold 12px Fredoka';ctx.textAlign='center';
+    ctx.fillText('t',gx+gw+10,gy+gh+4);
+    ctx.fillText('Vc',gx-4,gy-10);
+    // Y-axis tick: V0
+    ctx.fillStyle='#999';ctx.font='10px Fredoka';ctx.textAlign='right';
+    ctx.fillText(S.v0+'V',gx-6,gy+4);
+    ctx.fillText('0',gx-6,gy+gh+4);
     // Draw Vc curve
-    const R=S.r*1000,C=S.c*1e-6,tau=R*C;
-    ctx.beginPath();ctx.strokeStyle='var(--accent)';ctx.lineWidth=2;
+    const tau=tauVc;
     const maxT=tau*5;
+    ctx.fillText((maxT*1000).toFixed(0)+'ms',gx+gw,gy+gh+14);
+    ctx.beginPath();ctx.strokeStyle='var(--accent)';ctx.lineWidth=2;
     for(let i=0;i<=100;i++){
         const t=maxT*i/100;
         let v;

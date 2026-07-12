@@ -42,7 +42,13 @@
 <div class="branding"><div class="logo">Wuli布雷克</div></div>
 <a href="waves.html" class="back-link">← 返回波</a>
 <div class="container">
-    <header><h1>波的叠加原理 / Wave Superposition</h1></header>
+    <header>
+        <h1>波的叠加原理 / Wave Superposition</h1>
+        <div style="font-size:0.9rem;color:#8d6e63;margin-top:4px;font-style:italic;line-height:1.5">
+            When two or more waves meet, the resultant displacement at any point is the algebraic sum of the individual displacements.<br>
+            两列或多列波相遇时，任一质点的合位移等于各列波单独引起的位移之矢量和。
+        </div>
+    </header>
     <section class="formula-display">
         <div class="formula-container" id="formula-root"></div>
         <div class="result-row">
@@ -128,8 +134,11 @@ function update(){
 function draw(){
     const w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,w,h);
     const phi=S.phaseDeg*Math.PI/180;
-    const ampPx=60;
-    // Three wave rows
+    // Dynamic amplitude scale: ensure result wave never exceeds canvas
+    const maxSum=S.a1+S.a2;
+    const ampPx=Math.min(60,(h*0.18)/Math.max(maxSum,0.1));
+    // Three wave rows, evenly spaced
+    const y1=h*0.22,y2=h*0.48,y3=h*0.78;
     function drawWave(yBase,amp,color,phase,label){
         ctx.strokeStyle=color;ctx.lineWidth=2.5;ctx.beginPath();
         for(let x=0;x<w;x++){
@@ -138,15 +147,14 @@ function draw(){
             if(x===0)ctx.moveTo(x,py);else ctx.lineTo(x,py);
         }
         ctx.stroke();
-        // Zero line
         ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.lineWidth=1;ctx.setLineDash([4,8]);
         ctx.beginPath();ctx.moveTo(0,yBase);ctx.lineTo(w,yBase);ctx.stroke();ctx.setLineDash([]);
-        ctx.fillStyle=color;ctx.font='bold 12px Fredoka';ctx.textAlign='left';ctx.fillText(label,10,yBase-amp*ampPx-8);
+        ctx.fillStyle=color;ctx.font='bold 12px Fredoka';ctx.textAlign='left';ctx.fillText(label,10,yBase-amp*ampPx-10);
     }
-    drawWave(h*0.18,S.a1,'#e74c3c',0,'Wave 1 (y₁)');
-    drawWave(h*0.45,S.a2,'#3498db',phi,'Wave 2 (y₂)');
+    drawWave(y1,S.a1,'#e74c3c',0,'Wave 1 (y₁)');
+    drawWave(y2,S.a2,'#3498db',phi,'Wave 2 (y₂)');
     // Sum wave
-    const yBase=h*0.78;
+    const yBase=y3;
     ctx.strokeStyle='#2ecc71';ctx.lineWidth=3;ctx.beginPath();
     for(let x=0;x<w;x++){
         const y1=S.a1*ampPx*Math.sin(2*Math.PI*x/S.lambda-S.time*3);
