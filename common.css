@@ -22,12 +22,20 @@ body {
 }
 
 /* Branding */
-.branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
+.branding { position: fixed; top: 10px; left: 20px; z-index: 1000; display:flex; align-items:center; gap:8px; }
 .logo {
     font-weight: 700; font-size: 1.3rem; color: #fff;
     background: var(--primary); padding: 6px 18px; border-radius: 16px;
     box-shadow: 4px 4px 15px rgba(255,140,66,0.3);
+    text-decoration: none;
 }
+.brand-nav { display:flex; gap:3px; flex-wrap:wrap; }
+.brand-nav a {
+    font-size:0.7rem;font-weight:600;color:#fff;background:rgba(255,140,66,0.7);
+    padding:3px 8px;border-radius:10px;text-decoration:none;transition:all 0.2s;
+}
+.brand-nav a:hover { background: var(--primary); transform: scale(1.05); }
+@media (max-width:600px){ .brand-nav { display:none; } }
 
 /* Back link */
 .back-link {
