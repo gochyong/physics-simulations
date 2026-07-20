@@ -42,8 +42,8 @@ data.categories.forEach(cat => {
     // Build all cards
     const cards = cat.simulations.map((sim, i) => makeCard(sim, i + 1)).join('\n\n');
 
-    // Replace the card section between <!-- Sim Card Grid --> and </main>
-    const startMarker = '<!-- Sim Card Grid -->';
+    // Replace card section between <main class="grid-container"> and </main>
+    const startMarker = '<main class="grid-container">';
     const endMarker = '    </main>';
     const startIdx = html.indexOf(startMarker);
     const endIdx = html.indexOf(endMarker, startIdx);
