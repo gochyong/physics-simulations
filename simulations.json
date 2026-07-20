@@ -7,27 +7,174 @@
       "icon": "⚙️",
       "count": 21,
       "simulations": [
-        { "file": "density.html", "name": "密度", "nameEn": "Density", "formula": "ρ = m/V" },
-        { "file": "pressure.html", "name": "压强", "nameEn": "Pressure", "formula": "P = F/S" },
-        { "file": "LiquidPressure.html", "name": "液体压强", "nameEn": "Liquid Pressure", "formula": "P = ρgh" },
-        { "file": "upthrust.html", "name": "阿基米德原理", "nameEn": "Archimedes' Principle", "formula": "F = ρgV" },
-        { "file": "ForceCompositionDecomposition.html", "name": "力的合成与分解", "nameEn": "Vector Addition & Decomposition", "formula": "F=√(F₁²+F₂²+2F₁F₂cosθ)" },
-        { "file": "NewtonLaw.html", "name": "牛顿定律", "nameEn": "Newton's Laws", "formula": "F=ma" },
-        { "file": "HookesLaw.html", "name": "胡克定律", "nameEn": "Hooke's Law", "formula": "F=kx" },
-        { "file": "InclinedPlane.html", "name": "斜面运动", "nameEn": "Inclined Plane", "formula": "a=g(sinθ−μcosθ)" },
-        { "file": "ProjectileMotion.html", "name": "抛体运动", "nameEn": "Projectile Motion", "formula": "y=xtanθ−gx²/2v₀²cos²θ" },
-        { "file": "CircularMotion.html", "name": "圆周运动", "nameEn": "Circular Motion", "formula": "a=v²/r" },
-        { "file": "SimpleHarmonicMotion.html", "name": "简谐运动", "nameEn": "Simple Harmonic Motion", "formula": "x=Acos(ωt+φ)" },
-        { "file": "Momentum.html", "name": "动量", "nameEn": "Momentum", "formula": "p=mv" },
-        { "file": "Impulse.html", "name": "冲量", "nameEn": "Impulse", "formula": "I=Ft" },
-        { "file": "MomentumConservation.html", "name": "动量守恒", "nameEn": "Momentum Conservation", "formula": "m₁v₁+m₂v₂=const" },
-        { "file": "Work.html", "name": "功", "nameEn": "Work", "formula": "W=Fs cosθ" },
-        { "file": "Power.html", "name": "功率", "nameEn": "Power", "formula": "P=W/t=Fv" },
-        { "file": "KineticEnergy.html", "name": "动能", "nameEn": "Kinetic Energy", "formula": "Eₖ=½mv²" },
-        { "file": "PotentialEnergy.html", "name": "重力势能", "nameEn": "Gravitational Potential Energy", "formula": "Eₚ=mgh" },
-        { "file": "EnergyConservation.html", "name": "能量守恒", "nameEn": "Energy Conservation", "formula": "Eₖ+Eₚ=const" },
-        { "file": "Torque.html", "name": "力矩", "nameEn": "Torque", "formula": "τ=Frsinθ" },
-        { "file": "MomentBalance.html", "name": "杠杆平衡", "nameEn": "Lever Balance", "formula": "F₁d₁=F₂d₂" }
+        {
+          "file": "density.html",
+          "name": "密度",
+          "nameEn": "Density",
+          "formula": "ρ = m/V",
+          "icon": "⚖️",
+          "desc": "动态演示质量和体积如何影响物体密度。ρ = m / V"
+        },
+        {
+          "file": "pressure.html",
+          "name": "压强",
+          "nameEn": "Pressure",
+          "formula": "P = F/S",
+          "icon": "📐",
+          "desc": "动态演示压力和面积如何影响压强。P = F / S"
+        },
+        {
+          "file": "LiquidPressure.html",
+          "name": "液体压强",
+          "nameEn": "Liquid Pressure",
+          "formula": "P = ρgh",
+          "icon": "💧",
+          "desc": "液体的深度、密度与压强的关系。P = ρgh"
+        },
+        {
+          "file": "upthrust.html",
+          "name": "阿基米德原理",
+          "nameEn": "Archimedes' Principle",
+          "formula": "F = ρgV",
+          "icon": "🚢",
+          "desc": "探索浮力与排开液体重力的关系。F = ρgV"
+        },
+        {
+          "file": "ForceCompositionDecomposition.html",
+          "name": "力的合成与分解",
+          "nameEn": "Vector Addition & Decomposition",
+          "formula": "F=√(F₁²+F₂²+2F₁F₂cosθ)",
+          "icon": "➕",
+          "desc": "包含平行四边形法则合成与正交分解两个子页面。"
+        },
+        {
+          "file": "NewtonLaw.html",
+          "name": "牛顿定律",
+          "nameEn": "Newton's Laws",
+          "formula": "F=ma",
+          "icon": "🍎",
+          "desc": "综合演示惯性、F=ma及作用力与反作用力。"
+        },
+        {
+          "file": "HookesLaw.html",
+          "name": "胡克定律",
+          "nameEn": "Hooke's Law",
+          "formula": "F=kx",
+          "icon": "🪝",
+          "desc": "弹力与伸长量的线性关系模拟。F = kx"
+        },
+        {
+          "file": "InclinedPlane.html",
+          "name": "斜面运动",
+          "nameEn": "Inclined Plane",
+          "formula": "a=g(sinθ−μcosθ)",
+          "icon": "📐",
+          "desc": "物体在斜面上的受力分析与运动。a=g(sinθ−μcosθ)"
+        },
+        {
+          "file": "ProjectileMotion.html",
+          "name": "抛体运动",
+          "nameEn": "Projectile Motion",
+          "formula": "y=xtanθ−gx²/2v₀²cos²θ",
+          "icon": "🎯",
+          "desc": "含斜抛与平抛两种模式，模拟抛物线轨迹。"
+        },
+        {
+          "file": "CircularMotion.html",
+          "name": "圆周运动",
+          "nameEn": "Circular Motion",
+          "formula": "a=v²/r",
+          "icon": "🔵",
+          "desc": "小球做匀速圆周运动，展示速度和向心力矢量。"
+        },
+        {
+          "file": "SimpleHarmonicMotion.html",
+          "name": "简谐运动",
+          "nameEn": "Simple Harmonic Motion",
+          "formula": "x=Acos(ωt+φ)",
+          "icon": "🔄",
+          "desc": "弹簧振子的位移、速度、加速度与能量转换。"
+        },
+        {
+          "file": "Momentum.html",
+          "name": "动量",
+          "nameEn": "Momentum",
+          "formula": "p=mv",
+          "icon": "🏃",
+          "desc": "直观感受质量和速度对动量的影响。p = mv"
+        },
+        {
+          "file": "Impulse.html",
+          "name": "冲量",
+          "nameEn": "Impulse",
+          "formula": "I=Ft",
+          "icon": "💥",
+          "desc": "力的时间累积效应，观察冲量如何改变动量。I = Ft"
+        },
+        {
+          "file": "MomentumConservation.html",
+          "name": "动量守恒",
+          "nameEn": "Momentum Conservation",
+          "formula": "m₁v₁+m₂v₂=const",
+          "icon": "🎱",
+          "desc": "模拟弹性与非弹性碰撞，验证动量守恒定律。"
+        },
+        {
+          "file": "Work.html",
+          "name": "功",
+          "nameEn": "Work",
+          "formula": "W=Fs cosθ",
+          "icon": "📦",
+          "desc": "研究力、位移与夹角对功的影响。W = Fs cosθ"
+        },
+        {
+          "file": "Power.html",
+          "name": "功率",
+          "nameEn": "Power",
+          "formula": "P=W/t=Fv",
+          "icon": "⚙️",
+          "desc": "通过电动机提升重物演示做功的快慢。P = W/t"
+        },
+        {
+          "file": "KineticEnergy.html",
+          "name": "动能",
+          "nameEn": "Kinetic Energy",
+          "formula": "Eₖ=½mv²",
+          "icon": "⚡",
+          "desc": "探索质量与速度对动能的影响。Eₖ = ½mv²"
+        },
+        {
+          "file": "PotentialEnergy.html",
+          "name": "重力势能",
+          "nameEn": "Gravitational Potential Energy",
+          "formula": "Eₚ=mgh",
+          "icon": "🏔️",
+          "desc": "实时观察质量、高度对势能的影响。Eₚ = mgh"
+        },
+        {
+          "file": "EnergyConservation.html",
+          "name": "能量守恒",
+          "nameEn": "Energy Conservation",
+          "formula": "Eₖ+Eₚ=const",
+          "icon": "🎢",
+          "desc": "动能与势能的实时转化，验证能量守恒定律。"
+        },
+        {
+          "file": "Torque.html",
+          "name": "力矩",
+          "nameEn": "Torque",
+          "formula": "τ=Frsinθ",
+          "icon": "🔧",
+          "desc": "动态演示力、臂及夹角如何影响合力矩。τ = Fr sinθ"
+        },
+        {
+          "file": "MomentBalance.html",
+          "name": "杠杆平衡",
+          "nameEn": "Lever Balance",
+          "formula": "F₁d₁=F₂d₂",
+          "icon": "⚖️",
+          "desc": "探索力矩平衡条件，模拟不同质量和位置下的杠杆平衡。"
+        }
       ]
     },
     {
@@ -37,10 +184,38 @@
       "icon": "🔥",
       "count": 4,
       "simulations": [
-        { "file": "ThermalConduction.html", "name": "热传导", "nameEn": "Thermal Conduction", "formula": "Q/t=kA·ΔT/L" },
-        { "file": "SpecificHeatCapacity.html", "name": "比热容", "nameEn": "Specific Heat Capacity", "formula": "Q=cmΔt" },
-        { "file": "IdealGasLaw.html", "name": "理想气体定律", "nameEn": "Ideal Gas Law", "formula": "PV=nRT" },
-        { "file": "FirstLawThermodynamics.html", "name": "热力学第一定律", "nameEn": "First Law of Thermodynamics", "formula": "ΔU=Q+W" }
+        {
+          "file": "ThermalConduction.html",
+          "name": "热传导",
+          "nameEn": "Thermal Conduction",
+          "formula": "Q/t=kA·ΔT/L",
+          "icon": "🔥",
+          "desc": "模拟热量沿金属棒传导，温度梯度可视化。Q/t = kA·ΔT/L"
+        },
+        {
+          "file": "SpecificHeatCapacity.html",
+          "name": "比热容",
+          "nameEn": "Specific Heat Capacity",
+          "formula": "Q=cmΔt",
+          "icon": "🌡️",
+          "desc": "不同物质吸收相同热量温度变化不同。Q = cmΔt"
+        },
+        {
+          "file": "IdealGasLaw.html",
+          "name": "理想气体定律",
+          "nameEn": "Ideal Gas Law",
+          "formula": "PV=nRT",
+          "icon": "🎈",
+          "desc": "模拟气体分子运动，调节温度、体积和摩尔数。PV=nRT"
+        },
+        {
+          "file": "FirstLawThermodynamics.html",
+          "name": "热力学第一定律",
+          "nameEn": "First Law of Thermodynamics",
+          "formula": "ΔU=Q+W",
+          "icon": "♨️",
+          "desc": "等温、等容、绝热三种过程的可视化演示。ΔU=Q+W"
+        }
       ]
     },
     {
@@ -50,14 +225,70 @@
       "icon": "⚡",
       "count": 8,
       "simulations": [
-        { "file": "resistor.html", "name": "电阻", "nameEn": "Resistance", "formula": "R=ρL/A" },
-        { "file": "Ohm'sLaw.html", "name": "欧姆定律", "nameEn": "Ohm's Law", "formula": "I=V/R" },
-        { "file": "SeriesParallelCircuits.html", "name": "串并联电路", "nameEn": "Series & Parallel Circuits", "formula": "R_eq=R₁+R₂ 或 1/R_eq=1/R₁+1/R₂" },
-        { "file": "CapacitorChargeDischarge.html", "name": "电容充放电", "nameEn": "Capacitor Charge & Discharge", "formula": "Vc=V₀(1−e^(−t/RC))" },
-        { "file": "CoulombsLaw.html", "name": "库仑定律", "nameEn": "Coulomb's Law", "formula": "F=kq₁q₂/r²" },
-        { "file": "AmpereForce.html", "name": "安培力", "nameEn": "Ampère Force", "formula": "F=BILsinθ" },
-        { "file": "LorentzForce.html", "name": "洛伦兹力", "nameEn": "Lorentz Force", "formula": "F=qvB" },
-        { "file": "ElectromagneticInduction.html", "name": "电磁感应", "nameEn": "Electromagnetic Induction", "formula": "ε=−dΦ/dt" }
+        {
+          "file": "resistor.html",
+          "name": "电阻",
+          "nameEn": "Resistance",
+          "formula": "R=ρL/A",
+          "icon": "🔌",
+          "desc": "演示电阻率、长度和截面积如何影响电阻。R = ρL/A"
+        },
+        {
+          "file": "Ohm'sLaw.html",
+          "name": "欧姆定律",
+          "nameEn": "Ohm's Law",
+          "formula": "I=V/R",
+          "icon": "⚡",
+          "desc": "探究电压、电流与电阻的关系。I = V / R"
+        },
+        {
+          "file": "SeriesParallelCircuits.html",
+          "name": "串并联电路",
+          "nameEn": "Series & Parallel Circuits",
+          "formula": "R_eq=R₁+R₂ 或 1/R_eq=1/R₁+1/R₂",
+          "icon": "🔗",
+          "desc": "串联分压、并联分流，等效电阻实时计算。"
+        },
+        {
+          "file": "CapacitorChargeDischarge.html",
+          "name": "电容充放电",
+          "nameEn": "Capacitor Charge & Discharge",
+          "formula": "Vc=V₀(1−e^(−t/RC))",
+          "icon": "🔋",
+          "desc": "RC电路充放电曲线，时间常数τ=RC可视化。"
+        },
+        {
+          "file": "CoulombsLaw.html",
+          "name": "库仑定律",
+          "nameEn": "Coulomb's Law",
+          "formula": "F=kq₁q₂/r²",
+          "icon": "🧲",
+          "desc": "两个带电球体之间的静电力可视化。"
+        },
+        {
+          "file": "AmpereForce.html",
+          "name": "安培力",
+          "nameEn": "Ampère Force",
+          "formula": "F=BILsinθ",
+          "icon": "🧲",
+          "desc": "通电导线在磁场中的受力分析。F = BIL sinθ"
+        },
+        {
+          "file": "LorentzForce.html",
+          "name": "洛伦兹力",
+          "nameEn": "Lorentz Force",
+          "formula": "F=qvB",
+          "icon": "🔄",
+          "desc": "带电粒子在匀强磁场中做圆周运动。F = qvB"
+        },
+        {
+          "file": "ElectromagneticInduction.html",
+          "name": "电磁感应",
+          "nameEn": "Electromagnetic Induction",
+          "formula": "ε=−dΦ/dt",
+          "icon": "🧲",
+          "desc": "磁通量变化产生感应电动势，法拉第定律演示。"
+        }
       ]
     },
     {
@@ -67,16 +298,86 @@
       "icon": "🌊",
       "count": 10,
       "simulations": [
-        { "file": "WaveGeneration.html", "name": "波形产生", "nameEn": "Wave Generation", "formula": "y=Asin(ωt)" },
-        { "file": "TransverseLongitudinalWave.html", "name": "横波与纵波", "nameEn": "Transverse & Longitudinal Waves", "formula": "—" },
-        { "file": "WaveSpeed.html", "name": "波速", "nameEn": "Wave Speed", "formula": "v=fλ" },
-        { "file": "WaveSuperposition.html", "name": "波的叠加原理", "nameEn": "Wave Superposition", "formula": "y=y₁+y₂" },
-        { "file": "StandingWave.html", "name": "驻波形成", "nameEn": "Standing Wave", "formula": "y=2Acos(kx)sin(ωt)" },
-        { "file": "DopplerEffect.html", "name": "多普勒效应", "nameEn": "Doppler Effect", "formula": "f'=f(v±v₀)/(v∓v_s)" },
-        { "file": "Polarization.html", "name": "偏振与马吕斯定律", "nameEn": "Polarization & Malus's Law", "formula": "I=I₀cos²θ" },
-        { "file": "SingleSlitDiffraction.html", "name": "单缝衍射", "nameEn": "Single Slit Diffraction", "formula": "asinθ=nλ" },
-        { "file": "DoubleSlitInterference.html", "name": "双缝干涉", "nameEn": "Double-Slit Interference", "formula": "dsinθ=nλ" },
-        { "file": "DiffractionGrating.html", "name": "衍射光栅", "nameEn": "Diffraction Grating", "formula": "dsinθ=nλ" }
+        {
+          "file": "WaveGeneration.html",
+          "name": "波形产生",
+          "nameEn": "Wave Generation",
+          "formula": "y=Asin(ωt)",
+          "icon": "🌊",
+          "desc": "演示波在空间与时间维度的产生。"
+        },
+        {
+          "file": "TransverseLongitudinalWave.html",
+          "name": "横波与纵波",
+          "nameEn": "Transverse & Longitudinal Waves",
+          "formula": "—",
+          "icon": "〰️",
+          "desc": "对比横波与纵波的质点振动方式。"
+        },
+        {
+          "file": "WaveSpeed.html",
+          "name": "波速",
+          "nameEn": "Wave Speed",
+          "formula": "v=fλ",
+          "icon": "🚀",
+          "desc": "直观演示 v = fλ 关系。"
+        },
+        {
+          "file": "WaveSuperposition.html",
+          "name": "波的叠加原理",
+          "nameEn": "Wave Superposition",
+          "formula": "y=y₁+y₂",
+          "icon": "🌊",
+          "desc": "两列波相遇时合位移等于各分位移的矢量和。"
+        },
+        {
+          "file": "StandingWave.html",
+          "name": "驻波形成",
+          "nameEn": "Standing Wave",
+          "formula": "y=2Acos(kx)sin(ωt)",
+          "icon": "🔄",
+          "desc": "两列反向传播的波叠加形成驻波。"
+        },
+        {
+          "file": "DopplerEffect.html",
+          "name": "多普勒效应",
+          "nameEn": "Doppler Effect",
+          "formula": "f'=f(v±v₀)/(v∓v_s)",
+          "icon": "⚡",
+          "desc": "波源移动导致的频率变化。"
+        },
+        {
+          "file": "Polarization.html",
+          "name": "偏振与马吕斯定律",
+          "nameEn": "Polarization & Malus's Law",
+          "formula": "I=I₀cos²θ",
+          "icon": "🕶️",
+          "desc": "线偏振光通过偏振片后的强度变化。I = I₀cos²θ"
+        },
+        {
+          "file": "SingleSlitDiffraction.html",
+          "name": "单缝衍射",
+          "nameEn": "Single Slit Diffraction",
+          "formula": "asinθ=nλ",
+          "icon": "🔲",
+          "desc": "光通过单缝的衍射图样，暗纹条件 a sinθ = nλ。"
+        },
+        {
+          "file": "DoubleSlitInterference.html",
+          "name": "双缝干涉",
+          "nameEn": "Double-Slit Interference",
+          "formula": "dsinθ=nλ",
+          "icon": "🎯",
+          "desc": "模拟双缝干涉的二维波动场与强度分布。d sinθ = nλ"
+        },
+        {
+          "file": "DiffractionGrating.html",
+          "name": "衍射光栅",
+          "nameEn": "Diffraction Grating",
+          "formula": "dsinθ=nλ",
+          "icon": "🔬",
+          "desc": "N条缝的多光束干涉，N越大条纹越锐利。"
+        }
       ]
     },
     {
@@ -86,10 +387,38 @@
       "icon": "⚛️",
       "count": 4,
       "simulations": [
-        { "file": "PhotoelectricEffect.html", "name": "光电效应", "nameEn": "Photoelectric Effect", "formula": "Eₖ=hf−W" },
-        { "file": "AlphaScattering.html", "name": "卢瑟福散射", "nameEn": "Rutherford Scattering", "formula": "—" },
-        { "file": "MassEnergyEquivalence.html", "name": "质能方程", "nameEn": "Mass-Energy Equivalence", "formula": "E=mc²" },
-        { "file": "RadioactiveDecay.html", "name": "放射性衰变", "nameEn": "Radioactive Decay", "formula": "N=N₀e^(−λt)" }
+        {
+          "file": "PhotoelectricEffect.html",
+          "name": "光电效应",
+          "nameEn": "Photoelectric Effect",
+          "formula": "Eₖ=hf−W",
+          "icon": "💡",
+          "desc": "光子照射金属表面发射电子，验证截止频率。"
+        },
+        {
+          "file": "AlphaScattering.html",
+          "name": "卢瑟福散射",
+          "nameEn": "Rutherford Scattering",
+          "formula": "—",
+          "icon": "⚛️",
+          "desc": "α粒子散射实验模拟，探索原子核结构。"
+        },
+        {
+          "file": "MassEnergyEquivalence.html",
+          "name": "质能方程",
+          "nameEn": "Mass-Energy Equivalence",
+          "formula": "E=mc²",
+          "icon": "⚛️",
+          "desc": "用真实核反应方程演示质量亏损如何转化为能量。E=mc²"
+        },
+        {
+          "file": "RadioactiveDecay.html",
+          "name": "放射性衰变",
+          "nameEn": "Radioactive Decay",
+          "formula": "N=N₀e^(−λt)",
+          "icon": "☢️",
+          "desc": "N=N₀e^(−λt)指数衰变，半衰期标记线标注。"
+        }
       ]
     },
     {
@@ -99,9 +428,30 @@
       "icon": "🌌",
       "count": 3,
       "simulations": [
-        { "file": "Gravitation.html", "name": "万有引力", "nameEn": "Universal Gravitation", "formula": "F=Gm₁m₂/r²" },
-        { "file": "KeplersLaws.html", "name": "开普勒定律", "nameEn": "Kepler's Laws", "formula": "T²∝a³" },
-        { "file": "SolarLunarEclipse.html", "name": "月相变化", "nameEn": "Moon Phases", "formula": "—" }
+        {
+          "file": "Gravitation.html",
+          "name": "万有引力",
+          "nameEn": "Universal Gravitation",
+          "formula": "F=Gm₁m₂/r²",
+          "icon": "🌍",
+          "desc": "双天体引力模拟，展示F=Gm₁m₂/r²。"
+        },
+        {
+          "file": "KeplersLaws.html",
+          "name": "开普勒定律",
+          "nameEn": "Kepler's Laws",
+          "formula": "T²∝a³",
+          "icon": "🪐",
+          "desc": "行星椭圆轨道模拟，演示面积定律和周期定律。"
+        },
+        {
+          "file": "SolarLunarEclipse.html",
+          "name": "月相变化",
+          "nameEn": "Moon Phases",
+          "formula": "—",
+          "icon": "🌙",
+          "desc": "月球绕地球公转的月相变化演示，日食与月食标注。"
+        }
       ]
     }
   ],
