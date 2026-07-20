@@ -502,7 +502,7 @@
             T: 300, // K
             V: 3.0, // arbitrary units
             n: 1.0, // mol
-            isPlaying: true,
+            isPlaying: false,
             particles: [],
             pistonY: 0, // current animated piston Y
             targetPistonY: 0,
@@ -1062,7 +1062,7 @@
         resize();
         resetAll();
         state.isPlaying = true;
-        bStart.textContent = '暂停 Pause';
+        bStart.textContent = '开始 Start';
         bStart.classList.toggle('start', false);
         bStart.classList.toggle('pause', true);
         update();
