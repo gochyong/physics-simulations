@@ -52,22 +52,6 @@
             padding: 5px 40px 10px;
         }
 
-        .branding {
-            position: fixed;
-            top: 25px;
-            left: 30px;
-            z-index: 1000;
-        }
-
-        .logo {
-            font-weight: 700;
-            font-size: 1.6rem;
-            color: #FFFFFF;
-            background: var(--primary);
-            padding: 10px 25px;
-            border-radius: 20px;
-            box-shadow: 4px 4px 15px rgba(255, 140, 66, 0.3);
-        }
 
         .container {
             width: 100%;
@@ -1061,10 +1045,8 @@
         // ---- Initialize ----
         resize();
         resetAll();
-        state.isPlaying = true;
         bStart.textContent = '开始 Start';
-        bStart.classList.toggle('start', false);
-        bStart.classList.toggle('pause', true);
+        bStart.className = 'ctrl-btn start';
         update();
     </script>
 <div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
