@@ -18,7 +18,7 @@
         header { grid-area: header; text-align: center; } h1 { font-size: 2rem; margin-bottom: 2px; }
         .formula-display { grid-area: formula; background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb; }
         .formula-container { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; min-height: 44px; }
-        .result-row { font-size: 0.95rem; font-weight: 600; margin-top: 4px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+        .result-row { font-size: 1.05rem; font-weight: 600; margin-top: 4px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
         .legend { display: flex; gap: 16px; justify-content: center; border-top: 1px solid #eee; padding-top: 6px; width: 100%; flex-wrap: wrap; }
         .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
         .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
@@ -26,12 +26,14 @@
         #simCanvas { width: 100%; flex: 1; display: block; }
         .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
         .control-panel { background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
-        .control-group { display: flex; flex-direction: column; gap: 3px; }
+        .control-group { display: flex; flex-direction: column; gap: 4px; }
         .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
         .val-badge { background: #fff; padding: 1px 7px; border-radius: 7px; font-size: 0.85rem; border: 2px solid #f0f0f0; }
         input[type=range] { width: 100%; appearance: none; height: 6px; background: #eee; border-radius: 3px; }
         input[type=range]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--primary); cursor: pointer; }
-        .btn-row { display: grid; grid-template-columns: 1fr; gap: 8px; }
+        select { width: 100%; padding: 9px 10px; border-radius: 12px; border: 2px solid #e0e0e0; font-family: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer; background: #fafafa; color: #555; outline: none; }
+        select:focus { border-color: var(--primary); }
+        .btn-row { display: grid; grid-template-columns: 2fr 1fr; gap: 8px; }
         .ctrl-btn { padding: 10px; border: none; border-radius: 14px; font-size: 1rem; font-weight: 700; cursor: pointer; color: white; }
         .reset { background: #95a5a6; }
         .info-card { background: #fff; border-radius: 20px; padding: 12px 16px; box-shadow: var(--shadow); font-size: 0.9rem; line-height: 1.4; color: #5D6D7E; }
@@ -46,35 +48,38 @@
     <section class="formula-display">
         <div class="formula-container" id="formula-root"></div>
         <div class="result-row">
-            <span>I = <strong style="color:var(--accent)" id="res-i">—</strong> A</span>
-            <span>n = <strong style="color:#e67e22" id="res-n">5.0</strong> ×10²⁸ m⁻³</span>
-            <span>v = <strong style="color:#2ecc71" id="res-v">1.0</strong> mm/s</span>
+            <span>I = <strong style="color:var(--accent);font-size:1.3rem" id="res-i">—</strong> A</span>
+            <span>n = <strong style="color:#e67e22;font-size:1.3rem" id="res-n">8.47</strong> ×10²⁸ m⁻³</span>
+            <span>A = <strong style="color:#3498db;font-size:1.3rem" id="res-a">1.0</strong> mm²</span>
+            <span>v = <strong style="color:#2ecc71;font-size:1.3rem" id="res-v">1.0</strong> mm/s</span>
+            <span>q = <strong style="color:#9b59b6;font-size:1.3rem" id="res-q">1.60×10⁻¹⁹</strong> C</span>
         </div>
         <div class="legend">
             <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> I 电流</div>
             <div class="legend-item"><span class="legend-dot" style="background:#e67e22"></span> n 载流子密度</div>
-            <div class="legend-item"><span class="legend-dot" style="background:#9b59b6"></span> q 电荷量</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#3498db"></span> A 截面积</div>
             <div class="legend-item"><span class="legend-dot" style="background:#2ecc71"></span> v 漂移速度</div>
-            <div class="legend-item"><span class="legend-dot" style="background:#3498db"></span> S 截面积</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#9b59b6"></span> q 电子电量</div>
         </div>
     </section>
     <section class="diagram-section"><canvas id="simCanvas"></canvas></section>
     <section class="controls-section">
         <div class="control-panel">
             <div class="control-group">
-                <div class="label-row"><span style="color:#e67e22;">载流子密度 n</span><span id="badge-n" class="val-badge">5.0 ×10²⁸ m⁻³</span></div>
-                <input type="range" id="slider-n" min="1" max="10" step="0.1" value="5.0">
+                <div class="label-row"><span style="color:#e67e22;">金属种类（决定 n）</span><span id="badge-n" class="val-badge">8.47 ×10²⁸ m⁻³</span></div>
+                <select id="sel-metal"></select>
+            </div>
+            <div class="control-group">
+                <div class="label-row"><span style="color:#3498db;">截面积 A</span><span id="badge-a" class="val-badge">1.0 mm²</span></div>
+                <input type="range" id="slider-a" min="0.5" max="4" step="0.1" value="1.0">
             </div>
             <div class="control-group">
                 <div class="label-row"><span style="color:#2ecc71;">漂移速度 v</span><span id="badge-v" class="val-badge">1.0 mm/s</span></div>
                 <input type="range" id="slider-v" min="0.1" max="5" step="0.1" value="1.0">
             </div>
-            <div class="control-group">
-                <div class="label-row"><span style="color:#3498db;">截面积 S</span><span id="badge-s" class="val-badge">1.0 mm²</span></div>
-                <input type="range" id="slider-s" min="0.5" max="4" step="0.1" value="1.0">
-            </div>
             <div class="btn-row">
-                <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
+                <button id="btn-play" class="ctrl-btn" style="background:#2ecc71;">▶ 开始 Play</button>
+                <button id="btn-reset" class="ctrl-btn reset">重置</button>
             </div>
         </div>
         <div class="info-card">
@@ -82,19 +87,19 @@
             <div style="display:flex;flex-direction:column;gap:6px;">
                 <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
                     <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;">I</div>
-                    <div><div style="font-weight:700;font-size:0.9rem;">I = nqvS 微观表达式</div><div style="font-size:0.78rem;color:#888;">电流由载流子密度、电荷量、漂移速度和截面积共同决定。</div></div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">I = nAvq 微观表达式</div><div style="font-size:0.78rem;color:#888;">在 t 时间内，体积 A·v·t 内的 n·Avt 个载流子全部穿过截面，携带电量 n·Avt·q，故 I = nAvq。</div></div>
                 </div>
                 <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
                     <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(230,126,34,0.1);color:#e67e22;font-weight:700;">n</div>
-                    <div><div style="font-weight:700;font-size:0.9rem;">金属中 n ~ 10²⁸ m⁻³</div><div style="font-size:0.78rem;color:#888;">铜的自由电子密度约 8.5×10²⁸ m⁻³，极为巨大。</div></div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">不同金属 n 不同 ~ 10²⁸ m⁻³</div><div style="font-size:0.78rem;color:#888;">铜的自由电子密度约 8.47×10²⁸ m⁻³；下拉切换常见金属，n 改变时电子密集程度随之变化。</div></div>
                 </div>
                 <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
                     <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:#2ecc71;font-weight:700;">v</div>
                     <div><div style="font-weight:700;font-size:0.9rem;">漂移速度极慢 ~ mm/s</div><div style="font-size:0.78rem;color:#888;">电子热运动~10⁵m/s 但漂移速度仅 ~10⁻³m/s，电信号以光速传播是电场建立快。</div></div>
                 </div>
                 <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
-                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(155,89,182,0.1);color:#9b59b6;font-weight:700;">q</div>
-                    <div><div style="font-weight:700;font-size:0.9rem;">q = e = 1.6×10⁻¹⁹ C</div><div style="font-size:0.78rem;color:#888;">每个自由电子带电量 e，n 个电子微观运动形成宏观电流。</div></div>
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:#3498db;font-weight:700;">⇄</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">电流方向与电子运动方向相反</div><div style="font-size:0.78rem;color:#888;">金属中实际定向移动的是电子（向左），但电流方向规定为正电荷移动方向（向右），二者相反。</div></div>
                 </div>
             </div>
         </div>
@@ -102,70 +107,116 @@
 </div>
 <script>
 const canvas=document.getElementById('simCanvas'),ctx=canvas.getContext('2d');
-const sN=document.getElementById('slider-n'),sV=document.getElementById('slider-v'),sS=document.getElementById('slider-s');
-const bN=document.getElementById('badge-n'),bV=document.getElementById('badge-v'),bS=document.getElementById('badge-s');
-const resI=document.getElementById('res-i'),resN=document.getElementById('res-n'),resV=document.getElementById('res-v');
-const fRoot=document.getElementById('formula-root');
+const selM=document.getElementById('sel-metal'),sV=document.getElementById('slider-v'),sA=document.getElementById('slider-a');
+const bN=document.getElementById('badge-n'),bV=document.getElementById('badge-v'),bA=document.getElementById('badge-a');
+const resI=document.getElementById('res-i'),resN=document.getElementById('res-n'),resV=document.getElementById('res-v'),resA=document.getElementById('res-a'),resQ=document.getElementById('res-q');
+const fRoot=document.getElementById('formula-root'),btnPlay=document.getElementById('btn-play');
 const QE=1.6e-19;
-const S={n:5.0,v:1.0,s:1.0,electrons:[]};
+// 常见金属的自由电子密度 n（单位 ×10²⁸ m⁻³）
+const METALS=[{name:'锂 Li',n:4.70},{name:'钠 Na',n:2.65},{name:'镁 Mg',n:8.61},{name:'铝 Al',n:18.10},{name:'铜 Cu',n:8.47},{name:'锌 Zn',n:13.20},{name:'银 Ag',n:5.86},{name:'金 Au',n:5.90}];
+const SUP={0:'⁰',1:'¹',2:'²',3:'³',4:'⁴',5:'⁵',6:'⁶',7:'⁷',8:'⁸',9:'⁹','-':'⁻'};
+// 把数值格式化为 10 的幂次方形式（含上标 Unicode 指数）
+function fmtExp(v){if(!isFinite(v)||v===0)return'0';const e=Math.floor(Math.log10(Math.abs(v)));const m=v/Math.pow(10,e);const es=Math.abs(e).toString().split('').map(d=>SUP[d]).join('');return m.toFixed(2)+'×10'+(e<0?SUP['-']:'')+es}
+const S={metalIdx:4,v:1.0,a:1.0,electrons:[],flash:0,passed:0,windowT:0,running:false};
+let lastTs=performance.now(),rafId=null;
+// 填充金属下拉框
+METALS.forEach((m,i)=>{const o=document.createElement('option');o.value=i;o.textContent=m.name+'    (n = '+m.n.toFixed(2)+'×10²⁸ m⁻³)';selM.appendChild(o)});
+selM.value=S.metalIdx;
+function nVal(){return METALS[S.metalIdx].n}
+function geom(){const w=canvas.width,h=canvas.height,barY=h*0.52,barH=30+S.a*22,barL=Math.min(w*0.62,640),barX=(w-barL)/2;return{w,h,barY,barH,barL,barX,sectionX:barX+barL/2}}
+function targetCount(){return Math.min(90,Math.max(8,Math.round(nVal()*5)))}  // 电子数量随 n 变化
+function speed(){return Math.min(Math.max(S.v*34,20),210)}                     // 漂移速度随 v 变化（电子向左）
 
-function initElectrons(){
-    S.electrons=[];
-    const count=Math.floor(S.n*5);
-    for(let i=0;i<Math.min(count,100);i++){
-        S.electrons.push({x:Math.random(),y:0.15+Math.random()*0.7});
+function initElectrons(){const g=geom();S.electrons=[];const rows=Math.max(2,Math.round(g.barH/14));const cnt=targetCount();
+for(let i=0;i<cnt;i++){const row=i%rows;S.electrons.push({x:g.barX+Math.random()*g.barL,y:g.barY-g.barH/2+8+(row+0.5)*(g.barH-16)/rows,jit:Math.random()*Math.PI*2,js:0.4+Math.random()*0.8,counted:false})}}
+
+function updateText(){
+    S.v=parseFloat(sV.value);S.a=parseFloat(sA.value);
+    const nn=nVal();
+    bN.textContent=nn.toFixed(2)+' ×10²⁸ m⁻³';bV.textContent=S.v.toFixed(1)+' mm/s';bA.textContent=S.a.toFixed(1)+' mm²';
+    const nReal=nn*1e28,vReal=S.v*1e-3,aReal=S.a*1e-6;
+    const I=nReal*QE*vReal*aReal;          // I = n·A·v·q
+    resI.textContent=fmtExp(I);resN.textContent=nn.toFixed(2);resV.textContent=S.v.toFixed(1);resA.textContent=S.a.toFixed(1);resQ.textContent=fmtExp(QE);
+    fRoot.innerHTML=`<span style="font-size:26px;font-weight:700;color:#FF5E5B">I</span><span style="font-size:26px">=</span><span style="font-size:26px;font-weight:700;color:#e67e22">n</span><span style="font-size:26px;font-weight:700;color:#3498db">A</span><span style="font-size:26px;font-weight:700;color:#2ecc71">v</span><span style="font-size:26px;font-weight:700;color:#9b59b6">q</span><span style="font-size:26px">= <b>${fmtExp(I)} A</b></span>`;
+}
+
+function frame(ts){
+    if(!S.running)return;
+    const dt=Math.min(0.05,(ts-lastTs)/1000);lastTs=ts;
+    const g=geom();
+    // 电子数量随金属 n 动态增删
+    const tgt=targetCount();
+    if(S.electrons.length<tgt){const rows=Math.max(2,Math.round(g.barH/14));for(let i=S.electrons.length;i<tgt;i++){const row=i%rows;S.electrons.push({x:g.barX+Math.random()*g.barL,y:g.barY-g.barH/2+8+(row+0.5)*(g.barH-16)/rows,jit:Math.random()*Math.PI*2,js:0.4+Math.random()*0.8,counted:false})}}
+    else if(S.electrons.length>tgt)S.electrons.length=tgt;
+    const sp=speed();
+    for(const e of S.electrons){
+        const prev=e.x;e.x-=sp*dt;            // 电子向左漂移
+        e.jit+=e.js*dt;
+        if(!e.counted && prev>g.sectionX && e.x<=g.sectionX){e.counted=true;S.passed++;S.flash=1}
+        if(e.x<g.barX-6){e.x=g.barX+g.barL+Math.random()*30;e.y=g.barY-g.barH/2+8+Math.random()*(g.barH-16);e.counted=false}
     }
+    S.flash*=0.88;
+    const nn=nVal(),nReal=nn*1e28,vReal=S.v*1e-3,aReal=S.a*1e-6;
+    const I=nReal*QE*vReal*aReal;
+    draw(g,I);
+    rafId=requestAnimationFrame(frame);
 }
-initElectrons();
 
-function resize(){canvas.width=canvas.clientWidth;canvas.height=canvas.clientHeight;}
+function draw(g,I){
+    const {w,h,barY,barH,barL,barX,sectionX}=g;
+    ctx.clearRect(0,0,w,h);ctx.fillStyle='#fafaf7';ctx.fillRect(0,0,w,h);
+    // 导体
+    const g1=ctx.createLinearGradient(0,barY-barH/2,0,barY+barH/2);
+    g1.addColorStop(0,'#ececdf');g1.addColorStop(0.5,'#d8d8cc');g1.addColorStop(1,'#c4c4b8');
+    ctx.fillStyle=g1;ctx.fillRect(barX,barY-barH/2,barL,barH);
+    ctx.strokeStyle='#8a8a7a';ctx.lineWidth=2;ctx.strokeRect(barX,barY-barH/2,barL,barH);
+    // 中央截面（电子穿过时闪烁）
+    ctx.strokeStyle=S.flash>0.25?'#e74c3c':'rgba(231,76,60,0.5)';
+    ctx.lineWidth=S.flash>0.25?3.5:2;ctx.setLineDash([6,5]);
+    ctx.beginPath();ctx.moveTo(sectionX,barY-barH/2-22);ctx.lineTo(sectionX,barY+barH/2+22);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#e74c3c';ctx.font='bold 12px Fredoka';ctx.textAlign='center';
+    ctx.fillText('截面 A',sectionX,barY-barH/2-28);
+    // 电子（向左漂移，叠加纵向热运动抖动）
+    ctx.textBaseline='middle';
+    for(const e of S.electrons){
+        const py=e.y+Math.sin(e.jit)*1.5;
+        ctx.fillStyle='#3498db';ctx.beginPath();ctx.arc(e.x,py,4,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle='#fff';ctx.font='bold 6px Fredoka';ctx.textAlign='center';ctx.fillText('−',e.x,py+0.5);
+    }
+    ctx.textBaseline='alphabetic';
+    // 电子运动方向（导体上方，向左）
+    const ey=barY-barH/2-54;
+    ctx.strokeStyle='#3498db';ctx.lineWidth=3.5;ctx.fillStyle='#3498db';
+    ctx.beginPath();ctx.moveTo(barX+barL-4,ey);ctx.lineTo(barX+10,ey);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(barX,ey);ctx.lineTo(barX+13,ey-7);ctx.lineTo(barX+13,ey+7);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#3498db';ctx.font='bold 13px Fredoka';ctx.textAlign='center';
+    ctx.fillText('电子定向漂移 v = '+S.v.toFixed(1)+' mm/s（向左）',barX+barL/2,ey-9);
+    // 电流方向（导体下方，向右）—— 与电子运动方向相反
+    const iy=barY+barH/2+50;
+    ctx.strokeStyle='#FF8c42';ctx.lineWidth=3.5;ctx.fillStyle='#FF8c42';
+    ctx.beginPath();ctx.moveTo(barX+4,iy);ctx.lineTo(barX+barL-10,iy);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(barX+barL,iy);ctx.lineTo(barX+barL-13,iy-7);ctx.lineTo(barX+barL-13,iy+7);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#FF8c42';ctx.font='bold 15px Fredoka';ctx.textAlign='center';
+    ctx.fillText('电流方向 I（向右）= '+fmtExp(I)+' A',barX+barL/2,iy+18);
+    // 金属与密度提示
+    ctx.fillStyle='#e67e22';ctx.font='bold 12px Fredoka';ctx.textAlign='left';
+    ctx.fillText('金属：'+METALS[S.metalIdx].name+'   n = '+nVal().toFixed(2)+'×10²⁸ m⁻³',barX,barY-barH/2-78);
+}
+
+// 开始/暂停切换
+function togglePlay(){
+    S.running=!S.running;
+    if(S.running){lastTs=performance.now();rafId=requestAnimationFrame(frame);btnPlay.textContent='⏸ 暂停 Pause';btnPlay.style.background='var(--primary)'}
+    else{if(rafId)cancelAnimationFrame(rafId);rafId=null;btnPlay.textContent='▶ 开始 Play';btnPlay.style.background='#2ecc71'}
+}
+
+function resize(){canvas.width=canvas.clientWidth;canvas.height=canvas.clientHeight;initElectrons()}
 window.addEventListener('resize',resize);
-
-function update(){
-    S.n=parseFloat(sN.value);S.v=parseFloat(sV.value);S.s=parseFloat(sS.value);
-    bN.textContent=S.n.toFixed(1)+' ×10²⁸ m⁻³';bV.textContent=S.v.toFixed(1)+' mm/s';bS.textContent=S.s.toFixed(1)+' mm²';
-    const nReal=S.n*1e28,vReal=S.v*1e-3,sReal=S.s*1e-6;
-    const I=nReal*QE*vReal*sReal;
-    resI.textContent=I.toExponential(2);
-    resN.textContent=S.n.toFixed(1);resV.textContent=S.v.toFixed(1);
-    fRoot.innerHTML=`<span style="font-size:26px;font-weight:700;color:var(--accent);">I</span><span style="font-size:26px;">=</span><span style="font-size:26px;font-weight:700;color:#e67e22;">n</span><span style="font-size:26px;font-weight:700;color:#9b59b6;">q</span><span style="font-size:26px;font-weight:700;color:#2ecc71;">v</span><span style="font-size:26px;font-weight:700;color:#3498db;">S</span><span style="font-size:26px;">= <b>${I.toExponential(2)} A</b></span>`;
-    draw(I);requestAnimationFrame(update);
-}
-
-function draw(I){
-    const w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);ctx.fillStyle='#fafaf7';ctx.fillRect(0,0,w,h);
-
-    // Conductor with variable cross section
-    const barY=h*0.5,barH=30+ S.s*30,barL=w*0.6,barX=(w-barL)/2;
-    ctx.fillStyle='#ddd';ctx.fillRect(barX,barY-barH/2,barL,barH);
-    ctx.strokeStyle='#888';ctx.lineWidth=2;ctx.strokeRect(barX,barY-barH/2,barL,barH);
-    ctx.fillStyle='#555';ctx.font='bold 11px Fredoka';ctx.textAlign='center';
-    ctx.fillText('截面 S='+S.s.toFixed(1)+'mm²',w/2,barY+barH/2+16);
-
-    // Moving electrons
-    const vScale=S.v*0.3;
-    S.electrons.forEach((el,i)=>{
-        el.x+=vScale*0.002;
-        if(el.x>barX+barL-10)el.x=barX+5;
-        const px=barX+el.x*(barL/1.5);
-        const py=barY-barH/2+8+(i%8)*(barH-16)/8;
-        ctx.fillStyle='#3498db';ctx.beginPath();ctx.arc(px,py,3.5,0,Math.PI*2);ctx.fill();
-        ctx.fillStyle='#fff';ctx.font='bold 5px Fredoka';ctx.textAlign='center';ctx.fillText('e',px,py+1.5);
-    });
-
-    // Labels
-    const infoY=barY-50;
-    ctx.strokeStyle='#2ecc71';ctx.setLineDash([3,5]);ctx.lineWidth=1.5;
-    ctx.beginPath();ctx.moveTo(barX+barL/2,barY-10);ctx.lineTo(barX+barL/2,infoY+10);ctx.stroke();ctx.setLineDash([]);
-    ctx.fillStyle='#2ecc71';ctx.font='bold 12px Fredoka';ctx.textAlign='center';
-    ctx.fillText('漂移速度 v='+S.v.toFixed(1)+' mm/s',barX+barL/2,infoY);
-
-    ctx.fillStyle='var(--accent)';ctx.font='bold 14px Fredoka';ctx.textAlign='right';
-    ctx.fillText('I = nqvS = '+I.toExponential(2)+' A',w-20,30);
-}
-
-document.getElementById('btn-reset').onclick=()=>{sN.value=5;sV.value=1;sS.value=1;S.n=5;S.v=1;S.s=1;};
-resize();requestAnimationFrame(update);
+selM.onchange=()=>{S.metalIdx=parseInt(selM.value);updateText()};
+sV.addEventListener('input',updateText);sA.addEventListener('input',updateText);
+btnPlay.onclick=togglePlay;
+document.getElementById('btn-reset').onclick=()=>{selM.value=4;S.metalIdx=4;sV.value=1;sA.value=1;S.passed=0;S.windowT=0;updateText();initElectrons()};
+resize();updateText();draw(geom(),nVal()*1e28*QE*S.v*1e-3*S.a*1e-6);
 </script>
 <div class="site-footer">© 2025 Wuli布雷克 | MIT License </div>
 </body>

@@ -5,7 +5,7 @@
       "name": "力学",
       "nameEn": "Mechanics",
       "icon": "⚙️",
-      "count": 21,
+      "count": 23,
       "simulations": [
         {
           "file": "density.html",
@@ -174,6 +174,24 @@
           "formula": "F₁d₁=F₂d₂",
           "icon": "⚖️",
           "desc": "探索力矩平衡条件，模拟不同质量和位置下的杠杆平衡。"
+        },
+        {
+          "cat": "mechanics",
+          "file": "SimplePendulum.html",
+          "name": "单摆",
+          "nameEn": "Simple Pendulum",
+          "formula": "T=2π√(L/g)",
+          "icon": "⏰",
+          "desc": "单摆周期仅与摆长和重力加速度有关。小角度时做简谐运动，可测量重力加速度。"
+        },
+        {
+          "cat": "mechanics",
+          "file": "Pulley.html",
+          "name": "滑轮",
+          "nameEn": "Pulley",
+          "formula": "F=G/n",
+          "icon": "🪢",
+          "desc": "定滑轮改变方向不省力，动滑轮省一半力，滑轮组n段绳省力1/n。"
         }
       ]
     },
@@ -182,7 +200,7 @@
       "name": "热学",
       "nameEn": "Thermal Physics",
       "icon": "🔥",
-      "count": 4,
+      "count": 5,
       "simulations": [
         {
           "file": "ThermalConduction.html",
@@ -215,6 +233,15 @@
           "formula": "ΔU=Q+W",
           "icon": "♨️",
           "desc": "等温、等容、绝热三种过程的可视化演示。ΔU=Q+W"
+        },
+        {
+          "cat": "thermal",
+          "file": "LatentHeat.html",
+          "name": "潜热与相变",
+          "nameEn": "Latent Heat & Phase Change",
+          "formula": "Q=mL",
+          "icon": "🧊",
+          "desc": "冰水相变过程中温度保持0°C不变，吸收的热量用于改变分子间势能。Lf=334kJ/kg。"
         }
       ]
     },
@@ -223,7 +250,7 @@
       "name": "电磁学",
       "nameEn": "Electromagnetism",
       "icon": "⚡",
-      "count": 9,
+      "count": 10,
       "simulations": [
         {
           "file": "resistor.html",
@@ -296,6 +323,15 @@
           "formula": "ε=−dΦ/dt",
           "icon": "🧲",
           "desc": "磁通量变化产生感应电动势，法拉第定律演示。"
+        },
+        {
+          "cat": "electricity",
+          "file": "ElectricFieldLines.html",
+          "name": "电场线",
+          "nameEn": "Electric Field Lines",
+          "formula": "E=kQ/r²",
+          "icon": "🌀",
+          "desc": "单电荷、偶极子、同种电荷的电场线可视化。电场线密度代表场强大小。"
         }
       ]
     },
@@ -304,7 +340,7 @@
       "name": "波",
       "nameEn": "Waves",
       "icon": "🌊",
-      "count": 10,
+      "count": 11,
       "simulations": [
         {
           "file": "WaveGeneration.html",
@@ -385,6 +421,15 @@
           "formula": "dsinθ=nλ",
           "icon": "🔬",
           "desc": "N条缝的多光束干涉，N越大条纹越锐利。"
+        },
+        {
+          "cat": "waves",
+          "file": "Resonance.html",
+          "name": "共振",
+          "nameEn": "Resonance",
+          "formula": "f_drive=f₀",
+          "icon": "〰️",
+          "desc": "驱动力频率等于固有频率时振幅急剧增大。共振曲线尖峰，阻尼越小峰越锐。"
         }
       ]
     },
@@ -434,7 +479,7 @@
       "name": "天文",
       "nameEn": "Astronomy",
       "icon": "🌌",
-      "count": 3,
+      "count": 5,
       "simulations": [
         {
           "file": "Gravitation.html",
@@ -459,11 +504,29 @@
           "formula": "—",
           "icon": "🌙",
           "desc": "月球绕地球公转的月相变化演示，日食与月食标注。"
+        },
+        {
+          "cat": "astronomy",
+          "file": "HubblesLaw.html",
+          "name": "哈勃定律",
+          "nameEn": "Hubble's Law",
+          "formula": "v=H₀·d",
+          "icon": "🌌",
+          "desc": "星系退行速度与距离成正比。H₀≈70 km/s/Mpc。宇宙膨胀的关键证据。"
+        },
+        {
+          "cat": "astronomy",
+          "file": "SolarSystem.html",
+          "name": "太阳系模型",
+          "nameEn": "Solar System Model",
+          "formula": "T²∝a³",
+          "icon": "☀️",
+          "desc": "八大行星绕太阳公转演示。近太阳公转快，远太阳公转慢。开普勒第三定律可视化。"
         }
       ]
     }
   ],
-  "totalSimulations": 51,
+  "totalSimulations": 58,
   "siteName": "Wuli布雷克物理模拟实验室",
   "url": "https://wuliblake.com",
   "github": "https://github.com/gochyong/physics-simulations"
