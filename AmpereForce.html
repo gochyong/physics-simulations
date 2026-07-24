@@ -160,7 +160,7 @@ function draw(){
         const ahx=S.bDir>0?bTo:bTo+10;
         ctx.beginPath();ctx.moveTo(ahx,by);ctx.lineTo(ahx-S.bDir*10,by-5);ctx.lineTo(ahx-S.bDir*10,by+5);ctx.closePath();ctx.fill();
     }
-    ctx.fillStyle='#9b59b6';ctx.font='bold 14px Fredoka';ctx.textAlign='center';
+    ctx.fillStyle='#9b59b6';ctx.font='bold 14px ';ctx.textAlign='center';
     ctx.fillText('B='+S.b.toFixed(1)+'T'+(S.bDir>0?' →':' ←'),bRight-40,bTop-10);
 
     // === Wire at angle θ ===
@@ -227,7 +227,7 @@ function draw(){
         const iax=wx1+idx*midT,iay=wy1+idy*midT;
         arrow(ctx,iax,iay,iax+iux*30,iay+iuy*30,'#3498db',2.5);
     }
-    ctx.fillStyle='#3498db';ctx.font='bold 13px Fredoka';ctx.textAlign='left';
+    ctx.fillStyle='#3498db';ctx.font='bold 13px ';ctx.textAlign='left';
     ctx.fillText('I='+S.i+'A'+(S.iDir>0?' ↗':' ↙'),wx2+8,wy2-4);
 
     // === Force (based on effective length, left-hand rule) ===
@@ -250,12 +250,12 @@ function draw(){
     resF.textContent=force.toFixed(3);
 
     // Force direction and magnitude at top of canvas
-    ctx.fillStyle='var(--accent)';ctx.font='bold 18px Fredoka';ctx.textAlign='center';
+    ctx.fillStyle='var(--accent)';ctx.font='bold 18px ';ctx.textAlign='center';
     ctx.fillText('F = '+force.toFixed(3)+' N  '+dirText,cx,h*0.06);
 
     // Effective length note
     if(effFrac<0.99){
-        ctx.fillStyle='#e67e22';ctx.font='bold 11px Fredoka';ctx.textAlign='center';
+        ctx.fillStyle='#e67e22';ctx.font='bold 11px ';ctx.textAlign='center';
         ctx.fillText('L_eff='+effLen.toFixed(2)+'m (导线超出磁场，仅计有效长度)',cx,cy+130);
     }
 
@@ -266,7 +266,7 @@ function draw(){
     if(thetaRad>=0){ctx.arc(cx,wireMidY,arcR,0,-thetaRad,true);}
     else{ctx.arc(cx,wireMidY,arcR,0,-thetaRad,false);}
     ctx.stroke();
-    ctx.fillStyle='#e67e22';ctx.font='bold 12px Fredoka';
+    ctx.fillStyle='#e67e22';ctx.font='bold 12px ';
     const labelAng=-thetaRad/2;
     ctx.fillText('θ='+S.theta+'°',cx+arcR*Math.cos(labelAng)+10,wireMidY+arcR*Math.sin(labelAng)-6);
 

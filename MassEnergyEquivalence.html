@@ -190,16 +190,16 @@ function drawNucleus(x,y,data,scale){
         const elem=rawName.replace(/[₀-₉²³⁴⁵⁶⁷⁸⁹¹⁰0-9]+/g,'');
         ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';
         // Superscript (mass) top-left, close to element
-        ctx.font='bold 11px Fredoka';ctx.textAlign='right';
+        ctx.font='bold 11px ';ctx.textAlign='right';
         ctx.fillText(mass,x+2,y-10);
         // Subscript (atomic) bottom-left, close to element
-        ctx.font='bold 9px Fredoka';ctx.textAlign='right';
+        ctx.font='bold 9px ';ctx.textAlign='right';
         ctx.fillText(data.p,x+2,y+7);
         // Element symbol
-        ctx.font='bold 18px Fredoka';ctx.textAlign='left';
+        ctx.font='bold 18px ';ctx.textAlign='left';
         ctx.fillText(elem,x+4,y+1);
     }else{
-        ctx.fillStyle='#fff';ctx.font='bold 16px Fredoka';ctx.textAlign='center';ctx.textBaseline='middle';
+        ctx.fillStyle='#fff';ctx.font='bold 16px ';ctx.textAlign='center';ctx.textBaseline='middle';
         ctx.fillText(data.name.replace(/[₀-₉²³⁴⁵⁶⁷⁸⁹¹⁰0-9]+/g,''),x,y);
     }
 }
@@ -215,7 +215,7 @@ function drawEqTerm(x,y,data){
     ctx.fillStyle='#fff';ctx.textBaseline='middle';
     let w=0;
     if(coeff){
-        ctx.font='bold 16px Fredoka';ctx.textAlign='left';
+        ctx.font='bold 16px ';ctx.textAlign='left';
         ctx.fillText(coeff,x,y);
         w+=ctx.measureText(coeff).width+3;
         x+=w;
@@ -224,23 +224,23 @@ function drawEqTerm(x,y,data){
         // Draw: superscript(mass) + subscript(atomic) on LEFT, then element symbol
         const mass=data.p+data.n;
         let lx=x;
-        ctx.font='bold 12px Fredoka';ctx.textAlign='right';
+        ctx.font='bold 12px ';ctx.textAlign='right';
         ctx.fillText(mass,lx+16,y-9);
-        ctx.font='bold 10px Fredoka';ctx.textAlign='right';
+        ctx.font='bold 10px ';ctx.textAlign='right';
         ctx.fillText(data.p,lx+16,y+7);
         // Element right next to numbers
-        ctx.font='bold 20px Fredoka';ctx.textAlign='left';
+        ctx.font='bold 20px ';ctx.textAlign='left';
         ctx.fillText(elem,lx+18,y+1);
         const totalW=w+ctx.measureText(elem).width+20;
         return totalW;
     }else{
-        ctx.font='bold 20px Fredoka';ctx.textAlign='left';
+        ctx.font='bold 20px ';ctx.textAlign='left';
         ctx.fillText(elem||rest,x,y+1);
         return w+ctx.measureText(elem||rest).width+4;
     }
 }
 function drawEqText(x,y,text){
-    ctx.fillStyle='#fff';ctx.font='bold 16px Fredoka';ctx.textAlign='left';ctx.textBaseline='middle';
+    ctx.fillStyle='#fff';ctx.font='bold 16px ';ctx.textAlign='left';ctx.textBaseline='middle';
     ctx.fillText(text,x,y);
     return ctx.measureText(text).width;
 }
@@ -270,7 +270,7 @@ function draw(){
             const ry=cy-15+(i-(total-1)/2)*65;
             drawNucleus(rx,ry,R.reactants[i],1.2);
         }
-        ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='italic 13px Fredoka';ctx.textAlign='center';
+        ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='italic 13px ';ctx.textAlign='center';
         ctx.fillText('点击 "反应" 按钮触发核反应',cx,cy+80);
     }else{
         // === During/after reaction: reactants gone, products appear ===
@@ -295,7 +295,7 @@ function draw(){
     }
 
     // Energy info at bottom
-    ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font='bold 14px Fredoka';ctx.textAlign='center';
+    ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font='bold 14px ';ctx.textAlign='center';
     ctx.fillText('Δm = '+R.dm_u.toFixed(4)+' u  →  E = '+R.E_MeV.toFixed(1)+' MeV',cx,h-22);
     if(S.mode==='annihilation'){
         ctx.fillText('物质 100% 转化为能量 (2×511 keV γ光子)',cx,h-6);

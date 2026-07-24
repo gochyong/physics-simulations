@@ -641,7 +641,7 @@ canvas {
             // Piston movement arrows
             const arrowX = rodX + 18;
             ctx.fillStyle = '#A0845C';
-            ctx.font = 'bold 14px Fredoka';
+            ctx.font = 'bold 14px ';
             ctx.textAlign = 'left';
             // Up arrow
             ctx.beginPath();
@@ -660,7 +660,7 @@ canvas {
 
             // "Piston" label
             ctx.fillStyle = '#6B5B4F';
-            ctx.font = '600 12px Fredoka, Noto Sans SC';
+            ctx.font = '600 12px ';
             ctx.textAlign = 'left';
             ctx.fillText('Piston', arrowX + 10, pY - pT - 2);
 
@@ -695,7 +695,7 @@ canvas {
             // Gauge tick marks
             ctx.strokeStyle = '#A0845C';
             ctx.lineWidth = 1;
-            ctx.font = '10px Fredoka';
+            ctx.font = '10px ';
             ctx.fillStyle = '#8B7355';
             ctx.textAlign = 'left';
             const tickLevels = [0, 50, 100, 150, 200, 250];
@@ -711,10 +711,10 @@ canvas {
 
             // Gauge label
             ctx.fillStyle = '#8B7355';
-            ctx.font = 'bold 13px Fredoka';
+            ctx.font = 'bold 13px ';
             ctx.textAlign = 'center';
             ctx.fillText('P', gaugeX + gaugeW / 2, gaugeBottom - gaugeMaxH - 10);
-            ctx.font = '600 10px Fredoka';
+            ctx.font = '600 10px ';
             ctx.fillText('kPa', gaugeX + gaugeW / 2, gaugeBottom - gaugeMaxH + 2);
 
             // Current pressure marker on gauge
@@ -729,13 +729,13 @@ canvas {
 
             // Pressure value
             ctx.fillStyle = '#c0392b';
-            ctx.font = 'bold 13px Fredoka';
+            ctx.font = 'bold 13px ';
             ctx.textAlign = 'left';
             ctx.fillText(P.toFixed(1) + ' kPa', gaugeX + gaugeW + 16, markerY + 4);
 
             // Container wall labels
             ctx.fillStyle = '#A0845C';
-            ctx.font = 'bold 13px Fredoka, Noto Sans SC';
+            ctx.font = 'bold 13px ';
             ctx.textAlign = 'right';
             ctx.fillText('Container', L - 8, (innerTop + B) / 2 + 5);
 
@@ -765,12 +765,12 @@ canvas {
 
             // T label
             ctx.fillStyle = '#8B7355';
-            ctx.font = 'bold 12px Fredoka';
+            ctx.font = 'bold 12px ';
             ctx.textAlign = 'left';
             ctx.fillText('T = ' + state.T + ' K', tBarX, tBarY - 6);
 
             // T min/max labels
-            ctx.font = '10px Fredoka';
+            ctx.font = '10px ';
             ctx.textAlign = 'left';
             ctx.fillText('100K', tBarX, tBarY + tBarH + 14);
             ctx.textAlign = 'right';

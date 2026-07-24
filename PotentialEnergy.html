@@ -189,7 +189,7 @@ sup { font-size: 0.6em; vertical-align: top; position: relative; top: -0.2em; }
                 ctx.moveTo(centerX, groundY); ctx.lineTo(centerX, currentY + radius);
                 ctx.stroke(); ctx.setLineDash([]);
 
-                ctx.fillStyle = '#2ecc71'; ctx.font = 'bold 20px Fredoka'; ctx.textAlign = 'left';
+                ctx.fillStyle = '#2ecc71'; ctx.font = 'bold 20px '; ctx.textAlign = 'left';
                 ctx.fillText('h = ' + state.h.toFixed(1) + 'm', centerX + radius + 10, groundY - (state.h * meterPx / 2));
             }
 
@@ -216,7 +216,7 @@ sup { font-size: 0.6em; vertical-align: top; position: relative; top: -0.2em; }
             ctx.lineTo(x2 - headlen * Math.cos(angle + Math.PI / 6), y2 - headlen * Math.sin(angle + Math.PI / 6));
             ctx.closePath(); ctx.fillStyle = color; ctx.fill();
             if (label) {
-                ctx.fillStyle = color; ctx.font = 'bold 24px Fredoka'; ctx.textAlign = 'center';
+                ctx.fillStyle = color; ctx.font = 'bold 24px '; ctx.textAlign = 'center';
                 ctx.fillText(label, x2 + 15 * Math.cos(angle), y2 + 15 * Math.sin(angle));
             }
         }
@@ -244,7 +244,7 @@ sup { font-size: 0.6em; vertical-align: top; position: relative; top: -0.2em; }
             gCtx.stroke();
             gCtx.beginPath(); gCtx.arc(cx, cy, 7, 0, Math.PI * 2); gCtx.fillStyle = '#333'; gCtx.fill();
 
-            gCtx.font = 'bold 24px Fredoka'; gCtx.fillStyle = '#444'; gCtx.textAlign = 'center';
+            gCtx.font = 'bold 24px '; gCtx.fillStyle = '#444'; gCtx.textAlign = 'center';
             gCtx.fillText(Math.round(Ep) + ' J', cx, cy + 40);
 
             gCtx.font = '14px Arial'; gCtx.fillStyle = '#bbb';

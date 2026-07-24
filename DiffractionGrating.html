@@ -197,7 +197,7 @@ canvas { width: 100%; flex: 1; display: block; }
             const grad = ctx.createLinearGradient(0, 0, srcX2, 0);
             grad.addColorStop(0, lc); grad.addColorStop(0.7, lc); grad.addColorStop(1, 'rgba(0,0,0,0)');
             ctx.fillStyle = grad; ctx.fillRect(0, midY - 30, srcX2, 60);
-            ctx.fillStyle = '#fff'; ctx.font = 'bold 13px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillStyle = '#fff'; ctx.font = 'bold 13px '; ctx.textAlign = 'center';
             ctx.fillText('单色光源', srcX2 / 2, midY - 36);
             ctx.fillText('Monochromatic', srcX2 / 2, midY - 20);
             ctx.fillText('λ=' + state.lambdaNm + 'nm', srcX2 / 2, midY + 40);
@@ -229,12 +229,12 @@ canvas { width: 100%; flex: 1; display: block; }
                 ctx.beginPath(); ctx.moveTo(slitX + 12, slitPositions[0]);
                 ctx.lineTo(slitX + 12, slitPositions[1]); ctx.stroke();
                 ctx.setLineDash([]);
-                ctx.fillStyle = '#e74c3c'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'left';
+                ctx.fillStyle = '#e74c3c'; ctx.font = 'bold 12px '; ctx.textAlign = 'left';
                 ctx.fillText('d=' + dUm.toFixed(2) + 'μm', slitX + 16, (slitPositions[0] + slitPositions[1]) / 2 + 5);
             }
 
             // N label
-            ctx.fillStyle = '#e74c3c'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'right';
+            ctx.fillStyle = '#e74c3c'; ctx.font = 'bold 12px '; ctx.textAlign = 'right';
             ctx.fillText('N=' + state.N, slitX - 8, barTop - 8);
 
             // === Circular Wavefronts — light-colored dashed lines from all slits ===
@@ -297,7 +297,7 @@ canvas { width: 100%; flex: 1; display: block; }
             // --- Screen ---
             ctx.strokeStyle = '#ccc'; ctx.lineWidth = 2.5;
             ctx.beginPath(); ctx.moveTo(screenX, scrTop); ctx.lineTo(screenX, scrBot); ctx.stroke();
-            ctx.fillStyle = '#ddd'; ctx.font = 'bold 14px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillStyle = '#ddd'; ctx.font = 'bold 14px '; ctx.textAlign = 'center';
             ctx.fillText('屏 Screen', screenX, scrTop - 12);
 
             // D arrow
@@ -309,7 +309,7 @@ canvas { width: 100%; flex: 1; display: block; }
                 ctx.fillStyle = '#2ecc71';
                 ctx.beginPath(); ctx.moveTo(slitX + 6, dY); ctx.lineTo(slitX + 15, dY - 5); ctx.lineTo(slitX + 15, dY + 5); ctx.fill();
                 ctx.beginPath(); ctx.moveTo(screenX - 3, dY); ctx.lineTo(screenX - 13, dY - 5); ctx.lineTo(screenX - 13, dY + 5); ctx.fill();
-                ctx.fillStyle = '#2ecc71'; ctx.font = 'bold 13px Fredoka'; ctx.textAlign = 'center';
+                ctx.fillStyle = '#2ecc71'; ctx.font = 'bold 13px '; ctx.textAlign = 'center';
                 ctx.fillText('D = ' + state.Dm.toFixed(1) + ' m', (slitX + screenX) / 2, dY - 8);
             }
 
@@ -329,12 +329,12 @@ canvas { width: 100%; flex: 1; display: block; }
                 ctx.beginPath(); ctx.arc(screenX + 4, yPx, 3.5, 0, Math.PI * 2);
                 ctx.fillStyle = '#ffdd57'; ctx.fill();
                 ctx.strokeStyle = '#fff'; ctx.lineWidth = 0.8; ctx.stroke();
-                ctx.fillStyle = '#fff'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'left';
+                ctx.fillStyle = '#fff'; ctx.font = 'bold 12px '; ctx.textAlign = 'left';
                 const absN = Math.abs(n);
                 ctx.fillText(absN === 0 ? 'n=0' : 'n=' + absN, screenX + 34, yPx + 4);
             });
 
-            ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.font = '500 12px Fredoka'; ctx.textAlign = 'right';
+            ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.font = '500 12px '; ctx.textAlign = 'right';
             ctx.fillText('t = ' + state.time.toFixed(1) + ' s', w - 12, 20);
         }
 

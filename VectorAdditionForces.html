@@ -130,13 +130,13 @@ function draw(){
     arrow(ctx,cx,cy,cx+r*SCALE*Math.cos(Math.atan2(rey-cy,rex-cx)),cy+r*SCALE*Math.sin(Math.atan2(rey-cy,rex-cx)),'#2ecc71',4,'F_合='+r.toFixed(1)+'N');
     // Angle arc
     ctx.strokeStyle='#e67e22';ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,35,0,-rad,true);ctx.stroke();
-    ctx.fillStyle='#e67e22';ctx.font='bold 12px Fredoka';ctx.textAlign='left';ctx.fillText('θ='+S.angle+'°',cx+40,cy-10);
+    ctx.fillStyle='#e67e22';ctx.font='bold 12px ';ctx.textAlign='left';ctx.fillText('θ='+S.angle+'°',cx+40,cy-10);
     // Grid
     ctx.strokeStyle='rgba(0,0,0,0.04)';ctx.lineWidth=1;
     for(let gx=cx-200;gx<cx+400;gx+=30){ctx.beginPath();ctx.moveTo(gx,0);ctx.lineTo(gx,h);ctx.stroke();}
     for(let gy=0;gy<h;gy+=30){ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(w,gy);ctx.stroke();}
 }
-function arrow(c,x1,y1,x2,y2,clr,lw,label){const a=Math.atan2(y2-y1,x2-x1),h=8;c.strokeStyle=clr;c.fillStyle=clr;c.lineWidth=lw||2;c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();c.beginPath();c.moveTo(x2,y2);c.lineTo(x2-h*Math.cos(a-Math.PI/6),y2-h*Math.sin(a-Math.PI/6));c.lineTo(x2-h*Math.cos(a+Math.PI/6),y2-h*Math.sin(a+Math.PI/6));c.closePath();c.fill();if(label){c.font='bold 11px Fredoka';c.fillText(label,x2+6,y2-4);}}
+function arrow(c,x1,y1,x2,y2,clr,lw,label){const a=Math.atan2(y2-y1,x2-x1),h=8;c.strokeStyle=clr;c.fillStyle=clr;c.lineWidth=lw||2;c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();c.beginPath();c.moveTo(x2,y2);c.lineTo(x2-h*Math.cos(a-Math.PI/6),y2-h*Math.sin(a-Math.PI/6));c.lineTo(x2-h*Math.cos(a+Math.PI/6),y2-h*Math.sin(a+Math.PI/6));c.closePath();c.fill();if(label){c.font='bold 11px ';c.fillText(label,x2+6,y2-4);}}
 document.getElementById('btn-reset').onclick=()=>{sF1.value=5;sF2.value=3;sA.value=60;};
 resize();requestAnimationFrame(update);
 

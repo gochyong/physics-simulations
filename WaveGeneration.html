@@ -336,7 +336,7 @@ select:hover {
             ctx.beginPath(); ctx.moveTo(50, 50); ctx.lineTo(50, canvas.height - 50); ctx.stroke(); // Y
 
             // Ticks & Values
-            ctx.fillStyle = '#95a5a6'; ctx.font = '500 12px Fredoka';
+            ctx.fillStyle = '#95a5a6'; ctx.font = '500 12px ';
             ctx.textAlign = 'center';
             // X-Ticks
             for (let i = 0; i <= 25; i++) {
@@ -355,7 +355,7 @@ select:hover {
             }
 
             // Labels
-            ctx.fillStyle = '#95a5a6'; ctx.font = '700 18px Fredoka';
+            ctx.fillStyle = '#95a5a6'; ctx.font = '700 18px ';
             ctx.fillText('y (cm)', 75, 40);
             const xLabel = state.domain === 'distance' ? 'x (Distance 距离/cm)' : 't (Time 时间/s)';
             ctx.textAlign = 'right';
@@ -447,7 +447,7 @@ select:hover {
                 ctx.strokeStyle = 'var(--accent)'; ctx.lineWidth = 4; ctx.stroke();
                 ctx.fillStyle = 'rgba(255,140,66,0.2)'; ctx.fill();
 
-                ctx.fillStyle = 'var(--accent)'; ctx.font = '600 14px Noto Sans SC';
+                ctx.fillStyle = 'var(--accent)'; ctx.font = '600 14px ';
                 ctx.textAlign = 'center';
                 ctx.fillText('质点 P', hX, hY - 20);
             }

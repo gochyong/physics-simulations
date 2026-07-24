@@ -120,7 +120,7 @@ function draw() {
 
     // Label center
     ctx.fillStyle = '#6B6B6B';
-    ctx.font = '11px Fredoka';
+    ctx.font = '11px ';
     ctx.textAlign = 'right';
     ctx.fillText('O', cx - 10, cy + 5);
 
@@ -151,7 +151,7 @@ function draw() {
     const lblX = cx + (arcR + 14) * Math.cos(-arcMid);
     const lblY = cy - (arcR + 14) * Math.sin(-arcMid);
     ctx.fillStyle = '#9b59b6';
-    ctx.font = 'bold 12px Fredoka';
+    ctx.font = 'bold 12px ';
     ctx.textAlign = 'center';
     ctx.fillText('θ', lblX, lblY + 4);
 
@@ -162,7 +162,7 @@ function draw() {
         const rmx = cx + r_px * 0.5 * Math.cos(ang);
         const rmy = cy - r_px * 0.5 * Math.sin(ang);
         ctx.fillStyle = '#6B6B6B';
-        ctx.font = 'bold 11px Fredoka';
+        ctx.font = 'bold 11px ';
         ctx.textAlign = 'left';
         const offsetAng = ang + Math.PI / 2;
         ctx.fillText('r=' + r.toFixed(1) + ' m', rmx + 8 * Math.cos(offsetAng), rmy - 8 * Math.sin(offsetAng));
@@ -184,7 +184,7 @@ function draw() {
     const vlx = bx + vx + 8 * Math.sign(vx);
     const vly = by + vy + 8 * Math.sign(vy);
     ctx.fillStyle = '#3498db';
-    ctx.font = 'bold 12px Fredoka';
+    ctx.font = 'bold 12px ';
     ctx.textAlign = 'center';
     ctx.fillText('v=' + v.toFixed(2) + ' m/s', vlx + 4, vly + 4);
 
@@ -206,7 +206,7 @@ function draw() {
     const alx = bx + ax - 15 * anx;
     const aly = by + ay - 15 * any;
     ctx.fillStyle = '#e74c3c';
-    ctx.font = 'bold 12px Fredoka';
+    ctx.font = 'bold 12px ';
     ctx.textAlign = 'center';
 
     // Draw centripetal force arrow (orange, pointing toward center, slightly offset)
@@ -225,7 +225,7 @@ function draw() {
     const flx = fStartX + (fx - anx * 16) * 0.5 - 18 * anx;
     const fly = fStartY + (fy - any * 16) * 0.5 - 18 * any;
     ctx.fillStyle = '#FF8c42';
-    ctx.font = 'bold 11px Fredoka';
+    ctx.font = 'bold 11px ';
     ctx.textAlign = 'center';
 
     // Draw ball

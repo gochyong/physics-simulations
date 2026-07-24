@@ -447,7 +447,7 @@ select:focus { border-color: var(--primary); }
 
                 // Minus sign
                 ctx.fillStyle = '#fff';
-                ctx.font = 'bold 5px Fredoka';
+                ctx.font = 'bold 5px ';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText('–', el.x, el.y);
@@ -458,7 +458,7 @@ select:focus { border-color: var(--primary); }
 
             // --- Labels ---
             ctx.fillStyle = 'rgba(255,255,255,0.7)';
-            ctx.font = '600 13px "Noto Sans SC", Fredoka, sans-serif';
+            ctx.font = '600 13px "", sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText('光源', 50, H * 0.12);
             ctx.fillText('Light Source', 50, H * 0.12 + 16);
@@ -469,13 +469,13 @@ select:focus { border-color: var(--primary); }
             // Metal name label above plate
             const metalName = metals[state.metal].name;
             ctx.fillStyle = '#ecf0f1';
-            ctx.font = '600 12px "Noto Sans SC", Fredoka, sans-serif';
+            ctx.font = '600 12px "", sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText(metalName, plateX, H * 0.12);
 
             // Work function label below plate
             ctx.fillStyle = 'rgba(255,255,255,0.5)';
-            ctx.font = '11px Fredoka';
+            ctx.font = '11px ';
             ctx.fillText('φ=' + metals[state.metal].phi.toFixed(1) + 'eV', plateX, H * 0.88);
 
             // Title annotation
@@ -483,7 +483,7 @@ select:focus { border-color: var(--primary); }
             const E_photon = hc_eVnm / state.wavelength;
             const aboveThreshold = E_photon > phi;
             ctx.fillStyle = aboveThreshold ? 'rgba(46,204,113,0.8)' : 'rgba(231,76,60,0.8)';
-            ctx.font = '600 14px "Noto Sans SC", Fredoka, sans-serif';
+            ctx.font = '600 14px "", sans-serif';
             ctx.textAlign = 'left';
             const statusLabel = aboveThreshold ? '光电效应发生  Photoelectric Effect' : '低于截止频率  Below Threshold';
             ctx.fillText(statusLabel, 15, H - 15);
@@ -580,7 +580,7 @@ select:focus { border-color: var(--primary); }
 
             // "−" label
             ctx.fillStyle = '#e74c3c';
-            ctx.font = 'bold 16px Fredoka';
+            ctx.font = 'bold 16px ';
             ctx.textAlign = 'center';
             ctx.fillText('−', x, topY - 8);
 
@@ -609,7 +609,7 @@ select:focus { border-color: var(--primary); }
                 ctx.setLineDash([]);
 
                 ctx.fillStyle = 'rgba(255, 94, 91, 0.7)';
-                ctx.font = '10px Fredoka';
+                ctx.font = '10px ';
                 ctx.textAlign = 'left';
                 ctx.fillText('BLOCKED', barrierX + 4, H * 0.5);
             } else {
@@ -678,10 +678,10 @@ select:focus { border-color: var(--primary); }
             ctx.strokeStyle = '#FF5E5B'; ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.stroke();
             ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(cx, cy, 4, 0, Math.PI * 2); ctx.fill();
 
-            ctx.fillStyle = 'rgba(255,255,255,0.8)'; ctx.font = 'bold 10px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillStyle = 'rgba(255,255,255,0.8)'; ctx.font = 'bold 10px '; ctx.textAlign = 'center';
             ctx.fillText('光电流 μA', cx, cy - r - 10);
             ctx.fillText((lastCurrent * 10).toFixed(1), cx, cy + r + 16);
-            ctx.fillStyle = 'rgba(255,255,255,0.45)'; ctx.font = '7px Fredoka';
+            ctx.fillStyle = 'rgba(255,255,255,0.45)'; ctx.font = '7px ';
             ctx.fillText('0', cx + (r + 10) * Math.cos(startA), cy + (r + 10) * Math.sin(startA));
             ctx.fillText('3', cx + (r + 10) * Math.cos(endA), cy + (r + 10) * Math.sin(endA));
         }

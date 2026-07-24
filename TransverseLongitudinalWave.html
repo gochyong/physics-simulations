@@ -260,7 +260,7 @@ canvas {
                 ctx.beginPath(); ctx.moveTo(midX, midY); ctx.lineTo(tCanvas.width - 50, midY); ctx.stroke();
 
                 // Ruler
-                ctx.fillStyle = '#bdc3c7'; ctx.font = '500 12px Fredoka'; ctx.textAlign = 'center';
+                ctx.fillStyle = '#bdc3c7'; ctx.font = '500 12px '; ctx.textAlign = 'center';
                 for (let i = 0; i <= 40; i++) {
                     const x = midX + i * state.pxPerCm;
                     if (x > tCanvas.width - 50) break;
@@ -299,7 +299,7 @@ canvas {
                 tCtx.strokeStyle = '#fff'; tCtx.lineWidth = 1; tCtx.stroke();
 
                 if (label) {
-                    tCtx.fillStyle = color; tCtx.font = 'bold 12px Fredoka';
+                    tCtx.fillStyle = color; tCtx.font = 'bold 12px ';
                     tCtx.textAlign = 'center';
                     tCtx.fillText(label, baseX, y - 15);
                 }
@@ -330,7 +330,7 @@ canvas {
                 lCtx.strokeStyle = '#fff'; lCtx.lineWidth = 1; lCtx.stroke();
 
                 if (label) {
-                    lCtx.fillStyle = color; lCtx.font = 'bold 12px Fredoka';
+                    lCtx.fillStyle = color; lCtx.font = 'bold 12px ';
                     lCtx.textAlign = 'center';
                     lCtx.fillText(label, x, midYl - 15);
                 }

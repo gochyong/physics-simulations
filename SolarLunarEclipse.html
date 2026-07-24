@@ -161,7 +161,7 @@ function draw(earthDeg,moonDeg,rotDeg,relDeg){
     glow.addColorStop(0,'rgba(255,255,200,1)');glow.addColorStop(0.4,'rgba(255,200,50,0.5)');glow.addColorStop(1,'rgba(255,150,50,0)');
     ctx.fillStyle=glow;ctx.beginPath();ctx.arc(sunX,sunY,sunR*2.5,0,Math.PI*2);ctx.fill();
     ctx.fillStyle='#ffdd57';ctx.beginPath();ctx.arc(sunX,sunY,sunR,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#fff';ctx.font='bold 12px Fredoka';ctx.textAlign='center';
+    ctx.fillStyle='#fff';ctx.font='bold 12px ';ctx.textAlign='center';
     ctx.fillText('Sun 太阳',sunX,sunY+sunR+18);
 
     // Earth orbit
@@ -181,7 +181,7 @@ function draw(earthDeg,moonDeg,rotDeg,relDeg){
     const dotX=earthX+dotR*Math.cos(dotAngle);
     const dotY=earthY+dotR*Math.sin(dotAngle);
     ctx.fillStyle='#e74c3c';ctx.beginPath();ctx.arc(dotX,dotY,3,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#fff';ctx.font='bold 9px Fredoka';ctx.fillText('Earth',earthX,earthY+earthR+14);
+    ctx.fillStyle='#fff';ctx.font='bold 9px ';ctx.fillText('Earth',earthX,earthY+earthR+14);
 
     // Moon orbit around Earth
     const moonOrbitR=38;
@@ -194,7 +194,7 @@ function draw(earthDeg,moonDeg,rotDeg,relDeg){
     // Moon body
     const moonR=6;
     ctx.fillStyle='#ddd';ctx.beginPath();ctx.arc(moonX,moonY,moonR,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#fff';ctx.font='bold 8px Fredoka';ctx.fillText('Moon',moonX,moonY-moonR-5);
+    ctx.fillStyle='#fff';ctx.font='bold 8px ';ctx.fillText('Moon',moonX,moonY-moonR-5);
 
     // Sunlight direction lines
     ctx.strokeStyle='rgba(255,255,200,0.06)';ctx.lineWidth=0.5;
@@ -204,13 +204,13 @@ function draw(earthDeg,moonDeg,rotDeg,relDeg){
     const pcx=w-60,pcy=70,pr=32;
     ctx.fillStyle='rgba(0,0,0,0.3)';ctx.beginPath();ctx.arc(pcx,pcy,pr+5,0,Math.PI*2);ctx.fill();
     drawMoonPhase(pcx,pcy,pr,relDeg);
-    ctx.fillStyle='#fff';ctx.font='bold 10px Fredoka';ctx.textAlign='center';
+    ctx.fillStyle='#fff';ctx.font='bold 10px ';ctx.textAlign='center';
     ctx.fillText('红点视角',pcx,pcy+pr+14);
 
     // Eclipse
     const eclipse=getEclipseInfo(relDeg);
     if(eclipse){
-        ctx.fillStyle='var(--accent)';ctx.font='bold 14px Fredoka';ctx.textAlign='center';
+        ctx.fillStyle='var(--accent)';ctx.font='bold 14px ';ctx.textAlign='center';
         ctx.fillText(eclipse,w/2,h-16);
     }
 }

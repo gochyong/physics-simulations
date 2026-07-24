@@ -52,14 +52,14 @@ if(S.mode==='melt'){
 const liquidH=beakerH*S.progress;
 ctx.fillStyle='#4da6ff';ctx.fillRect(bx+2,by+beakerH-liquidH+2,beakerW-4,liquidH-4);
 if(iceFrac>0.01){ctx.fillStyle='rgba(200,220,255,0.8)';ctx.fillRect(bx+2,by+2,beakerW-4,beakerH-liquidH-2)}
-ctx.fillStyle='#fff';ctx.font='bold 12px Fredoka';ctx.textAlign='center';
+ctx.fillStyle='#fff';ctx.font='bold 12px ';ctx.textAlign='center';
 ctx.fillText('冰 Ice',cx,by+beakerH*iceFrac/2+4);
 ctx.fillText('水 Water',cx,by+beakerH-20);
 }else{
 const waterH=beakerH*(1-S.progress);ctx.fillStyle='#4da6ff';ctx.fillRect(bx+2,by+beakerH-waterH,beakerW-4,waterH-2);
 const steamH=Math.min(80,S.progress*beakerH*0.6);
 if(S.progress>0.01){ctx.fillStyle='rgba(255,255,255,0.6)';for(let i=0;i<8;i++){ctx.beginPath();ctx.arc(bx+20+Math.random()*(beakerW-40),by+beakerH-waterH-Math.random()*steamH,4+Math.random()*8,0,Math.PI*2);ctx.fill()}}
-ctx.fillStyle='#fff';ctx.font='bold 12px Fredoka';ctx.textAlign='center';
+ctx.fillStyle='#fff';ctx.font='bold 12px ';ctx.textAlign='center';
 if(waterH>15)ctx.fillText('水 Water',cx,by+beakerH-waterH/2);if(S.progress>0.01)ctx.fillText('蒸汽 Steam',cx,by+beakerH-waterH-15)
 }
 // Flame below
@@ -68,9 +68,9 @@ const fx=cx,fb=by+beakerH+5;
 for(let i=0;i<5;i++){ctx.fillStyle='rgba(255,'+(140+i*20)+','+(20+i*10)+',0.7)';ctx.beginPath();ctx.arc(fx-12+i*6,fb+10-Math.sin(Date.now()*0.02+i)*8,6+Math.random()*4,0,Math.PI*2);ctx.fill()}
 }
 // Thermometer
-const tx=bx+beakerW+15,tt=by+10,tb=by+beakerH-10,th=tb-tt;ctx.fillStyle='rgba(255,255,255,0.9)';ctx.fillRect(tx-3,tt,6,th);ctx.strokeStyle='#6B6B6B';ctx.lineWidth=1.2;ctx.strokeRect(tx-3,tt,6,th);ctx.fillStyle='#e74c3c';ctx.beginPath();ctx.arc(tx,tb,6,0,Math.PI*2);ctx.fill();const temp=S.mode==='melt'?0:100;ctx.fillStyle='#e74c3c';ctx.fillRect(tx-2,tb-(temp+20)/120*th,4,(temp+20)/120*th);ctx.fillStyle='#333';ctx.font='bold 10px Fredoka';ctx.textAlign='left';ctx.fillText(S.mode==='melt'?'0°C':'100°C',tx+6,tt+10);ctx.fillText('0°C',tx+6,tb);
+const tx=bx+beakerW+15,tt=by+10,tb=by+beakerH-10,th=tb-tt;ctx.fillStyle='rgba(255,255,255,0.9)';ctx.fillRect(tx-3,tt,6,th);ctx.strokeStyle='#6B6B6B';ctx.lineWidth=1.2;ctx.strokeRect(tx-3,tt,6,th);ctx.fillStyle='#e74c3c';ctx.beginPath();ctx.arc(tx,tb,6,0,Math.PI*2);ctx.fill();const temp=S.mode==='melt'?0:100;ctx.fillStyle='#e74c3c';ctx.fillRect(tx-2,tb-(temp+20)/120*th,4,(temp+20)/120*th);ctx.fillStyle='#333';ctx.font='bold 10px ';ctx.textAlign='left';ctx.fillText(S.mode==='melt'?'0°C':'100°C',tx+6,tt+10);ctx.fillText('0°C',tx+6,tb);
 // Progress bar
-const px=cx+80,py=by+beakerH+30,pw=100,ph=12;ctx.fillStyle='#eee';ctx.fillRect(px,py,pw,ph);ctx.fillStyle='#2ecc71';ctx.fillRect(px,py,pw*S.progress,ph);ctx.strokeStyle='#6B6B6B';ctx.lineWidth=1;ctx.strokeRect(px,py,pw,ph);ctx.fillStyle='#333';ctx.font='bold 11px Fredoka';ctx.textAlign='center';ctx.fillText('进度 '+(S.progress*100).toFixed(0)+'%',px+pw/2,py-6);
+const px=cx+80,py=by+beakerH+30,pw=100,ph=12;ctx.fillStyle='#eee';ctx.fillRect(px,py,pw,ph);ctx.fillStyle='#2ecc71';ctx.fillRect(px,py,pw*S.progress,ph);ctx.strokeStyle='#6B6B6B';ctx.lineWidth=1;ctx.strokeRect(px,py,pw,ph);ctx.fillStyle='#333';ctx.font='bold 11px ';ctx.textAlign='center';ctx.fillText('进度 '+(S.progress*100).toFixed(0)+'%',px+pw/2,py-6);
 ctx.fillText('T='+(S.mode==='melt'?'0':'100')+'°C (恒定/Constant)',cx,by-15)
 }
 document.getElementById('btn-start').onclick=()=>{S.playing=true;document.getElementById('btn-start').style.display='none';document.getElementById('btn-pause').style.display=''};

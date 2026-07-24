@@ -185,7 +185,7 @@ canvas { width: 100%; flex: 1; display: block; }
             srcGrad.addColorStop(1, '#f0c040');
             ctx.fillStyle = srcGrad;
             ctx.fillRect(0, midY - srcH / 2, srcW, srcH);
-            ctx.fillStyle = '#333'; ctx.font = 'bold 16px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillStyle = '#333'; ctx.font = 'bold 16px '; ctx.textAlign = 'center';
             ctx.fillText('入射光', srcX2 / 2, midY - 44);
             ctx.fillText('Incident Light', srcX2 / 2, midY + 48);
             ctx.fillText('I₀ = ' + state.I0.toFixed(1), srcX2 / 2, midY + 66);
@@ -236,12 +236,12 @@ canvas { width: 100%; flex: 1; display: block; }
             // Arrowhead top
             ctx.fillStyle = '#e74c3c';
             ctx.beginPath(); ctx.moveTo(0, -polH / 2 - 4); ctx.lineTo(-7, -polH / 2 + 6); ctx.lineTo(7, -polH / 2 + 6); ctx.fill();
-            ctx.fillStyle = '#e74c3c'; ctx.font = 'bold 13px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillStyle = '#e74c3c'; ctx.font = 'bold 13px '; ctx.textAlign = 'center';
             ctx.fillText('透振轴', 0, -polH / 2 - 12);
             ctx.restore();
 
             // Polarizer label
-            ctx.fillStyle = '#333'; ctx.font = 'bold 16px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillStyle = '#333'; ctx.font = 'bold 16px '; ctx.textAlign = 'center';
             ctx.fillText('偏振片', polX, midY - polH / 2 - 18);
             ctx.fillText('Polarizer', polX, midY + polH / 2 + 26);
 
@@ -254,7 +254,7 @@ canvas { width: 100%; flex: 1; display: block; }
             const labelAngle = -Math.PI / 2 + thetaRad / 2;
             const labelX = polX + (arcR + 22) * Math.cos(labelAngle);
             const labelY = midY + (arcR + 22) * Math.sin(labelAngle);
-            ctx.fillStyle = '#FF5E5B'; ctx.font = 'bold 16px Fredoka';
+            ctx.fillStyle = '#FF5E5B'; ctx.font = 'bold 16px ';
             ctx.fillText('θ = ' + state.thetaDeg + '°', labelX, labelY);
 
             // --- Transmitted light (right side) ---
@@ -299,13 +299,13 @@ canvas { width: 100%; flex: 1; display: block; }
             ctx.fillRect(barX + 1, barY + barH - fillH, barW - 2, fillH);
 
             // Bar labels
-            ctx.fillStyle = '#333'; ctx.font = 'bold 13px Fredoka'; ctx.textAlign = 'left';
+            ctx.fillStyle = '#333'; ctx.font = 'bold 13px '; ctx.textAlign = 'left';
             ctx.fillText('I = ' + I.toFixed(2), barX + barW + 8, midY - 4);
             const ratioText = (tIntensityAlpha * 100).toFixed(0) + '%';
             ctx.fillText(ratioText, barX + barW + 8, midY + 16);
 
             // Section label
-            ctx.fillStyle = '#666'; ctx.font = 'bold 15px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillStyle = '#666'; ctx.font = 'bold 15px '; ctx.textAlign = 'center';
             ctx.fillText('透射光 Transmitted', (outX1 + barX) / 2, midY + barH / 2 + 30);
         }
 
@@ -333,7 +333,7 @@ canvas { width: 100%; flex: 1; display: block; }
             ctx.lineTo(cx - dx + head * ux - head * 0.5 * uy, cy - dy + head * uy + head * 0.5 * ux);
             ctx.fill();
             if (label) {
-                ctx.fillStyle = color; ctx.font = 'bold 12px Fredoka';
+                ctx.fillStyle = color; ctx.font = 'bold 12px ';
                 ctx.textAlign = 'left'; ctx.fillText(label, cx + dx + 5, cy + dy - 3);
             }
         }

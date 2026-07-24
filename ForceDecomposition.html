@@ -13,9 +13,9 @@
     <meta name="author" content="Wuli布雷克">
     <meta name="copyright" content="Copyright 2025 Wuli布雷克">
     <title>力的正交分解 / Orthogonal Decomposition of Forces - Wuli布雷克</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    
+    
+    
     <style>.back-link { position: fixed; top: 10px; right: 20px; z-index: 1000; text-decoration: none; color: var(--primary); font-weight: 700; font-size: 0.9rem; background: rgba(255,255,255,0.9); padding: 6px 14px; border-radius: 16px; box-shadow: 0 2px 10px rgba(255,140,66,0.15); }</style>
 </head>
 <body>
@@ -126,7 +126,7 @@ function draw(){
     ctx.strokeStyle='rgba(0,0,0,0.35)';ctx.lineWidth=2;
     ctx.beginPath();ctx.moveTo(cx,cy-maxYPx-20);ctx.lineTo(cx,cy+20);ctx.stroke(); // y
     ctx.beginPath();ctx.moveTo(cx-20,cy);ctx.lineTo(cx+maxXPx+20,cy);ctx.stroke();  // x
-    ctx.fillStyle='#6B6B6B';ctx.font='bold 12px Fredoka';ctx.textAlign='center';
+    ctx.fillStyle='#6B6B6B';ctx.font='bold 12px ';ctx.textAlign='center';
     ctx.fillText('x',cx+maxXPx+30,cy+4);ctx.fillText('y',cx,cy-maxYPx-25);
     // Arrowheads on axes
     arrowHead(ctx,cx+maxXPx+10,cy,0,'#6B6B6B');
@@ -152,7 +152,7 @@ function draw(){
 
     // Angle arc
     ctx.strokeStyle='#e67e22';ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,38,0,-rad,true);ctx.stroke();
-    ctx.fillStyle='#e67e22';ctx.font='bold 13px Fredoka';ctx.textAlign='left';ctx.fillText('θ='+S.angle+'°',cx+43,cy-8);
+    ctx.fillStyle='#e67e22';ctx.font='bold 13px ';ctx.textAlign='left';ctx.fillText('θ='+S.angle+'°',cx+43,cy-8);
 
     // Right-angle markers at Fx and Fy tips
     const sq=8;
@@ -183,7 +183,7 @@ function arrow(c,x1,y1,x2,y2,clr,lw,label){
     c.lineTo(x2-h*Math.cos(a-Math.PI/6),y2-h*Math.sin(a-Math.PI/6));
     c.lineTo(x2-h*Math.cos(a+Math.PI/6),y2-h*Math.sin(a+Math.PI/6));
     c.closePath();c.fill();
-    if(label){c.font='bold 12px Fredoka';c.fillText(label,x2+6,y2-4);}
+    if(label){c.font='bold 12px ';c.fillText(label,x2+6,y2-4);}
 }
 
 document.getElementById('btn-reset').onclick=()=>{sF.value=10;sA.value=30;};

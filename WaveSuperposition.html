@@ -132,7 +132,7 @@ function draw(){
         ctx.stroke();
         ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.lineWidth=1;ctx.setLineDash([4,8]);
         ctx.beginPath();ctx.moveTo(0,yBase);ctx.lineTo(w,yBase);ctx.stroke();ctx.setLineDash([]);
-        ctx.fillStyle=color;ctx.font='bold 12px Fredoka';ctx.textAlign='left';ctx.fillText(label,10,yBase-amp*ampPx-10);
+        ctx.fillStyle=color;ctx.font='bold 12px ';ctx.textAlign='left';ctx.fillText(label,10,yBase-amp*ampPx-10);
     }
     drawWave(y1,S.a1,'#e74c3c',0,'Wave 1 (y₁)');
     drawWave(y2,S.a2,'#3498db',phi,'Wave 2 (y₂)');
@@ -148,10 +148,10 @@ function draw(){
     ctx.stroke();
     ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.lineWidth=1;ctx.setLineDash([4,8]);
     ctx.beginPath();ctx.moveTo(0,yBase);ctx.lineTo(w,yBase);ctx.stroke();ctx.setLineDash([]);
-    ctx.fillStyle='#2ecc71';ctx.font='bold 12px Fredoka';ctx.textAlign='left';
+    ctx.fillStyle='#2ecc71';ctx.font='bold 12px ';ctx.textAlign='left';
     ctx.fillText('Resultant (y₁+y₂)',10,yBase-(S.a1+S.a2)*ampPx-8);
     // Phase info
-    ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='11px Fredoka';ctx.textAlign='right';
+    ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='11px ';ctx.textAlign='right';
     ctx.fillText('Δφ='+S.phaseDeg+'°',w-15,20);
 }
 document.getElementById('btn-start').onclick=()=>{S.playing=!S.playing;const b=document.getElementById('btn-start');b.textContent=S.playing?'暂停 Pause':'开始 Start';b.classList.toggle('start',!S.playing);b.classList.toggle('pause',S.playing);};

@@ -18,7 +18,7 @@
 .emoji { font-size: 2.5rem; line-height: 1; }
 #balanceCanvas { width: 100%; flex: 1; display: block; }
 .button-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.check-btn, .reset-btn { padding: 12px; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: transform 0.2s; font-family: 'Fredoka','Noto Sans SC',sans-serif; }
+.check-btn, .reset-btn { padding: 12px; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: transform 0.2s; font-family: 'PingFang SC','Microsoft YaHei',sans-serif; }
 .check-btn { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(255,140,66,0.3); }
 .check-btn:hover { transform: translateY(-2px); }
 hr { border: none; border-top: 1px solid #eee; margin: 4px 0; }
@@ -259,7 +259,7 @@ hr { border: none; border-top: 1px solid #eee; margin: 4px 0; }
 
             // Draw Scale
             ctx.textAlign = 'center';
-            ctx.font = '10px Fredoka';
+            ctx.font = '10px ';
             ctx.fillStyle = 'rgba(255,255,255,0.8)';
             for (let i = -10; i <= 10; i++) {
                 const tickX = (i - state.pivot) * scale;

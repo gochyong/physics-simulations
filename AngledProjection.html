@@ -114,21 +114,21 @@ function draw(){
     const lx=X(RR),dY=oy+28;
     ctx.strokeStyle='#3498db';ctx.lineWidth=1.5;ctx.setLineDash([6,4]);ctx.beginPath();ctx.moveTo(ox,dY);ctx.lineTo(lx,dY);ctx.stroke();ctx.setLineDash([]);
     arrow(ctx,ox,dY,7,0,'#3498db',1.5);arrow(ctx,lx,dY,-7,0,'#3498db',1.5);
-    ctx.fillStyle='#3498db';ctx.font='bold 12px Fredoka';ctx.textAlign='center';ctx.fillText('R='+RR.toFixed(2)+' m',(ox+lx)/2,dY-8);
+    ctx.fillStyle='#3498db';ctx.font='bold 12px ';ctx.textAlign='center';ctx.fillText('R='+RR.toFixed(2)+' m',(ox+lx)/2,dY-8);
 
     // Height
     const pkX=X(RR/2),pkY=Y(HH),dX=pkX+38;
     ctx.strokeStyle='#2ecc71';ctx.lineWidth=1.5;ctx.setLineDash([6,4]);ctx.beginPath();ctx.moveTo(dX,pkY);ctx.lineTo(dX,oy);ctx.stroke();ctx.setLineDash([]);
     arrow(ctx,dX,pkY,0,7,'#2ecc71',1.5);arrow(ctx,dX,oy,0,-7,'#2ecc71',1.5);
-    ctx.fillStyle='#2ecc71';ctx.font='bold 12px Fredoka';ctx.textAlign='left';ctx.fillText('H='+HH.toFixed(2)+' m',dX+4,(pkY+oy)/2+4);
+    ctx.fillStyle='#2ecc71';ctx.font='bold 12px ';ctx.textAlign='left';ctx.fillText('H='+HH.toFixed(2)+' m',dX+4,(pkY+oy)/2+4);
 
     // Angle arc
     const aR=28;ctx.strokeStyle='rgba(231,76,60,0.7)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(ox,oy,aR,-rad,0,false);ctx.stroke();
-    ctx.fillStyle='#333';ctx.font='bold 11px Fredoka';ctx.textAlign='center';ctx.fillText('θ='+S.angle+'°',ox+(aR+16)*Math.cos(-rad/2),oy+(aR+16)*Math.sin(-rad/2));
+    ctx.fillStyle='#333';ctx.font='bold 11px ';ctx.textAlign='center';ctx.fillText('θ='+S.angle+'°',ox+(aR+16)*Math.cos(-rad/2),oy+(aR+16)*Math.sin(-rad/2));
 
     // V0
     const vS=3.5;arrow(ctx,ox,oy,vx0*vS,-vy0*vS,'#e74c3c',2.5);
-    ctx.fillStyle='#333';ctx.font='bold 11px Fredoka';ctx.textAlign='left';ctx.fillText('v₀='+v0.toFixed(1)+'m/s',ox+vx0*vS+4,oy-vy0*vS-2);
+    ctx.fillStyle='#333';ctx.font='bold 11px ';ctx.textAlign='left';ctx.fillText('v₀='+v0.toFixed(1)+'m/s',ox+vx0*vS+4,oy-vy0*vS-2);
 
     // Ball
     const bPx=vx0*t,bPy=vy0*t-0.5*G*t*t,bx=X(bPx),by=Y(bPy);
@@ -138,11 +138,11 @@ function draw(){
 
     // Vh/Vv/V
     const cVX=vx0,cVY=vy0-G*t,spd=Math.sqrt(cVX*cVX+cVY*cVY);
-    if(spd>0.2){const hdx=cVX*vS,vdy=-cVY*vS;arrow(ctx,bx,by,hdx,0,'#3498db',2);ctx.fillStyle='#3498db';ctx.font='bold 10px Fredoka';ctx.textAlign='left';ctx.fillText('Vh='+cVX.toFixed(1),bx+hdx+3,by+4);arrow(ctx,bx,by,0,vdy,'#2ecc71',2);ctx.fillStyle='#2ecc71';ctx.fillText('Vv='+cVY.toFixed(1),bx+5,by+vdy-4);arrow(ctx,bx,by,hdx,vdy,'rgba(231,76,60,0.55)',1.8);ctx.fillStyle='#e74c3c';ctx.fillText('V='+spd.toFixed(1),bx+hdx+3,by+vdy-4);}
+    if(spd>0.2){const hdx=cVX*vS,vdy=-cVY*vS;arrow(ctx,bx,by,hdx,0,'#3498db',2);ctx.fillStyle='#3498db';ctx.font='bold 10px ';ctx.textAlign='left';ctx.fillText('Vh='+cVX.toFixed(1),bx+hdx+3,by+4);arrow(ctx,bx,by,0,vdy,'#2ecc71',2);ctx.fillStyle='#2ecc71';ctx.fillText('Vv='+cVY.toFixed(1),bx+5,by+vdy-4);arrow(ctx,bx,by,hdx,vdy,'rgba(231,76,60,0.55)',1.8);ctx.fillStyle='#e74c3c';ctx.fillText('V='+spd.toFixed(1),bx+hdx+3,by+vdy-4);}
 
     // Origin
     ctx.fillStyle='#4A403A';ctx.beginPath();ctx.arc(ox,oy,3.5,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#6B6B6B';ctx.font='10px Fredoka';ctx.textAlign='center';ctx.fillText('O',ox-8,oy+11);ctx.fillText('x',cw-14,oy+11);ctx.fillText('y',ox+6,14);
+    ctx.fillStyle='#6B6B6B';ctx.font='10px ';ctx.textAlign='center';ctx.fillText('O',ox-8,oy+11);ctx.fillText('x',cw-14,oy+11);ctx.fillText('y',ox+6,14);
 
     // === Decomp window: vert-left, horiz-bottom ===
     const dw=dC.width,dh=dC.height;ctxD.clearRect(0,0,dw,dh);ctxD.fillStyle='#fdfcf8';ctxD.fillRect(0,0,dw,dh);
@@ -156,13 +156,13 @@ function draw(){
     const vg=ctxD.createRadialGradient(vx1-1,vby-2,2,vx1,vby,9);vg.addColorStop(0,'#82e0aa');vg.addColorStop(1,'#1e8449');
     ctxD.fillStyle=vg;ctxD.beginPath();ctxD.arc(vx1,vby,8,0,Math.PI*2);ctxD.fill();ctxD.strokeStyle='#fff';ctxD.lineWidth=1.5;ctxD.stroke();
     const vvL=Math.min(Math.abs(vvy)*5,45);arrow(ctxD,vx1,vby,0,(vvy>=0?-1:1)*vvL,'#2ecc71',2.5);
-    ctxD.fillStyle='#2ecc71';ctxD.font='bold 10px Fredoka';ctxD.textAlign='left';
+    ctxD.fillStyle='#2ecc71';ctxD.font='bold 10px ';ctxD.textAlign='left';
     ctxD.fillText('Vv='+vvy.toFixed(1),vx1+10,vtop+14);ctxD.fillText('a=-9.8 m/s²',vx1+10,vtop+28);
 
     // Horizontal — proportional to main canvas
     const hx2=dw*(ox/cw),hEnd=dw*(lx/cw),hlen2=Math.max(hEnd-hx2,20),hy2=dh*(oy/ch);
     ctxD.strokeStyle='#ddd';ctxD.lineWidth=2;ctxD.beginPath();ctxD.moveTo(hx2,hy2);ctxD.lineTo(hx2+hlen2,hy2);ctxD.stroke();
-    ctxD.fillStyle='#aaa';ctxD.font='9px Fredoka';ctxD.textAlign='center';
+    ctxD.fillStyle='#aaa';ctxD.font='9px ';ctxD.textAlign='center';
     for(let tick=0;tick<=4;tick++){
         const tx=hx2+(tick/4)*hlen2;
         ctxD.beginPath();ctxD.moveTo(tx,hy2-6);ctxD.lineTo(tx,hy2+6);ctxD.stroke();
@@ -173,7 +173,7 @@ function draw(){
     const hg=ctxD.createRadialGradient(hxP-1,hy2-2,2,hxP,hy2,9);hg.addColorStop(0,'#85c1e9');hg.addColorStop(1,'#2471a3');
     ctxD.fillStyle=hg;ctxD.beginPath();ctxD.arc(hxP,hy2,8,0,Math.PI*2);ctxD.fill();ctxD.strokeStyle='#fff';ctxD.lineWidth=1.5;ctxD.stroke();
     arrow(ctxD,hxP,hy2,30,0,'#3498db',2.5);
-    ctxD.fillStyle='#3498db';ctxD.font='bold 10px Fredoka';ctxD.textAlign='left';
+    ctxD.fillStyle='#3498db';ctxD.font='bold 10px ';ctxD.textAlign='left';
     ctxD.fillText('Vh='+vx0.toFixed(1)+'（恒定）',hx2+4,hy2-8);
 
     // Update UI each frame too

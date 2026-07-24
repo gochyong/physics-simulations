@@ -218,7 +218,7 @@
             ctx.closePath(); ctx.fillStyle = color; ctx.fill();
 
             if (label) {
-                ctx.fillStyle = color; ctx.font = 'bold 24px Fredoka'; ctx.textAlign = 'center';
+                ctx.fillStyle = color; ctx.font = 'bold 24px '; ctx.textAlign = 'center';
                 ctx.fillText(label, x2 + 15 * Math.cos(angle), y2 + 15 * Math.sin(angle));
             }
         }
@@ -247,7 +247,7 @@
             gCtx.stroke();
             gCtx.beginPath(); gCtx.arc(cx, cy, 7, 0, Math.PI * 2); gCtx.fillStyle = '#333'; gCtx.fill();
 
-            gCtx.font = 'bold 24px Fredoka'; gCtx.fillStyle = '#444'; gCtx.textAlign = 'center';
+            gCtx.font = 'bold 24px '; gCtx.fillStyle = '#444'; gCtx.textAlign = 'center';
             gCtx.fillText(W.toFixed(2) + ' J', cx, cy + 40);
 
             gCtx.font = '14px Arial'; gCtx.fillStyle = '#bbb';

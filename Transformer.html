@@ -194,7 +194,7 @@ function draw() {
     }
     ctx.restore();
     // Φ label
-    ctx.fillStyle = '#7f8c8d'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign='center';
+    ctx.fillStyle = '#7f8c8d'; ctx.font = 'bold 12px '; ctx.textAlign='center';
     ctx.fillText('Φ', cx, cy+4);
 
     // --- Coils (sine wave wrapping each leg vertically) ---
@@ -221,7 +221,7 @@ function draw() {
     ctx.beginPath();
     ctx.moveTo(srcX-9, srcY); ctx.quadraticCurveTo(srcX-4.5, srcY-8, srcX, srcY);
     ctx.quadraticCurveTo(srcX+4.5, srcY+8, srcX+9, srcY); ctx.stroke();
-    ctx.fillStyle = '#6B6B6B'; ctx.font='bold 11px Fredoka'; ctx.textAlign='center';
+    ctx.fillStyle = '#6B6B6B'; ctx.font='bold 11px '; ctx.textAlign='center';
     ctx.fillText('AC', srcX, srcY+srcR+14);
 
     // --- Secondary AC symbol (right side) — same circle + sine wave as primary ---
@@ -241,7 +241,7 @@ function draw() {
     ctx.beginPath();
     ctx.moveTo(outX-9, outY); ctx.quadraticCurveTo(outX-4.5, outY-8, outX, outY);
     ctx.quadraticCurveTo(outX+4.5, outY+8, outX+9, outY); ctx.stroke();
-    ctx.fillStyle = '#6B6B6B'; ctx.font='bold 11px Fredoka'; ctx.textAlign='center';
+    ctx.fillStyle = '#6B6B6B'; ctx.font='bold 11px '; ctx.textAlign='center';
     ctx.fillText('AC', outX, outY+outR+14);
 
     // --- Moving charges (current flow), alternating with AC ---
@@ -266,15 +266,15 @@ function draw() {
     }
 
     // --- Coil turn labels ---
-    ctx.fillStyle = '#e67e22'; ctx.font='bold 12px Fredoka'; ctx.textAlign='center';
+    ctx.fillStyle = '#e67e22'; ctx.font='bold 12px '; ctx.textAlign='center';
     ctx.fillText('原线圈 Np='+S.Np, leftLegX, botY+26);
     ctx.fillStyle = '#9b59b6';
     ctx.fillText('副线圈 Ns='+S.Ns, rightLegX, botY+26);
-    ctx.fillStyle = '#7f8c8d'; ctx.font='11px Fredoka';
+    ctx.fillStyle = '#7f8c8d'; ctx.font='11px ';
     ctx.fillText('铁芯 Iron Core', cx, botY+26);
 
     // --- Vp / Vs labels near source & output symbol ---
-    ctx.fillStyle = '#e67e22'; ctx.font='bold 13px Fredoka'; ctx.textAlign='center';
+    ctx.fillStyle = '#e67e22'; ctx.font='bold 13px '; ctx.textAlign='center';
     ctx.fillText('Vp='+vp.toFixed(1)+'V', srcX, srcY-srcR-22);
     ctx.fillStyle = '#3498db';
     ctx.fillText('Vs='+vs.toFixed(1)+'V', outX, outY-outR-22);
@@ -365,7 +365,7 @@ function drawWave(curVp, curVs) {
     ctxW.fillStyle='#3498db'; ctxW.beginPath(); ctxW.arc(xCur, midY-curVs*scale, 4, 0, Math.PI*2); ctxW.fill();
     ctxW.stroke();
     // axis labels
-    ctxW.fillStyle='#6B6B6B'; ctxW.font='9px Fredoka'; ctxW.textAlign='right';
+    ctxW.fillStyle='#6B6B6B'; ctxW.font='9px '; ctxW.textAlign='right';
     ctxW.fillText('+12V', mL-4, mT+8);
     ctxW.fillText('0', mL-4, midY+3);
     ctxW.fillText('-12V', mL-4, mT+ph);

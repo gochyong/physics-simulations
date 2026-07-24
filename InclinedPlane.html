@@ -150,7 +150,7 @@ function draw(){
     // Angle arc
     ctx.strokeStyle='#e67e22';ctx.lineWidth=2;ctx.beginPath();
     ctx.arc(baseX,baseY,35,-Math.PI,thRad-Math.PI,false);ctx.stroke();
-    ctx.fillStyle='#e67e22';ctx.font='bold 14px Fredoka';ctx.fillText('θ='+S.theta+'°',baseX+45,baseY-10);
+    ctx.fillStyle='#e67e22';ctx.font='bold 14px ';ctx.fillText('θ='+S.theta+'°',baseX+45,baseY-10);
 
     // --- Block positioned ON the slope surface ---
     const t=0.04+S.pos*0.96;
@@ -167,7 +167,7 @@ function draw(){
     // Draw block rotated to slope
     ctx.save();ctx.translate(bcx,bcy);ctx.rotate(thRad);ctx.translate(-bcx,-bcy);
     ctx.fillStyle='#e74c3c';ctx.fillRect(bx,by,blockW,blockH);
-    ctx.fillStyle='#fff';ctx.font='bold 10px Fredoka';ctx.textAlign='center';ctx.fillText(S.m.toFixed(1)+'kg',bcx,bcy+5);
+    ctx.fillStyle='#fff';ctx.font='bold 10px ';ctx.textAlign='center';ctx.fillText(S.m.toFixed(1)+'kg',bcx,bcy+5);
     ctx.restore();
 
     // --- Force vectors (length proportional to magnitude) ---
@@ -195,7 +195,7 @@ function draw(){
     }
 
     // Speed
-    ctx.fillStyle='#2ecc71';ctx.font='bold 14px Fredoka';ctx.textAlign='right';ctx.fillText('v='+S.v.toFixed(2)+' m/s',w-20,30);
+    ctx.fillStyle='#2ecc71';ctx.font='bold 14px ';ctx.textAlign='right';ctx.fillText('v='+S.v.toFixed(2)+' m/s',w-20,30);
 
 }
 
@@ -207,7 +207,7 @@ function arrow(c,x1,y1,x2,y2,clr,lw,label){
     c.lineTo(x2-h*Math.cos(a-Math.PI/6),y2-h*Math.sin(a-Math.PI/6));
     c.lineTo(x2-h*Math.cos(a+Math.PI/6),y2-h*Math.sin(a+Math.PI/6));
     c.closePath();c.fill();
-    if(label){c.font='bold 12px Fredoka';c.fillText(label,x2+6,y2-3);}
+    if(label){c.font='bold 12px ';c.fillText(label,x2+6,y2-3);}
 }
 
 function resetSim(){

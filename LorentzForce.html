@@ -67,7 +67,7 @@
 
     <!-- Formula Display -->
     <section class="formula-display" aria-label="公式与实时数值">
-        <div class="formula-container" id="formula-root" style="flex-direction:column;gap:2px;font-family:'Fredoka','Noto Sans SC',sans-serif;">
+        <div class="formula-container" id="formula-root" style="flex-direction:column;gap:2px;font-family:'PingFang SC','Microsoft YaHei',sans-serif;">
             <div style="font-size:1.15rem;font-weight:600;color:#e67e22;line-height:1.7;" id="formula-sub-f"></div>
             <div style="font-size:0.82rem;color:#6B6B6B;line-height:1.6;" id="formula-sub-rt"></div>
         </div>
@@ -349,7 +349,7 @@ function draw() {
 
     // --- B-field direction label at top-right of canvas ---
     ctx.fillStyle = 'rgba(200,200,220,0.5)';
-    ctx.font = 'bold 16px Fredoka';
+    ctx.font = 'bold 16px ';
     ctx.textAlign = 'right';
     const blabel = S.fieldIntoPage ? 'B ⊗ (into page)' : 'B ⊙ (out of page)';
     ctx.fillText(blabel, cw - 20, 30);
@@ -404,7 +404,7 @@ function draw() {
     const labelOffX = -16 * Math.sin(labelAngle);
     const labelOffY = -16 * Math.cos(labelAngle);
     ctx.fillStyle = 'rgba(255,255,255,0.55)';
-    ctx.font = 'bold 11px Fredoka';
+    ctx.font = 'bold 11px ';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('r=' + fmtSciShort(phy.radius) + ' m', midX + labelOffX, midY + labelOffY);
@@ -428,7 +428,7 @@ function draw() {
 
     // Charge label next to particle
     ctx.fillStyle = '#fff';
-    ctx.font = 'bold 10px Fredoka';
+    ctx.font = 'bold 10px ';
     ctx.textAlign = 'left';
     const qlabel = S.positiveCharge ? '+q' : '−q';
     ctx.fillText(qlabel, ppx + ballRadius + 6, ppy + 4);
@@ -456,7 +456,7 @@ function draw() {
         arrow(ctx, ppx, ppy, vDx, vDy, '#2ecc71', 2.5);
         // Label
         ctx.fillStyle = '#2ecc71';
-        ctx.font = 'bold 11px Fredoka';
+        ctx.font = 'bold 11px ';
         ctx.textAlign = 'left';
         const vlx = ppx + vDx + (vDx > 0 ? 5 : -5);
         const vly = ppy + vDy + (vDy > 0 ? 5 : -5);
@@ -481,7 +481,7 @@ function draw() {
         arrow(ctx, ppx + fEdgeX, ppy + fEdgeY, fDx - fEdgeX, fDy - fEdgeY, '#ff9800', 2.5);
         // Label
         ctx.fillStyle = '#ff9800';
-        ctx.font = 'bold 11px Fredoka';
+        ctx.font = 'bold 11px ';
         ctx.textAlign = 'left';
         const flx = ppx + fDx + (fDx > 0 ? 5 : -15);
         const fly = ppy + fDy + (fDy > 0 ? -8 : 8);

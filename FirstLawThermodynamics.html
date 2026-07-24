@@ -646,7 +646,7 @@ function draw() {
         drawRoundedRect(L-28, lockY-3, 18, 6, 3, '#e74c3c', null);
         drawRoundedRect(R+15, lockY-10, 8, 20, 3, '#e74c3c', null);
         drawRoundedRect(R+10, lockY-3, 18, 6, 3, '#e74c3c', null);
-        ctx.fillStyle = '#e74c3c'; ctx.font = 'bold 13px Fredoka, Noto Sans SC'; ctx.textAlign = 'center';
+        ctx.fillStyle = '#e74c3c'; ctx.font = 'bold 13px '; ctx.textAlign = 'center';
         ctx.fillText('LOCKED', (L+R)/2, pY-pT-42);
     }
 
@@ -654,10 +654,10 @@ function draw() {
     if (sim.mode === 'adiabatic') {
         ctx.strokeStyle = '#3498db'; ctx.lineWidth = 4; ctx.setLineDash([8, 4]);
         ctx.strokeRect(L-12, pY-pT-8, cylW+24, B-pY+pT+16); ctx.setLineDash([]);
-        ctx.fillStyle = '#3498db'; ctx.font = 'bold 12px Fredoka, Noto Sans SC'; ctx.textAlign = 'right';
+        ctx.fillStyle = '#3498db'; ctx.font = 'bold 12px '; ctx.textAlign = 'right';
         ctx.fillText('Insulated', L-18, (pY+B)/2+5);
         // Drag hint
-        ctx.fillStyle = 'rgba(52,152,219,0.7)'; ctx.font = 'italic 11px Fredoka, Noto Sans SC'; ctx.textAlign = 'center';
+        ctx.fillStyle = 'rgba(52,152,219,0.7)'; ctx.font = 'italic 11px '; ctx.textAlign = 'center';
         ctx.fillText('↕ 拖拽活塞 Drag piston', (L+R)/2, pY-pT-45);
     }
 
@@ -672,9 +672,9 @@ function draw() {
     ctx.fillStyle = tGrad;
     drawRoundedRect(tBarX, tBarTop+tBarH-fillH, tBarW, fillH, 7, tGrad, null);
 
-    ctx.fillStyle = '#6B5B4F'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'left';
+    ctx.fillStyle = '#6B5B4F'; ctx.font = 'bold 12px '; ctx.textAlign = 'left';
     ctx.fillText('T = ' + Math.round(sim.T) + ' K', tBarX+tBarW+6, tBarTop+tBarH/2+4);
-    ctx.font = '9px Fredoka'; ctx.fillStyle = '#999';
+    ctx.font = '9px '; ctx.fillStyle = '#999';
     ctx.fillText('500K', tBarX+tBarW+6, tBarTop+10);
     ctx.fillText('200K', tBarX+tBarW+6, tBarTop+tBarH);
 
@@ -690,18 +690,18 @@ function draw() {
     drawRoundedRect(vBarX, vBarTop+vBarH-vFillH, vBarW, vFillH, 6, vGrad, null);
 
     var V_ml = (B-pY) * sim.cylW * getCalibFactor() * 1000;
-    ctx.fillStyle = '#6B5B4F'; ctx.font = 'bold 11px Fredoka'; ctx.textAlign = 'right';
+    ctx.fillStyle = '#6B5B4F'; ctx.font = 'bold 11px '; ctx.textAlign = 'right';
     ctx.fillText('V=' + V_ml.toFixed(0) + 'mL', vBarX-6, vBarTop+vBarH/2+4);
 
     // Mode label
     var modeLabels = { isothermal: '等温 Isothermal  (ΔU=0)', isochoric: '等容 Isochoric  (W=0)', adiabatic: '绝热 Adiabatic  (Q=0)' };
-    ctx.fillStyle = '#999'; ctx.font = 'italic 13px Fredoka, Noto Sans SC'; ctx.textAlign = 'center';
+    ctx.fillStyle = '#999'; ctx.font = 'italic 13px '; ctx.textAlign = 'center';
     ctx.fillText(modeLabels[sim.mode], (L+R)/2, Math.max(10, pY-pT-55));
 
     // Labels
-    ctx.fillStyle = '#A0845C'; ctx.font = 'bold 12px Fredoka, Noto Sans SC'; ctx.textAlign = 'right';
+    ctx.fillStyle = '#A0845C'; ctx.font = 'bold 12px '; ctx.textAlign = 'right';
     ctx.fillText('Cylinder', L-8, pY+25);
-    ctx.fillStyle = '#6B5B4F'; ctx.font = '600 11px Fredoka, Noto Sans SC'; ctx.textAlign = 'left';
+    ctx.fillStyle = '#6B5B4F'; ctx.font = '600 11px '; ctx.textAlign = 'left';
     ctx.fillText('Piston', rodX+14, pY-pT-10);
 }
 

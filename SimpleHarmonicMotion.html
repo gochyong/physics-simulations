@@ -282,7 +282,7 @@ canvas { width: 100%; flex: 1; display: block; }
 
             // Equilibrium label
             ctx.fillStyle = '#95a5a6';
-            ctx.font = '500 11px Fredoka, Noto Sans SC';
+            ctx.font = '500 11px ';
             ctx.textAlign = 'center';
             ctx.fillText('平衡位置', eqX, centerY - 58);
 
@@ -326,7 +326,7 @@ canvas { width: 100%; flex: 1; display: block; }
             ctx.stroke();
             // Mass label
             ctx.fillStyle = '#fff';
-            ctx.font = 'bold 15px Fredoka';
+            ctx.font = 'bold 15px ';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText('m', massX, centerY);
@@ -357,20 +357,20 @@ canvas { width: 100%; flex: 1; display: block; }
 
                 // x label
                 ctx.fillStyle = '#3498db';
-                ctx.font = 'bold 12px Fredoka';
+                ctx.font = 'bold 12px ';
                 ctx.textAlign = 'center';
                 ctx.fillText('x = ' + disp.toFixed(2) + ' cm', (eqX + massX) / 2, arrowY - 10);
             }
 
             // Anchor label
             ctx.fillStyle = '#7f8c8d';
-            ctx.font = '500 11px Fredoka, Noto Sans SC';
+            ctx.font = '500 11px ';
             ctx.textAlign = 'center';
             ctx.fillText('固定端', anchorX, wallY - 12);
 
             // k label near spring
             ctx.fillStyle = '#FF8c42';
-            ctx.font = 'italic 12px Fredoka';
+            ctx.font = 'italic 12px ';
             ctx.textAlign = 'center';
             ctx.fillText('k=' + state.k + ' N/m', (anchorX + eqX) / 2, centerY - 32);
         }
@@ -405,7 +405,7 @@ canvas { width: 100%; flex: 1; display: block; }
 
             // Title
             ctx.fillStyle = color;
-            ctx.font = 'bold 12px Fredoka, Noto Sans SC';
+            ctx.font = 'bold 12px ';
             ctx.textAlign = 'left';
             ctx.fillText(title, left + 6, top + 14);
 
@@ -436,7 +436,7 @@ canvas { width: 100%; flex: 1; display: block; }
             ctx.setLineDash([]);
 
             // Y-axis labels
-            ctx.fillStyle = '#aaa'; ctx.font = '9px Fredoka'; ctx.textAlign = 'right';
+            ctx.fillStyle = '#aaa'; ctx.font = '9px '; ctx.textAlign = 'right';
             ctx.fillText(yMax.toFixed(1), plotLeft - 4, plotTop + 10);
             ctx.fillText('0', plotLeft - 4, midY + 4);
             ctx.fillText((-yMax).toFixed(1), plotLeft - 4, plotBottom - 2);
@@ -445,7 +445,7 @@ canvas { width: 100%; flex: 1; display: block; }
             const T = period();
             const latestT = state.graphTime;
             const oldestT = Math.max(0, latestT - HISTORY_WINDOW);
-            ctx.fillStyle = '#ccc'; ctx.font = '8px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillStyle = '#ccc'; ctx.font = '8px '; ctx.textAlign = 'center';
             for (let n = 0; n * T <= latestT; n++) {
                 const tN = n * T;
                 if (tN < oldestT) continue;
@@ -494,7 +494,7 @@ canvas { width: 100%; flex: 1; display: block; }
 
                 // Value label
                 ctx.fillStyle = color;
-                ctx.font = 'bold 10px Fredoka';
+                ctx.font = 'bold 10px ';
                 ctx.textAlign = 'left';
                 const labelX = Math.min(dotX + 8, plotRight - 55);
                 ctx.fillText(yLabel + '=' + dotVal.toFixed(2), labelX, dotY - 6);
@@ -534,7 +534,7 @@ canvas { width: 100%; flex: 1; display: block; }
 
             // Title
             ctx.fillStyle = '#4A403A';
-            ctx.font = 'bold 12px Fredoka, Noto Sans SC';
+            ctx.font = 'bold 12px ';
             ctx.textAlign = 'left';
             ctx.fillText('能量 / Energy', left + 6, top + 14);
 
@@ -590,7 +590,7 @@ canvas { width: 100%; flex: 1; display: block; }
             ctx.stroke();
 
             // Labels inside/outside the bar
-            ctx.font = 'bold 10px Fredoka';
+            ctx.font = 'bold 10px ';
             ctx.textBaseline = 'middle';
             if (keFrac > 0.25) {
                 ctx.fillStyle = '#fff';
@@ -604,7 +604,7 @@ canvas { width: 100%; flex: 1; display: block; }
             }
 
             // Legend below bar
-            ctx.font = '10px Fredoka, Noto Sans SC';
+            ctx.font = '10px ';
             ctx.fillStyle = '#2ecc71';
             ctx.textAlign = 'left';
             ctx.fillText('KE ' + (ke * 1000).toFixed(2) + ' mJ', barX, barY + barH + 14);
@@ -625,7 +625,7 @@ canvas { width: 100%; flex: 1; display: block; }
             if (pw <= 0 || ph <= 0) return;
 
             // Title
-            ctx.fillStyle = '#9b59b6'; ctx.font = 'bold 11px Fredoka'; ctx.textAlign = 'left';
+            ctx.fillStyle = '#9b59b6'; ctx.font = 'bold 11px '; ctx.textAlign = 'left';
             ctx.fillText('v-x 相图 Phase', left + 6, top + 14);
 
             // Axes
@@ -635,10 +635,10 @@ canvas { width: 100%; flex: 1; display: block; }
 
             // Axis labels with max values
             const wA = state.A * omega();
-            ctx.fillStyle = '#aaa'; ctx.font = '9px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillStyle = '#aaa'; ctx.font = '9px '; ctx.textAlign = 'center';
             ctx.fillText('x (cm)', pr, midY + 12); ctx.fillText('v (cm/s)', midX + 8, pt - 2);
             // Y-axis max/min
-            ctx.fillStyle = '#999'; ctx.font = '8px Fredoka'; ctx.textAlign = 'right';
+            ctx.fillStyle = '#999'; ctx.font = '8px '; ctx.textAlign = 'right';
             ctx.fillText('+ωA=' + wA.toFixed(0), midX - 6, pt + 10);
             ctx.fillText('-ωA', midX - 6, pb - 2);
             // X-axis max/min

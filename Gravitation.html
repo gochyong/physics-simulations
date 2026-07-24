@@ -296,7 +296,7 @@
 
             // Sun label
             ctx.fillStyle = '#fff';
-            ctx.font = 'bold 13px Fredoka, "Noto Sans SC", sans-serif';
+            ctx.font = 'bold 13px "", sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText('M = ' + M_val.toFixed(1), cx, cy - sunR - 12);
 
@@ -325,7 +325,7 @@
 
             // Planet label
             ctx.fillStyle = '#ccc';
-            ctx.font = 'bold 11px Fredoka, "Noto Sans SC", sans-serif';
+            ctx.font = 'bold 11px "", sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText('m', px, py + planetR + 16);
 
@@ -350,7 +350,7 @@
                 const flx = px + fux * forceMag * 1.15;
                 const fly = py + fuy * forceMag * 1.15;
                 ctx.fillStyle = '#FF8c42';
-                ctx.font = 'bold 11px Fredoka, "Noto Sans SC", sans-serif';
+                ctx.font = 'bold 11px "", sans-serif';
                 ctx.textAlign = 'center';
                 ctx.fillText('F', flx, fly - 4);
             }
@@ -366,7 +366,7 @@
                 const vlx = px + vux * velMag * 1.15;
                 const vly = py + vuy * velMag * 1.15;
                 ctx.fillStyle = '#3498db';
-                ctx.font = 'bold 11px Fredoka, "Noto Sans SC", sans-serif';
+                ctx.font = 'bold 11px "", sans-serif';
                 ctx.textAlign = 'center';
                 ctx.fillText('v', vlx, vly);
             }

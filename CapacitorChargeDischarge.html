@@ -129,7 +129,7 @@ function draw(){
     // Battery
     ctx.beginPath();ctx.moveTo(bCX-bGap,bCY-longH);ctx.lineTo(bCX-bGap,bCY);ctx.stroke();
     ctx.beginPath();ctx.moveTo(bCX+bGap,bCY-shortH);ctx.lineTo(bCX+bGap,bCY);ctx.stroke();
-    ctx.fillStyle='#333';ctx.font='bold 13px Fredoka';ctx.textAlign='center';
+    ctx.fillStyle='#333';ctx.font='bold 13px ';ctx.textAlign='center';
     ctx.fillText('+',bCX-bGap,bCY-longH-6);
     ctx.fillText('−',bCX+bGap,bCY-shortH-6);
     ctx.fillText(S.v0+'V',bCX,bCY-longH-16);
@@ -142,7 +142,7 @@ function draw(){
     // Right horizontal: battery- → R → RX
     ctx.beginPath();ctx.moveTo(bCX+bGap,midY);ctx.lineTo(bCX+bGap+40,midY);ctx.stroke();
     ctx.strokeRect(bCX+bGap+40,midY-14,38,28);
-    ctx.fillStyle='#333';ctx.font='bold 12px Fredoka';ctx.textAlign='center';
+    ctx.fillStyle='#333';ctx.font='bold 12px ';ctx.textAlign='center';
     ctx.fillText('R',bCX+bGap+59,midY+30);
     ctx.fillText(S.r+'kΩ',bCX+bGap+59,midY+44);
     ctx.beginPath();ctx.moveTo(bCX+bGap+78,midY);ctx.lineTo(RX,midY);ctx.stroke();
@@ -189,7 +189,7 @@ function draw(){
     ctx.beginPath();ctx.moveTo((LX+RX)/2+19,row2Y);ctx.lineTo(RX,row2Y);ctx.stroke();
 
     // Title
-    ctx.fillStyle='#333';ctx.font='bold 16px Fredoka';ctx.textAlign='center';
+    ctx.fillStyle='#333';ctx.font='bold 16px ';ctx.textAlign='center';
     const R=S.r*1000,Rd=S.rd*1000,C=S.c*1e-6;
     const tauVc=S.charging?(R*C):(Rd*C);
     ctx.fillText((S.charging?'充电 Charging':'放电 Discharging')+'    τ = '+(S.charging?'RC':'RdC')+' = '+(tauVc*1000).toFixed(1)+' ms',(LX+RX)/2,h*0.06);
@@ -200,11 +200,11 @@ function draw(){
     ctx.strokeStyle='#6B6B6B';ctx.lineWidth=1.5;
     ctx.beginPath();ctx.moveTo(gx,gy);ctx.lineTo(gx,gy+gh);ctx.lineTo(gx+gw,gy+gh);ctx.stroke();
     // Axis labels at ends
-    ctx.fillStyle='#6B6B6B';ctx.font='bold 12px Fredoka';ctx.textAlign='center';
+    ctx.fillStyle='#6B6B6B';ctx.font='bold 12px ';ctx.textAlign='center';
     ctx.fillText('t',gx+gw+10,gy+gh+4);
     ctx.fillText('Vc',gx-4,gy-10);
     // Y-axis tick: V0
-    ctx.fillStyle='#999';ctx.font='10px Fredoka';ctx.textAlign='right';
+    ctx.fillStyle='#999';ctx.font='10px ';ctx.textAlign='right';
     ctx.fillText(S.v0+'V',gx-6,gy+4);
     ctx.fillText('0',gx-6,gy+gh+4);
     // Draw Vc curve

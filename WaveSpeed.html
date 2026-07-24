@@ -259,7 +259,7 @@ canvas {
             ctx.beginPath(); ctx.moveTo(50, midY); ctx.lineTo(canvas.width - 50, midY); ctx.stroke();
 
             // Ticks
-            ctx.fillStyle = '#95a5a6'; ctx.font = '500 12px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillStyle = '#95a5a6'; ctx.font = '500 12px '; ctx.textAlign = 'center';
             for (let i = 0; i <= 40; i++) {
                 const x = 50 + i * state.pxPerCm;
                 if (x > canvas.width - 50) break;
@@ -340,7 +340,7 @@ canvas {
             ctx.closePath();
             ctx.fillStyle = color; ctx.fill(); ctx.stroke();
 
-            ctx.font = 'bold 14px Fredoka'; ctx.fillText(label, x2 + 10, y2 - 5);
+            ctx.font = 'bold 14px '; ctx.fillText(label, x2 + 10, y2 - 5);
         }
 
         bStart.onclick = () => {

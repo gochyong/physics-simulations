@@ -241,7 +241,7 @@
                 const currentE = 0.5 * state.m1 * state.v1 ** 2 + 0.5 * state.m2 * state.v2 ** 2;
                 drawDataBlock(cx + blockW / 2 + 30, yText, "After (碰后)", currentP, currentE, state.v1, state.v2, true);
             } else {
-                ctx.fillStyle = "#bbb"; ctx.textAlign = "center"; ctx.font = "italic 22px Fredoka";
+                ctx.fillStyle = "#bbb"; ctx.textAlign = "center"; ctx.font = "italic 22px ";
                 ctx.fillText("Waiting for collision...", cx + blockW / 2 + 30, yText + 80);
             }
 
@@ -252,10 +252,10 @@
         function drawDataBlock(x, y, title, p, e, v1, v2, show) {
             if (!show) return;
             ctx.textAlign = 'center';
-            ctx.fillStyle = '#4A403A'; ctx.font = '700 24px Fredoka';
+            ctx.fillStyle = '#4A403A'; ctx.font = '700 24px ';
             ctx.fillText(title, x, y + 20);
 
-            ctx.font = '600 18px Fredoka'; ctx.fillStyle = '#8e44ad';
+            ctx.font = '600 18px '; ctx.fillStyle = '#8e44ad';
             ctx.fillText(`P_tot: ${p.toFixed(2)}`, x, y + 50);
             ctx.fillStyle = '#f39c12';
             ctx.fillText(`E_tot: ${e.toFixed(2)} J`, x, y + 78);

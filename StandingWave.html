@@ -68,7 +68,7 @@ canvas { width: 100%; flex: 1; display: block; }
 /* Dropdown */
         select.mode-select {
             width: 100%; padding: 8px 14px;
-            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
+            font-family: 'PingFang SC','Microsoft YaHei',sans-serif;
             font-size: 0.95rem; font-weight: 600;
             color: var(--text-dark); background: #fff;
             border: 2px solid #e8ddd0; border-radius: 12px;
@@ -394,7 +394,7 @@ select.mode-select:focus {
             });
 
             // Labels
-            ctx.font = '600 13px Fredoka';
+            ctx.font = '600 13px ';
             bands.forEach(b => {
                 ctx.fillStyle = b.colorCode; ctx.textAlign = 'left';
                 ctx.fillText(b.label, 55, b.y - bandHeight * 0.35 + 5);
@@ -522,7 +522,7 @@ select.mode-select:focus {
                             ctx.beginPath(); ctx.arc(x, bands[2].y, 9, 0, Math.PI * 2);
                             ctx.fillStyle = 'rgba(46,204,113,0.15)'; ctx.fill();
                             ctx.strokeStyle = '#2ecc71'; ctx.lineWidth = 2; ctx.stroke();
-                            ctx.fillStyle = '#2ecc71'; ctx.font = 'bold 10px Fredoka'; ctx.textAlign = 'center';
+                            ctx.fillStyle = '#2ecc71'; ctx.font = 'bold 10px '; ctx.textAlign = 'center';
                             ctx.fillText('N', x, bands[2].y - 16);
                         }
                     }
@@ -533,14 +533,14 @@ select.mode-select:focus {
                         ctx.fillStyle = 'rgba(255,94,91,0.15)'; ctx.beginPath();
                         ctx.arc(x, bands[2].y, 9, 0, Math.PI * 2); ctx.fill();
                         ctx.strokeStyle = '#FF5E5B'; ctx.lineWidth = 2; ctx.stroke();
-                        ctx.fillStyle = '#FF5E5B'; ctx.font = 'bold 10px Fredoka'; ctx.textAlign = 'center';
+                        ctx.fillStyle = '#FF5E5B'; ctx.font = 'bold 10px '; ctx.textAlign = 'center';
                         ctx.fillText('A', x, bands[2].y - 16);
                     }
                 }
             }
 
             // x-axis scale
-            ctx.fillStyle = '#95a5a6'; ctx.font = '500 11px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillStyle = '#95a5a6'; ctx.font = '500 11px '; ctx.textAlign = 'center';
             for (let i = 0; i <= 40; i++) {
                 const x = 50 + i * state.pxPerCm;
                 if (x > canvas.width - 50) break;
@@ -548,7 +548,7 @@ select.mode-select:focus {
             }
 
             // Time indicator
-            ctx.fillStyle = '#95a5a6'; ctx.font = '500 13px Fredoka'; ctx.textAlign = 'right';
+            ctx.fillStyle = '#95a5a6'; ctx.font = '500 13px '; ctx.textAlign = 'right';
             ctx.fillText('t = ' + state.time.toFixed(1) + ' s', canvas.width - 55, 30);
         }
 
@@ -559,7 +559,7 @@ select.mode-select:focus {
             ctx.lineTo(x2 - head * Math.cos(angle - Math.PI / 6), y2 - head * Math.sin(angle - Math.PI / 6));
             ctx.lineTo(x2 - head * Math.cos(angle + Math.PI / 6), y2 - head * Math.sin(angle + Math.PI / 6));
             ctx.closePath(); ctx.fillStyle = color; ctx.fill(); ctx.stroke();
-            ctx.font = 'bold 13px Fredoka'; ctx.fillText(label, x2 + (x2 > x1 ? 6 : -50), y2 - 5);
+            ctx.font = 'bold 13px '; ctx.fillText(label, x2 + (x2 > x1 ? 6 : -50), y2 - 5);
         }
 
         bStart.onclick = () => {

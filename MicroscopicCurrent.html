@@ -150,14 +150,14 @@ function draw(g,I){
     ctx.strokeStyle=S.flash>0.25?'#e74c3c':'rgba(231,76,60,0.5)';
     ctx.lineWidth=S.flash>0.25?3.5:2;ctx.setLineDash([6,5]);
     ctx.beginPath();ctx.moveTo(sectionX,barY-barH/2-22);ctx.lineTo(sectionX,barY+barH/2+22);ctx.stroke();ctx.setLineDash([]);
-    ctx.fillStyle='#e74c3c';ctx.font='bold 12px Fredoka';ctx.textAlign='center';
+    ctx.fillStyle='#e74c3c';ctx.font='bold 12px ';ctx.textAlign='center';
     ctx.fillText('截面 A',sectionX,barY-barH/2-28);
     // 电子（向左漂移，叠加纵向热运动抖动）
     ctx.textBaseline='middle';
     for(const e of S.electrons){
         const py=e.y+Math.sin(e.jit)*1.5;
         ctx.fillStyle='#3498db';ctx.beginPath();ctx.arc(e.x,py,4,0,Math.PI*2);ctx.fill();
-        ctx.fillStyle='#fff';ctx.font='bold 6px Fredoka';ctx.textAlign='center';ctx.fillText('−',e.x,py+0.5);
+        ctx.fillStyle='#fff';ctx.font='bold 6px ';ctx.textAlign='center';ctx.fillText('−',e.x,py+0.5);
     }
     ctx.textBaseline='alphabetic';
     // 电子运动方向（导体上方，向左）
@@ -165,17 +165,17 @@ function draw(g,I){
     ctx.strokeStyle='#3498db';ctx.lineWidth=3.5;ctx.fillStyle='#3498db';
     ctx.beginPath();ctx.moveTo(barX+barL-4,ey);ctx.lineTo(barX+10,ey);ctx.stroke();
     ctx.beginPath();ctx.moveTo(barX,ey);ctx.lineTo(barX+13,ey-7);ctx.lineTo(barX+13,ey+7);ctx.closePath();ctx.fill();
-    ctx.fillStyle='#3498db';ctx.font='bold 13px Fredoka';ctx.textAlign='center';
+    ctx.fillStyle='#3498db';ctx.font='bold 13px ';ctx.textAlign='center';
     ctx.fillText('电子定向漂移 v = '+S.v.toFixed(1)+' mm/s（向左）',barX+barL/2,ey-9);
     // 电流方向（导体下方，向右）—— 与电子运动方向相反
     const iy=barY+barH/2+50;
     ctx.strokeStyle='#FF8c42';ctx.lineWidth=3.5;ctx.fillStyle='#FF8c42';
     ctx.beginPath();ctx.moveTo(barX+4,iy);ctx.lineTo(barX+barL-10,iy);ctx.stroke();
     ctx.beginPath();ctx.moveTo(barX+barL,iy);ctx.lineTo(barX+barL-13,iy-7);ctx.lineTo(barX+barL-13,iy+7);ctx.closePath();ctx.fill();
-    ctx.fillStyle='#FF8c42';ctx.font='bold 15px Fredoka';ctx.textAlign='center';
+    ctx.fillStyle='#FF8c42';ctx.font='bold 15px ';ctx.textAlign='center';
     ctx.fillText('电流方向 I（向右）= '+fmtExp(I)+' A',barX+barL/2,iy+18);
     // 金属与密度提示
-    ctx.fillStyle='#e67e22';ctx.font='bold 12px Fredoka';ctx.textAlign='left';
+    ctx.fillStyle='#e67e22';ctx.font='bold 12px ';ctx.textAlign='left';
     ctx.fillText('金属：'+METALS[S.metalIdx].name+'   n = '+nVal().toFixed(2)+'×10²⁸ m⁻³',barX,barY-barH/2-78);
 }
 

@@ -495,7 +495,7 @@
                 ctx.fillRect(thermoX - 2.5, mercuryTop, 5, thermoBottom - mercuryTop);
 
                 ctx.fillStyle = '#555';
-                ctx.font = '10px Fredoka';
+                ctx.font = '10px ';
                 ctx.textAlign = 'left';
                 const solidMax = state.boilPoint === Infinity ? '150°C' : (state.boilPoint + 40) + '°C';
                 ctx.fillText(solidMax, thermoX + 6, thermoTop + 10);
@@ -559,7 +559,7 @@
                 ctx.fillRect(thermoX - 2.5, mercuryTop, 5, thermoBottom - mercuryTop);
 
                 ctx.fillStyle = '#555';
-                ctx.font = '10px Fredoka';
+                ctx.font = '10px ';
                 ctx.textAlign = 'left';
                 const liquidMax = state.boilPoint === Infinity ? '150°C' : (state.boilPoint + 10) + '°C';
                 ctx.fillText(liquidMax, thermoX + 6, thermoTop + 10);
@@ -579,7 +579,7 @@
 
             // Temp label
             ctx.fillStyle = state.isBoiling ? '#e74c3c' : 'rgba(0,0,0,0.7)';
-            ctx.font = 'bold 16px Fredoka';
+            ctx.font = 'bold 16px ';
             ctx.textAlign = 'center';
             const tempText = state.temperature.toFixed(1) + ' °C';
             ctx.fillText(tempText, beakerX, beakerTop - 15);
@@ -587,13 +587,13 @@
             // Boiling indicator
             if (state.isBoiling) {
                 ctx.fillStyle = '#e74c3c';
-                ctx.font = 'bold 13px "Noto Sans SC"';
+                ctx.font = 'bold 13px ""';
                 ctx.fillText('沸騰中 Boiling', beakerX, beakerTop - 35);
             } else {
                 // Substance name
                 const phaseIcon = isSolid ? '🧱' : '💧';
                 ctx.fillStyle = '#6B6B6B';
-                ctx.font = 'bold 14px "Noto Sans SC"';
+                ctx.font = 'bold 14px ""';
                 ctx.fillText(phaseIcon + ' ' + state.substanceName, beakerX, beakerTop - 35);
             }
 
@@ -663,12 +663,12 @@
             ctx.fill();
 
             // Temp reading
-            ctx.font = 'bold 22px Fredoka';
+            ctx.font = 'bold 22px ';
             ctx.fillStyle = '#444';
             ctx.fillText(state.temperature.toFixed(1) + '°C', gaugeCX, gaugeCY + 45);
 
             // Labels
-            ctx.font = '10px Fredoka';
+            ctx.font = '10px ';
             ctx.fillStyle = '#bbb';
             ctx.fillText(tempMin + '°C', gaugeCX - gaugeR - 12, gaugeCY + 5);
             ctx.fillText(tempMax + '°C', gaugeCX + gaugeR + 12, gaugeCY + 5);

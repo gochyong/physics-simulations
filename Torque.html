@@ -19,7 +19,7 @@
 #slider-r::-webkit-slider-thumb { background: #0081a7; }
 #slider-theta::-webkit-slider-thumb { background: var(--secondary); }
 .material-tag { display: inline-block; background: rgba(255,140,66,0.1); color: var(--primary); padding: 4px 14px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; }
-select { width: 100%; padding: 8px; font-size: 0.9rem; font-weight: 600; border: 2px solid #f0f0f0; border-radius: 8px; background: white; color: var(--text-dark); cursor: pointer; font-family: 'Fredoka','Noto Sans SC',sans-serif; }
+select { width: 100%; padding: 8px; font-size: 0.9rem; font-weight: 600; border: 2px solid #f0f0f0; border-radius: 8px; background: white; color: var(--text-dark); cursor: pointer; font-family: 'PingFang SC','Microsoft YaHei',sans-serif; }
 select:focus { outline: none; border-color: var(--primary); }
 /* === 无障碍 Accessibility (批量注入) === */
 .skip-link { position: absolute; top: -40px; left: 8px; z-index: 2000; background: #185FA5; color: #fff; padding: 8px 16px; border-radius: 10px; font-size: 0.9rem; font-weight: 600; text-decoration: none; transition: top 0.2s; }
@@ -244,7 +244,7 @@ select:focus { outline: none; border-color: var(--primary); }
 
             // Label pivot point
             ctx.fillStyle = '#333';
-            ctx.font = 'bold 14px Fredoka, Noto Sans SC, sans-serif';
+            ctx.font = 'bold 14px sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText('支点 / Pivot', cx, cy + 30);
 
@@ -296,7 +296,7 @@ select:focus { outline: none; border-color: var(--primary); }
                 const labelX = leverEndX + labelDist * Math.cos(midAngle);
                 const labelY = leverEndY - labelDist * Math.sin(midAngle);
                 ctx.fillStyle = '#333';
-                ctx.font = 'bold 18px Fredoka, Noto Sans SC, sans-serif';
+                ctx.font = 'bold 18px sans-serif';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText('θ', labelX, labelY);
@@ -319,7 +319,7 @@ select:focus { outline: none; border-color: var(--primary); }
                 drawArrowHead(leverEndX, leverEndY + (vDir * perpLength), perpAngle, '#32CD32');
 
                 ctx.fillStyle = '#32CD32';
-                ctx.font = 'bold 14px Fredoka, Noto Sans SC, sans-serif';
+                ctx.font = 'bold 14px sans-serif';
                 ctx.textAlign = 'left';
                 ctx.fillText('Fsinθ', leverEndX + 10, leverEndY + (vDir * perpLength / 2));
 
@@ -337,13 +337,13 @@ select:focus { outline: none; border-color: var(--primary); }
 
             // Draw distance label
             ctx.fillStyle = '#0081a7';
-            ctx.font = 'bold 14px Fredoka, Noto Sans SC, sans-serif';
+            ctx.font = 'bold 14px sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText('r', cx + leverLength / 2, cy - 15);
 
             // Draw force label
             ctx.fillStyle = '#FF8c42';
-            ctx.font = 'bold 14px Fredoka, Noto Sans SC, sans-serif';
+            ctx.font = 'bold 14px sans-serif';
             const forceLabelX = leverEndX + (forceScale / 2) * Math.cos(forceAngle);
             const forceLabelY = leverEndY - (forceScale / 2) * Math.sin(forceAngle);
             ctx.fillText('F', forceLabelX + 20, forceLabelY - 10);

@@ -356,9 +356,9 @@
             ctx.fillStyle = grad;
             ctx.beginPath(); ctx.arc(cx, cy, 28, 0, Math.PI * 2); ctx.fill();
             ctx.fillStyle = '#3498db';
-            ctx.font = 'bold 16px Fredoka'; ctx.textAlign = 'center';
+            ctx.font = 'bold 16px '; ctx.textAlign = 'center';
             ctx.fillText('❄', cx, cy + 6);
-            ctx.font = '600 11px Fredoka';
+            ctx.font = '600 11px ';
             ctx.fillText(T_COLD + '°C', cx, cy + rh / 2 + 16);
         }
 
@@ -383,7 +383,7 @@
                 ctx.fillStyle = bg;
                 ctx.beginPath(); ctx.roundRect(x - 18, ry - rh / 2 - 52, 36, 22, 8); ctx.fill();
                 ctx.fillStyle = (t > (state.T_hot + T_COLD) / 2) ? '#fff' : '#222';
-                ctx.font = 'bold 11px Fredoka'; ctx.textAlign = 'center';
+                ctx.font = 'bold 11px '; ctx.textAlign = 'center';
                 ctx.fillText(t.toFixed(0) + '°C', x, ry - rh / 2 - 39);
             }
         }
@@ -398,7 +398,7 @@
             ctx.strokeStyle = '#e0e0e0'; ctx.lineWidth = 1.5;
             ctx.beginPath(); ctx.roundRect(gx - 5, gy - 5, gw + 10, gh + 10, 10); ctx.fill(); ctx.stroke();
 
-            ctx.fillStyle = '#555'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'left';
+            ctx.fillStyle = '#555'; ctx.font = 'bold 12px '; ctx.textAlign = 'left';
             ctx.fillText('温度分布 Temperature Profile', gx + 6, gy + 14);
 
             const pl = 50, pr = 15, pt = 28, pb = 32;
@@ -409,7 +409,7 @@
             ctx.beginPath(); ctx.moveTo(px, py + ph); ctx.lineTo(px + pw, py + ph); ctx.stroke();
 
             // Y
-            ctx.fillStyle = '#6B6B6B'; ctx.font = '10px Fredoka'; ctx.textAlign = 'right';
+            ctx.fillStyle = '#6B6B6B'; ctx.font = '10px '; ctx.textAlign = 'right';
             const nY = 4;
             for (let i = 0; i <= nY; i++) {
                 const f = i / nY, y = py + ph - f * ph;
@@ -429,11 +429,11 @@
 
             // Y label
             ctx.save(); ctx.translate(px - 42, py + ph / 2); ctx.rotate(-Math.PI / 2);
-            ctx.fillStyle = '#6B6B6B'; ctx.font = '10px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillStyle = '#6B6B6B'; ctx.font = '10px '; ctx.textAlign = 'center';
             ctx.fillText('T (°C)', 0, 0); ctx.restore();
 
             // X label
-            ctx.fillStyle = '#6B6B6B'; ctx.font = '10px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillStyle = '#6B6B6B'; ctx.font = '10px '; ctx.textAlign = 'center';
             ctx.fillText('Position', px + pw / 2, py + ph + 30);
 
             // steady-state dashed
@@ -442,7 +442,7 @@
             ctx.moveTo(px, py + ph - ph);
             ctx.lineTo(px + pw, py + ph);
             ctx.stroke(); ctx.setLineDash([]);
-            ctx.fillStyle = '#aaa'; ctx.font = 'italic 10px Fredoka'; ctx.textAlign = 'right';
+            ctx.fillStyle = '#aaa'; ctx.font = 'italic 10px '; ctx.textAlign = 'right';
             ctx.fillText('稳态', px + pw - 4, py + ph - 4);
 
             // current profile
@@ -462,7 +462,7 @@
                 ctx.beginPath(); ctx.arc(x, py + ph - tn * ph, 3, 0, Math.PI * 2);
                 ctx.fillStyle = '#FF5E5B'; ctx.fill();
             }
-            ctx.fillStyle = '#FF5E5B'; ctx.font = 'italic 10px Fredoka'; ctx.textAlign = 'left';
+            ctx.fillStyle = '#FF5E5B'; ctx.font = 'italic 10px '; ctx.textAlign = 'left';
             ctx.fillText('当前', px + 6, py + ph - 4);
         }
 
@@ -478,7 +478,7 @@
                 ctx.lineTo(x + 4, ay - 6); ctx.lineTo(x + 14, ay);
                 ctx.lineTo(x + 4, ay + 6); ctx.closePath(); ctx.fill();
                 ctx.fillStyle = `rgba(230,126,34,${alpha + 0.15})`;
-                ctx.font = 'italic 10px Fredoka'; ctx.textAlign = 'center';
+                ctx.font = 'italic 10px '; ctx.textAlign = 'center';
                 ctx.fillText('heat →', x, ay + 14);
             }
         }
@@ -489,7 +489,7 @@
             if (!state.isPlaying) { txt = '已暂停 Paused'; clr = '#95a5a6'; }
             else if (state.steady) { txt = '已达到稳态 Steady State ✓'; clr = '#2ecc71'; }
             else { txt = '热传导中... Heating...'; clr = '#FF5E5B'; }
-            ctx.fillStyle = clr; ctx.font = 'bold 13px Fredoka'; ctx.textAlign = 'left';
+            ctx.fillStyle = clr; ctx.font = 'bold 13px '; ctx.textAlign = 'left';
             ctx.fillText(txt, x, y);
         }
 

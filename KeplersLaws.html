@@ -368,7 +368,7 @@ canvas {
             drawPlanet(planetX, planetY, planetR);
 
             // --- Sector label ---
-            ctx.font = '600 11px Fredoka, "Noto Sans SC", sans-serif';
+            ctx.font = '600 11px "", sans-serif';
             ctx.textAlign = 'center';
             const midA_idx = Math.floor(sectorA_positions.length / 2);
             if (sectorA_positions.length > 1 && midA_idx >= 0) {
@@ -379,7 +379,7 @@ canvas {
             }
 
             // --- Label perihelion and aphelion ---
-            ctx.font = '600 10px Fredoka, "Noto Sans SC", sans-serif';
+            ctx.font = '600 10px "", sans-serif';
             ctx.textAlign = 'center';
             ctx.fillStyle = 'rgba(255,255,255,0.7)';
 
@@ -404,7 +404,7 @@ canvas {
             ctx.fill();
 
             // --- Semi-major axis label ---
-            ctx.font = 'italic 10px Fredoka, "Noto Sans SC", sans-serif';
+            ctx.font = 'italic 10px "", sans-serif';
             ctx.fillStyle = 'rgba(255,255,255,0.45)';
             ctx.textAlign = 'center';
             const axisLabelX = centerX;

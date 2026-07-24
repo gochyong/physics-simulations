@@ -129,7 +129,7 @@ function drawSwitchAt(x,y){
 }
 function drawRectR(x,y,rw,rh,label){
     ctx.strokeStyle='#333';ctx.lineWidth=2.5;ctx.strokeRect(x-rw/2,y-rh/2,rw,rh);
-    ctx.fillStyle='#333';ctx.font='bold 14px Fredoka';ctx.textAlign='center';
+    ctx.fillStyle='#333';ctx.font='bold 14px ';ctx.textAlign='center';
     ctx.fillText(label,x,y+rh/2+18);
 }
 
@@ -149,8 +149,8 @@ function draw(mode,req,i1,i2,v1,v2){
         ctx.beginPath();ctx.moveTo(bCX-bGap,bCY-longH);ctx.lineTo(bCX-bGap,bCY);ctx.stroke();
         ctx.beginPath();ctx.moveTo(bCX+bGap,bCY-shortH);ctx.lineTo(bCX+bGap,bCY);ctx.stroke();
         // + and - labels
-        ctx.fillStyle='#333';ctx.font='bold 11px Fredoka';ctx.textAlign='center';
-        ctx.fillStyle='#333';ctx.font='bold 13px Fredoka';ctx.textAlign='center';
+        ctx.fillStyle='#333';ctx.font='bold 11px ';ctx.textAlign='center';
+        ctx.fillStyle='#333';ctx.font='bold 13px ';ctx.textAlign='center';
         ctx.fillText('+',bCX-bGap,bCY-longH-6);
         ctx.fillText('−',bCX+bGap,bCY-shortH-6);
         ctx.fillText(S.voltage+'V',bCX,bCY-longH-16);
@@ -182,7 +182,7 @@ function draw(mode,req,i1,i2,v1,v2){
         // Battery (same as series)
         ctx.beginPath();ctx.moveTo(bCX-bGap,bCY-longH);ctx.lineTo(bCX-bGap,bCY);ctx.stroke();
         ctx.beginPath();ctx.moveTo(bCX+bGap,bCY-shortH);ctx.lineTo(bCX+bGap,bCY);ctx.stroke();
-        ctx.fillStyle='#333';ctx.font='bold 13px Fredoka';ctx.textAlign='center';
+        ctx.fillStyle='#333';ctx.font='bold 13px ';ctx.textAlign='center';
         ctx.fillText('+',bCX-bGap,bCY-longH-6);
         ctx.fillText('−',bCX+bGap,bCY-shortH-6);
         ctx.fillText(S.voltage+'V',bCX,bCY-longH-16);
@@ -204,7 +204,7 @@ function draw(mode,req,i1,i2,v1,v2){
         ctx.beginPath();ctx.moveTo(LX,row1Y);ctx.lineTo((LX+RX)/2-19,row1Y);ctx.stroke();
         drawRectR((LX+RX)/2,row1Y,38,28,'R₁');
         ctx.beginPath();ctx.moveTo((LX+RX)/2+19,row1Y);ctx.lineTo(RX,row1Y);ctx.stroke();
-        ctx.fillStyle='#3498db';ctx.font='bold 14px Fredoka';ctx.textAlign='center';
+        ctx.fillStyle='#3498db';ctx.font='bold 14px ';ctx.textAlign='center';
         ctx.fillText('I₁='+i1.toFixed(3)+'A',(LX+RX)/2,row1Y-26);
 
         // R2 on lower row: wire from left→resistor→wire to right
@@ -216,14 +216,14 @@ function draw(mode,req,i1,i2,v1,v2){
 
     ctx.textAlign='center';
     if(mode==='series'){
-        ctx.fillStyle='#333';ctx.font='bold 20px Fredoka';
+        ctx.fillStyle='#333';ctx.font='bold 20px ';
         ctx.fillText('串联 Series    R_eq = '+req.toFixed(1)+' Ω',w/2,24);
-        ctx.fillStyle='#3498db';ctx.font='bold 16px Fredoka';
+        ctx.fillStyle='#3498db';ctx.font='bold 16px ';
         ctx.fillText('I = '+(S.voltage/req).toFixed(3)+' A（处处相等）',w/2,52);
     }else{
-        ctx.fillStyle='#333';ctx.font='bold 20px Fredoka';
+        ctx.fillStyle='#333';ctx.font='bold 20px ';
         ctx.fillText('并联 Parallel    R_eq = '+req.toFixed(1)+' Ω',w/2,24);
-        ctx.fillStyle='#3498db';ctx.font='bold 14px Fredoka';
+        ctx.fillStyle='#3498db';ctx.font='bold 14px ';
         ctx.fillText('I_total = '+(S.voltage/req).toFixed(3)+' A',w/2,48);
     }
 }

@@ -51,7 +51,7 @@ let hit=false;for(const c of cs){const dx=x-c.x,dy=y-c.y;if(dx*dx+dy*dy<LINE_R*L
 function drawArrow(x,y,ux,uy){const s=6;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-s*ux+s*0.5*uy,y-s*uy-s*0.5*ux);ctx.moveTo(x,y);ctx.lineTo(x-s*ux-s*0.5*uy,y-s*uy+s*0.5*ux);ctx.stroke()}
 function drawPolyline(pts,dir){if(pts.length<2)return;ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);for(let i=1;i<pts.length;i++)ctx.lineTo(pts[i][0],pts[i][1]);ctx.stroke();
 let acc=0;for(let i=1;i<pts.length;i++){const dx=pts[i][0]-pts[i-1][0],dy=pts[i][1]-pts[i-1][1];acc+=Math.hypot(dx,dy);if(acc>=ARROW_GAP){acc=0;const m=Math.hypot(dx,dy)||1;drawArrow(pts[i][0],pts[i][1],dir*dx/m,dir*dy/m)}}}
-function drawCharge(c){ctx.fillStyle=c.q>0?'#e74c3c':'#3498db';ctx.beginPath();ctx.arc(c.x,c.y,CHARGE_R,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.font='bold 20px Fredoka,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(c.q>0?'+':'−',c.x,c.y+1)}
+function drawCharge(c){ctx.fillStyle=c.q>0?'#e74c3c':'#3498db';ctx.beginPath();ctx.arc(c.x,c.y,CHARGE_R,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.font='bold 20px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(c.q>0?'+':'−',c.x,c.y+1)}
 // 发射场线：dir=+1顺场(正电荷向外发射/被负电荷吸收的外部线)；dir=-1逆场(孤立负电荷向内汇聚)
 function emitFrom(c,cs,dir,N){const half=N/2;for(let k=0;k<N;k++){const ang=(k-half+0.5)*2*Math.PI/N;const pts=trace(c.x+LINE_R*Math.cos(ang),c.y+LINE_R*Math.sin(ang),cs,dir);drawPolyline(pts,dir)}}
 // 按电荷极性自动选方向：正电荷向外发散(+1)，负电荷向内汇聚(-1)

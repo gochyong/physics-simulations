@@ -204,7 +204,7 @@ canvas { width: 100%; flex: 1; display: block; }
             const grad=ctx.createLinearGradient(0,0,srcX2,0);
             grad.addColorStop(0,lc); grad.addColorStop(0.7,lc); grad.addColorStop(1,'rgba(0,0,0,0)');
             ctx.fillStyle=grad; ctx.fillRect(0,midY-25,srcX2,50);
-            ctx.fillStyle='#fff'; ctx.font='bold 10px Fredoka'; ctx.textAlign='center';
+            ctx.fillStyle='#fff'; ctx.font='bold 10px '; ctx.textAlign='center';
             ctx.fillText('单色光源',srcX2/2,midY-30);
             ctx.fillText('λ='+state.lambdaNm+'nm',srcX2/2,midY+38);
 
@@ -227,7 +227,7 @@ canvas { width: 100%; flex: 1; display: block; }
                 ctx.fillStyle=g; ctx.fillRect(slitX-10,sy-12,20,24);
                 ctx.fillStyle='#fff'; ctx.fillRect(slitX-1,sy-3,5,6);
             });
-            ctx.fillStyle='#e74c3c'; ctx.font='bold 10px Fredoka'; ctx.textAlign='right';
+            ctx.fillStyle='#e74c3c'; ctx.font='bold 10px '; ctx.textAlign='right';
             ctx.fillText('S₁',slitX-7,s1y+4); ctx.fillText('S₂',slitX-7,s2y+4);
 
             // a label
@@ -289,7 +289,7 @@ canvas { width: 100%; flex: 1; display: block; }
             const scrBot=fieldY2-4;
             ctx.strokeStyle='#aaa'; ctx.lineWidth=2;
             ctx.beginPath(); ctx.moveTo(screenX,scrTop); ctx.lineTo(screenX,scrBot); ctx.stroke();
-            ctx.fillStyle='#ddd'; ctx.font='bold 12px Fredoka'; ctx.textAlign='center';
+            ctx.fillStyle='#ddd'; ctx.font='bold 12px '; ctx.textAlign='center';
             ctx.fillText('屏 Screen',screenX,scrTop-10);
 
             // D arrow (positioned just below the field)
@@ -355,16 +355,16 @@ canvas { width: 100%; flex: 1; display: block; }
                 ctx.beginPath();ctx.arc(screenX+4,yPx,3.5,0,Math.PI*2);
                 ctx.fillStyle='#ffdd57';ctx.fill();
                 ctx.strokeStyle='#fff';ctx.lineWidth=0.8;ctx.stroke();
-                ctx.fillStyle='#fff';ctx.font='bold 9px Fredoka';ctx.textAlign='left';
+                ctx.fillStyle='#fff';ctx.font='bold 9px ';ctx.textAlign='left';
                 ctx.fillText(n===0?'0':(n>0?'+'+n:''+n),screenX+32,yPx+3);
             }
 
             // Central max label
-            ctx.fillStyle='#ffdd57';ctx.font='bold 10px Fredoka';ctx.textAlign='left';
+            ctx.fillStyle='#ffdd57';ctx.font='bold 10px ';ctx.textAlign='left';
             ctx.fillText('中央极大',screenX+32,midY+3);
 
             // Time
-            ctx.fillStyle='rgba(255,255,255,0.3)';ctx.font='500 10px Fredoka';ctx.textAlign='right';
+            ctx.fillStyle='rgba(255,255,255,0.3)';ctx.font='500 10px ';ctx.textAlign='right';
             ctx.fillText('t='+state.time.toFixed(1)+'s',w-12,16);
         }
 

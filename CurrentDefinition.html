@@ -137,7 +137,7 @@ function draw(g,I){
     ctx.strokeStyle=S.flash>0.25?'#e74c3c':'rgba(231,76,60,0.55)';
     ctx.lineWidth=S.flash>0.25?3.5:2;ctx.setLineDash([6,5]);
     ctx.beginPath();ctx.moveTo(sectionX,barY-barH/2-20);ctx.lineTo(sectionX,barY+barH/2+20);ctx.stroke();ctx.setLineDash([]);
-    ctx.fillStyle='#e74c3c';ctx.font='bold 12px Fredoka';ctx.textAlign='center';
+    ctx.fillStyle='#e74c3c';ctx.font='bold 12px ';ctx.textAlign='center';
     ctx.fillText('截面 S',sectionX,barY-barH/2-26);
 
     // 电荷（正电荷，与电流同向）
@@ -145,7 +145,7 @@ function draw(g,I){
     for(const c of S.charges){
         if(c.x<barX-8||c.x>barX+barL+8)continue;
         ctx.fillStyle='#FF5E5B';ctx.beginPath();ctx.arc(c.x,c.y,6,0,Math.PI*2);ctx.fill();
-        ctx.fillStyle='#fff';ctx.font='bold 9px Fredoka';ctx.textAlign='center';ctx.fillText('+',c.x,c.y+0.5);
+        ctx.fillStyle='#fff';ctx.font='bold 9px ';ctx.textAlign='center';ctx.fillText('+',c.x,c.y+0.5);
     }
     ctx.textBaseline='alphabetic';
 
@@ -154,13 +154,13 @@ function draw(g,I){
     ctx.strokeStyle='#FF8c42';ctx.lineWidth=3.5;ctx.fillStyle='#FF8c42';
     ctx.beginPath();ctx.moveTo(barX+4,ay);ctx.lineTo(barX+barL-10,ay);ctx.stroke();
     ctx.beginPath();ctx.moveTo(barX+barL,ay);ctx.lineTo(barX+barL-13,ay-7);ctx.lineTo(barX+barL-13,ay+7);ctx.closePath();ctx.fill();
-    ctx.font='bold 15px Fredoka';ctx.textAlign='center';ctx.fillText('I = '+I.toFixed(2)+' A',barX+barL/2,ay-9);
+    ctx.font='bold 15px ';ctx.textAlign='center';ctx.fillText('I = '+I.toFixed(2)+' A',barX+barL/2,ay-9);
 
     // 计量周期进度条（导体下方）
     const pbY=barY+barH/2+40,pbX=barX,pbW=barL;
     ctx.fillStyle='#eee';ctx.fillRect(pbX,pbY,pbW,14);ctx.strokeStyle='#bbb';ctx.lineWidth=1;ctx.strokeRect(pbX,pbY,pbW,14);
     ctx.fillStyle='#3498db';ctx.fillRect(pbX,pbY,pbW*Math.min(1,S.periodT/S.t),14);
-    ctx.fillStyle='#555';ctx.font='bold 12px Fredoka';ctx.textAlign='left';
+    ctx.fillStyle='#555';ctx.font='bold 12px ';ctx.textAlign='left';
     ctx.fillText('本周期已通过 '+S.periodCount+' C    计时 '+S.periodT.toFixed(1)+' / '+S.t.toFixed(1)+' s',pbX,pbY+30);
     if(S.lastI!=null){ctx.fillStyle='#e67e22';ctx.textAlign='right';ctx.fillText('上一周期实测 I ≈ '+S.lastI.toFixed(2)+' A',pbX+pbW,pbY+30)}
 }

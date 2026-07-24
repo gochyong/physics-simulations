@@ -157,7 +157,7 @@ function draw() {
     arrow(ctx, hLX, hBot, 0, 7, '#2ecc71', 1.5);
     // label
     ctx.fillStyle = '#2ecc71';
-    ctx.font = 'bold 12px Fredoka';
+    ctx.font = 'bold 12px ';
     ctx.textAlign = 'right';
     ctx.fillText('h₀=' + h0.toFixed(1) + ' m', hLX - 6, (hTop + hBot) / 2 + 4);
 
@@ -175,7 +175,7 @@ function draw() {
     arrow(ctx, ox, rY, -7, 0, '#3498db', 1.5);
     arrow(ctx, rXend, rY, 7, 0, '#3498db', 1.5);
     ctx.fillStyle = '#3498db';
-    ctx.font = 'bold 12px Fredoka';
+    ctx.font = 'bold 12px ';
     ctx.textAlign = 'center';
     ctx.fillText('R=' + R.toFixed(2) + ' m', (ox + rXend) / 2, rY - 8);
 
@@ -186,7 +186,7 @@ function draw() {
     ctx.arc(lx, ly, 4, 0, Math.PI * 2);
     ctx.fill();
     ctx.fillStyle = '#6B6B6B';
-    ctx.font = '10px Fredoka';
+    ctx.font = '10px ';
     ctx.textAlign = 'right';
     ctx.fillText('发射点', lx - 8, ly + 4);
 
@@ -194,7 +194,7 @@ function draw() {
     const vS = 3.5;
     arrow(ctx, lx, ly, v0 * vS, 0, '#e74c3c', 2.5);
     ctx.fillStyle = '#333';
-    ctx.font = 'bold 11px Fredoka';
+    ctx.font = 'bold 11px ';
     ctx.textAlign = 'left';
     ctx.fillText('v₀=' + v0.toFixed(1) + ' m/s', lx + v0 * vS + 4, ly - 2);
 
@@ -233,7 +233,7 @@ function draw() {
         const hdx = cVX * vS;
         arrow(ctx, bx, by, hdx, 0, '#3498db', 2);
         ctx.fillStyle = '#3498db';
-        ctx.font = 'bold 10px Fredoka';
+        ctx.font = 'bold 10px ';
         ctx.textAlign = 'left';
         ctx.fillText('Vh=' + cVX.toFixed(1), bx + hdx + 3, by + 4);
 
@@ -257,7 +257,7 @@ function draw() {
     ctx.arc(ox, oy, 3.5, 0, Math.PI * 2);
     ctx.fill();
     ctx.fillStyle = '#6B6B6B';
-    ctx.font = '10px Fredoka';
+    ctx.font = '10px ';
     ctx.textAlign = 'center';
     ctx.fillText('O', ox - 8, oy + 13);
 
@@ -303,7 +303,7 @@ function draw() {
         arrow(ctxD, vx1, vby, 0, vvL, '#2ecc71', 2.5);
     }
     ctxD.fillStyle = '#2ecc71';
-    ctxD.font = 'bold 10px Fredoka';
+    ctxD.font = 'bold 10px ';
     ctxD.textAlign = 'left';
     ctxD.fillText('Vv=' + vvy.toFixed(1), vx1 + 10, vtop + 14);
     ctxD.fillText('a=g=9.8 m/s²', vx1 + 10, vtop + 28);
@@ -322,7 +322,7 @@ function draw() {
 
     // Tick marks along horizontal axis
     ctxD.fillStyle = '#aaa';
-    ctxD.font = '9px Fredoka';
+    ctxD.font = '9px ';
     ctxD.textAlign = 'center';
     for (let tick = 0; tick <= 4; tick++) {
         const tx = hx2 + (tick / 4) * hlen2;
@@ -350,7 +350,7 @@ function draw() {
     // Horizontal velocity arrow (constant rightward)
     arrow(ctxD, hxP, hy2, 30, 0, '#3498db', 2.5);
     ctxD.fillStyle = '#3498db';
-    ctxD.font = 'bold 10px Fredoka';
+    ctxD.font = 'bold 10px ';
     ctxD.textAlign = 'left';
     ctxD.fillText('Vh=' + v0.toFixed(1) + '（恒定）', hx2 + 4, hy2 - 8);
 

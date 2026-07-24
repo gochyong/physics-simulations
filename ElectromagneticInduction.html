@@ -198,7 +198,7 @@ function draw() {
     ctx.lineTo(solRr, galvY + galvR);
     ctx.lineTo(galvX + 14, galvY + galvR); ctx.stroke();
     // G label
-    ctx.fillStyle = '#6B6B6B'; ctx.font = '10px Fredoka'; ctx.textAlign = 'center';
+    ctx.fillStyle = '#6B6B6B'; ctx.font = '10px '; ctx.textAlign = 'center';
     ctx.fillText('G', galvX, galvY + 4);
 
     // --- Draw magnet ---
@@ -314,7 +314,7 @@ function draw() {
     }
 
     // N/S labels
-    ctx.fillStyle = '#fff'; ctx.font = 'bold 15px Fredoka'; ctx.textAlign = 'center';
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 15px '; ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     const nlX = isNLeft ? mx + magnetW * 0.2 : mx + magnetW * 0.8;
     const slX = isNLeft ? mx + magnetW * 0.8 : mx + magnetW * 0.2;
@@ -326,12 +326,12 @@ function draw() {
         const vDir = S.side === 'left' ? 1 : -1;
         const ax = mx + magnetW / 2, ay = magnetTop - 20;
         arrow(ctx, ax, ay, vDir * 25, 0, '#27ae60', 2.5);
-        ctx.fillStyle = '#27ae60'; ctx.font = 'bold 10px Fredoka'; ctx.textAlign = 'center';
+        ctx.fillStyle = '#27ae60'; ctx.font = 'bold 10px '; ctx.textAlign = 'center';
         ctx.fillText('v', ax + vDir * 32, ay - 2);
     }
 
     // Labels
-    ctx.fillStyle = '#6B6B6B'; ctx.font = '11px Fredoka'; ctx.textAlign = 'center';
+    ctx.fillStyle = '#6B6B6B'; ctx.font = '11px '; ctx.textAlign = 'center';
     ctx.textBaseline = 'alphabetic';
     ctx.fillText('线圈 (' + S.N + '匝)', coilCx, coilCy + coilHalfH + 16);
 
@@ -408,11 +408,11 @@ function draw() {
         ctxE.strokeStyle = '#D4956B'; ctxE.lineWidth = 1.5; ctxE.setLineDash([3, 5]);
         ctxE.beginPath(); ctxE.moveTo(coilSx, mT); ctxE.lineTo(coilSx, mT + ph); ctxE.stroke();
         ctxE.setLineDash([]);
-        ctxE.fillStyle = '#D4956B'; ctxE.font = '9px Fredoka'; ctxE.textAlign = 'center';
+        ctxE.fillStyle = '#D4956B'; ctxE.font = '9px '; ctxE.textAlign = 'center';
         ctxE.fillText('线圈', coilSx, mT + ph + 14);
 
         // Axis labels with actual max
-        ctxE.fillStyle = '#6B6B6B'; ctxE.font = '9px Fredoka'; ctxE.textAlign = 'right';
+        ctxE.fillStyle = '#6B6B6B'; ctxE.font = '9px '; ctxE.textAlign = 'right';
         ctxE.fillText('+' + labelMax.toFixed(0) + 'mV', mL - 4, mT + 10);
         ctxE.fillText('0', mL - 4, midY + 4);
         ctxE.fillText('-' + labelMax.toFixed(0) + 'mV', mL - 4, mT + ph);

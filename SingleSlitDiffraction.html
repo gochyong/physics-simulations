@@ -222,7 +222,7 @@ canvas { width: 100%; flex: 1; display: block; }
             const grad = ctx.createLinearGradient(0, 0, srcX2, 0);
             grad.addColorStop(0, lc); grad.addColorStop(0.7, lc); grad.addColorStop(1, 'rgba(0,0,0,0)');
             ctx.fillStyle = grad; ctx.fillRect(0, midY - 25, srcX2, 50);
-            ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillStyle = '#fff'; ctx.font = 'bold 10px '; ctx.textAlign = 'center';
             ctx.fillText('单色光源', srcX2 / 2, midY - 30);
             ctx.fillText('λ=' + state.lambdaNm + 'nm', srcX2 / 2, midY + 38);
 
@@ -268,7 +268,7 @@ canvas { width: 100%; flex: 1; display: block; }
             ctx.fillRect(slitX - 10, slitTop - 8, 22, (slitBot - slitTop) + 16);
 
             // Slit label
-            ctx.fillStyle = '#e74c3c'; ctx.font = 'bold 10px Fredoka'; ctx.textAlign = 'right';
+            ctx.fillStyle = '#e74c3c'; ctx.font = 'bold 10px '; ctx.textAlign = 'right';
             ctx.fillText('单缝', slitX - 7, midY + 4);
             // a label
             ctx.strokeStyle = '#e74c3c'; ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
@@ -352,7 +352,7 @@ canvas { width: 100%; flex: 1; display: block; }
             const scrBot = fieldY2 - 4;
             ctx.strokeStyle = '#aaa'; ctx.lineWidth = 2;
             ctx.beginPath(); ctx.moveTo(screenX, scrTop); ctx.lineTo(screenX, scrBot); ctx.stroke();
-            ctx.fillStyle = '#ddd'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillStyle = '#ddd'; ctx.font = 'bold 12px '; ctx.textAlign = 'center';
             ctx.fillText('屏 Screen', screenX, scrTop - 10);
 
             // D arrow below field
@@ -409,7 +409,7 @@ canvas { width: 100%; flex: 1; display: block; }
             }
 
             // === Central maximum label ===
-            ctx.fillStyle = '#ffdd57'; ctx.font = 'bold 10px Fredoka'; ctx.textAlign = 'left';
+            ctx.fillStyle = '#ffdd57'; ctx.font = 'bold 10px '; ctx.textAlign = 'left';
             ctx.fillText('中央极大 Central max', screenX + 42, midY + 3);
 
             // === Dark fringe markers (where β = nπ, i.e., a sinθ = nλ) ===
@@ -441,7 +441,7 @@ canvas { width: 100%; flex: 1; display: block; }
 
                     // Label
                     ctx.fillStyle = '#ccc';
-                    ctx.font = 'bold 9px Fredoka';
+                    ctx.font = 'bold 9px ';
                     ctx.textAlign = 'left';
                     const labelN = sign > 0 ? '+' + n : '-' + n;
                     ctx.fillText('n=' + labelN, screenX + 42, yPx + 3.5);
@@ -476,20 +476,20 @@ canvas { width: 100%; flex: 1; display: block; }
             // Central max half-width annotation
             if (dy1 < halfScrH * 0.9) {
                 ctx.fillStyle = 'rgba(255,255,180,0.7)';
-                ctx.font = 'italic 9px Fredoka';
+                ctx.font = 'italic 9px ';
                 ctx.textAlign = 'left';
                 ctx.fillText('← λ/a →', screenX + 42, midY - dy1 / 2 + 4);
             }
 
             // Time display
             ctx.fillStyle = 'rgba(255,255,255,0.3)';
-            ctx.font = '500 10px Fredoka';
+            ctx.font = '500 10px ';
             ctx.textAlign = 'right';
             ctx.fillText('t=' + state.time.toFixed(1) + 's', w - 12, 16);
 
             // Huygens label
             ctx.fillStyle = 'rgba(255,255,255,0.2)';
-            ctx.font = 'italic 9px Fredoka';
+            ctx.font = 'italic 9px ';
             ctx.textAlign = 'right';
             ctx.fillText('惠更斯子波 Huygens wavelets', w - 12, h - 8);
         }
