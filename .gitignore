@@ -10,6 +10,7 @@ desktop.ini
 # Working / temp directories
 updating/
 videos/
+.workbuddy/
 
 # IDE
 .vscode/

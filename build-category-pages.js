@@ -44,7 +44,7 @@ data.categories.forEach(cat => {
 
     // Replace card section between <main class="grid-container"> and </main>
     const startMarker = '<main class="grid-container">';
-    const endMarker = '    </main>';
+    const endMarker = '</main>';
     const startIdx = html.indexOf(startMarker);
     const endIdx = html.indexOf(endMarker, startIdx);
     if (startIdx === -1 || endIdx === -1) {
@@ -69,7 +69,7 @@ data.categories.forEach(cat => {
     let html = fs.readFileSync(file, 'utf8');
     if (!html.includes('更新中')) {
         const comingSoon = '\n        <div class="sim-card" style="opacity:0.5;cursor:default;border:2px dashed #e0d0c0;"><div class="sim-card-header" style="justify-content:center;"><span class="sim-card-icon">📝</span><div><div class="sim-card-title">更新中</div><div class="sim-card-subtitle">More Coming Soon</div></div></div><div class="sim-card-desc" style="text-align:center;">新模拟持续添加中，敬请期待。</div></div>\n';
-        html = html.replace('    </main>', comingSoon + '    </main>');
+        html = html.replace('</main>', comingSoon + '</main>');
         fs.writeFileSync(file, html);
         console.log('Added coming-soon to: ' + file);
     }

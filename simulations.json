@@ -250,7 +250,7 @@
       "name": "电磁学",
       "nameEn": "Electromagnetism",
       "icon": "⚡",
-      "count": 10,
+      "count": 11,
       "simulations": [
         {
           "file": "resistor.html",
@@ -332,6 +332,14 @@
           "formula": "E=kQ/r²",
           "icon": "🌀",
           "desc": "单电荷、偶极子、同种电荷的电场线可视化。电场线密度代表场强大小。"
+        },
+        {
+          "file": "Transformer.html",
+          "name": "变压器",
+          "nameEn": "Transformer",
+          "formula": "Vp/Vs = Np/Ns",
+          "icon": "🔩",
+          "desc": "互感原理与理想变压器匝数比。Vp/Vs = Np/Ns，升压降压实时演示。"
         }
       ]
     },
