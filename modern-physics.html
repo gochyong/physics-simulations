@@ -14,29 +14,12 @@
     <meta name="author" content="Wuli布雷克">
     <meta name="copyright" content="Copyright 2025 Wuli布雷克">
     <title>近代物理 / Modern Physics - Wuli布雷克</title>
-    <style>
-        :root {
-            --bg-color: #fffaf5;
-            --primary-warm: #ff9800;
-            --accent-warm: #f57c00;
-            --text-main: #3e2723;
-            --card-bg: #ffffff;
+    <style>        :root {
+    --primary-warm: #ff9800;
+    --accent-warm: #f57c00;
+    --text-main: #3e2723;
         }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: 'Segoe UI', 'PingFang SC', system-ui, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        /* Back link */
+/* Back link */
         .back-link {
             position: fixed;
             top: 20px;
@@ -52,13 +35,12 @@
             box-shadow: 0 2px 12px rgba(245, 124, 0, 0.15);
             transition: all 0.3s ease;
         }
-        .back-link:hover {
+.back-link:hover {
             background: #fff;
             box-shadow: 0 4px 20px rgba(245, 124, 0, 0.3);
             transform: translateX(-3px);
         }
-
-        /* Header */
+/* Header */
         header {
             width: 100%;
             padding: 40px 0 20px;
@@ -66,15 +48,13 @@
             flex-direction: column;
             align-items: center;
         }
-
-        .brand-logo {
+.brand-logo {
             display: flex;
             flex-direction: column;
             align-items: center;
             margin-bottom: 20px;
         }
-
-        .logo-main {
+.logo-main {
             font-size: 2.2rem;
             font-weight: 900;
             color: #fff;
@@ -83,8 +63,7 @@
             border-radius: 15px 15px 15px 0;
             box-shadow: 5px 5px 20px rgba(245, 124, 0, 0.2);
         }
-
-        .logo-sub {
+.logo-sub {
             font-size: 0.9rem;
             letter-spacing: 4px;
             color: var(--accent-warm);
@@ -92,23 +71,21 @@
             font-weight: bold;
             text-transform: uppercase;
         }
-
-        .page-title {
+.page-title {
             font-size: 1.8rem;
             font-weight: 800;
             color: var(--text-main);
             letter-spacing: 2px;
             margin-top: 10px;
         }
-        .page-subtitle {
+.page-subtitle {
             font-size: 1rem;
             color: #795548;
             opacity: 0.8;
             margin-top: 4px;
             font-weight: 500;
         }
-
-        /* Grid Container */
+/* Grid Container */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -117,8 +94,7 @@
             max-width: 1100px;
             padding: 20px 0 50px;
         }
-
-        /* Sim Card */
+/* Sim Card */
         .sim-card {
             text-decoration: none;
             color: var(--text-main);
@@ -135,7 +111,7 @@
             position: relative;
             overflow: hidden;
         }
-        .sim-card::before {
+.sim-card::before {
             content: '';
             position: absolute;
             top: 0;
@@ -145,44 +121,41 @@
             background: linear-gradient(135deg, var(--accent-warm), var(--primary-warm));
             border-radius: 0 0 4px 4px;
         }
-        .sim-card:hover {
+.sim-card:hover {
             transform: translateY(-6px);
             box-shadow: 0 16px 45px rgba(245, 124, 0, 0.18);
             border-color: #ffe0c0;
         }
-
-        .sim-card-header {
+.sim-card-header {
             display: flex;
             align-items: center;
             gap: 10px;
             margin-bottom: 8px;
             width: 100%;
         }
-        .sim-card-icon {
+.sim-card-icon {
             font-size: 1.6rem;
             line-height: 1;
         }
-        .sim-card-title {
+.sim-card-title {
             font-size: 1.15rem;
             font-weight: 800;
             color: var(--text-main);
             line-height: 1.3;
         }
-        .sim-card-subtitle {
+.sim-card-subtitle {
             font-size: 0.85rem;
             color: #8d6e63;
             font-weight: 500;
         }
-
-        .sim-card-desc {
+.sim-card-desc {
             font-size: 0.88rem;
             color: #6d4c41;
             line-height: 1.5;
             margin-bottom: 12px;
             flex: 1;
         }
-
-        /* Tag */
+/* Tag */
         .tag {
             display: inline-block;
             background: linear-gradient(135deg, #fff3e0, #ffe0b2);
@@ -193,15 +166,13 @@
             border-radius: 12px;
             letter-spacing: 1px;
         }
-
-        footer {
+footer {
             margin-top: auto;
             padding: 40px;
             font-size: 0.85rem;
             color: #a1887f;
         }
-
-        @media (max-width: 800px) {
+@media (max-width: 800px) {
             .grid-container {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 16px;
@@ -213,12 +184,17 @@
                 font-size: 1rem;
             }
         }
-        @media (max-width: 480px) {
+@media (max-width: 480px) {
             .grid-container {
                 grid-template-columns: 1fr;
             }
         }
-    </style>
+/* === 无障碍 Accessibility (批量注入) === */
+.skip-link { position: absolute; top: -40px; left: 8px; z-index: 2000; background: #185FA5; color: #fff; padding: 8px 16px; border-radius: 10px; font-size: 0.9rem; font-weight: 600; text-decoration: none; transition: top 0.2s; }
+.skip-link:focus { top: 8px; }
+:focus-visible { outline: 3px solid #185FA5; outline-offset: 2px; border-radius: 6px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+</style>
 </head>
 
 <body>
@@ -232,12 +208,12 @@
     </header>
 
     <!-- Sim Card Grid -->
-    <main class="grid-container">
+    <main class="grid-container" id="main">
 
         <!-- 1. 光电效应 / Photoelectric Effect -->
-        <a href="PhotoelectricEffect.html" class="sim-card">
+        <a href="PhotoelectricEffect.html" class="sim-card" aria-label="访问光电效应">
             <div class="sim-card-header">
-                <span class="sim-card-icon">💡</span>
+                <span class="sim-card-icon" aria-hidden="true">💡</span>
                 <div>
                     <div class="sim-card-title">光电效应</div>
                     <div class="sim-card-subtitle">Photoelectric Effect</div>
@@ -248,9 +224,9 @@
         </a>
 
         <!-- 2. 卢瑟福散射 / Rutherford Scattering -->
-        <a href="AlphaScattering.html" class="sim-card">
+        <a href="AlphaScattering.html" class="sim-card" aria-label="访问卢瑟福散射">
             <div class="sim-card-header">
-                <span class="sim-card-icon">⚛️</span>
+                <span class="sim-card-icon" aria-hidden="true">⚛️</span>
                 <div>
                     <div class="sim-card-title">卢瑟福散射</div>
                     <div class="sim-card-subtitle">Rutherford Scattering</div>
@@ -261,9 +237,9 @@
         </a>
 
         <!-- 3. 质能方程 / Mass-Energy Equivalence -->
-        <a href="MassEnergyEquivalence.html" class="sim-card">
+        <a href="MassEnergyEquivalence.html" class="sim-card" aria-label="访问质能方程">
             <div class="sim-card-header">
-                <span class="sim-card-icon">⚛️</span>
+                <span class="sim-card-icon" aria-hidden="true">⚛️</span>
                 <div>
                     <div class="sim-card-title">质能方程</div>
                     <div class="sim-card-subtitle">Mass-Energy Equivalence</div>
@@ -274,9 +250,9 @@
         </a>
 
         <!-- 4. 放射性衰变 / Radioactive Decay -->
-        <a href="RadioactiveDecay.html" class="sim-card">
+        <a href="RadioactiveDecay.html" class="sim-card" aria-label="访问放射性衰变">
             <div class="sim-card-header">
-                <span class="sim-card-icon">☢️</span>
+                <span class="sim-card-icon" aria-hidden="true">☢️</span>
                 <div>
                     <div class="sim-card-title">放射性衰变</div>
                     <div class="sim-card-subtitle">Radioactive Decay</div>

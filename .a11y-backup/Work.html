@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wuli布雷克物理模拟实验室 - 功 / Work。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:title" content="功 / Work - Wuli布雷克">
+    <meta property="og:description" content="Wuli布雷克物理模拟实验室 - 功 / Work。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wuliblake.com/Work.html">
+    <meta property="og:site_name" content="Wuli布雷克物理模拟实验室">
+    <link rel="stylesheet" href="common.css">
+    <meta name="author" content="Wuli布雷克">
+    <meta name="copyright" content="Copyright 2025 Wuli布雷克">
+    <title>功 / Work - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>#f-slider::-webkit-slider-thumb { background: var(--primary); }
+#s-slider::-webkit-slider-thumb { background: #0081a7; }
+#theta-slider::-webkit-slider-thumb { background: var(--secondary); }
+.gauge-panel { background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 10px; display: flex; flex-direction: column; align-items: center; }
+#gaugeCanvas { width: 100%; max-width: 280px; display: block; }</style>
+</head>
+
+<body>
+    <div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
+<a href="mechanics.html" class="back-link" aria-label="返回力学分类页">← 返回力学</a>
+    <div class="container" id="main">
+        <header><h1>功 / Work</h1></header>
+
+        <section class="formula-display" aria-label="公式与实时数值">
+            <div class="formula-container" id="formula-root"></div>
+            <div class="result-row">
+                <span>W = <strong id="res-F" style="color:var(--primary)">0</strong> N &times; <strong id="res-S" style="color:#0081a7">0</strong> m &times; <strong id="res-cos" style="color:var(--secondary)">1.00</strong> = <strong id="res-W" style="color:var(--accent)">0.00</strong> J</span>
+            </div>
+            <div class="legend" aria-label="图例说明">
+                <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> W: 功 / Work</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--primary)"></span> F: 力 / Force</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#0081a7"></span> s: 位移 / Displacement</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--secondary)"></span> &theta;: 力和位移的夹角</div>
+            </div>
+        </section>
+
+        <section class="diagram-section" aria-label="模拟动画区"><canvas id="simCanvas" role="img" aria-label="功模拟动画 — 交互式物理仿真画面"></canvas></section>
+
+        <section class="controls-section" aria-label="参数控制区">
+            <div class="control-panel">
+                <div class="control-group">
+                    <div class="label-row"><span style="color:var(--primary)">恒力 F / Force</span><span id="f-val" class="val-badge" aria-live="polite">10 N</span></div>
+                    <input type="range" id="f-slider" min="0" max="50" value="10" aria-valuemin="0" aria-valuemax="50" aria-valuenow="10" aria-valuetext="10匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+                </div>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:#0081a7">位移 s / Displacement</span><span id="s-val" class="val-badge" aria-live="polite">50 m</span></div>
+                    <input type="range" id="s-slider" min="10" max="100" value="50" aria-valuemin="10" aria-valuemax="100" aria-valuenow="50" aria-valuetext="50匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+                </div>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:var(--secondary)">夹角 &theta; / Angle</span><span id="theta-val" class="val-badge" aria-live="polite">0&deg;</span></div>
+                    <input type="range" id="theta-slider" min="0" max="180" value="0" aria-valuemin="0" aria-valuemax="180" aria-valuenow="0" aria-valuetext="0匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+                </div>
+                <div class="btn-row">
+                    <button id="btn-start" class="ctrl-btn start" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false">开始 Start</button>
+                    <button id="btn-reset" class="ctrl-btn reset" aria-label="重置参数" aria-label="重置参数">重置 Reset</button>
+                </div>
+            </div>
+
+            <div class="gauge-panel">
+                <canvas id="gaugeCanvas" width="300" height="220" role="img" aria-label="功模拟动画 — 交互式物理仿真画面"></canvas>
+                <div id="gauge-label" style="font-weight:700;font-size:1rem;color:#555;margin-top:-5px;">做功 / Work</div>
+            </div>
+
+            <div class="info-card">
+                <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem">演示要点 / Key Points</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,94,91,0.1);color:var(--accent);font-weight:700">W</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">W = F &middot; s &middot; cos&theta;</div><div style="font-size:0.78rem;color:#6B6B6B">功等于力、位移和夹角余弦的乘积。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700">F</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">力与位移同向时做功最大</div><div style="font-size:0.78rem;color:#6B6B6B">&theta;=0&deg; 时 cos&theta;=1，W = F&middot;s 达到最大值。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,199,95,0.15);color:var(--secondary);font-weight:700">&theta;</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">垂直时不做功</div><div style="font-size:0.78rem;color:#6B6B6B">&theta;=90&deg; 时 cos&theta;=0，力对物体不做功。</div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas'), ctx = canvas.getContext('2d');
+        const gCanvas = document.getElementById('gaugeCanvas'), gCtx = gCanvas.getContext('2d');
+
+        const sF = document.getElementById('f-slider'), sS = document.getElementById('s-slider'), sTheta = document.getElementById('theta-slider');
+        const vF = document.getElementById('f-val'), vS = document.getElementById('s-val'), vTheta = document.getElementById('theta-val');
+        const resW = document.getElementById('res-W'), resF = document.getElementById('res-F'), resS = document.getElementById('res-S'), resCos = document.getElementById('res-cos');
+        const formulaRoot = document.getElementById('formula-root');
+        const btnStart = document.getElementById('btn-start'), btnReset = document.getElementById('btn-reset');
+
+        const state = {
+            F: 10, S: 50, theta: 0,
+            progress: 0,
+            isPlaying: false,
+            baseX: 100
+        };
+
+        function resize() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            draw();
+        }
+        window.addEventListener('resize', resize);
+
+        function update() {
+            state.F = parseInt(sF.value);
+            state.S = parseInt(sS.value);
+            state.theta = parseInt(sTheta.value);
+
+            vF.textContent = state.F + ' N';
+            vS.textContent = state.S + ' m';
+            vTheta.textContent = state.theta + '°';
+
+            if (state.isPlaying) {
+                state.progress += 0.005;
+                if (state.progress >= 1) {
+                    state.progress = 1;
+                    state.isPlaying = false;
+                    btnStart.textContent = '开始 Start';
+                    btnStart.classList.add('start');
+                    btnStart.classList.remove('pause');
+                }
+            }
+
+            updateFormula();
+            draw();
+            drawGauge();
+            requestAnimationFrame(update);
+        }
+
+        function updateFormula() {
+            const rad = state.theta * Math.PI / 180;
+            const cosTheta = Math.cos(rad);
+            const W = state.F * state.S * cosTheta;
+
+            resF.textContent = state.F;
+            resS.textContent = state.S;
+            resCos.textContent = cosTheta.toFixed(2);
+            resW.textContent = W.toFixed(2);
+
+            const baseSize = 48;
+            const scaleW = 1 + (Math.abs(W) / 5000) * 0.3;
+            const scaleF = 1 + (state.F / 50) * 0.3;
+            const scaleS = 1 + (state.S / 100) * 0.3;
+            const scaleCos = 1 + Math.abs(cosTheta) * 0.2;
+
+            const parts = [
+                { l: 'W', c: '#FF5E5B', s: scaleW },
+                { l: '=', c: '#4A403A', s: 1 },
+                { l: 'F', c: '#FF8c42', s: scaleF },
+                { l: '·', c: '#4A403A', s: 1 },
+                { l: 's', c: '#0081a7', s: scaleS },
+                { l: '·', c: '#4A403A', s: 1 },
+                { l: 'cos(θ)', c: '#FFC75F', s: scaleCos }
+            ];
+
+            const html = parts.map(p => `<span style="color:${p.c}; font-weight:700; font-size:${baseSize * p.s}px; display:inline-block; transition:all 0.2s;">${p.l}</span>`).join('<span style="width:15px; display:inline-block"></span>');
+            if (formulaRoot.innerHTML !== html) formulaRoot.innerHTML = html;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const scale = 1.33;
+            const groundY = canvas.height * 0.75;
+            const boxW = 80 * scale, boxH = 60 * scale;
+
+            const currentS = state.S * state.progress * scale * 5;
+            const boxX = state.baseX + currentS;
+
+            ctx.beginPath(); ctx.strokeStyle = '#e0e0e0'; ctx.lineWidth = 4;
+            ctx.moveTo(0, groundY); ctx.lineTo(canvas.width, groundY); ctx.stroke();
+
+            if (state.progress > 0) {
+                ctx.setLineDash([5, 5]); ctx.beginPath(); ctx.strokeStyle = '#ccc';
+                ctx.moveTo(state.baseX + boxW / 2, groundY); ctx.lineTo(state.baseX + boxW / 2, groundY + 50);
+                ctx.moveTo(boxX + boxW / 2, groundY); ctx.lineTo(boxX + boxW / 2, groundY + 50);
+                ctx.stroke(); ctx.setLineDash([]);
+
+                drawArrow(state.baseX + boxW / 2, groundY + 40, boxX + boxW / 2, groundY + 40, '#0081a7', 2, 's');
+            }
+
+            ctx.fillStyle = '#FFC75F'; ctx.fillRect(boxX, groundY - boxH, boxW, boxH);
+            ctx.strokeStyle = '#4A403A'; ctx.lineWidth = 2; ctx.strokeRect(boxX, groundY - boxH, boxW, boxH);
+
+            const forceRad = state.theta * Math.PI / 180;
+            const forceLen = state.F * scale * 4;
+            const fx = boxX + boxW / 2, fy = groundY - boxH / 2;
+            drawArrow(fx, fy, fx + forceLen * Math.cos(forceRad), fy - forceLen * Math.sin(forceRad), '#FF5E5B', 4, 'F');
+        }
+
+        function drawArrow(x1, y1, x2, y2, color, width, label) {
+            const headlen = 12;
+            const dx = x2 - x1, dy = y2 - y1;
+            const angle = Math.atan2(dy, dx);
+
+            ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+            ctx.strokeStyle = color; ctx.lineWidth = width; ctx.lineCap = 'round'; ctx.stroke();
+
+            ctx.beginPath(); ctx.moveTo(x2, y2);
+            ctx.lineTo(x2 - headlen * Math.cos(angle - Math.PI / 6), y2 - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(x2 - headlen * Math.cos(angle + Math.PI / 6), y2 - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.closePath(); ctx.fillStyle = color; ctx.fill();
+
+            if (label) {
+                ctx.fillStyle = color; ctx.font = 'bold 24px Fredoka'; ctx.textAlign = 'center';
+                ctx.fillText(label, x2 + 15 * Math.cos(angle), y2 + 15 * Math.sin(angle));
+            }
+        }
+
+        function drawGauge() {
+            gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
+            const cx = gCanvas.width / 2, cy = gCanvas.height * 0.75;
+            const r = 100;
+            const startAngle = Math.PI * 0.8, endAngle = Math.PI * 2.2, range = endAngle - startAngle;
+
+            const rad = state.theta * Math.PI / 180;
+            const W = state.F * state.S * Math.cos(rad);
+            const maxVal = 50 * 100;
+
+            gCtx.beginPath(); gCtx.arc(cx, cy, r, startAngle, endAngle); gCtx.lineWidth = 12; gCtx.strokeStyle = '#f0f0f0'; gCtx.lineCap = 'round'; gCtx.stroke();
+
+            const normVal = (W / maxVal + 1) / 2;
+            const currentAngle = startAngle + range * normVal;
+            const midAngle = startAngle + range * 0.5;
+
+            gCtx.beginPath(); gCtx.arc(cx, cy, r, Math.min(midAngle, currentAngle), Math.max(midAngle, currentAngle));
+            gCtx.strokeStyle = W >= 0 ? '#2ecc71' : '#FF5E5B'; gCtx.lineWidth = 12; gCtx.stroke();
+
+            gCtx.beginPath(); gCtx.lineWidth = 4; gCtx.strokeStyle = '#333';
+            gCtx.moveTo(cx, cy); gCtx.lineTo(cx + (r - 15) * Math.cos(currentAngle), cy + (r - 15) * Math.sin(currentAngle));
+            gCtx.stroke();
+            gCtx.beginPath(); gCtx.arc(cx, cy, 7, 0, Math.PI * 2); gCtx.fillStyle = '#333'; gCtx.fill();
+
+            gCtx.font = 'bold 24px Fredoka'; gCtx.fillStyle = '#444'; gCtx.textAlign = 'center';
+            gCtx.fillText(W.toFixed(2) + ' J', cx, cy + 40);
+
+            gCtx.font = '14px Arial'; gCtx.fillStyle = '#bbb';
+            gCtx.fillText("-W", cx - r - 20, cy); gCtx.fillText("+W", cx + r + 20, cy); gCtx.fillText("0", cx, cy - r - 20);
+        }
+
+        function resetSim() {
+            state.progress = 0; state.isPlaying = false; state.baseX = 100;
+        }
+
+        btnStart.onclick = () => {
+            state.isPlaying = !state.isPlaying;
+            btnStart.textContent = state.isPlaying ? '暂停 Pause' : '开始 Start';
+            btnStart.classList.toggle('start', !state.isPlaying);
+            btnStart.classList.toggle('pause', state.isPlaying);
+        };
+
+        btnReset.onclick = () => {
+            resetSim();
+            btnStart.textContent = '开始 Start';
+            btnStart.className = 'ctrl-btn start';
+        };
+
+        resize();
+        update();
+    
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+</script>
+<div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
+</body>
+
+</html>

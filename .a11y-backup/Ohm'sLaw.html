@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wuli布雷克物理模拟实验室 - 欧姆定律 / Ohm's Law。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:title" content="欧姆定律 / Ohm's Law - Wuli布雷克">
+    <meta property="og:description" content="Wuli布雷克物理模拟实验室 - 欧姆定律 / Ohm's Law。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wuliblake.com/Ohm'sLaw.html">
+    <meta property="og:site_name" content="Wuli布雷克物理模拟实验室">
+    <link rel="stylesheet" href="common.css">
+    <meta name="author" content="Wuli布雷克">
+    <meta name="copyright" content="Copyright 2025 Wuli布雷克">
+    <title>欧姆定律 / Ohm's Law - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>        :root {
+    --col-v: #d32f2f; --col-i: #2e7d32; --col-r: #1565c0;
+        }
+.frac { display: inline-flex; flex-direction: column; align-items: center; margin: 0 4px; }
+.frac-line { width: 1.2em; height: 4px; background: var(--text-dark); margin: 2px 0; border-radius: 2px; }
+.sym { display: inline-block; transition: transform 0.2s cubic-bezier(0.175,0.885,0.32,1.275); }
+#cvs { width: 100%; flex: 1; display: block; }
+#sld-v::-webkit-slider-thumb { background: var(--col-v); }
+#sld-r::-webkit-slider-thumb { background: var(--col-r); }
+.circuit-mini { width: 100%; max-width: 230px; margin-top: 4px; }</style>
+</head>
+
+<body>
+    <div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
+<a href="electricity.html" class="back-link" aria-label="返回电磁学分类页">← 返回电磁学</a>
+    <div class="container" id="main">
+        <header><h1>欧姆定律 / Ohm's Law</h1></header>
+
+        <section class="formula-display" aria-label="公式与实时数值">
+            <div class="formula-container">
+                <span id="f-i" class="sym" style="color: var(--col-i);">I</span>
+                <span style="margin: 0 12px; color: #ccc; font-size: 1.6rem;">=</span>
+                <div class="frac">
+                    <span id="f-v" class="sym" style="color: var(--col-v);">V</span>
+                    <div class="frac-line"></div>
+                    <span id="f-r" class="sym" style="color: var(--col-r);">R</span>
+                </div>
+            </div>
+            <div class="result-row">
+                <span>电流 I = <strong id="txt-i" style="color:var(--col-i)">--</strong> A</span>
+            </div>
+            <div class="legend" aria-label="图例说明">
+                <div class="legend-item"><span class="legend-dot" style="background:var(--col-v)"></span> 电压 V (V)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--col-r)"></span> 电阻 R (Ω)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--col-i)"></span> 电流 I (A)</div>
+            </div>
+        </section>
+
+        <section class="diagram-section" aria-label="模拟动画区"><canvas id="cvs" role="img" aria-label="欧姆定律模拟动画 — 交互式物理仿真画面"></canvas></section>
+
+        <section class="controls-section" aria-label="参数控制区">
+            <div class="control-panel">
+                <div class="control-group">
+                    <div class="label-row"><span style="color:var(--col-v)">电压 Voltage (V)</span><span id="txt-v" class="val-badge" aria-live="polite">-- V</span></div>
+                    <input type="range" id="sld-v" min="1" max="30" step="0.5" value="15" aria-valuemin="1" aria-valuemax="30" aria-valuenow="15" aria-valuetext="15匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+                </div>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:var(--col-r)">电阻 Resistance (R)</span><span id="txt-r" class="val-badge" aria-live="polite">-- Ω</span></div>
+                    <input type="range" id="sld-r" min="1" max="50" step="1" value="10" aria-valuemin="1" aria-valuemax="50" aria-valuenow="10" aria-valuetext="10匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+                </div>
+                <svg width="100%" height="75" viewBox="0 0 400 130" preserveAspectRatio="xMidYMid meet">
+                    <path d="M 60 110 L 60 45 L 340 45 L 340 110 L 60 110" fill="none" stroke="#444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    <rect x="165" y="30" width="70" height="30" fill="white" stroke="var(--col-r)" stroke-width="3" rx="4"/>
+                    <text x="200" y="50" font-family="Fredoka" font-size="14" fill="var(--col-r)" font-weight="bold" text-anchor="middle">R</text>
+                    <circle cx="340" cy="85" r="18" fill="white" stroke="var(--col-i)" stroke-width="3"/>
+                    <text x="340" y="91" font-family="Fredoka" font-size="15" fill="var(--col-i)" font-weight="bold" text-anchor="middle">A</text>
+                    <path d="M 165 45 L 165 80 L 235 80 L 235 45" fill="none" stroke="var(--col-v)" stroke-width="2"/>
+                    <circle cx="200" cy="80" r="18" fill="white" stroke="var(--col-v)" stroke-width="3"/>
+                    <text x="200" y="86" font-family="Fredoka" font-size="15" fill="var(--col-v)" font-weight="bold" text-anchor="middle">V</text>
+                </svg>
+            </div>
+            <div class="info-card">
+                <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem">演示要点 / Key Points</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700">I</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">I = V / R</div><div style="font-size:0.78rem;color:#6B6B6B">欧姆定律：电流与电压成正比，与电阻成反比。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(211,47,47,0.1);color:var(--col-v);font-weight:700">V</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">I-V 图斜率 = 1/R</div><div style="font-size:0.78rem;color:#6B6B6B">图像中直线斜率越大，电阻越小；斜率越小，电阻越大。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(21,101,192,0.1);color:var(--col-r);font-weight:700">R</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">固定电阻下V-I为直线</div><div style="font-size:0.78rem;color:#6B6B6B">欧姆导体满足线性关系，图像中直线经过原点。</div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const sldV = document.getElementById('sld-v');
+        const sldR = document.getElementById('sld-r');
+        const txtV = document.getElementById('txt-v');
+        const txtR = document.getElementById('txt-r');
+        const txtI = document.getElementById('txt-i');
+        const fi = document.getElementById('f-i');
+        const fv = document.getElementById('f-v');
+        const fr = document.getElementById('f-r');
+        const canvas = document.getElementById('cvs');
+        const ctx = canvas.getContext('2d');
+
+        // Config
+        const MAX_V = 30;
+        const MAX_I_GRAPH = 3; // Y-axis max for graph
+
+        function drawGraph(V, R, I) {
+            // Resize canvas to parent
+            const rect = canvas.parentElement.getBoundingClientRect();
+            // Subtract padding
+            const w = canvas.width = rect.width - 22;
+            const h = canvas.height = rect.height - 40;
+
+            const padLeft = 40;
+            const padBottom = 30;
+            const padTop = 20;
+            const padRight = 20;
+
+            const graphW = w - padLeft - padRight;
+            const graphH = h - padTop - padBottom;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Axes
+            ctx.beginPath();
+            ctx.strokeStyle = '#6B6B6B';
+            ctx.lineWidth = 2;
+            // Y axis
+            ctx.moveTo(padLeft, padTop);
+            ctx.lineTo(padLeft, h - padBottom);
+            // X axis
+            ctx.lineTo(w - padRight, h - padBottom);
+            ctx.stroke();
+
+            // Labels
+            ctx.fillStyle = '#666';
+            ctx.font = 'bold 12px Fredoka';
+            ctx.textAlign = 'right';
+            ctx.fillText("I (A)", padLeft - 10, padTop + 10);
+            ctx.textAlign = 'right';
+            ctx.fillText("V (V)", w - padRight, h - padBottom - 10);
+
+            // Grid lines (Simple)
+            ctx.strokeStyle = '#eee';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            /*
+            let y = padTop;
+            ctx.moveTo(padLeft, y); ctx.lineTo(w-padRight, y);
+            */
+            ctx.stroke();
+
+            // Plot Characteristic Line (Slope = 1/R)
+            // Points: (0,0) -> (MAX_V, MAX_V/R)
+            const x1 = 0;
+            const y1 = 0;
+            const x2 = MAX_V;
+            const y2 = MAX_V / R;
+
+            const mapX = (x) => padLeft + (x / MAX_V) * graphW;
+            const mapY = (y) => (h - padBottom) - (y / MAX_I_GRAPH) * graphH;
+
+            // Draw Full Line
+            ctx.beginPath();
+            ctx.strokeStyle = '#bbdefb'; // Light Blue
+            ctx.lineWidth = 2;
+            ctx.moveTo(mapX(x1), mapY(y1));
+            // Clamp to visible graph area area?
+            // Ideally we draw to V=MAX_V, but I might exceed axes if R is small.
+            // Let's just draw to V_max for this R at current scale, or edge of graph
+
+            // Actually, let's just draw the line segment relevant to current V?
+            // No, the line represents the Resistance.
+            // Let's find end point. End X is MAX_V.
+            let endX = MAX_V;
+            let endY = MAX_V / R;
+
+            if (endY > MAX_I_GRAPH) {
+                // Clip by Y
+                endY = MAX_I_GRAPH;
+                endX = endY * R;
+            }
+
+            ctx.lineTo(mapX(endX), mapY(endY));
+            ctx.stroke();
+
+            // Draw Current Point
+            const ptX = mapX(V);
+            const ptY = mapY(I);
+
+            // Dashed Guides
+            ctx.setLineDash([5, 5]);
+            ctx.strokeStyle = '#aaa';
+            ctx.beginPath();
+            ctx.moveTo(ptX, h - padBottom);
+            ctx.lineTo(ptX, ptY);
+            ctx.lineTo(padLeft, ptY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Highlight Active Segment
+            ctx.beginPath();
+            ctx.strokeStyle = 'var(--col-r)'; // Blue
+            ctx.lineWidth = 3;
+            ctx.moveTo(mapX(0), mapY(0));
+            ctx.lineTo(ptX, ptY);
+            ctx.stroke();
+
+            // Point
+            ctx.fillStyle = 'var(--col-v)'; // Red dot
+            ctx.beginPath();
+            ctx.arc(ptX, ptY, 6, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        function update() {
+            const V = parseFloat(sldV.value);
+            const R = parseFloat(sldR.value);
+            const I = V / R;
+
+            txtV.innerText = V.toFixed(1) + " V";
+            txtR.innerText = R.toFixed(0) + " Ω";
+            txtI.innerText = I.toFixed(2) + " A";
+
+            // Formula Animation
+            fv.style.transform = `scale(${0.9 + V / 60})`;
+            fr.style.transform = `scale(${0.9 + R / 100})`;
+            const iScale = Math.min(Math.max(0.8 + I / 3, 0.8), 1.3);
+            fi.style.transform = `scale(${iScale})`;
+
+            requestAnimationFrame(() => drawGraph(V, R, I));
+        }
+
+        sldV.addEventListener('input', update);
+        sldR.addEventListener('input', update);
+        window.addEventListener('resize', update);
+
+        // Init
+        update();
+    
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+</script>
+<div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
+</body>
+
+</html>

@@ -13,73 +13,40 @@
     <meta name="author" content="Wuli布雷克">
     <meta name="copyright" content="Copyright 2025 Wuli布雷克">
     <title>圆周运动 / Circular Motion - Wuli布雷克</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        :root { --bg-color: #FFF9F0; --primary: #FF8c42; --secondary: #FFC75F; --accent: #FF5E5B; --text-dark: #4A403A; --card-bg: #FFFFFF; --shadow: 0 6px 30px rgba(255,140,66,0.18); }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Fredoka','Noto Sans SC',sans-serif; background: var(--bg-color); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 5px 40px 10px; }
-        .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
-        .logo { font-weight: 700; font-size: 1.3rem; color: #fff; background: var(--primary); padding: 6px 18px; border-radius: 16px; box-shadow: 4px 4px 15px rgba(255,140,66,0.3); }
-        .container { width: 100%; max-width: 1400px; margin-top: 8px; display: grid; grid-template-areas:"header header" "formula formula" "diagram controls"; grid-template-columns: 1fr 400px; gap: 12px; }
-        header { grid-area: header; text-align: center; } h1 { font-size: 2rem; margin-bottom: 2px; } .subtitle { font-size: 0.85rem; color: #999; }
-        .formula-display { grid-area: formula; background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb; }
-        .formula-container { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; min-height: 40px; }
-        .formula-item { font-size: 0.9rem; font-weight: 600; padding: 3px 10px; border-radius: 10px; background: #fafaf7; }
-        .result-row { font-size: 0.95rem; font-weight: 600; margin-top: 4px; display: flex; gap: 20px; justify-content: center; }
-        .legend { display: flex; gap: 16px; justify-content: center; border-top: 1px solid #eee; padding-top: 6px; width: 100%; }
-        .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
-        .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
-        .diagram-section { grid-area: diagram; display: flex; flex-direction: column; gap: 6px; }
-        .main-canvas-wrap { background: #fff; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; flex: 1; min-height: 480px; border: 2px solid #fff; }
-        #simCanvas { width: 100%; height: 100%; display: block; }
-        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
-        .control-panel { background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
-        .control-group { display: flex; flex-direction: column; gap: 3px; }
-        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
-        .val-badge { background: #fff; padding: 1px 7px; border-radius: 7px; font-size: 0.85rem; border: 2px solid #f0f0f0; }
-        input[type=range] { width: 100%; appearance: none; height: 6px; background: #eee; border-radius: 3px; }
-        input[type=range]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; cursor: pointer; background: var(--primary); }
-        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px; }
-        .ctrl-btn { padding: 10px; border: none; border-radius: 14px; font-size: 1.05rem; font-weight: 700; cursor: pointer; color: white; }
-        .start { background: var(--primary); } .pause { background: #2ecc71; } .reset { background: #95a5a6; }
-        .info-card { background: #fff; border-radius: 20px; padding: 12px 16px; box-shadow: var(--shadow); font-size: 0.9rem; line-height: 1.4; color: #5D6D7E; }
-        @media (max-width: 1100px) { .container { grid-template-areas: "header" "formula" "diagram" "controls"; grid-template-columns: 1fr; } }
-    </style>
 </head>
 <body>
+<a href="#main" class="skip-link">跳到主内容</a>
 <div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
-<a href="mechanics.html" class="back-link">← 返回力学</a>
-<div class="container">
+<a href="mechanics.html" class="back-link" aria-label="返回力学分类页">← 返回力学</a>
+<div class="container" id="main">
 <header><h1>圆周运动 / Circular Motion &amp; Centripetal Force</h1></header>
-<section class="formula-display">
+<section class="formula-display" aria-label="公式与实时数值">
     <div class="formula-container" id="formula-root"></div>
     <div class="result-row" id="result-row"></div>
-    <div class="legend">
+    <div class="legend" aria-label="图例说明">
         <div class="legend-item"><span class="legend-dot" style="background:#3498db"></span> 线速度 v (切线)</div>
         <div class="legend-item"><span class="legend-dot" style="background:#e74c3c"></span> 向心加速度 a<sub>c</sub> (指向中心)</div>
         <div class="legend-item"><span style="color:#FF8c42">●</span> 向心力 F<sub>c</sub></div>
         <div class="legend-item"><span style="color:#bbb">- - -</span> 轨道</div>
     </div>
 </section>
-<section class="diagram-section">
-    <div class="main-canvas-wrap"><canvas id="simCanvas"></canvas></div>
+<section class="diagram-section" aria-label="模拟动画区">
+    <div class="main-canvas-wrap"><canvas id="simCanvas" role="img" aria-label="圆周运动模拟动画 — 交互式物理仿真画面"></canvas></div>
 </section>
-<section class="controls-section">
+<section class="controls-section" aria-label="参数控制区">
     <div class="control-panel">
-        <div class="control-group"><div class="label-row"><span>半径 r / Radius</span><span id="badge-r" class="val-badge">3.0 m</span></div><input type="range" id="slider-r" min="1" max="5" step="0.1" value="3"></div>
-        <div class="control-group"><div class="label-row"><span>角速度 &omega; / Angular Velocity</span><span id="badge-w" class="val-badge">4.0 rad/s</span></div><input type="range" id="slider-w" min="1" max="10" step="0.1" value="4"></div>
-        <div class="control-group"><div class="label-row"><span>质量 m / Mass</span><span id="badge-m" class="val-badge">1.0 kg</span></div><input type="range" id="slider-m" min="0.5" max="3.0" step="0.1" value="1.0"></div>
-        <div class="btn-row"><button id="btn-start" class="ctrl-btn start">开始 Start</button><button id="btn-reset" class="ctrl-btn reset">重置 Reset</button></div>
+        <div class="control-group"><label for="slider-r" class="label-row"><span>半径 r / Radius</span><span id="badge-r" class="val-badge" aria-live="polite">3.0 m</span></label><input type="range" id="slider-r" min="1" max="5" step="0.1" value="3" aria-valuemin="1" aria-valuemax="5" aria-valuenow="3" aria-valuetext="3匝">></div>
+        <div class="control-group"><label for="slider-w" class="label-row"><span>角速度 &omega; / Angular Velocity</span><span id="badge-w" class="val-badge" aria-live="polite">4.0 rad/s</span></label><input type="range" id="slider-w" min="1" max="10" step="0.1" value="4" aria-valuemin="1" aria-valuemax="10" aria-valuenow="4" aria-valuetext="4匝">></div>
+        <div class="control-group"><label for="slider-m" class="label-row"><span>质量 m / Mass</span><span id="badge-m" class="val-badge" aria-live="polite">1.0 kg</span></label><input type="range" id="slider-m" min="0.5" max="3.0" step="0.1" value="1.0" aria-valuemin="0.5" aria-valuemax="3.0" aria-valuenow="1.0" aria-valuetext="1.0匝">></div>
+        <div class="btn-row"><button id="btn-start" class="ctrl-btn start" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false">开始 Start</button><button id="btn-reset" class="ctrl-btn reset" aria-label="重置参数" aria-label="重置参数" aria-label="重置参数" aria-label="重置参数" aria-label="重置参数">重置 Reset</button></div>
     </div>
     <div class="info-card">
         <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem;">演示要点 / Key Points</div>
         <div style="display:flex;flex-direction:column;gap:6px;">
-            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:#3498db;font-weight:700;">v</div><div><div style="font-weight:700;font-size:0.9rem;">线速度：v = &omega;r</div><div style="font-size:0.78rem;color:#888;">速度沿切线方向，与半径垂直。大小恒定，方向时刻变化。</div></div></div>
-            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(231,76,60,0.1);color:#e74c3c;font-weight:700;">a</div><div><div style="font-weight:700;font-size:0.9rem;">向心加速度：a<sub>c</sub>=v&sup2;/r=&omega;&sup2;r</div><div style="font-size:0.78rem;color:#888;">加速度始终指向圆心，产生向心力。大小恒定，方向时刻变化。</div></div></div>
-            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;">F</div><div><div style="font-weight:700;font-size:0.9rem;">向心力：F<sub>c</sub>=mv&sup2;/r=m&omega;&sup2;r</div><div style="font-size:0.78rem;color:#888;">绳子的拉力提供向心力——指向圆心。没有此力，物体将沿切线飞出。</div></div></div>
-            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(155,89,182,0.1);color:#9b59b6;font-weight:700;">T</div><div><div style="font-weight:700;font-size:0.9rem;">周期：T = 2&pi;/&omega;</div><div style="font-size:0.78rem;color:#888;">转一圈的时间。&omega;越大，周期越短，转动越快。</div></div></div>
+            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:#3498db;font-weight:700;">v</div><div><div style="font-weight:700;font-size:0.9rem;">线速度：v = &omega;r</div><div style="font-size:0.78rem;color:#6B6B6B;">速度沿切线方向，与半径垂直。大小恒定，方向时刻变化。</div></div></div>
+            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(231,76,60,0.1);color:#e74c3c;font-weight:700;">a</div><div><div style="font-weight:700;font-size:0.9rem;">向心加速度：a<sub>c</sub>=v&sup2;/r=&omega;&sup2;r</div><div style="font-size:0.78rem;color:#6B6B6B;">加速度始终指向圆心，产生向心力。大小恒定，方向时刻变化。</div></div></div>
+            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;">F</div><div><div style="font-weight:700;font-size:0.9rem;">向心力：F<sub>c</sub>=mv&sup2;/r=m&omega;&sup2;r</div><div style="font-size:0.78rem;color:#6B6B6B;">绳子的拉力提供向心力——指向圆心。没有此力，物体将沿切线飞出。</div></div></div>
+            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(155,89,182,0.1);color:#9b59b6;font-weight:700;">T</div><div><div style="font-weight:700;font-size:0.9rem;">周期：T = 2&pi;/&omega;</div><div style="font-size:0.78rem;color:#6B6B6B;">转一圈的时间。&omega;越大，周期越短，转动越快。</div></div></div>
         </div>
     </div>
 </section>
@@ -152,7 +119,7 @@ function draw() {
     ctx.stroke();
 
     // Label center
-    ctx.fillStyle = '#888';
+    ctx.fillStyle = '#6B6B6B';
     ctx.font = '11px Fredoka';
     ctx.textAlign = 'right';
     ctx.fillText('O', cx - 10, cy + 5);
@@ -194,7 +161,7 @@ function draw() {
         // Radius label at midpoint of radius line
         const rmx = cx + r_px * 0.5 * Math.cos(ang);
         const rmy = cy - r_px * 0.5 * Math.sin(ang);
-        ctx.fillStyle = '#888';
+        ctx.fillStyle = '#6B6B6B';
         ctx.font = 'bold 11px Fredoka';
         ctx.textAlign = 'left';
         const offsetAng = ang + Math.PI / 2;
@@ -315,6 +282,22 @@ function loop(ts) {
         if (S.angle < 0) S.angle += 2 * Math.PI;
     }
     draw();
+  // aria状态同步
+  (function syncAria(){
+    const ranges=document.querySelectorAll('input[type=range]');
+    ranges.forEach(r=>{
+      const v=r.value,min=r.min,max=r.max;
+      const unit=r.id.includes('freq')?'赫兹':r.id.includes('vp')?'伏':'匝';
+      r.setAttribute('aria-valuenow',v);
+      r.setAttribute('aria-valuetext',v+unit);
+    });
+    const startBtn=document.getElementById('btn-start');
+    if(startBtn&&startBtn.textContent.includes('暂停')){
+      startBtn.setAttribute('aria-pressed','true');
+      startBtn.setAttribute('aria-label','暂停模拟');
+    }
+  })();
+
     requestAnimationFrame(loop);
 }
 
@@ -346,7 +329,59 @@ bReset.onclick = () => {
 
 resize();
 draw();
+  // aria状态同步
+  (function syncAria(){
+    const ranges=document.querySelectorAll('input[type=range]');
+    ranges.forEach(r=>{
+      const v=r.value,min=r.min,max=r.max;
+      const unit=r.id.includes('freq')?'赫兹':r.id.includes('vp')?'伏':'匝';
+      r.setAttribute('aria-valuenow',v);
+      r.setAttribute('aria-valuetext',v+unit);
+    });
+    const startBtn=document.getElementById('btn-start');
+    if(startBtn&&startBtn.textContent.includes('暂停')){
+      startBtn.setAttribute('aria-pressed','true');
+      startBtn.setAttribute('aria-label','暂停模拟');
+    }
+  })();
+
 requestAnimationFrame(loop);
+
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
 </script>
 <div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
 </body>

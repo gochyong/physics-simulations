@@ -13,43 +13,12 @@
     <meta name="author" content="Wuli布雷克">
     <meta name="copyright" content="Copyright 2025 Wuli布雷克">
     <title>热力学第一定律 / First Law of Thermodynamics - Wuli布雷克</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-color: #FFF9F0;
-            --primary: #FF8c42;
-            --secondary: #FFC75F;
-            --accent: #FF5E5B;
-            --text-dark: #4A403A;
-            --card-bg: #FFFFFF;
-            --shadow: 0 6px 30px rgba(255,140,66,0.18);
-            --dU-color: #FF8c42;
-            --Q-color: #FF5E5B;
-            --W-color: #2ecc71;
+<style>        :root {
+    --dU-color: #FF8c42;
+    --Q-color: #FF5E5B;
+    --W-color: #2ecc71;
         }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
-            background: var(--bg-color);
-            color: var(--text-dark);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            padding: 5px 40px 10px;
-        }
-
-        .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
-        .logo {
-            font-weight: 700; font-size: 1.3rem; color: #fff;
-            background: var(--primary); padding: 6px 18px; border-radius: 16px;
-            box-shadow: 4px 4px 15px rgba(255,140,66,0.3);
-        }
-        .back-link {
+.back-link {
             position: fixed; top: 10px; right: 20px; z-index: 1000;
             text-decoration: none; color: var(--primary); font-weight: 700;
             font-size: 0.95rem; background: rgba(255,255,255,0.9);
@@ -57,146 +26,57 @@
             box-shadow: 0 2px 10px rgba(255,140,66,0.15);
             transition: all 0.3s;
         }
-        .back-link:hover { background: #fff; box-shadow: 0 4px 18px rgba(255,140,66,0.3); }
-
-        .container {
-            width: 100%; max-width: 1400px; margin-top: 8px;
-            display: grid;
-            grid-template-areas:
-                "header header"
-                "formula formula"
-                "diagram controls";
-            grid-template-columns: 1fr 400px;
-            gap: 12px;
-        }
-
-        header { grid-area: header; text-align: center; }
-        h1 { font-size: 2rem; margin-bottom: 2px; color: var(--text-dark); }
-
-        .formula-display {
-            grid-area: formula;
-            background: var(--card-bg);
-            border-radius: 20px;
-            box-shadow: var(--shadow);
-            padding: 10px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            border: 2px solid #fff5eb;
-        }
-        .formula-main {
-            font-size: 1.4rem; font-weight: 700; color: var(--text-dark);
-            display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center;
-        }
-        .formula-main .dU { color: var(--dU-color); }
-        .formula-main .Qc { color: var(--Q-color); }
-        .formula-main .Wc { color: var(--W-color); }
-        .energy-values {
-            display: flex; gap: 24px; justify-content: center; flex-wrap: wrap;
-            margin-top: 6px; font-size: 0.9rem; font-weight: 600;
-        }
-        .energy-item {
-            padding: 3px 12px; border-radius: 10px; background: #fafaf7;
-            display: flex; align-items: center; gap: 4px;
-        }
-        .energy-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-        .legend {
-            display: flex; gap: 16px; justify-content: center;
-            border-top: 1px solid #eee; padding-top: 6px; width: 100%; flex-wrap: wrap;
-        }
-        .legend-item { font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
-        .legend-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-
-        .diagram-section { grid-area: diagram; display: flex; flex-direction: column; gap: 6px; }
-        .main-canvas-wrap {
-            background: #FFFBF5;
-            border-radius: 20px;
-            box-shadow: var(--shadow);
-            overflow: hidden;
-            flex: 1;
-            min-height: 480px;
-            border: 2px solid #fff5eb;
-            position: relative;
-        }
-        #simCanvas { width: 100%; height: 100%; display: block; }
-
-        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
-        .control-panel {
-            background: #fff; border-radius: 20px; box-shadow: var(--shadow);
-            padding: 14px 18px; display: flex; flex-direction: column; gap: 10px;
-        }
-
-        .mode-row { display: flex; gap: 6px; }
-        .mode-btn {
+.back-link:hover { background: #fff; box-shadow: 0 4px 18px rgba(255,140,66,0.3); }
+.formula-main .dU { color: var(--dU-color); }
+.formula-main .Qc { color: var(--Q-color); }
+.formula-main .Wc { color: var(--W-color); }
+.mode-row { display: flex; gap: 6px; }
+.mode-btn {
             flex: 1; padding: 9px 6px; border: 2px solid #e0e0e0; border-radius: 14px;
             font-size: 0.78rem; font-weight: 700; cursor: pointer; background: #fff;
             color: #666; transition: all 0.25s ease; text-align: center;
             font-family: inherit; line-height: 1.3;
         }
-        .mode-btn:hover { border-color: var(--primary); color: var(--primary); }
-        .mode-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); box-shadow: 0 4px 15px rgba(255,140,66,0.3); }
-
-        .control-group { display: flex; flex-direction: column; gap: 3px; }
-        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.88rem; }
-        .val-badge { background: #fff; padding: 1px 8px; border-radius: 7px; font-size: 0.85rem; border: 2px solid #f0f0f0; }
-        input[type=range] { width: 100%; appearance: none; height: 6px; background: #eee; border-radius: 3px; }
-        input[type=range]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; cursor: pointer; background: var(--primary); }
-
-        .energy-panels {
+.mode-btn:hover { border-color: var(--primary); color: var(--primary); }
+.mode-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); box-shadow: 0 4px 15px rgba(255,140,66,0.3); }
+.energy-panels {
             display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;
         }
-        .ep {
+.ep {
             text-align: center; padding: 8px 4px; border-radius: 14px;
             font-weight: 700; font-size: 0.78rem; line-height: 1.4;
         }
-        .ep-dU { background: rgba(255,140,66,0.1); color: var(--dU-color); }
-        .ep-Q  { background: rgba(255,94,91,0.1);  color: var(--Q-color); }
-        .ep-W  { background: rgba(46,204,113,0.1);  color: var(--W-color); }
-        .ep-val { font-size: 1.1rem; font-weight: 800; }
-
-        .btn-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 2px; }
-        .ctrl-btn { padding: 9px 4px; border: none; border-radius: 14px; font-size: 0.9rem; font-weight: 700; cursor: pointer; color: white; font-family: inherit; transition: all 0.2s ease; }
-        .btn-heat { background: var(--accent); }
-        .btn-heat:hover { background: #e04845; }
-        .btn-heat.on { background: #e04845; animation: pulse-heat 0.8s ease-in-out infinite alternate; }
-        @keyframes pulse-heat { from { box-shadow: 0 0 8px rgba(255,94,91,0.4); } to { box-shadow: 0 0 20px rgba(255,94,91,0.8); } }
-        .btn-pause { background: var(--primary); }
-        .btn-pause:hover { background: #e67a30; }
-        .btn-reset { background: #95a5a6; }
-        .btn-reset:hover { background: #7f8c8d; }
-
-        .info-card {
-            background: #fff; border-radius: 20px; padding: 12px 16px;
-            box-shadow: var(--shadow); font-size: 0.88rem; line-height: 1.4; color: #5D6D7E;
-        }
-
-        @media (max-width: 1100px) {
-            .container {
-                grid-template-areas: "header" "formula" "diagram" "controls";
-                grid-template-columns: 1fr;
-            }
-            .main-canvas-wrap { min-height: 380px; }
-        }
-        @media (max-width: 600px) {
-            body { padding: 5px 10px 10px; }
-            h1 { font-size: 1.5rem; }
-            .main-canvas-wrap { min-height: 300px; }
-            .energy-panels { grid-template-columns: 1fr; }
-        }
-    </style>
+.ep-dU { background: rgba(255,140,66,0.1); color: var(--dU-color); }
+.ep-Q  { background: rgba(255,94,91,0.1);  color: var(--Q-color); }
+.ep-W  { background: rgba(46,204,113,0.1);  color: var(--W-color); }
+.ep-val { font-size: 1.1rem; font-weight: 800; }
+.btn-heat { background: var(--accent); }
+.btn-heat:hover { background: #e04845; }
+.btn-heat.on { background: #e04845; animation: pulse-heat 0.8s ease-in-out infinite alternate; }
+@keyframes pulse-heat { from { box-shadow: 0 0 8px rgba(255,94,91,0.4); } to { box-shadow: 0 0 20px rgba(255,94,91,0.8); } }
+.btn-pause { background: var(--primary); }
+.btn-pause:hover { background: #e67a30; }
+.btn-reset { background: #95a5a6; }
+.btn-reset:hover { background: #7f8c8d; }
+/* === 无障碍 Accessibility (批量注入) === */
+.skip-link { position: absolute; top: -40px; left: 8px; z-index: 2000; background: #185FA5; color: #fff; padding: 8px 16px; border-radius: 10px; font-size: 0.9rem; font-weight: 600; text-decoration: none; transition: top 0.2s; }
+.skip-link:focus { top: 8px; }
+:focus-visible { outline: 3px solid #185FA5; outline-offset: 2px; border-radius: 6px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+</style>
 </head>
 <body>
 
 <div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
 <a href="thermal.html" class="back-link">&larr; 返回热学</a>
 
-<div class="container">
+<div class="container" id="main">
 
     <header>
         <h1>热力学第一定律 / First Law of Thermodynamics</h1>
     </header>
 
-    <section class="formula-display">
+    <section class="formula-display" aria-label="公式与实时数值">
         <div class="formula-main">
             <span class="dU">&Delta;U</span>
             <span style="color:#999;">=</span>
@@ -209,20 +89,20 @@
             <span class="energy-item"><span class="energy-dot" style="background:var(--Q-color)"></span> Q = <b id="val-Q">0.0</b> J</span>
             <span class="energy-item"><span class="energy-dot" style="background:var(--W-color)"></span> W = <b id="val-W">0.0</b> J</span>
         </div>
-        <div class="legend">
+        <div class="legend" aria-label="图例说明">
             <div class="legend-item"><span class="legend-dot" style="background:var(--dU-color)"></span> 内能变化 &Delta;U</div>
             <div class="legend-item"><span class="legend-dot" style="background:var(--Q-color)"></span> 吸热 Q</div>
             <div class="legend-item"><span class="legend-dot" style="background:var(--W-color)"></span> 对内做功 W</div>
         </div>
     </section>
 
-    <section class="diagram-section">
+    <section class="diagram-section" aria-label="模拟动画区">
         <div class="main-canvas-wrap">
-            <canvas id="simCanvas"></canvas>
+            <canvas id="simCanvas" role="img" aria-label="热力学第一定律模拟动画 — 交互式物理仿真画面"></canvas>
         </div>
     </section>
 
-    <section class="controls-section">
+    <section class="controls-section" aria-label="参数控制区">
         <div class="control-panel">
             <div class="mode-row">
                 <button id="btn-isoT" class="mode-btn active">等温 Isothermal<br><span style="font-size:0.68rem;opacity:0.8;">活塞自由 &Delta;U=0</span></button>
@@ -231,16 +111,16 @@
             </div>
 
             <div class="control-group">
-                <div class="label-row"><span>初始温度 T</span><span id="badge-T" class="val-badge">300 K</span></div>
-                <input type="range" id="slider-T" min="200" max="500" step="5" value="300">
+                <label for="slider-T" class="label-row"><span>初始温度 T</span><span id="badge-T" class="val-badge" aria-live="polite">300 K</span></label>
+                <input type="range" id="slider-T" min="200" max="500" step="5" value="300" aria-valuemin="200" aria-valuemax="500" aria-valuenow="300" aria-valuetext="300匝">>
             </div>
             <div class="control-group">
-                <div class="label-row"><span>气体粒子数 N</span><span id="badge-N" class="val-badge">40</span></div>
-                <input type="range" id="slider-N" min="10" max="80" step="2" value="40">
+                <label for="slider-N" class="label-row"><span>气体粒子数 N</span><span id="badge-N" class="val-badge" aria-live="polite">40</span></label>
+                <input type="range" id="slider-N" min="10" max="80" step="2" value="40" aria-valuemin="10" aria-valuemax="80" aria-valuenow="40" aria-valuetext="40匝">>
             </div>
             <div class="control-group">
                 <div class="label-row"><span>外部压强 P<sub>ext</sub></span><span id="badge-P" class="val-badge">101 kPa</span></div>
-                <input type="range" id="slider-P" min="50" max="200" step="1" value="101">
+                <input type="range" id="slider-P" min="50" max="200" step="1" value="101" aria-valuemin="50" aria-valuemax="200" aria-valuenow="101" aria-valuetext="101匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
             </div>
 
             <div class="energy-panels">
@@ -261,7 +141,7 @@
             <div class="btn-row">
                 <button id="btn-heat" class="ctrl-btn btn-heat">&#x1F525; 加热</button>
                 <button id="btn-pause" class="ctrl-btn btn-pause">暂停</button>
-                <button id="btn-reset" class="ctrl-btn btn-reset">重置</button>
+                <button id="btn-reset" class="ctrl-btn btn-reset" aria-label="重置参数" aria-label="重置参数" aria-label="重置参数" aria-label="重置参数" aria-label="重置参数">重置</button>
             </div>
         </div>
 
@@ -272,28 +152,28 @@
                     <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;font-size:1.1rem;">&#9651;</div>
                     <div>
                         <div style="font-weight:700;font-size:0.88rem;">&Delta;U = Q + W（针对理想气体）</div>
-                        <div style="font-size:0.78rem;color:#888;">W为外界对内做功。内能变化=吸热+外界对内做功，能量守恒在热现象中的体现。</div>
+                        <div style="font-size:0.78rem;color:#6B6B6B;">W为外界对内做功。内能变化=吸热+外界对内做功，能量守恒在热现象中的体现。</div>
                     </div>
                 </div>
                 <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
                     <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:var(--W-color);font-weight:700;font-size:1.1rem;">T</div>
                     <div>
                         <div style="font-weight:700;font-size:0.88rem;">等温: &Delta;U=0, Q=&minus;W</div>
-                        <div style="font-size:0.78rem;color:#888;">温度不变，内能不变。加热时气体膨胀（活塞上移），对内做功为负，Q=&minus;W。</div>
+                        <div style="font-size:0.78rem;color:#6B6B6B;">温度不变，内能不变。加热时气体膨胀（活塞上移），对内做功为负，Q=&minus;W。</div>
                     </div>
                 </div>
                 <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
                     <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,94,91,0.1);color:var(--Q-color);font-weight:700;font-size:1.1rem;">V</div>
                     <div>
                         <div style="font-weight:700;font-size:0.88rem;">等容: W=0, &Delta;U=Q</div>
-                        <div style="font-size:0.78rem;color:#888;">体积不变，W=0。吸收的热量全部用于增加内能（升温）。</div>
+                        <div style="font-size:0.78rem;color:#6B6B6B;">体积不变，W=0。吸收的热量全部用于增加内能（升温）。</div>
                     </div>
                 </div>
                 <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
                     <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:#3498db;font-weight:700;font-size:1.1rem;">Q=0</div>
                     <div>
                         <div style="font-weight:700;font-size:0.88rem;">绝热: Q=0, &Delta;U=W（可拖拽活塞）</div>
-                        <div style="font-size:0.78rem;color:#888;">无热交换。下压活塞对内做功→升温；上拉对外做功→降温。可拖拽活塞体验。</div>
+                        <div style="font-size:0.78rem;color:#6B6B6B;">无热交换。下压活塞对内做功→升温；上拉对外做功→降温。可拖拽活塞体验。</div>
                     </div>
                 </div>
             </div>
@@ -856,6 +736,22 @@ function loop(ts) {
     }
     draw();
     updateUI();
+  // aria状态同步
+  (function syncAria(){
+    const ranges=document.querySelectorAll('input[type=range]');
+    ranges.forEach(r=>{
+      const v=r.value,min=r.min,max=r.max;
+      const unit=r.id.includes('freq')?'赫兹':r.id.includes('vp')?'伏':'匝';
+      r.setAttribute('aria-valuenow',v);
+      r.setAttribute('aria-valuetext',v+unit);
+    });
+    const startBtn=document.getElementById('btn-start');
+    if(startBtn&&startBtn.textContent.includes('暂停')){
+      startBtn.setAttribute('aria-pressed','true');
+      startBtn.setAttribute('aria-label','暂停模拟');
+    }
+  })();
+
     requestAnimationFrame(loop);
 }
 
@@ -1012,9 +908,43 @@ syncParticleCount();
 sim.U_init = internalEnergy(sim.T);
 updateUI();
 draw();
+  // aria状态同步
+  (function syncAria(){
+    const ranges=document.querySelectorAll('input[type=range]');
+    ranges.forEach(r=>{
+      const v=r.value,min=r.min,max=r.max;
+      const unit=r.id.includes('freq')?'赫兹':r.id.includes('vp')?'伏':'匝';
+      r.setAttribute('aria-valuenow',v);
+      r.setAttribute('aria-valuetext',v+unit);
+    });
+    const startBtn=document.getElementById('btn-start');
+    if(startBtn&&startBtn.textContent.includes('暂停')){
+      startBtn.setAttribute('aria-pressed','true');
+      startBtn.setAttribute('aria-label','暂停模拟');
+    }
+  })();
+
 requestAnimationFrame(loop);
 
 })();
+
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
 </script>
 
 <div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>

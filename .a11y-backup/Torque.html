@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wuli布雷克物理模拟实验室 - 力矩 / Torque。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:title" content="力矩 / Torque - Wuli布雷克">
+    <meta property="og:description" content="Wuli布雷克物理模拟实验室 - 力矩 / Torque。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wuliblake.com/Torque.html">
+    <meta property="og:site_name" content="Wuli布雷克物理模拟实验室">
+    <link rel="stylesheet" href="common.css">
+    <meta name="author" content="Wuli布雷克">
+    <meta name="copyright" content="Copyright 2025 Wuli布雷克">
+    <title>力矩 / Torque - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>#torqueCanvas { width: 100%; flex: 1; display: block; }
+#slider-F::-webkit-slider-thumb { background: var(--primary); }
+#slider-r::-webkit-slider-thumb { background: #0081a7; }
+#slider-theta::-webkit-slider-thumb { background: var(--secondary); }
+.material-tag { display: inline-block; background: rgba(255,140,66,0.1); color: var(--primary); padding: 4px 14px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; }
+select { width: 100%; padding: 8px; font-size: 0.9rem; font-weight: 600; border: 2px solid #f0f0f0; border-radius: 8px; background: white; color: var(--text-dark); cursor: pointer; font-family: 'Fredoka','Noto Sans SC',sans-serif; }
+select:focus { outline: none; border-color: var(--primary); }</style>
+</head>
+
+<body>
+    <div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
+<a href="mechanics.html" class="back-link" aria-label="返回力学分类页">← 返回力学</a>
+    <div class="container" id="main">
+        <header><h1>力矩 / Torque</h1></header>
+
+        <section class="formula-display" aria-label="公式与实时数值">
+            <div class="formula-container" id="formula-root">
+                <span id="sym-tau" style="color:var(--accent);font-weight:700;font-size:2.5rem;transition:transform 0.3s;display:inline-block;">τ</span>
+                <span style="font-size:26px;color:#ccc;">=</span>
+                <span id="sym-F" style="color:var(--primary);font-weight:700;font-size:2rem;transition:transform 0.3s;display:inline-block;">F</span>
+                <span style="font-size:20px;color:#ccc;">×</span>
+                <span id="sym-r" style="color:#0081a7;font-weight:700;font-size:2rem;transition:transform 0.3s;display:inline-block;">r</span>
+                <span style="font-size:20px;color:#ccc;">×</span>
+                <span style="font-size:18px;color:#999;">sin(</span>
+                <span id="sym-theta" style="color:var(--secondary);font-weight:700;font-size:2rem;transition:transform 0.3s;display:inline-block;">θ</span>
+                <span style="font-size:18px;color:#999;">)</span>
+            </div>
+            <div class="result-row" id="result-container" style="display:none;">
+                <span>τ = <strong id="val-tau" style="color:var(--accent)">0</strong> N·m</span>
+                <span id="direction-text" class="material-tag"></span>
+            </div>
+            <div class="legend" aria-label="图例说明">
+                <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> τ : 力矩 Moment</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--primary)"></span> F : 力 Force</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#0081a7"></span> r : 力臂 Distance</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--secondary)"></span> θ : 角度 Angle</div>
+            </div>
+        </section>
+
+        <section class="diagram-section" aria-label="模拟动画区"><canvas id="torqueCanvas" role="img" aria-label="力矩模拟动画 — 交互式物理仿真画面"></canvas></section>
+
+        <section class="controls-section" aria-label="参数控制区">
+            <div class="control-panel">
+                <div class="control-group">
+                    <div class="label-row"><span style="color:var(--primary)">力 Force (F)</span><span id="disp-F" class="val-badge" aria-live="polite">50 N</span></div>
+                    <input type="range" id="slider-F" min="10" max="100" step="5" value="50" aria-valuemin="10" aria-valuemax="100" aria-valuenow="50" aria-valuetext="50匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+                </div>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:#0081a7">力臂 Distance (r)</span><span id="disp-r" class="val-badge" aria-live="polite">2.0 m</span></div>
+                    <input type="range" id="slider-r" min="0.5" max="5" step="0.1" value="2" aria-valuemin="0.5" aria-valuemax="5" aria-valuenow="2" aria-valuetext="2匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+                </div>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:#b58900">角度 Angle (θ)</span><span id="disp-theta" class="val-badge" aria-live="polite">90°</span></div>
+                    <input type="range" id="slider-theta" min="0" max="180" step="5" value="90" aria-valuemin="0" aria-valuemax="180" aria-valuenow="90" aria-valuetext="90匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+                </div>
+                <div class="control-group">
+                    <div class="label-row"><span>方向 Direction</span></div>
+                    <select id="direction-select">
+                        <option value="ccw">逆时针 / Counterclockwise</option>
+                        <option value="cw">顺时针 / Clockwise</option>
+                    </select>
+                </div>
+            </div>
+            <div class="info-card">
+                <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem">演示要点 / Key Points</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,94,91,0.1);color:var(--accent);font-weight:700">τ</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">τ = F × r × sin(θ)</div><div style="font-size:0.78rem;color:#6B6B6B">力矩等于力乘以力臂乘以夹角的正弦值。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700">F</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">力的大小影响力矩</div><div style="font-size:0.78rem;color:#6B6B6B">力越大，力矩越大。注意力的垂直分量才产生有效力矩。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,199,95,0.1);color:#b58900;font-weight:700">θ</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">θ = 90°时力矩最大</div><div style="font-size:0.78rem;color:#6B6B6B">当力垂直于力臂时，sin(90°) = 1，力矩达到最大值。</div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Elements
+        const sliderF = document.getElementById('slider-F');
+        const sliderR = document.getElementById('slider-r');
+        const sliderTheta = document.getElementById('slider-theta');
+
+        const dispF = document.getElementById('disp-F');
+        const dispR = document.getElementById('disp-r');
+        const dispTheta = document.getElementById('disp-theta');
+
+        const symTau = document.getElementById('sym-tau');
+        const symF = document.getElementById('sym-F');
+        const symR = document.getElementById('sym-r');
+        const symTheta = document.getElementById('sym-theta');
+
+        const valTau = document.getElementById('val-tau');
+        const resultContainer = document.getElementById('result-container');
+        const directionText = document.getElementById('direction-text');
+        const directionSelect = document.getElementById('direction-select');
+
+        const canvas = document.getElementById('torqueCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // State
+        let state = {
+            F: 50,
+            r: 2,
+            theta: 90,
+            direction: 'ccw', // 'ccw' or 'cw'
+            showResult: false
+        };
+
+        // Initialize
+        function init() {
+            addListeners();
+            resize();
+            update();
+        }
+
+        function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+        window.addEventListener('resize', () => { resize(); update(); });
+
+        function addListeners() {
+            sliderF.addEventListener('input', (e) => {
+                state.F = parseFloat(e.target.value);
+                state.showResult = false;
+                update();
+            });
+            sliderR.addEventListener('input', (e) => {
+                state.r = parseFloat(e.target.value);
+                state.showResult = false;
+                update();
+            });
+            sliderTheta.addEventListener('input', (e) => {
+                state.theta = parseFloat(e.target.value);
+                state.showResult = false;
+                update();
+            });
+            directionSelect.addEventListener('change', (e) => {
+                state.direction = e.target.value;
+                state.showResult = false;
+                update();
+            });
+        }
+
+        function update() {
+            // Update display values
+            dispF.textContent = state.F + ' N';
+            dispR.textContent = state.r.toFixed(1) + ' m';
+            dispTheta.textContent = state.theta + '°';
+
+            // Calculate torque: τ = F × r × sin(θ)
+            const thetaRad = state.theta * Math.PI / 180;
+            let torque = state.F * state.r * Math.sin(thetaRad);
+
+            // Apply direction modifier
+            if (state.direction === 'cw') {
+                torque = -torque;
+            }
+
+            // Update formula symbol sizes
+            updateFormulaSizes(torque, thetaRad);
+
+            // Show/hide result
+            if (state.showResult) {
+                resultContainer.style.display = 'flex';
+                valTau.textContent = torque.toFixed(1);
+                if (state.direction === 'ccw') {
+                    directionText.textContent = '逆时针 / CCW';
+                } else {
+                    directionText.textContent = '顺时针 / CW';
+                }
+                directionText.style.display = 'inline-block';
+            } else {
+                resultContainer.style.display = 'none';
+                directionText.style.display = 'none';
+            }
+
+            // Draw diagram
+            drawDiagram(torque, thetaRad);
+
+            // Auto-show result after a short delay (like a check)
+            if (!state._timeoutSet) {
+                state._timeoutSet = true;
+                // Show result automatically on each change
+                state.showResult = true;
+                update();
+                state._timeoutSet = false;
+            }
+        }
+
+        function mapRange(value, inMin, inMax, outMin, outMax) {
+            return ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
+        }
+
+        function updateFormulaSizes(torque, thetaRad) {
+            const scaleF = mapRange(state.F, 10, 100, 1.0, 1.8);
+            const scaleR = mapRange(state.r, 0.5, 5, 0.8, 1.8);
+            const scaleTheta = mapRange(Math.sin(thetaRad), 0, 1, 0.8, 1.6);
+            const scaleTau = Math.max(1, Math.log10(Math.abs(torque) + 1) * 0.5);
+
+            symF.style.transform = `scale(${scaleF})`;
+            symR.style.transform = `scale(${scaleR})`;
+            symTheta.style.transform = `scale(${scaleTheta})`;
+            symTau.style.transform = `scale(${Math.min(scaleTau, 2.5)})`;
+        }
+
+        function drawDiagram(torque, thetaRad) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const cx = canvas.width / 4;
+            const cy = canvas.height / 2;
+
+            // Draw pivot point
+            ctx.fillStyle = '#333';
+            ctx.beginPath();
+            ctx.arc(cx, cy, 8, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Label pivot point
+            ctx.fillStyle = '#333';
+            ctx.font = 'bold 14px Fredoka, Noto Sans SC, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('支点 / Pivot', cx, cy + 30);
+
+            // Draw lever arm (horizontal)
+            const leverLength = mapRange(state.r, 0.5, 5, 80, 220);
+            const leverEndX = cx + leverLength;
+            const leverEndY = cy;
+
+            ctx.strokeStyle = '#8B7355';
+            ctx.lineWidth = 8;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(leverEndX, leverEndY);
+            ctx.stroke();
+
+            // Draw force application point
+            ctx.fillStyle = '#FF5E5B';
+            ctx.beginPath();
+            ctx.arc(leverEndX, leverEndY, 6, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Draw force vector
+            const forceScale = mapRange(state.F, 10, 100, 40, 120);
+            const thetaRad_val = state.theta * Math.PI / 180;
+            let forceAngle;
+            if (state.direction === 'ccw') {
+                forceAngle = Math.PI - thetaRad_val;
+            } else {
+                forceAngle = Math.PI + thetaRad_val;
+            }
+            const forceEndX = leverEndX + forceScale * Math.cos(forceAngle);
+            const forceEndY = leverEndY - forceScale * Math.sin(forceAngle);
+
+            ctx.strokeStyle = '#FF8c42';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(leverEndX, leverEndY);
+            ctx.lineTo(forceEndX, forceEndY);
+            ctx.stroke();
+
+            // Arrow head for force
+            drawArrowHead(forceEndX, forceEndY, forceAngle, '#FF8c42');
+
+            // Draw angle symbol θ (Reference: Left)
+            if (state.theta > 0 && state.theta < 180) {
+                const labelDist = 55;
+                const startAngle = Math.PI;
+                const midAngle = (startAngle + forceAngle) / 2;
+                const labelX = leverEndX + labelDist * Math.cos(midAngle);
+                const labelY = leverEndY - labelDist * Math.sin(midAngle);
+                ctx.fillStyle = '#333';
+                ctx.font = 'bold 18px Fredoka, Noto Sans SC, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('θ', labelX, labelY);
+            }
+
+            // Draw perpendicular component Fsinθ (GREEN)
+            if (state.theta > 0 && state.theta < 180) {
+                const perpLength = forceScale * Math.sin(thetaRad);
+                const vDir = state.direction === 'ccw' ? -1 : 1;
+
+                ctx.strokeStyle = '#32CD32';
+                ctx.lineWidth = 3;
+                ctx.setLineDash([]);
+                ctx.beginPath();
+                ctx.moveTo(leverEndX, leverEndY);
+                ctx.lineTo(leverEndX, leverEndY + (vDir * perpLength));
+                ctx.stroke();
+
+                const perpAngle = vDir === -1 ? Math.PI / 2 : -Math.PI / 2;
+                drawArrowHead(leverEndX, leverEndY + (vDir * perpLength), perpAngle, '#32CD32');
+
+                ctx.fillStyle = '#32CD32';
+                ctx.font = 'bold 14px Fredoka, Noto Sans SC, sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillText('Fsinθ', leverEndX + 10, leverEndY + (vDir * perpLength / 2));
+
+                if (state.theta !== 90) {
+                    ctx.strokeStyle = 'rgba(50, 205, 50, 0.3)';
+                    ctx.lineWidth = 1;
+                    ctx.setLineDash([3, 3]);
+                    ctx.beginPath();
+                    ctx.moveTo(leverEndX, leverEndY + (vDir * perpLength));
+                    ctx.lineTo(forceEndX, forceEndY);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+            }
+
+            // Draw distance label
+            ctx.fillStyle = '#0081a7';
+            ctx.font = 'bold 14px Fredoka, Noto Sans SC, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('r', cx + leverLength / 2, cy - 15);
+
+            // Draw force label
+            ctx.fillStyle = '#FF8c42';
+            ctx.font = 'bold 14px Fredoka, Noto Sans SC, sans-serif';
+            const forceLabelX = leverEndX + (forceScale / 2) * Math.cos(forceAngle);
+            const forceLabelY = leverEndY - (forceScale / 2) * Math.sin(forceAngle);
+            ctx.fillText('F', forceLabelX + 20, forceLabelY - 10);
+
+            // Draw torque direction indicator if result is shown
+            if (state.showResult && Math.abs(torque) > 0.1) {
+                const torqueDirection = torque >= 0 ? 1 : -1;
+                drawTorqueIndicator(cx, cy, 30, torqueDirection);
+            }
+        }
+
+        function drawArrowHead(x, y, angle, color) {
+            const headLen = 12;
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x - headLen * Math.cos(angle - Math.PI / 6), y + headLen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(x - headLen * Math.cos(angle + Math.PI / 6), y + headLen * Math.sin(angle + Math.PI / 6));
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function drawTorqueIndicator(cx, cy, radius, direction) {
+            const startAngle = 0;
+            const sweepAngle = direction > 0 ? -1.5 * Math.PI : 1.5 * Math.PI;
+            const endAngle = startAngle + sweepAngle;
+
+            ctx.strokeStyle = '#FF5E5B';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, startAngle, endAngle, direction > 0);
+            ctx.stroke();
+
+            const tangentAngle = endAngle + (direction > 0 ? -Math.PI / 2 : Math.PI / 2);
+
+            const headSize = 10;
+            const arrowX = cx + radius * Math.cos(endAngle);
+            const arrowY = cy + radius * Math.sin(endAngle);
+
+            ctx.fillStyle = '#FF5E5B';
+            ctx.beginPath();
+            ctx.moveTo(arrowX, arrowY);
+            ctx.lineTo(arrowX - headSize * Math.cos(tangentAngle - Math.PI / 6),
+                arrowY - headSize * Math.sin(tangentAngle - Math.PI / 6));
+            ctx.lineTo(arrowX - headSize * Math.cos(tangentAngle + Math.PI / 6),
+                arrowY - headSize * Math.sin(tangentAngle + Math.PI / 6));
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        // Start
+        init();
+    
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+</script>
+<div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
+</body>
+</html>

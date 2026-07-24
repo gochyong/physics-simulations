@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wuli布雷克物理模拟实验室 - 万有引力 / Universal Gravitation。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:title" content="万有引力 / Universal Gravitation - Wuli布雷克">
+    <meta property="og:description" content="Wuli布雷克物理模拟实验室 - 万有引力 / Universal Gravitation。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wuliblake.com/Gravitation.html">
+    <meta property="og:site_name" content="Wuli布雷克物理模拟实验室">
+    <link rel="stylesheet" href="common.css">
+    <meta name="author" content="Wuli布雷克">
+    <meta name="copyright" content="Copyright 2025 Wuli布雷克">
+    <title>万有引力 / Universal Gravitation - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>        :root {
+    --force-color: #FF8c42;
+    --vel-color: #3498db;
+    --orbit-color: rgba(255,255,255,0.3);
+        }
+#slider-speed::-webkit-slider-thumb { background: var(--secondary); }</style>
+</head>
+
+<body>
+    <div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
+<a href="astronomy.html" class="back-link" aria-label="返回天文分类页">← 返回天文</a>
+
+    <div class="container" id="main">
+        <header>
+            <h1>万有引力 / Universal Gravitation</h1>
+        </header>
+
+        <section class="formula-display" aria-label="公式与实时数值">
+            <div class="formula-container" id="formula-root" style="flex-direction:column;gap:4px;">
+                <div style="font-size:1.3rem;font-weight:700;color:#9b59b6;" id="formula-main"></div>
+                <div style="font-size:0.82rem;color:#6B6B6B;" id="formula-sub"></div>
+            </div>
+            <div class="result-row" id="result-area">
+                <span>引力 F: <strong id="res-F" style="color:var(--force-color)">--</strong></span>
+                <span>轨道速度 v: <strong id="res-v" style="color:#3498db">--</strong></span>
+                <span>轨道周期 T: <strong id="res-T" style="color:#e67e22">--</strong></span>
+            </div>
+            <div class="legend" aria-label="图例说明">
+                <div class="legend-item"><span class="legend-dot" style="background:var(--force-color)"></span> 引力 F (向心)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#3498db"></span> 轨道速度 v (切向)</div>
+                <div class="legend-item"><span style="color:rgba(255,255,255,0.5);font-size:1.2rem;">- -</span> 轨道半径 r</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--secondary)"></span> 中心天体 M</div>
+            </div>
+        </section>
+
+        <section class="diagram-section" aria-label="模拟动画区">
+            <canvas id="simCanvas" role="img" aria-label="万有引力模拟动画 — 交互式物理仿真画面"></canvas>
+        </section>
+
+        <section class="controls-section" aria-label="参数控制区">
+            <div class="control-panel">
+                <div class="param-section" style="border-left: 5px solid var(--secondary);">
+                    <div class="param-section-header">&#127774; 中心天体 Central Mass</div>
+                    <div class="control-group">
+                        <label for="slider-M" class="label-row"><span>质量 M</span><span id="badge-M" class="val-badge" aria-live="polite">5</span></label>
+                        <input type="range" id="slider-M" min="1" max="10" step="0.1" value="5" aria-valuemin="1" aria-valuemax="10" aria-valuenow="5" aria-valuetext="5匝">>
+                    </div>
+                </div>
+
+                <div class="param-section" style="border-left:5px solid #3498db;">
+                    <div class="param-section-header">&#127758; 转动天体 Orbiting Body</div>
+                    <div class="control-group"><label for="slider-m" class="label-row"><span>质量 m</span><span id="badge-m" class="val-badge" aria-live="polite">1</span></label><input type="range" id="slider-m" min="0.1" max="5" step="0.1" value="1" aria-valuemin="0.1" aria-valuemax="5" aria-valuenow="1" aria-valuetext="1匝">></div>
+                </div>
+
+                <div class="param-section" style="border-left: 5px solid var(--primary);">
+                    <div class="param-section-header">&#128301; 轨道参数 Orbit</div>
+                    <div class="control-group">
+                        <label for="slider-r" class="label-row"><span>轨道半径 r</span><span id="badge-r" class="val-badge" aria-live="polite">5</span></label>
+                        <input type="range" id="slider-r" min="2" max="10" step="0.1" value="5" aria-valuemin="2" aria-valuemax="10" aria-valuenow="5" aria-valuetext="5匝">>
+                    </div>
+                    <div class="control-group" style="margin-top:2px;">
+                        <label for="slider-speed" class="label-row"><span>动画速度 Speed</span><span id="badge-speed" class="val-badge" aria-live="polite">1.0x</span></label>
+                        <input type="range" id="slider-speed" min="0.5" max="2" step="0.1" value="1" aria-valuemin="0.5" aria-valuemax="2" aria-valuenow="1" aria-valuetext="1匝">>
+                    </div>
+                </div>
+
+                <div class="btn-row">
+                    <button id="btn-start" class="ctrl-btn start" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false">开始 Start</button>
+                    <button id="btn-reset" class="ctrl-btn reset" aria-label="重置参数" aria-label="重置参数">重置 Reset</button>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div style="font-weight: 700; color: var(--primary); margin-bottom: 8px; font-size: 1.1rem;">
+                    演示要点 / Key Points
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(155,89,182,0.1);color:#9b59b6;font-weight:700;">1/r²</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">平方反比定律 / Inverse Square</div><div style="font-size:0.78rem;color:#6B6B6B;">引力大小与距离的平方成反比：F ∝ 1/r²。距离加倍，引力降为1/4。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:#3498db;font-weight:700;">v</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">轨道速度 / Orbital Speed</div><div style="font-size:0.78rem;color:#6B6B6B;">v = √(GM/r)。质量越大或半径越小，轨道速度越快。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(230,126,34,0.1);color:#e67e22;font-weight:700;">G</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">引力常数 G = 6.674×10⁻¹¹ N·m²/kg²</div><div style="font-size:0.78rem;color:#6B6B6B;">万有引力常数，由卡文迪许扭秤实验测得。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:#2ecc71;font-weight:700;">F⊥v</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">圆周运动 / Circular Motion</div><div style="font-size:0.78rem;color:#6B6B6B;">引力始终垂直于速度方向，充当向心力，使行星保持在圆形轨道上。</div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas'), ctx = canvas.getContext('2d');
+
+        // --- Physics constants ---
+        const G = 6.67430e-11;          // gravitational constant
+        const MASS_SCALE = 1e24;         // 1 slider unit = 10^24 kg
+        const LENGTH_SCALE = 1e7;        // 1 slider unit = 10^7 m (~Earth radius)
+        const TIME_ACCEL = 12000;        // simulation time acceleration factor
+
+        // --- State ---
+        let M_val = 5;      // central mass in slider units
+        let r_val = 5;      // orbital radius in slider units
+        let m_val = 1;      // orbiting mass in slider units (×10²² kg)
+        let speed = 1.0;    // animation speed multiplier
+        let theta = 0;      // current orbital angle (radians)
+        let playing = false;
+        let lastTime = 0;
+
+        // --- Stars ---
+        let stars = [];
+
+        function initStars(w, h) {
+            stars = [];
+            const n = 180;
+            for (let i = 0; i < n; i++) {
+                stars.push({
+                    x: Math.random(),
+                    y: Math.random(),
+                    r: Math.random() * 1.5 + 0.3,
+                    b: Math.random() * 0.4 + 0.3
+                });
+            }
+        }
+
+        // --- Arrow drawing helper ---
+        function arrow(c, x, y, dx, dy, clr, lw) {
+            const a = Math.atan2(dy, dx);
+            const h = 8;
+            const tx = x + dx, ty = y + dy;
+            c.strokeStyle = clr;
+            c.fillStyle = clr;
+            c.lineWidth = lw || 2;
+            c.lineCap = 'round';
+            c.lineJoin = 'round';
+            c.beginPath();
+            c.moveTo(x, y);
+            c.lineTo(tx, ty);
+            c.stroke();
+            c.beginPath();
+            c.moveTo(tx, ty);
+            c.lineTo(tx - h * Math.cos(a - Math.PI / 6), ty - h * Math.sin(a - Math.PI / 6));
+            c.lineTo(tx - h * Math.cos(a + Math.PI / 6), ty - h * Math.sin(a + Math.PI / 6));
+            c.closePath();
+            c.fill();
+        }
+
+        // --- Physics calculations ---
+        const MASS_SCALE2 = 1e22; // 1 slider unit for m = 10^22 kg
+        function getPhysics() {
+            const M_actual = M_val * MASS_SCALE;
+            const m_actual = m_val * MASS_SCALE2;
+            const r_actual = r_val * LENGTH_SCALE;
+            const F = G * M_actual * m_actual / (r_actual * r_actual);
+            const v = Math.sqrt(G * M_actual / r_actual);
+            const T = 2 * Math.PI * Math.sqrt(r_actual * r_actual * r_actual / (G * M_actual));
+            const omega = v / r_actual;
+            return { F, v, T, omega, M_actual, m_actual, r_actual };
+        }
+
+        // --- Format helpers ---
+        function fmtExp(val, unit, decimals) {
+            // Format in scientific notation style: X.XX × 10^Y unit
+            if (val === 0) return '0 ' + unit;
+            const exp = Math.floor(Math.log10(val));
+            const mantissa = val / Math.pow(10, exp);
+            const d = decimals || 2;
+            return mantissa.toFixed(d) + '×10<sup>' + exp + '</sup> ' + unit;
+        }
+
+        function fmtTime(seconds) {
+            if (seconds < 120) return seconds.toFixed(1) + ' s';
+            if (seconds < 7200) return (seconds / 60).toFixed(1) + ' min';
+            if (seconds < 172800) return (seconds / 3600).toFixed(1) + ' h';
+            return (seconds / 86400).toFixed(1) + ' d';
+        }
+
+        // --- Main draw ---
+        function draw() {
+            const cw = canvas.width, ch = canvas.height;
+            if (cw < 10 || ch < 10) return;
+
+            ctx.clearRect(0, 0, cw, ch);
+
+            // Dark space background
+            const spaceBg = ctx.createLinearGradient(0, 0, cw, ch);
+            spaceBg.addColorStop(0, '#0a0a1e');
+            spaceBg.addColorStop(0.5, '#0d0d28');
+            spaceBg.addColorStop(1, '#0a0a1e');
+            ctx.fillStyle = spaceBg;
+            ctx.fillRect(0, 0, cw, ch);
+
+            // Draw stars
+            for (const s of stars) {
+                const sx = s.x * cw;
+                const sy = s.y * ch;
+                ctx.fillStyle = `rgba(255,255,255,${s.b})`;
+                ctx.beginPath();
+                ctx.arc(sx, sy, s.r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Center of canvas = sun position
+            const cx = cw / 2;
+            const cy = ch / 2;
+
+            // Orbit radius in pixels
+            const r_px = Math.min(cw, ch) * 0.36 * (r_val / 5);
+
+            // Sun size (slightly proportional to mass)
+            const sunR = 18 + M_val * 2.5;
+            const planetR = 9;
+
+            // Planet position
+            const px = cx + r_px * Math.cos(theta);
+            const py = cy - r_px * Math.sin(theta); // CCW on canvas
+
+            // --- Draw orbit circle (dashed) ---
+            ctx.save();
+            ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([8, 6]);
+            ctx.beginPath();
+            ctx.arc(cx, cy, r_px, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.restore();
+
+            // --- Draw radius line (dashed, from sun center to planet center) ---
+            ctx.save();
+            ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(px, py);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.restore();
+
+            // --- Draw Sun ---
+            // Outer glow
+            const glowGrad = ctx.createRadialGradient(cx, cy, sunR * 0.6, cx, cy, sunR * 2.5);
+            glowGrad.addColorStop(0, 'rgba(255,200,50,0.6)');
+            glowGrad.addColorStop(0.5, 'rgba(255,150,30,0.15)');
+            glowGrad.addColorStop(1, 'rgba(255,100,20,0)');
+            ctx.fillStyle = glowGrad;
+            ctx.beginPath();
+            ctx.arc(cx, cy, sunR * 2.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Sun body
+            const sunGrad = ctx.createRadialGradient(cx - sunR * 0.2, cy - sunR * 0.3, sunR * 0.1, cx, cy, sunR);
+            sunGrad.addColorStop(0, '#fff7a0');
+            sunGrad.addColorStop(0.3, '#ffd630');
+            sunGrad.addColorStop(0.7, '#ff9800');
+            sunGrad.addColorStop(1, '#e65100');
+            ctx.fillStyle = sunGrad;
+            ctx.beginPath();
+            ctx.arc(cx, cy, sunR, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255,200,100,0.5)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Sun label
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 13px Fredoka, "Noto Sans SC", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('M = ' + M_val.toFixed(1), cx, cy - sunR - 12);
+
+            // --- Draw Planet ---
+            // Planet glow
+            const pGlow = ctx.createRadialGradient(px, py, planetR * 0.5, px, py, planetR * 2);
+            pGlow.addColorStop(0, 'rgba(100,180,255,0.3)');
+            pGlow.addColorStop(1, 'rgba(100,180,255,0)');
+            ctx.fillStyle = pGlow;
+            ctx.beginPath();
+            ctx.arc(px, py, planetR * 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Planet body
+            const pGrad = ctx.createRadialGradient(px - planetR * 0.25, py - planetR * 0.3, planetR * 0.15, px, py, planetR);
+            pGrad.addColorStop(0, '#a8d8ff');
+            pGrad.addColorStop(0.5, '#4da6ff');
+            pGrad.addColorStop(1, '#1a5276');
+            ctx.fillStyle = pGrad;
+            ctx.beginPath();
+            ctx.arc(px, py, planetR, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(200,230,255,0.5)';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            // Planet label
+            ctx.fillStyle = '#ccc';
+            ctx.font = 'bold 11px Fredoka, "Noto Sans SC", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('m', px, py + planetR + 16);
+
+            // --- Physics values for vectors ---
+            const phys = getPhysics();
+
+            // Vector scale factors (independent for force and velocity display)
+            const forceScale = 0.25 * (5 / r_val); // so force vector is visible at all radii
+            const velScale = 0.04;   // ~100px baseline
+
+            // Force vector: from planet toward center
+            const forceMag = Math.min(phys.F * forceScale * 1e-21, r_px * 0.7);
+            const fdx = (cx - px);
+            const fdy = (cy - py);
+            const fDist = Math.sqrt(fdx * fdx + fdy * fdy);
+            const fux = (fDist > 0.01) ? fdx / fDist : 0;
+            const fuy = (fDist > 0.01) ? fdy / fDist : 0;
+
+            if (forceMag > 3) {
+                arrow(ctx, px, py, fux * forceMag, fuy * forceMag, '#FF8c42', 3);
+                // Force label
+                const flx = px + fux * forceMag * 1.15;
+                const fly = py + fuy * forceMag * 1.15;
+                ctx.fillStyle = '#FF8c42';
+                ctx.font = 'bold 11px Fredoka, "Noto Sans SC", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('F', flx, fly - 4);
+            }
+
+            // Velocity vector: tangent CCW (planet at (cx+r·cosθ, cy−r·sinθ), deriv = (−sinθ, −cosθ))
+            const vux = -Math.sin(theta);
+            const vuy = -Math.cos(theta);
+
+            const velMag = Math.min(phys.v * velScale, r_px * 0.9);
+            if (velMag > 3) {
+                arrow(ctx, px, py, vux * velMag, vuy * velMag, '#3498db', 3);
+                // Velocity label
+                const vlx = px + vux * velMag * 1.15;
+                const vly = py + vuy * velMag * 1.15;
+                ctx.fillStyle = '#3498db';
+                ctx.font = 'bold 11px Fredoka, "Noto Sans SC", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('v', vlx, vly);
+            }
+
+            // --- Update result area ---
+            document.getElementById('res-F').innerHTML = fmtExp(phys.F, 'N', 2);
+            document.getElementById('res-v').innerHTML = (phys.v / 1000).toFixed(2) + ' km/s';
+            document.getElementById('res-T').innerHTML = fmtTime(phys.T);
+
+            // --- Update formula display ---
+            document.getElementById('formula-main').innerHTML =
+                'F = G·M·m / r² = <b>' + fmtExp(phys.F, 'N', 2) + '</b>';
+            document.getElementById('formula-sub').innerHTML =
+                'v = √(GM/r) = <b>' + (phys.v / 1000).toFixed(2) + ' km/s</b> &nbsp;|&nbsp; ' +
+                'T = 2π√(r³/GM) = <b>' + fmtTime(phys.T) + '</b>';
+        }
+
+        // --- Animation loop ---
+        function loop(ts) {
+            if (!lastTime) lastTime = ts;
+            let dt = (ts - lastTime) / 1000;
+            lastTime = ts;
+            if (dt > 0.1) dt = 0.016;
+
+            if (playing) {
+                const phys = getPhysics();
+                const dTheta = phys.omega * dt * TIME_ACCEL * speed;
+                theta += dTheta;
+                // Keep theta within [0, 2π)
+                theta = theta % (2 * Math.PI);
+            }
+
+            draw();
+  // aria状态同步
+  (function syncAria(){
+    const ranges=document.querySelectorAll('input[type=range]');
+    ranges.forEach(r=>{
+      const v=r.value,min=r.min,max=r.max;
+      const unit=r.id.includes('freq')?'赫兹':r.id.includes('vp')?'伏':'匝';
+      r.setAttribute('aria-valuenow',v);
+      r.setAttribute('aria-valuetext',v+unit);
+    });
+    const startBtn=document.getElementById('btn-start');
+    if(startBtn&&startBtn.textContent.includes('暂停')){
+      startBtn.setAttribute('aria-pressed','true');
+      startBtn.setAttribute('aria-label','暂停模拟');
+    }
+  })();
+
+            requestAnimationFrame(loop);
+        }
+
+        // --- Resize ---
+        function resize() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            initStars(canvas.width, canvas.height);
+            draw();
+        }
+        window.addEventListener('resize', resize);
+
+        // --- UI Elements ---
+        const sM = document.getElementById('slider-M');
+        const sr = document.getElementById('slider-r');
+        const sSpeed = document.getElementById('slider-speed');
+        const sm = document.getElementById('slider-m');
+        const bM = document.getElementById('badge-M');
+        const br = document.getElementById('badge-r');
+        const bSpeed = document.getElementById('badge-speed');
+        const bm = document.getElementById('badge-m');
+        const bStart = document.getElementById('btn-start');
+        const bReset = document.getElementById('btn-reset');
+
+        function onSliderChange() {
+            M_val = parseFloat(sM.value);
+            r_val = parseFloat(sr.value);
+            speed = parseFloat(sSpeed.value);
+            m_val = parseFloat(sm.value);
+            bM.textContent = M_val.toFixed(1) + ' (10²⁴ kg)';
+            br.textContent = r_val.toFixed(1);
+            bSpeed.textContent = speed.toFixed(1) + 'x';
+            bm.textContent = m_val.toFixed(1) + ' (10²² kg)';
+            theta = 0;
+            lastTime = 0;
+            draw();
+        }
+
+        sM.addEventListener('input', onSliderChange);
+        sr.addEventListener('input', onSliderChange);
+        sSpeed.addEventListener('input', onSliderChange);
+        sm.addEventListener('input', onSliderChange);
+
+        bStart.onclick = () => {
+            playing = !playing;
+            bStart.textContent = playing ? '暂停 Pause' : '开始 Start';
+            bStart.className = 'ctrl-btn ' + (playing ? 'pause' : 'start');
+            if (playing) lastTime = 0;
+        };
+
+        bReset.onclick = () => {
+            theta = 0;
+            playing = false;
+            lastTime = 0;
+            bStart.textContent = '开始 Start';
+            bStart.className = 'ctrl-btn start';
+            draw();
+        };
+
+        // --- Init ---
+        bM.textContent = '5.0 (10²⁴ kg)';
+        br.textContent = '5.0';
+        bSpeed.textContent = '1.0x';
+        resize();
+  // aria状态同步
+  (function syncAria(){
+    const ranges=document.querySelectorAll('input[type=range]');
+    ranges.forEach(r=>{
+      const v=r.value,min=r.min,max=r.max;
+      const unit=r.id.includes('freq')?'赫兹':r.id.includes('vp')?'伏':'匝';
+      r.setAttribute('aria-valuenow',v);
+      r.setAttribute('aria-valuetext',v+unit);
+    });
+    const startBtn=document.getElementById('btn-start');
+    if(startBtn&&startBtn.textContent.includes('暂停')){
+      startBtn.setAttribute('aria-pressed','true');
+      startBtn.setAttribute('aria-label','暂停模拟');
+    }
+  })();
+
+        requestAnimationFrame(loop);
+    
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+</script>
+<div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
+</body>
+</html>

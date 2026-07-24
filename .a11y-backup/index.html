@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wuli布雷克物理模拟实验室 - Wuli布雷克 - 物理模拟实验室。59个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:title" content="Wuli布雷克 - 物理模拟实验室">
+    <meta property="og:description" content="Wuli布雷克物理模拟实验室 - Wuli布雷克 - 物理模拟实验室。59个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wuliblake.com/index.html">
+    <meta property="og:site_name" content="Wuli布雷克物理模拟实验室">
+    <link rel="stylesheet" href="common.css">
+    <meta name="author" content="Wuli布雷克">
+    <meta name="copyright" content="Copyright 2025 Wuli布雷克">
+    <title>Wuli布雷克 - 物理模拟实验室</title>
+    <style>        :root {
+    --primary-warm: #ff9800;
+    --accent-warm: #f57c00;
+    --text-main: #3e2723;
+        }
+/* Header */
+        header {
+            width: 100%;
+            padding: 40px 0 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+.brand-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+.logo-main {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent-warm), var(--primary-warm));
+            padding: 10px 25px;
+            border-radius: 15px 15px 15px 0;
+            box-shadow: 5px 5px 20px rgba(245, 124, 0, 0.2);
+        }
+.logo-sub {
+            font-size: 0.9rem;
+            letter-spacing: 4px;
+            color: var(--accent-warm);
+            margin-top: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+.intro {
+            text-align: center;
+            max-width: 600px;
+            padding: 0 20px;
+            color: #795548;
+            line-height: 1.6;
+        }
+/* Category Grid */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            width: 90%;
+            max-width: 1100px;
+            padding: 20px 0 50px;
+        }
+.cat-card {
+            text-decoration: none;
+            color: #3e2723;
+            border-radius: 24px;
+            padding: 40px 30px 35px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+            position: relative;
+            overflow: hidden;
+        }
+.cat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+.cat-icon {
+            font-size: 3.5rem;
+            margin-bottom: 16px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+        }
+.cat-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+            letter-spacing: 2px;
+        }
+.cat-subtitle {
+            font-size: 0.95rem;
+            opacity: 0.85;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+.cat-count {
+            background: rgba(0, 0, 0, 0.08);
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+/* Category backgrounds — RGB top (lighter) / RGB bottom (deeper) */
+        .cat-mechanics {
+            background: #f0b8b0;  /* R light — warm coral */
+        }
+.cat-thermal {
+            background: #b0d0b8;  /* G light — warm sage */
+        }
+.cat-electricity {
+            background: #b0b8e0;  /* B light — warm cornflower */
+        }
+.cat-waves {
+            background: #e89088;  /* R deep — warm red */
+        }
+.cat-modern {
+            background: #88b898;  /* G deep — warm green */
+        }
+.cat-astronomy {
+            background: #7888b8;  /* B deep — warm blue */
+        }
+.visitor-counter {
+            position: fixed;
+            bottom: 20px;
+            left: 24px;
+            z-index: 999;
+            background: rgba(255,255,255,0.85);
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #a1887f;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+.visitor-counter span {
+            color: var(--accent-warm);
+            font-weight: 700;
+        }
+footer {
+            margin-top: auto;
+            padding: 40px;
+            font-size: 0.85rem;
+            color: #a1887f;
+        }
+@media (max-width: 800px) {
+            .category-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+            .cat-card {
+                padding: 28px 18px 24px;
+            }
+            .cat-title {
+                font-size: 1.4rem;
+            }
+            .cat-icon {
+                font-size: 2.5rem;
+            }
+        }
+@media (max-width: 480px) {
+            .category-grid {
+                grid-template-columns: 1fr;
+            }
+        }</style>
+</head>
+
+<body>
+
+    <header>
+        <div class="brand-logo">
+            <div class="logo-main">Wuli布雷克</div>
+            <div class="logo-sub">Physics Simulation Lab</div>
+        </div>
+        <div class="intro">
+            <div style="font-size: 1.6rem; font-weight: 700; color: var(--accent-warm); margin-bottom: 12px; letter-spacing: 1px;">
+                欢迎来到Wuli布雷克的物理模拟实验室<br>
+                <span style="font-size: 1.1rem; font-weight: 400; opacity: 0.8; font-style: italic;">Welcome to Wuli
+                    Blake's Physics Simulation Lab</span>
+            </div>
+            <div style="padding-top: 10px; border-top: 2px solid rgba(245, 124, 0, 0.1); display: inline-block;">
+                选择一个分类，探索对应的物理模拟。<br>
+                <span style="font-size: 0.9rem; opacity: 0.7;">Select a category to explore interactive physics simulations.</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="category-grid">
+
+        <!-- 力学 -->
+        <a href="mechanics.html" class="cat-card cat-mechanics" aria-label="查看力学分类（mechanics）">
+            <div class="cat-icon" aria-hidden="true">⚙️</div>
+            <div class="cat-title">力学</div>
+            <div class="cat-subtitle">Mechanics</div>
+            <div class="cat-count">23 个模拟</div>
+        </a>
+
+        <!-- 热学 -->
+        <a href="thermal.html" class="cat-card cat-thermal" aria-label="查看热学分类（thermal）">
+            <div class="cat-icon" aria-hidden="true">🔥</div>
+            <div class="cat-title">热学</div>
+            <div class="cat-subtitle">Thermal Physics</div>
+            <div class="cat-count">5 个模拟</div>
+        </a>
+
+        <!-- 电磁学 -->
+        <a href="electricity.html" class="cat-card cat-electricity" aria-label="查看电磁学分类（electricity）">
+            <div class="cat-icon" aria-hidden="true">⚡</div>
+            <div class="cat-title">电磁学</div>
+            <div class="cat-subtitle">Electromagnetism</div>
+            <div class="cat-count">11 个模拟</div>
+        </a>
+
+        <!-- 波 -->
+        <a href="waves.html" class="cat-card cat-waves" aria-label="查看波分类（waves）">
+            <div class="cat-icon" aria-hidden="true">🌊</div>
+            <div class="cat-title">波</div>
+            <div class="cat-subtitle">Waves</div>
+            <div class="cat-count">11 个模拟</div>
+        </a>
+
+        <!-- 近代物理 -->
+        <a href="modern-physics.html" class="cat-card cat-modern">
+            <div class="cat-icon">⚛️</div>
+            <div class="cat-title">近代物理</div>
+            <div class="cat-subtitle">Modern Physics</div>
+            <div class="cat-count">4 个模拟</div>
+        </a>
+
+        <!-- 天文 -->
+        <a href="astronomy.html" class="cat-card cat-astronomy" aria-label="查看天文分类（astronomy）">
+            <div class="cat-icon" aria-hidden="true">🌌</div>
+            <div class="cat-title">天文</div>
+            <div class="cat-subtitle">Astronomy</div>
+            <div class="cat-count">5 个模拟</div>
+        </a>
+
+    </main>
+
+    <div class="visitor-counter">
+        👁 总访问 <span id="busuanzi_value_site_pv">—</span> 次 &nbsp;|&nbsp;
+        👤 访客 <span id="busuanzi_value_site_uv">—</span> 人
+    </div>
+
+    <footer>
+        © 2025 Wuli布雷克 | MIT License 
+    </footer>
+
+    <!-- 不蒜子 访问统计 -->
+    <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <!-- 百度统计 -->
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?f52f9e1cdcfe1d568f3da94ae405198f";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+</body>
+
+</html>

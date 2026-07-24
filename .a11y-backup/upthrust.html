@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wuli布雷克物理模拟实验室 - 阿基米德原理 / Archimedes' Principle。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:title" content="阿基米德原理 / Archimedes' Principle - Wuli布雷克">
+    <meta property="og:description" content="Wuli布雷克物理模拟实验室 - 阿基米德原理 / Archimedes' Principle。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wuliblake.com/upthrust.html">
+    <meta property="og:site_name" content="Wuli布雷克物理模拟实验室">
+    <link rel="stylesheet" href="common.css">
+    <meta name="author" content="Wuli布雷克">
+    <meta name="copyright" content="Copyright 2025 Wuli布雷克">
+    <title>阿基米德原理 / Archimedes' Principle - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>        :root {
+    --fluid-color: rgba(33, 150, 243, 0.45);
+        }
+#cvs { width: 100%; flex: 1; display: block; }
+select { font-family: inherit; font-size: 0.9rem; padding: 6px 10px; border-radius: 8px; border: 2px solid #f0f0f0; background: #fff; color: var(--text-dark); cursor: pointer; }
+#sld-rhol::-webkit-slider-thumb { background: #1976d2; }
+#sld-rhoo::-webkit-slider-thumb { background: var(--accent); }
+#sld-vo::-webkit-slider-thumb { background: #d84315; }
+.button-row { display: grid; grid-template-columns: 1.8fr 1fr; gap: 10px; margin-top: 5px; }
+.btn { padding: 12px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 1rem; color: white; font-family: inherit; transition: all 0.2s; }
+.btn-check { background-color: #4caf50; box-shadow: 0 4px #2e7d32; }
+.btn-check:hover { background-color: #43a047; }
+.btn-check:active { transform: translateY(3px); box-shadow: 0 1px #2e7d32; }
+.btn-reset { background-color: #e91e63; box-shadow: 0 4px #c2185b; }
+.btn-reset:hover { background-color: #d81b60; }
+.btn-reset:active { transform: translateY(3px); box-shadow: 0 1px #c2185b; }
+.material-tag { display: inline-block; background: rgba(255,140,66,0.1); color: var(--primary); padding: 4px 14px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; }
+.sym { display: inline-block; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.active-res { color: var(--accent) !important; }
+.active-v { color: #1976d2 !important; }</style>
+</head>
+
+<body>
+    <div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
+<a href="mechanics.html" class="back-link" aria-label="返回力学分类页">← 返回力学</a>
+    <div class="container" id="main">
+        <header><h1>阿基米德原理 / Archimedes' Principle</h1></header>
+
+        <section class="formula-display" aria-label="公式与实时数值">
+            <div class="formula-container">
+                <span id="f-fb" class="sym" style="color:var(--accent);font-size:2.5rem;font-weight:700;line-height:1;">F<sub>up</sub></span>
+                <span style="font-size:26px;color:#ccc;">=</span>
+                <span id="f-rho" class="sym" style="color:#1976d2;font-size:2rem;font-weight:700;line-height:1;">ρ<sub>l</sub></span>
+                <span style="font-size:20px;color:#999;">•</span>
+                <span class="sym" style="color:#388e3c;font-size:2rem;font-weight:700;line-height:1;">g</span>
+                <span style="font-size:20px;color:#999;">•</span>
+                <span id="f-v" class="sym" style="color:#d84315;font-size:2rem;font-weight:700;line-height:1;">V<sub>disp</sub></span>
+            </div>
+            <div class="result-row">
+                <span>浮力 F<sub>up</sub> = <strong id="res-fb" style="color:#bdbdbd">-- N</strong></span>
+                <span id="res-vdisp" style="color:#bdbdbd;font-weight:bold;">V<sub>disp</sub>: -- m³</span>
+                <span id="status" class="material-tag">等待验证 / Waiting</span>
+            </div>
+            <div class="legend" aria-label="图例说明">
+                <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> F<sub>up</sub>: 浮力 / Upthrust (N)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#1976d2"></span> ρ<sub>l</sub>: 液体密度 / Liquid Density (kg/m³)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#388e3c"></span> g: 重力场强度 / Gravitational field (9.81 m/s²)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#d84315"></span> V<sub>disp</sub>: 排开体积 / Displaced Volume (m³)</div>
+            </div>
+        </section>
+
+        <section class="diagram-section" aria-label="模拟动画区"><canvas id="cvs" role="img" aria-label="阿基米德原理模拟动画 — 交互式物理仿真画面"></canvas></section>
+
+        <section class="controls-section" aria-label="参数控制区">
+            <div class="control-panel">
+                <div class="control-group">
+                    <label class="label-row"><span>物体形状 / Object Shape</span></label>
+                    <select id="shape">
+                        <option value="cube">立方体 / Cube</option>
+                        <option value="sphere">球体 / Sphere</option>
+                        <option value="irregular">不规则 / Irregular</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <div class="label-row"><span style="color:#1976d2">液体密度 / ρ<sub>l</sub></span><span id="txt-rhol" class="val-badge" aria-live="polite">1000 kg/m³</span></div>
+                    <input type="range" id="sld-rhol" min="500" max="2000" step="50" value="1000" aria-valuemin="500" aria-valuemax="2000" aria-valuenow="1000" aria-valuetext="1000匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+                </div>
+
+                <div class="control-group">
+                    <div class="label-row"><span style="color:var(--accent)">物体密度 / ρ<sub>o</sub></span><span id="txt-rhoo" class="val-badge" aria-live="polite">600 kg/m³</span></div>
+                    <input type="range" id="sld-rhoo" min="100" max="2500" step="50" value="600" aria-valuemin="100" aria-valuemax="2500" aria-valuenow="600" aria-valuetext="600匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+                </div>
+
+                <div class="control-group">
+                    <div class="label-row"><span style="color:#d84315">物体体积 / V<sub>o</sub></span><span id="txt-vo" class="val-badge" aria-live="polite">1.0 m³</span></div>
+                    <input type="range" id="sld-vo" min="0.1" max="2.0" step="0.1" value="1.0" aria-valuemin="0.1" aria-valuemax="2.0" aria-valuenow="1.0" aria-valuetext="1.0匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+                </div>
+
+                <div class="button-row">
+                    <button id="btn-check" class="btn btn-check">检查 / CHECK</button>
+                    <button id="btn-reset" class="btn btn-reset" aria-label="重置参数" aria-label="重置参数">重置 / RESET</button>
+                </div>
+            </div>
+            <div class="info-card">
+                <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem">演示要点 / Key Points</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700">F</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">F<sub>up</sub> = ρ<sub>l</sub> · g · V<sub>disp</sub></div><div style="font-size:0.78rem;color:#6B6B6B">浮力等于排开液体的重量，这是阿基米德原理的核心。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(76,175,80,0.1);color:#4caf50;font-weight:700">↑</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">沉浮条件</div><div style="font-size:0.78rem;color:#6B6B6B">ρ<sub>o</sub> &lt; ρ<sub>l</sub> 漂浮；ρ<sub>o</sub> = ρ<sub>l</sub> 悬浮；ρ<sub>o</sub> &gt; ρ<sub>l</sub> 下沉。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(33,150,243,0.1);color:#1976d2;font-weight:700">V</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">排开体积</div><div style="font-size:0.78rem;color:#6B6B6B">漂浮时 V<sub>disp</sub> &lt; V<sub>o</sub>；完全浸没时 V<sub>disp</sub> = V<sub>o</sub>。</div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('cvs');
+        const ctx = canvas.getContext('2d');
+        const G_FIELD = 9.81;
+
+        const sldRhoL = document.getElementById('sld-rhol');
+        const sldRhoO = document.getElementById('sld-rhoo');
+        const sldVO = document.getElementById('sld-vo');
+        const selShape = document.getElementById('shape');
+        const btnCheck = document.getElementById('btn-check');
+        const btnReset = document.getElementById('btn-reset');
+
+        let currentSubRatio = -0.3;
+        let targetSubRatio = -0.3;
+        let currentVO = 1.0;
+        let isSinking = false;
+
+        function onSliderChange() {
+            document.getElementById('txt-rhol').innerText = sldRhoL.value + " kg/m³";
+            document.getElementById('txt-rhoo').innerText = sldRhoO.value + " kg/m³";
+            document.getElementById('txt-vo').innerText = parseFloat(sldVO.value).toFixed(1) + " m³";
+        }
+
+        function calculate() {
+            const rhoL = parseFloat(sldRhoL.value);
+            const rhoO = parseFloat(sldRhoO.value);
+            const VO = parseFloat(sldVO.value);
+            currentVO = VO;
+
+            let fb, vDisp, statusCN, statusEN, subRatio;
+
+            if (rhoO > rhoL) {
+                vDisp = VO;
+                fb = rhoL * vDisp * G_FIELD;
+                statusCN = "下沉至底"; statusEN = "Sinking to Bottom";
+                subRatio = 1.0;
+                isSinking = true;
+            } else {
+                fb = rhoO * VO * G_FIELD;
+                vDisp = fb / (rhoL * G_FIELD);
+                statusCN = (rhoO === rhoL) ? "悬浮" : "漂浮";
+                statusEN = (rhoO === rhoL) ? "Neutral Buoyancy" : "Floating";
+                subRatio = vDisp / VO;
+                isSinking = false;
+            }
+
+            const resFb = document.getElementById('res-fb');
+            const resV = document.getElementById('res-vdisp');
+            resFb.innerText = fb.toFixed(1) + " N";
+            resV.innerHTML = `V<sub>disp</sub>: ${vDisp.toFixed(3)} m³`;
+            resFb.classList.add('active-res');
+            resV.classList.add('active-v');
+
+            document.getElementById('status').innerText = `${statusCN} / ${statusEN}`;
+
+            // 公式缩放动画
+            document.getElementById('f-fb').style.transform = `scale(${0.85 + (fb / 40000) * 0.6})`;
+            document.getElementById('f-rho').style.transform = `scale(${0.85 + (rhoL / 2000) * 0.4})`;
+            document.getElementById('f-v').style.transform = `scale(${0.85 + (vDisp / 2.0) * 0.6})`;
+
+            targetSubRatio = subRatio;
+            drawLoop();
+        }
+
+        function resetAll() {
+            sldRhoL.value = 1000;
+            sldRhoO.value = 600;
+            sldVO.value = 1.0;
+            selShape.selectedIndex = 0;
+            onSliderChange();
+
+            const resFb = document.getElementById('res-fb');
+            const resV = document.getElementById('res-vdisp');
+            resFb.innerText = "-- N";
+            resV.innerText = "Vdisp: -- m³";
+            resFb.classList.remove('active-res');
+            resV.classList.remove('active-v');
+            document.getElementById('status').innerText = "等待验证 / Waiting";
+
+            document.querySelectorAll('.sym').forEach(s => s.style.transform = 'scale(1)');
+
+            targetSubRatio = -0.3;
+            currentSubRatio = -0.3;
+            isSinking = false;
+            drawLoop();
+        }
+
+        function drawLoop() {
+            if (Math.abs(currentSubRatio - targetSubRatio) > 0.005) {
+                currentSubRatio += (targetSubRatio - currentSubRatio) * 0.08;
+                requestAnimationFrame(drawLoop);
+            }
+
+            const w = canvas.width = canvas.offsetWidth;
+            const h = canvas.height = canvas.offsetHeight;
+            const waterY = h * 0.55;
+
+            ctx.clearRect(0, 0, w, h);
+            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--fluid-color');
+            ctx.fillRect(0, waterY, w, h - waterY);
+
+            const size = (Math.min(w, h) * 0.22) * Math.pow(currentVO, 1 / 3);
+            const cx = w / 2;
+
+            let cy;
+            // 沉底判定逻辑
+            if (isSinking && currentSubRatio > 0.98) {
+                cy = h - size / 2 - 5;
+            } else {
+                cy = waterY - (0.5 - currentSubRatio) * size;
+            }
+
+            ctx.fillStyle = '#a1887f';
+            ctx.strokeStyle = '#5d4037';
+            ctx.lineWidth = 2;
+
+            ctx.beginPath();
+            const shape = selShape.value;
+            if (shape === 'cube') {
+                ctx.rect(cx - size / 2, cy - size / 2, size, size);
+            } else if (shape === 'sphere') {
+                ctx.arc(cx, cy, size / 2, 0, Math.PI * 2);
+            } else {
+                ctx.moveTo(cx - size * 0.4, cy - size * 0.3);
+                ctx.bezierCurveTo(cx - size * 0.7, cy + size * 0.5, cx + size * 0.7, cy + size * 0.5, cx + size * 0.4, cy - size * 0.3);
+                ctx.closePath();
+            }
+            ctx.fill(); ctx.stroke();
+
+            ctx.save();
+            ctx.clip();
+            ctx.fillStyle = "rgba(33, 150, 243, 0.2)";
+            ctx.fillRect(0, waterY, w, h - waterY);
+            ctx.restore();
+        }
+
+        [sldRhoL, sldRhoO, sldVO].forEach(el => el.oninput = onSliderChange);
+        btnCheck.onclick = calculate;
+        btnReset.onclick = resetAll;
+
+        window.addEventListener('load', () => setTimeout(resetAll, 100));
+        window.onresize = drawLoop;
+    
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+</script>
+<div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
+</body>
+
+</html>

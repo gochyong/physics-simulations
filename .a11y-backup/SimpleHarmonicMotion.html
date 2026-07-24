@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wuli布雷克物理模拟实验室 - 简谐运动 / Simple Harmonic Motion。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:title" content="简谐运动 / Simple Harmonic Motion - Wuli布雷克">
+    <meta property="og:description" content="Wuli布雷克物理模拟实验室 - 简谐运动 / Simple Harmonic Motion。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wuliblake.com/SimpleHarmonicMotion.html">
+    <meta property="og:site_name" content="Wuli布雷克物理模拟实验室">
+    <link rel="stylesheet" href="common.css">
+    <meta name="author" content="Wuli布雷克">
+    <meta name="copyright" content="Copyright 2025 Wuli布雷克">
+    <title>简谐运动 / Simple Harmonic Motion - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>        :root {
+    --disp-color: #3498db;
+    --vel-color: #e74c3c;
+    --ke-color: #2ecc71;
+    --pe-color: #3498db;
+    --spring-color: #FF8c42;
+        }
+.formula-item .val { color: var(--primary); }
+canvas { width: 100%; flex: 1; display: block; }
+#k-slider::-webkit-slider-thumb { background: var(--spring-color); }
+#m-slider::-webkit-slider-thumb { background: var(--accent); }
+#a-slider::-webkit-slider-thumb { background: var(--disp-color); }</style>
+</head>
+
+<body>
+    <div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
+<a href="mechanics.html" class="back-link" aria-label="返回力学分类页">← 返回力学</a>
+
+    <div class="container" id="main">
+        <header>
+            <h1>简谐运动 / Simple Harmonic Motion</h1>
+        </header>
+
+        <section class="formula-display" aria-label="公式与实时数值">
+            <div class="formula-container" id="formula-root">
+                <div class="formula-item">a = −ω²x &nbsp;（定义式）</div>
+                <div class="formula-item">ω = √(k/m) = <span class="val" id="f-omega">6.32</span> rad/s</div>
+                <div class="formula-item">T = 2π√(m/k) = <span class="val" id="f-T">0.99</span> s</div>
+            </div>
+            <div class="legend" aria-label="图例说明">
+                <div class="legend-item"><span class="legend-dot" style="background:var(--disp-color)"></span> 位移 x</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--vel-color)"></span> 速度 v</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#9b59b6"></span> 加速度 a</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--spring-color)"></span> a = −ω²x</div>
+            </div>
+        </section>
+
+        <section class="diagram-section" aria-label="模拟动画区">
+            <canvas id="simCanvas" role="img" aria-label="简谐运动模拟动画 — 交互式物理仿真画面"></canvas>
+        </section>
+
+        <section class="controls-section" aria-label="参数控制区">
+            <div class="control-panel">
+                <div class="param-section" style="border-left: 5px solid var(--spring-color);">
+                    <div class="param-section-header">
+                        <span style="color:var(--spring-color);font-size:1.2rem;">&#9702;</span> 弹簧参数 / Spring
+                    </div>
+                    <div class="control-group">
+                        <label for="k-slider" class="label-row"><span>劲度系数 k (N/m)</span><span id="k-badge" class="val-badge" aria-live="polite">40</span></label>
+                        <input type="range" id="k-slider" min="10" max="100" step="1" value="40" aria-valuemin="10" aria-valuemax="100" aria-valuenow="40" aria-valuetext="40匝">>
+                    </div>
+                    <div class="control-group">
+                        <label for="m-slider" class="label-row"><span>质量 m (kg)</span><span id="m-badge" class="val-badge" aria-live="polite">1.0</span></label>
+                        <input type="range" id="m-slider" min="0.2" max="2.0" step="0.1" value="1.0" aria-valuemin="0.2" aria-valuemax="2.0" aria-valuenow="1.0" aria-valuetext="1.0匝">>
+                    </div>
+                </div>
+
+                <div class="param-section" style="border-left: 5px solid var(--disp-color);">
+                    <div class="param-section-header">
+                        <span style="color:var(--disp-color);font-size:1.2rem;">&#9702;</span> 运动参数 / Motion
+                    </div>
+                    <div class="control-group">
+                        <label for="a-slider" class="label-row"><span>振幅 A (cm)</span><span id="a-badge" class="val-badge" aria-live="polite">5.0</span></label>
+                        <input type="range" id="a-slider" min="2" max="10" step="0.1" value="5.0" aria-valuemin="2" aria-valuemax="10" aria-valuenow="5.0" aria-valuetext="5.0匝">>
+                    </div>
+                </div>
+
+                <div class="btn-row">
+                    <button id="btn-start" class="ctrl-btn start" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false">开始 Start</button>
+                    <button id="btn-reset" class="ctrl-btn reset" aria-label="重置参数" aria-label="重置参数">重置 Reset</button>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div style="font-weight: 700; color: var(--primary); margin-bottom: 8px; font-size: 1.1rem;">
+                    演示要点 / Key points
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;background:rgba(52,152,219,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--disp-color);font-weight:700;font-size:1rem;">x</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">位移是余弦函数</div><div style="font-size:0.78rem;color:#6B6B6B;">x(t) = A&middot;cos(&omega;t), starting from max displacement</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;background:rgba(231,76,60,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--vel-color);font-weight:700;font-size:1rem;">v</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">速度领先位移90&deg;</div><div style="font-size:0.78rem;color:#6B6B6B;">v(t) = -A&omega;&middot;sin(&omega;t), velocity leads displacement by &pi;/2</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;background:rgba(46,204,113,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--ke-color);font-weight:700;font-size:1rem;">E</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">机械能守恒</div><div style="font-size:0.78rem;color:#6B6B6B;">KE + PE = &frac12;kA&sup2; = constant, energy converts back and forth</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;align-items:center;">
+                        <div style="width:32px;height:32px;background:rgba(255,140,66,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--primary);font-weight:700;font-size:1rem;">T</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">等时性 / Isochronism</div><div style="font-size:0.78rem;color:#6B6B6B;">Period T is independent of amplitude A (for ideal spring)</div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas'), ctx = canvas.getContext('2d');
+
+        // DOM refs
+        const sK = document.getElementById('k-slider'), sM = document.getElementById('m-slider'), sA = document.getElementById('a-slider');
+        const bK = document.getElementById('k-badge'), bM = document.getElementById('m-badge'), bA = document.getElementById('a-badge');
+        const fOmega = document.getElementById('f-omega'), fT = document.getElementById('f-T');
+        const bStart = document.getElementById('btn-start'), bReset = document.getElementById('btn-reset');
+
+        const state = {
+            k: 40,
+            m: 1.0,
+            A: 5.0,
+            phase: 0,
+            graphTime: 0,
+            isPlaying: false,
+            history: []
+        };
+
+        const HISTORY_WINDOW = 4.0; // seconds of graph visible
+        let lastTimestamp = null;
+
+        function omega() { return Math.sqrt(state.k / state.m); }
+        function period() { return 2 * Math.PI / omega(); }
+        function freq() { return 1 / period(); }
+        function displacement() { return state.A * Math.cos(state.phase); }
+        function velocity() { return -state.A * omega() * Math.sin(state.phase); }
+
+        function resize() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+        }
+        window.addEventListener('resize', resize);
+
+        function update(timestamp) {
+            if (lastTimestamp === null) lastTimestamp = timestamp;
+            let dt = (timestamp - lastTimestamp) / 1000;
+            lastTimestamp = timestamp;
+            dt = Math.min(dt, 0.05);
+
+            // Read sliders
+            state.k = parseFloat(sK.value);
+            state.m = parseFloat(sM.value);
+            state.A = parseFloat(sA.value);
+
+            // Update badges
+            bK.textContent = state.k;
+            bM.textContent = state.m.toFixed(1);
+            bA.textContent = state.A.toFixed(1);
+
+            if (state.isPlaying) {
+                state.phase += omega() * dt;
+                state.phase = state.phase % (2 * Math.PI);
+                state.graphTime += dt;
+
+                const x = displacement();
+                const v = velocity();
+                const acc = -omega() * omega() * x;  // a = -ω²x
+                state.history.push({ t: state.graphTime, x: x, v: v, a: acc });
+
+                // Trim old entries
+                while (state.history.length > 0 && state.graphTime - state.history[0].t > HISTORY_WINDOW) {
+                    state.history.shift();
+                }
+            }
+
+            updateUI();
+            draw();
+            requestAnimationFrame(update);
+        }
+
+        function updateUI() {
+            const w = omega(), T = period();
+            fOmega.textContent = w.toFixed(2);
+            fT.textContent = T.toFixed(3);
+        }
+
+        function roundRect(ctx, x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+        }
+
+        function draw() {
+            const W = canvas.width, H = canvas.height;
+            ctx.clearRect(0, 0, W, H);
+
+            const topH = H * 0.52;  // spring scene + v-x graph
+            const springW = W * 0.60;  // left 60%: spring
+            const vxW = W - springW;   // right 40%: v-x phase
+
+            drawSpringScene(springW, topH);
+            drawVXGraph(springW, 0, vxW, topH);  // v-x on the right
+            drawGraphs(W, H, topH);  // x-t, v-t, a-t below
+        }
+
+        function drawSpringScene(W, areaH) {
+            const padTop = areaH * 0.08;
+            const padBot = areaH * 0.08;
+            const centerY = padTop + (areaH - padTop - padBot) / 2;
+
+            const anchorX = W * 0.08;
+            const eqX = W * 0.40;
+            const pxPerCm = Math.min((eqX - anchorX) / 8, 18);
+            const minSpringLen = 16;
+
+            const disp = displacement();
+            let massX = eqX + disp * pxPerCm;
+            massX = Math.max(anchorX + minSpringLen, Math.min(massX, W - 30));
+
+            // Background grid (subtle)
+            ctx.strokeStyle = '#fef5eb';
+            ctx.lineWidth = 1;
+            for (let gx = 0; gx < W; gx += 40) {
+                ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, areaH); ctx.stroke();
+            }
+            for (let gy = 0; gy < areaH; gy += 40) {
+                ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(W, gy); ctx.stroke();
+            }
+
+            // Wall
+            const wallW = 14, wallH = 110;
+            const wallX = anchorX - wallW / 2;
+            const wallY = centerY - wallH / 2;
+            ctx.fillStyle = '#7f8c8d';
+            ctx.fillRect(wallX, wallY, wallW, wallH);
+            // Wall hatching
+            ctx.strokeStyle = '#95a5a6';
+            ctx.lineWidth = 1.5;
+            for (let i = 0; i < 7; i++) {
+                const hy = wallY + 10 + i * 15;
+                ctx.beginPath();
+                ctx.moveTo(wallX - 2, hy);
+                ctx.lineTo(wallX + wallW + 2, hy - 8);
+                ctx.stroke();
+            }
+            // Wall border
+            ctx.strokeStyle = '#5d6d7e';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(wallX, wallY, wallW, wallH);
+
+            // Equilibrium dashed line
+            ctx.setLineDash([8, 6]);
+            ctx.strokeStyle = '#bdc3c7';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(eqX, centerY - 52);
+            ctx.lineTo(eqX, centerY + 52);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Equilibrium label
+            ctx.fillStyle = '#95a5a6';
+            ctx.font = '500 11px Fredoka, Noto Sans SC';
+            ctx.textAlign = 'center';
+            ctx.fillText('平衡位置', eqX, centerY - 58);
+
+            // Spring
+            const numCoils = 12;
+            const coilAmp = 15;
+            const springWidth = massX - anchorX;
+            ctx.strokeStyle = '#FF8c42';
+            ctx.lineWidth = 3.5;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+            ctx.moveTo(anchorX, centerY);
+            // Draw zigzag spring
+            const segments = numCoils * 2;
+            for (let i = 0; i < segments; i++) {
+                const sx = anchorX + ((i + 1) / segments) * springWidth;
+                const sy = centerY + ((i % 2 === 0) ? -coilAmp : coilAmp);
+                ctx.lineTo(sx, sy);
+            }
+            ctx.lineTo(massX, centerY);
+            ctx.stroke();
+
+            // Mass block
+            const blockW = 44, blockH = 70;
+            const bx = massX - blockW / 2, by = centerY - blockH / 2;
+            // Shadow
+            ctx.fillStyle = 'rgba(0,0,0,0.12)';
+            roundRect(ctx, bx + 3, by + 3, blockW, blockH, 9);
+            ctx.fill();
+            // Block
+            const blockGrad = ctx.createLinearGradient(bx, by, bx + blockW, by + blockH);
+            blockGrad.addColorStop(0, '#FF6B6B');
+            blockGrad.addColorStop(1, '#c0392b');
+            ctx.fillStyle = blockGrad;
+            roundRect(ctx, bx, by, blockW, blockH, 9);
+            ctx.fill();
+            ctx.strokeStyle = '#a93226';
+            ctx.lineWidth = 2;
+            roundRect(ctx, bx, by, blockW, blockH, 9);
+            ctx.stroke();
+            // Mass label
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 15px Fredoka';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('m', massX, centerY);
+
+            // Displacement arrow (from equilibrium to current position)
+            if (Math.abs(disp) > 0.05) {
+                const arrowY = centerY + 40;
+                ctx.strokeStyle = '#3498db';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([4, 3]);
+                ctx.beginPath();
+                ctx.moveTo(eqX, arrowY);
+                ctx.lineTo(massX, arrowY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Arrow heads
+                const arrowDir = disp > 0 ? 1 : -1;
+                const arrowTip = massX;
+                const arrowBase = arrowTip - arrowDir * 10;
+                ctx.fillStyle = '#3498db';
+                ctx.beginPath();
+                ctx.moveTo(arrowTip, arrowY);
+                ctx.lineTo(arrowBase, arrowY - 5);
+                ctx.lineTo(arrowBase, arrowY + 5);
+                ctx.closePath();
+                ctx.fill();
+
+                // x label
+                ctx.fillStyle = '#3498db';
+                ctx.font = 'bold 12px Fredoka';
+                ctx.textAlign = 'center';
+                ctx.fillText('x = ' + disp.toFixed(2) + ' cm', (eqX + massX) / 2, arrowY - 10);
+            }
+
+            // Anchor label
+            ctx.fillStyle = '#7f8c8d';
+            ctx.font = '500 11px Fredoka, Noto Sans SC';
+            ctx.textAlign = 'center';
+            ctx.fillText('固定端', anchorX, wallY - 12);
+
+            // k label near spring
+            ctx.fillStyle = '#FF8c42';
+            ctx.font = 'italic 12px Fredoka';
+            ctx.textAlign = 'center';
+            ctx.fillText('k=' + state.k + ' N/m', (anchorX + eqX) / 2, centerY - 32);
+        }
+
+        function drawGraphs(W, H, graphTop) {
+            const graphH = H - graphTop;
+            if (graphH < 80) return;
+
+            ctx.strokeStyle = '#e8ddd0'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(30, graphTop); ctx.lineTo(W - 30, graphTop); ctx.stroke();
+
+            const ml = 55, mr = 20, mt = 20, mb = 18;
+            const uw = W - ml - mr, uh = graphH - mt - mb;
+            // 4 rows: x-t, v-t, a-t, energy
+            const eachH = uh * 0.26;  // x-t
+            const vth = uh * 0.26;    // v-t
+            const ath = uh * 0.26;    // a-t
+            const energyH = uh - eachH - vth - ath;
+            drawXTGraph(ml, graphTop + mt, uw, eachH);
+            drawVTGraph(ml, graphTop + mt + eachH, uw, vth);
+            drawATGraph(ml, graphTop + mt + eachH + vth, uw, ath);
+            drawEnergyBar(ml, graphTop + mt + eachH + vth + ath, uw, energyH);
+        }
+
+        function drawTimeSeriesGraph(left, top, w, h, title, getY, yLabel, color, yMin, yMax) {
+            // Background
+            ctx.fillStyle = '#fefdf9';
+            ctx.fillRect(left, top, w, h);
+            ctx.strokeStyle = '#e8ddd0';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(left, top, w, h);
+
+            // Title
+            ctx.fillStyle = color;
+            ctx.font = 'bold 12px Fredoka, Noto Sans SC';
+            ctx.textAlign = 'left';
+            ctx.fillText(title, left + 6, top + 14);
+
+            const plotLeft = left + 5;
+            const plotRight = left + w - 5;
+            const plotTop = top + 18;
+            const plotBottom = top + h - 5;
+            const plotW = plotRight - plotLeft;
+            const plotH = plotBottom - plotTop;
+            const midY = (plotTop + plotBottom) / 2;
+
+            if (plotW <= 0 || plotH <= 0) return;
+
+            // Clip
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(plotLeft, plotTop, plotW, plotH);
+            ctx.clip();
+
+            // Zero line
+            ctx.strokeStyle = '#e0d8cc';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([3, 4]);
+            ctx.beginPath();
+            ctx.moveTo(plotLeft, midY);
+            ctx.lineTo(plotRight, midY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Y-axis labels
+            ctx.fillStyle = '#aaa'; ctx.font = '9px Fredoka'; ctx.textAlign = 'right';
+            ctx.fillText(yMax.toFixed(1), plotLeft - 4, plotTop + 10);
+            ctx.fillText('0', plotLeft - 4, midY + 4);
+            ctx.fillText((-yMax).toFixed(1), plotLeft - 4, plotBottom - 2);
+
+            // X-axis T markers
+            const T = period();
+            const latestT = state.graphTime;
+            const oldestT = Math.max(0, latestT - HISTORY_WINDOW);
+            ctx.fillStyle = '#ccc'; ctx.font = '8px Fredoka'; ctx.textAlign = 'center';
+            for (let n = 0; n * T <= latestT; n++) {
+                const tN = n * T;
+                if (tN < oldestT) continue;
+                const tx = plotLeft + ((tN - oldestT) / HISTORY_WINDOW) * plotW;
+                ctx.beginPath(); ctx.moveTo(tx, plotBottom - 4); ctx.lineTo(tx, plotBottom + 2); ctx.strokeStyle = '#ddd';
+                ctx.stroke();
+                ctx.fillText((n === 0 ? '0' : n + 'T'), tx, plotBottom + 12);
+            }
+
+            // Data curve
+            const hist = state.history;
+            if (hist.length < 2) {
+                ctx.restore();
+                return;
+            }
+
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+            let firstPoint = true;
+            for (let i = 0; i < hist.length; i++) {
+                const pt = hist[i];
+                if (pt.t < oldestT) continue;
+                const sx = plotLeft + ((pt.t - oldestT) / HISTORY_WINDOW) * plotW;
+                const val = getY(pt);
+                const sy = midY - (val / yMax) * (plotH / 2);
+                if (firstPoint) { ctx.moveTo(sx, sy); firstPoint = false; }
+                else ctx.lineTo(sx, sy);
+            }
+            ctx.stroke();
+
+            // Current value dot
+            if (hist.length > 0) {
+                const last = hist[hist.length - 1];
+                const dotX = plotLeft + ((last.t - oldestT) / HISTORY_WINDOW) * plotW;
+                const dotVal = getY(last);
+                const dotY = midY - (dotVal / yMax) * (plotH / 2);
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(dotX, dotY, 4, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                // Value label
+                ctx.fillStyle = color;
+                ctx.font = 'bold 10px Fredoka';
+                ctx.textAlign = 'left';
+                const labelX = Math.min(dotX + 8, plotRight - 55);
+                ctx.fillText(yLabel + '=' + dotVal.toFixed(2), labelX, dotY - 6);
+            }
+
+            ctx.restore();
+        }
+
+        function drawXTGraph(left, top, w, h) {
+            const yMax = Math.max(state.A * 1.3, 3);
+            drawTimeSeriesGraph(left, top, w, h,
+                '位移 x(t) / Displacement',
+                function(pt) { return pt.x; },
+                'x', '#3498db', -yMax, yMax);
+        }
+
+        function drawVTGraph(left, top, w, h) {
+            const vMax = Math.max(state.A * omega() * 1.3, 10);
+            drawTimeSeriesGraph(left, top, w, h,
+                '速度 v(t) / Velocity',
+                function(pt) { return pt.v; },
+                'v', '#e74c3c', -vMax, vMax);
+        }
+
+        function drawEnergyBar(left, top, w, h) {
+            const barH = Math.min(h * 0.5, 28);
+            const barY = top + (h - barH) / 2;
+            const barW = w - 20;
+            const barX = left + 10;
+
+            // Background
+            ctx.fillStyle = '#fefdf9';
+            ctx.fillRect(left, top, w, h);
+            ctx.strokeStyle = '#e8ddd0';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(left, top, w, h);
+
+            // Title
+            ctx.fillStyle = '#4A403A';
+            ctx.font = 'bold 12px Fredoka, Noto Sans SC';
+            ctx.textAlign = 'left';
+            ctx.fillText('能量 / Energy', left + 6, top + 14);
+
+            if (barW <= 0) return;
+
+            const x_cm = displacement();
+            const v_cm_s = velocity();
+            const x_m = x_cm / 100;
+            const v_m_s = v_cm_s / 100;
+            const ke = 0.5 * state.m * v_m_s * v_m_s;
+            const pe = 0.5 * state.k * x_m * x_m;
+            const total = ke + pe;
+            const maxE = 0.5 * state.k * (state.A / 100) * (state.A / 100);
+
+            const keFrac = total > 0 ? ke / Math.max(total, maxE) : 0;
+            const peFrac = total > 0 ? pe / Math.max(total, maxE) : 0;
+
+            // Total energy reference outline
+            const totalW = (total / Math.max(maxE, 0.0001)) * barW;
+            ctx.strokeStyle = '#ccc';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([4, 4]);
+            ctx.strokeRect(barX, barY, Math.min(totalW, barW), barH);
+            ctx.setLineDash([]);
+
+            // KE bar
+            const keW = keFrac * barW;
+            if (keW > 0.5) {
+                const keGrad = ctx.createLinearGradient(barX, barY, barX, barY + barH);
+                keGrad.addColorStop(0, '#2ecc71');
+                keGrad.addColorStop(1, '#27ae60');
+                ctx.fillStyle = keGrad;
+                roundRect(ctx, barX, barY, keW, barH, 6);
+                ctx.fill();
+            }
+
+            // PE bar (stacked after KE)
+            const peW = peFrac * barW;
+            if (peW > 0.5) {
+                const peGrad = ctx.createLinearGradient(barX + keW, barY, barX + keW, barY + barH);
+                peGrad.addColorStop(0, '#3498db');
+                peGrad.addColorStop(1, '#2980b9');
+                ctx.fillStyle = peGrad;
+                roundRect(ctx, barX + keW, barY, peW, barH, 6);
+                ctx.fill();
+            }
+
+            // Bar border
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            roundRect(ctx, barX, barY, barW, barH, 6);
+            ctx.stroke();
+
+            // Labels inside/outside the bar
+            ctx.font = 'bold 10px Fredoka';
+            ctx.textBaseline = 'middle';
+            if (keFrac > 0.25) {
+                ctx.fillStyle = '#fff';
+                ctx.textAlign = 'center';
+                ctx.fillText('KE: ' + (ke * 1000).toFixed(2) + ' mJ', barX + keW / 2, barY + barH / 2);
+            }
+            if (peFrac > 0.2 && peW > 30) {
+                ctx.fillStyle = '#fff';
+                ctx.textAlign = 'center';
+                ctx.fillText('PE: ' + (pe * 1000).toFixed(2) + ' mJ', barX + keW + peW / 2, barY + barH / 2);
+            }
+
+            // Legend below bar
+            ctx.font = '10px Fredoka, Noto Sans SC';
+            ctx.fillStyle = '#2ecc71';
+            ctx.textAlign = 'left';
+            ctx.fillText('KE ' + (ke * 1000).toFixed(2) + ' mJ', barX, barY + barH + 14);
+            ctx.fillStyle = '#3498db';
+            ctx.fillText('PE ' + (pe * 1000).toFixed(2) + ' mJ', barX + 120, barY + barH + 14);
+            ctx.fillStyle = '#4A403A';
+            ctx.fillText('Total ' + (total * 1000).toFixed(2) + ' mJ', barX + 240, barY + barH + 14);
+        }
+
+        function drawVXGraph(left, top, w, h) {
+            // Background
+            ctx.fillStyle = '#fefdf9'; ctx.fillRect(left, top, w, h);
+            ctx.strokeStyle = '#e8ddd0'; ctx.lineWidth = 1; ctx.strokeRect(left, top, w, h);
+
+            const pad = 16, pl = left + pad, pr = left + w - pad, pw = pr - pl;
+            const pt = top + pad + 14, pb = top + h - pad, ph = pb - pt;
+            const midX = pl + pw / 2, midY = pt + ph / 2;
+            if (pw <= 0 || ph <= 0) return;
+
+            // Title
+            ctx.fillStyle = '#9b59b6'; ctx.font = 'bold 11px Fredoka'; ctx.textAlign = 'left';
+            ctx.fillText('v-x 相图 Phase', left + 6, top + 14);
+
+            // Axes
+            ctx.strokeStyle = '#e0d8cc'; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(pl, midY); ctx.lineTo(pr, midY); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(midX, pt); ctx.lineTo(midX, pb); ctx.stroke();
+
+            // Axis labels with max values
+            const wA = state.A * omega();
+            ctx.fillStyle = '#aaa'; ctx.font = '9px Fredoka'; ctx.textAlign = 'center';
+            ctx.fillText('x (cm)', pr, midY + 12); ctx.fillText('v (cm/s)', midX + 8, pt - 2);
+            // Y-axis max/min
+            ctx.fillStyle = '#999'; ctx.font = '8px Fredoka'; ctx.textAlign = 'right';
+            ctx.fillText('+ωA=' + wA.toFixed(0), midX - 6, pt + 10);
+            ctx.fillText('-ωA', midX - 6, pb - 2);
+            // X-axis max/min
+            ctx.textAlign = 'center';
+            ctx.fillText('+A', pr - 8, midY + 24);
+            ctx.fillText('-A', pl + 8, midY + 24);
+
+            // Plot history as v vs x (ellipse)
+            const hist = state.history;
+            if (hist.length < 2) return;
+            const xMax = state.A * 1.2;
+            const vMax = state.A * omega() * 1.2;
+
+            ctx.strokeStyle = '#9b59b6'; ctx.lineWidth = 2; ctx.lineJoin = 'round';
+            ctx.beginPath();
+            let first = true;
+            for (let i = Math.max(0, hist.length - 200); i < hist.length; i++) {
+                const pt2 = hist[i];
+                const sx = midX + (pt2.x / xMax) * (pw / 2);
+                const sy = midY - (pt2.v / vMax) * (ph / 2);
+                if (first) { ctx.moveTo(sx, sy); first = false; }
+                else ctx.lineTo(sx, sy);
+            }
+            ctx.stroke();
+
+            // Current point dot
+            if (hist.length > 0) {
+                const last = hist[hist.length - 1];
+                const dx = midX + (last.x / xMax) * (pw / 2);
+                const dy = midY - (last.v / vMax) * (ph / 2);
+                ctx.fillStyle = '#9b59b6'; ctx.beginPath(); ctx.arc(dx, dy, 4, 0, Math.PI * 2); ctx.fill();
+                ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+            }
+        }
+
+        function drawATGraph(left, top, w, h) {
+            const yMax = Math.max(state.A * omega() * omega() * 1.3, 15);
+            drawTimeSeriesGraph(left, top, w, h,
+                '加速度 a(t) / Acceleration (a = −ω²x)',
+                function(pt) { return pt.a; },
+                'a', '#9b59b6', -yMax, yMax);
+        }
+
+        // Button handlers
+        bStart.onclick = function() {
+            state.isPlaying = !state.isPlaying;
+            if (state.isPlaying) {
+                bStart.textContent = '暂停 Pause';
+                bStart.className = 'ctrl-btn pause';
+                lastTimestamp = null;
+            } else {
+                bStart.textContent = '开始 Start';
+                bStart.className = 'ctrl-btn start';
+            }
+        };
+
+        bReset.onclick = function() {
+            state.isPlaying = false;
+            state.phase = 0;
+            state.graphTime = 0;
+            state.history = [];
+            lastTimestamp = null;
+            bStart.textContent = '开始 Start';
+            bStart.className = 'ctrl-btn start';
+            // Add one data point at t=0
+            state.history.push({ t: 0, x: state.A, v: 0, a: -omega()*omega()*state.A });
+            updateUI();
+            draw();
+        };
+
+        // Initialize: add starting point
+        state.history.push({ t: 0, x: state.A, v: 0, a: -omega()*omega()*state.A });
+
+        resize();
+        updateUI();
+        draw();
+        requestAnimationFrame(update);
+    
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+</script>
+<div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
+</body>
+
+</html>

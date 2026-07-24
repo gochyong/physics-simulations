@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wuli布雷克物理模拟实验室 - 串并联电路 / Series & Parallel Circuits。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:title" content="串并联电路 / Series & Parallel Circuits - Wuli布雷克">
+    <meta property="og:description" content="Wuli布雷克物理模拟实验室 - 串并联电路 / Series & Parallel Circuits。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wuliblake.com/SeriesParallelCircuits.html">
+    <meta property="og:site_name" content="Wuli布雷克物理模拟实验室">
+    <link rel="stylesheet" href="common.css">
+    <meta name="author" content="Wuli布雷克">
+    <meta name="copyright" content="Copyright 2025 Wuli布雷克">
+    <title>串并联电路 / Series & Parallel Circuits - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>.back-link { position: fixed; top: 10px; right: 20px; z-index: 1000; text-decoration: none; color: var(--primary); font-weight: 700; font-size: 0.9rem; background: rgba(255,255,255,0.9); padding: 6px 14px; border-radius: 16px; box-shadow: 0 2px 10px rgba(255,140,66,0.15); }
+.mode-pills { display: flex; gap: 6px; }
+.mode-pill { flex: 1; padding: 8px 6px; border-radius: 12px; font-size: 0.82rem; font-weight: 700; border: 2px solid #e0e0e0; background: #fafafa; cursor: pointer; text-align: center; color: #666; transition: all 0.2s; }
+.mode-pill.active { background: var(--primary); color: #fff; border-color: var(--primary); }</style>
+</head>
+<body>
+<div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
+<a href="electricity.html" class="back-link" aria-label="返回电磁学分类页">← 返回电磁学</a>
+<div class="container" id="main">
+    <header><h1>串并联电路 / Series & Parallel Circuits</h1></header>
+    <section class="formula-display" aria-label="公式与实时数值">
+        <div class="formula-container" id="formula-root"></div>
+        <div class="result-row">
+            <span>R<sub>eq</sub> = <strong style="color:#e74c3c" id="res-req">—</strong> Ω</span>
+            <span>I = <strong style="color:#3498db" id="res-i">—</strong> A</span>
+            <span>V = <strong style="color:#2ecc71" id="res-vtotal">12</strong> V</span>
+        </div>
+        <div class="legend" aria-label="图例说明">
+            <div class="legend-item"><span class="legend-dot" style="background:#e74c3c"></span> 电阻</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#3498db"></span> 电流</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#2ecc71"></span> 电压</div>
+        </div>
+    </section>
+    <section class="diagram-section" aria-label="模拟动画区"><canvas id="simCanvas" role="img" aria-label="串并联电路模拟动画 — 交互式物理仿真画面"></canvas></section>
+    <section class="controls-section" aria-label="参数控制区">
+        <div class="control-panel">
+            <div class="control-group">
+                <div class="label-row"><span>电路模式</span></div>
+                <div class="mode-pills" id="mode-pills">
+                    <button class="mode-pill active" data-mode="series">串联 Series</button>
+                    <button class="mode-pill" data-mode="parallel">并联 Parallel</button>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="label-row"><span>R₁</span><span id="badge-r1" class="val-badge" aria-live="polite">100 Ω</span></div>
+                <input type="range" id="slider-r1" min="10" max="500" value="100" aria-valuemin="10" aria-valuemax="500" aria-valuenow="100" aria-valuetext="100匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+            </div>
+            <div class="control-group">
+                <div class="label-row"><span>R₂</span><span id="badge-r2" class="val-badge" aria-live="polite">200 Ω</span></div>
+                <input type="range" id="slider-r2" min="10" max="500" value="200" aria-valuemin="10" aria-valuemax="500" aria-valuenow="200" aria-valuetext="200匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+            </div>
+            <div class="control-group">
+                <div class="label-row"><span>电源电压 V</span><span id="badge-v" class="val-badge" aria-live="polite">12 V</span></div>
+                <input type="range" id="slider-v" min="3" max="24" value="12" aria-valuemin="3" aria-valuemax="24" aria-valuenow="12" aria-valuetext="12匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+            </div>
+            <div class="btn-row">
+                <button id="btn-reset" class="ctrl-btn reset" aria-label="重置参数" aria-label="重置参数">重置 Reset</button>
+            </div>
+        </div>
+        <div class="info-card">
+            <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem;">演示要点 / Key Points</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(231,76,60,0.1);color:#e74c3c;font-weight:700;">串</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">串联：R_eq = R₁+R₂</div><div style="font-size:0.78rem;color:#6B6B6B;">电流相同，电压按电阻分配（分压）。总电阻增大。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:#3498db;font-weight:700;">并</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">并联：1/R_eq = 1/R₁+1/R₂</div><div style="font-size:0.78rem;color:#6B6B6B;">电压相同，电流按电阻反比分配（分流）。总电阻减小。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:#2ecc71;font-weight:700;">V</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">串联分压、并联分流</div><div style="font-size:0.78rem;color:#6B6B6B;">串联各电阻电压之和=总电压；并联各支路电流之和=总电流。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;">I</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">欧姆定律 I=V/R</div><div style="font-size:0.78rem;color:#6B6B6B;">无论串并联，每个电阻都遵循欧姆定律 V=IR。</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<script>
+const canvas=document.getElementById('simCanvas'),ctx=canvas.getContext('2d');
+const sR1=document.getElementById('slider-r1'),sR2=document.getElementById('slider-r2'),sV=document.getElementById('slider-v');
+const bR1=document.getElementById('badge-r1'),bR2=document.getElementById('badge-r2'),bV=document.getElementById('badge-v');
+const resReq=document.getElementById('res-req'),resI=document.getElementById('res-i'),resVt=document.getElementById('res-vtotal');
+const fRoot=document.getElementById('formula-root'),modePills=document.getElementById('mode-pills');
+const S={mode:'series',r1:100,r2:200,voltage:12};
+function resize(){canvas.width=canvas.clientWidth;canvas.height=canvas.clientHeight;}
+window.addEventListener('resize',resize);
+modePills.onclick=e=>{const p=e.target.closest('.mode-pill');if(!p)return;modePills.querySelectorAll('.mode-pill').forEach(x=>x.classList.remove('active'));p.classList.add('active');S.mode=p.dataset.mode;};
+function update(){
+    S.r1=parseInt(sR1.value);S.r2=parseInt(sR2.value);S.voltage=parseInt(sV.value);
+    bR1.textContent=S.r1+' Ω';bR2.textContent=S.r2+' Ω';bV.textContent=S.voltage+' V';
+    let req,i1,i2,v1,v2;
+    if(S.mode==='series'){req=S.r1+S.r2;i1=i2=S.voltage/req;v1=i1*S.r1;v2=i2*S.r2;}
+    else{req=1/(1/S.r1+1/S.r2);v1=v2=S.voltage;i1=S.voltage/S.r1;i2=S.voltage/S.r2;}
+    resReq.textContent=req.toFixed(1);
+    resI.textContent=(S.voltage/req).toFixed(3);
+    resVt.textContent=S.voltage+' V';
+    fRoot.innerHTML=S.mode==='series'?
+        `<span style="font-size:22px;font-weight:700;color:#e74c3c;">R<sub>eq</sub>=R₁+R₂</span><span style="font-size:22px;">=${S.r1}+${S.r2}=<b>${req.toFixed(0)}Ω</b></span>`:
+        `<span style="font-size:22px;font-weight:700;color:#3498db;">1/R<sub>eq</sub>=1/R₁+1/R₂</span><span style="font-size:22px;">=1/${S.r1}+1/${S.r2}=<b>${req.toFixed(1)}Ω</b></span>`;
+    draw(S.mode,req,i1,i2,v1,v2);
+    requestAnimationFrame(update);
+}
+function drawBatteryAt(x,y){
+    ctx.strokeStyle='#333';ctx.lineWidth=2.5;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(x-10,y-10);ctx.lineTo(x+10,y-10);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x-6,y+10);ctx.lineTo(x+6,y+10);ctx.stroke();
+}
+function drawSwitchAt(x,y){
+    ctx.strokeStyle='#333';ctx.lineWidth=2.5;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(x-8,y);ctx.lineTo(x-8,y-16);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x+8,y);ctx.lineTo(x+8,y-16);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x-8,y-16);ctx.lineTo(x-5,y-10);ctx.stroke();
+}
+function drawRectR(x,y,rw,rh,label){
+    ctx.strokeStyle='#333';ctx.lineWidth=2.5;ctx.strokeRect(x-rw/2,y-rh/2,rw,rh);
+    ctx.fillStyle='#333';ctx.font='bold 14px Fredoka';ctx.textAlign='center';
+    ctx.fillText(label,x,y+rh/2+18);
+}
+
+function draw(mode,req,i1,i2,v1,v2){
+    const w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);ctx.fillStyle='#fafaf7';ctx.fillRect(0,0,w,h);
+
+    ctx.strokeStyle='#333';ctx.lineWidth=2.5;ctx.lineCap='round';ctx.lineJoin='round';
+    const LX=w*0.14,RX=w*0.62;
+
+    if(mode==='series'){
+        const TY=h*0.22, BY=h*0.68;
+        // === SERIES: battery top-center, resistors on bottom wire ===
+        // Battery: long vertical (+) and short vertical (-) side by side
+        const bCX=w*0.42, bCY=TY+15;
+        const longH=22, shortH=12, bGap=8;  // heights and gap between lines
+        // Long line (+) on left, short (-) on right
+        ctx.beginPath();ctx.moveTo(bCX-bGap,bCY-longH);ctx.lineTo(bCX-bGap,bCY);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(bCX+bGap,bCY-shortH);ctx.lineTo(bCX+bGap,bCY);ctx.stroke();
+        // + and - labels
+        ctx.fillStyle='#333';ctx.font='bold 11px Fredoka';ctx.textAlign='center';
+        ctx.fillStyle='#333';ctx.font='bold 13px Fredoka';ctx.textAlign='center';
+        ctx.fillText('+',bCX-bGap,bCY-longH-6);
+        ctx.fillText('−',bCX+bGap,bCY-shortH-6);
+        ctx.fillText(S.voltage+'V',bCX,bCY-longH-16);
+
+        // Horizontal wires from battery midpoint → left and right
+        const midY=bCY-longH/2;
+        ctx.beginPath();ctx.moveTo(bCX-bGap,midY);ctx.lineTo(LX,midY);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(bCX+bGap,midY);ctx.lineTo(RX,midY);ctx.stroke();
+
+        // Vertical wires down at ends (equal length)
+        const vBot=BY;
+        ctx.beginPath();ctx.moveTo(LX,midY);ctx.lineTo(LX,vBot);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(RX,midY);ctx.lineTo(RX,vBot);ctx.stroke();
+
+        // Bottom horizontal wire with R1 and R2 in series
+        const bWY=vBot;
+        const seg=(RX-LX-160)/3;  // spacing
+        ctx.beginPath();ctx.moveTo(LX,bWY);ctx.lineTo(LX+seg,bWY);ctx.stroke();
+        drawRectR(LX+seg+19,bWY,38,28,'R₁');
+        ctx.beginPath();ctx.moveTo(LX+seg+38,bWY);ctx.lineTo(LX+seg*2+38,bWY);ctx.stroke();
+        drawRectR(LX+seg*2+57,bWY,38,28,'R₂');
+        ctx.beginPath();ctx.moveTo(LX+seg*2+76,bWY);ctx.lineTo(RX,bWY);ctx.stroke();
+
+    }else{
+        const TY=h*0.18, BY=h*0.80;
+        // === PARALLEL: same frame as series, two resistor rows ===
+        const bCX=w*0.42, bCY=TY+15;
+        const longH=22, shortH=12, bGap=8;
+        // Battery (same as series)
+        ctx.beginPath();ctx.moveTo(bCX-bGap,bCY-longH);ctx.lineTo(bCX-bGap,bCY);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(bCX+bGap,bCY-shortH);ctx.lineTo(bCX+bGap,bCY);ctx.stroke();
+        ctx.fillStyle='#333';ctx.font='bold 13px Fredoka';ctx.textAlign='center';
+        ctx.fillText('+',bCX-bGap,bCY-longH-6);
+        ctx.fillText('−',bCX+bGap,bCY-shortH-6);
+        ctx.fillText(S.voltage+'V',bCX,bCY-longH-16);
+
+        // Horizontal wires from battery midpoint → left and right
+        const midY=bCY-longH/2;
+        ctx.beginPath();ctx.moveTo(bCX-bGap,midY);ctx.lineTo(LX,midY);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(bCX+bGap,midY);ctx.lineTo(RX,midY);ctx.stroke();
+
+        // Vertical wires down to the last resistor row
+        const row1Y=midY+70;
+        const row2Y=row1Y+100;
+        const vBot=row2Y;
+
+        ctx.beginPath();ctx.moveTo(LX,midY);ctx.lineTo(LX,vBot);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(RX,midY);ctx.lineTo(RX,vBot);ctx.stroke();
+
+        // R1 on upper row: wire from left→resistor→wire to right
+        ctx.beginPath();ctx.moveTo(LX,row1Y);ctx.lineTo((LX+RX)/2-19,row1Y);ctx.stroke();
+        drawRectR((LX+RX)/2,row1Y,38,28,'R₁');
+        ctx.beginPath();ctx.moveTo((LX+RX)/2+19,row1Y);ctx.lineTo(RX,row1Y);ctx.stroke();
+        ctx.fillStyle='#3498db';ctx.font='bold 14px Fredoka';ctx.textAlign='center';
+        ctx.fillText('I₁='+i1.toFixed(3)+'A',(LX+RX)/2,row1Y-26);
+
+        // R2 on lower row: wire from left→resistor→wire to right
+        ctx.beginPath();ctx.moveTo(LX,row2Y);ctx.lineTo((LX+RX)/2-19,row2Y);ctx.stroke();
+        drawRectR((LX+RX)/2,row2Y,38,28,'R₂');
+        ctx.beginPath();ctx.moveTo((LX+RX)/2+19,row2Y);ctx.lineTo(RX,row2Y);ctx.stroke();
+        ctx.fillText('I₂='+i2.toFixed(3)+'A',(LX+RX)/2,row2Y-26);
+    }
+
+    ctx.textAlign='center';
+    if(mode==='series'){
+        ctx.fillStyle='#333';ctx.font='bold 20px Fredoka';
+        ctx.fillText('串联 Series    R_eq = '+req.toFixed(1)+' Ω',w/2,24);
+        ctx.fillStyle='#3498db';ctx.font='bold 16px Fredoka';
+        ctx.fillText('I = '+(S.voltage/req).toFixed(3)+' A（处处相等）',w/2,52);
+    }else{
+        ctx.fillStyle='#333';ctx.font='bold 20px Fredoka';
+        ctx.fillText('并联 Parallel    R_eq = '+req.toFixed(1)+' Ω',w/2,24);
+        ctx.fillStyle='#3498db';ctx.font='bold 14px Fredoka';
+        ctx.fillText('I_total = '+(S.voltage/req).toFixed(3)+' A',w/2,48);
+    }
+}
+function resetSim(){sR1.value=100;sR2.value=200;sV.value=12;S.r1=100;S.r2=200;S.voltage=12;}
+document.getElementById('btn-reset').onclick=resetSim;
+resize();requestAnimationFrame(update);
+
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+</script>
+<div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
+</body>
+</html>

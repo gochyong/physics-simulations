@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wuli布雷克物理模拟实验室 - 电磁学 / Electromagnetism。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:title" content="电磁学 / Electromagnetism - Wuli布雷克">
+    <meta property="og:description" content="Wuli布雷克物理模拟实验室 - 电磁学 / Electromagnetism。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wuliblake.com/electricity.html">
+    <meta property="og:site_name" content="Wuli布雷克物理模拟实验室">
+    <link rel="stylesheet" href="common.css">
+    <meta name="author" content="Wuli布雷克">
+    <meta name="copyright" content="Copyright 2025 Wuli布雷克">
+    <title>电磁学 / Electromagnetism - Wuli布雷克</title>
+    <style>        :root {
+    --primary-warm: #ff9800;
+    --accent-warm: #f57c00;
+    --text-main: #3e2723;
+        }
+/* Back link */
+        .back-link {
+            position: fixed;
+            top: 20px;
+            left: 24px;
+            z-index: 1000;
+            text-decoration: none;
+            color: var(--accent-warm);
+            font-weight: 700;
+            font-size: 0.95rem;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 18px;
+            border-radius: 20px;
+            box-shadow: 0 2px 12px rgba(245, 124, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+.back-link:hover {
+            background: #fff;
+            box-shadow: 0 4px 20px rgba(245, 124, 0, 0.3);
+            transform: translateX(-3px);
+        }
+/* Header */
+        header {
+            width: 100%;
+            padding: 40px 0 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+.brand-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+.logo-main {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent-warm), var(--primary-warm));
+            padding: 10px 25px;
+            border-radius: 15px 15px 15px 0;
+            box-shadow: 5px 5px 20px rgba(245, 124, 0, 0.2);
+        }
+.logo-sub {
+            font-size: 0.9rem;
+            letter-spacing: 4px;
+            color: var(--accent-warm);
+            margin-top: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+.page-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: 2px;
+            margin-top: 10px;
+        }
+.page-subtitle {
+            font-size: 1rem;
+            color: #795548;
+            opacity: 0.8;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+/* Grid Container */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            width: 90%;
+            max-width: 1100px;
+            padding: 20px 0 50px;
+        }
+/* Sim Card */
+        .sim-card {
+            text-decoration: none;
+            color: var(--text-main);
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 28px 24px 22px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            border: 2px solid #fff5eb;
+            position: relative;
+            overflow: hidden;
+        }
+.sim-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(135deg, var(--accent-warm), var(--primary-warm));
+            border-radius: 0 0 4px 4px;
+        }
+.sim-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 45px rgba(245, 124, 0, 0.18);
+            border-color: #ffe0c0;
+        }
+.sim-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            width: 100%;
+        }
+.sim-card-icon {
+            font-size: 1.6rem;
+            line-height: 1;
+        }
+.sim-card-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1.3;
+        }
+.sim-card-subtitle {
+            font-size: 0.85rem;
+            color: #8d6e63;
+            font-weight: 500;
+        }
+.sim-card-desc {
+            font-size: 0.88rem;
+            color: #6d4c41;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            flex: 1;
+        }
+/* Tag */
+        .tag {
+            display: inline-block;
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            color: var(--accent-warm);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 14px;
+            border-radius: 12px;
+            letter-spacing: 1px;
+        }
+footer {
+            margin-top: auto;
+            padding: 40px;
+            font-size: 0.85rem;
+            color: #a1887f;
+        }
+@media (max-width: 800px) {
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+            .sim-card {
+                padding: 22px 18px 18px;
+            }
+            .sim-card-title {
+                font-size: 1rem;
+            }
+        }
+@media (max-width: 480px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+        }</style>
+</head>
+
+<body>
+
+    <div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
+
+    <!-- Header -->
+    <header>
+        <div class="page-title">电磁学 / Electromagnetism</div>
+        <div class="page-subtitle">11 个模拟</div>
+    </header>
+
+    <!-- Sim Card Grid -->
+    <main class="grid-container" id="main">
+
+        <!-- 1. 电阻 / Resistance -->
+        <a href="resistor.html" class="sim-card" aria-label="访问电阻">
+            <div class="sim-card-header">
+                <span class="sim-card-icon" aria-hidden="true">🔌</span>
+                <div>
+                    <div class="sim-card-title">电阻</div>
+                    <div class="sim-card-subtitle">Resistance</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">演示电阻率、长度和截面积如何影响电阻。R = ρL/A</div>
+            <span class="tag">电磁学 / Electromagnetism</span>
+        </a>
+
+        <!-- 2. 欧姆定律 / Ohm's Law -->
+        <a href="Ohm'sLaw.html" class="sim-card" aria-label="访问欧姆定律">
+            <div class="sim-card-header">
+                <span class="sim-card-icon" aria-hidden="true">⚡</span>
+                <div>
+                    <div class="sim-card-title">欧姆定律</div>
+                    <div class="sim-card-subtitle">Ohm's Law</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">探究电压、电流与电阻的关系。I = V / R</div>
+            <span class="tag">电磁学 / Electromagnetism</span>
+        </a>
+
+        <!-- 3. 串并联电路 / Series & Parallel Circuits -->
+        <a href="SeriesParallelCircuits.html" class="sim-card" aria-label="访问串并联电路">
+            <div class="sim-card-header">
+                <span class="sim-card-icon" aria-hidden="true">🔗</span>
+                <div>
+                    <div class="sim-card-title">串并联电路</div>
+                    <div class="sim-card-subtitle">Series & Parallel Circuits</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">串联分压、并联分流，等效电阻实时计算。</div>
+            <span class="tag">电磁学 / Electromagnetism</span>
+        </a>
+
+        <!-- 4. 电流 / Electric Current -->
+        <a href="ElectricCurrent.html" class="sim-card" aria-label="访问电流">
+            <div class="sim-card-header">
+                <span class="sim-card-icon" aria-hidden="true">⚡</span>
+                <div>
+                    <div class="sim-card-title">电流</div>
+                    <div class="sim-card-subtitle">Electric Current</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">包含电流定义式与微观表达式两个子页面。I=Q/t（宏观）和 I=nqvS（微观）。</div>
+            <span class="tag">电磁学 / Electromagnetism</span>
+        </a>
+
+        <!-- 5. 电容充放电 / Capacitor Charge & Discharge -->
+        <a href="CapacitorChargeDischarge.html" class="sim-card" aria-label="访问电容充放电">
+            <div class="sim-card-header">
+                <span class="sim-card-icon" aria-hidden="true">🔋</span>
+                <div>
+                    <div class="sim-card-title">电容充放电</div>
+                    <div class="sim-card-subtitle">Capacitor Charge & Discharge</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">RC电路充放电曲线，时间常数τ=RC可视化。</div>
+            <span class="tag">电磁学 / Electromagnetism</span>
+        </a>
+
+        <!-- 6. 库仑定律 / Coulomb's Law -->
+        <a href="CoulombsLaw.html" class="sim-card" aria-label="访问库仑定律">
+            <div class="sim-card-header">
+                <span class="sim-card-icon" aria-hidden="true">🧲</span>
+                <div>
+                    <div class="sim-card-title">库仑定律</div>
+                    <div class="sim-card-subtitle">Coulomb's Law</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">两个带电球体之间的静电力可视化。</div>
+            <span class="tag">电磁学 / Electromagnetism</span>
+        </a>
+
+        <!-- 7. 安培力 / Ampère Force -->
+        <a href="AmpereForce.html" class="sim-card" aria-label="访问安培力">
+            <div class="sim-card-header">
+                <span class="sim-card-icon" aria-hidden="true">🧲</span>
+                <div>
+                    <div class="sim-card-title">安培力</div>
+                    <div class="sim-card-subtitle">Ampère Force</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">通电导线在磁场中的受力分析。F = BIL sinθ</div>
+            <span class="tag">电磁学 / Electromagnetism</span>
+        </a>
+
+        <!-- 8. 洛伦兹力 / Lorentz Force -->
+        <a href="LorentzForce.html" class="sim-card" aria-label="访问洛伦兹力">
+            <div class="sim-card-header">
+                <span class="sim-card-icon" aria-hidden="true">🔄</span>
+                <div>
+                    <div class="sim-card-title">洛伦兹力</div>
+                    <div class="sim-card-subtitle">Lorentz Force</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">带电粒子在匀强磁场中做圆周运动。F = qvB</div>
+            <span class="tag">电磁学 / Electromagnetism</span>
+        </a>
+
+        <!-- 9. 电磁感应 / Electromagnetic Induction -->
+        <a href="ElectromagneticInduction.html" class="sim-card" aria-label="访问电磁感应">
+            <div class="sim-card-header">
+                <span class="sim-card-icon" aria-hidden="true">🧲</span>
+                <div>
+                    <div class="sim-card-title">电磁感应</div>
+                    <div class="sim-card-subtitle">Electromagnetic Induction</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">磁通量变化产生感应电动势，法拉第定律演示。</div>
+            <span class="tag">电磁学 / Electromagnetism</span>
+        </a>
+
+        <!-- 10. 电场线 / Electric Field Lines -->
+        <a href="ElectricFieldLines.html" class="sim-card" aria-label="访问电场线">
+            <div class="sim-card-header">
+                <span class="sim-card-icon" aria-hidden="true">🌀</span>
+                <div>
+                    <div class="sim-card-title">电场线</div>
+                    <div class="sim-card-subtitle">Electric Field Lines</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">单电荷、偶极子、同种电荷的电场线可视化。电场线密度代表场强大小。</div>
+            <span class="tag">电磁学 / Electromagnetism</span>
+        </a>
+
+        <!-- 11. 变压器 / Transformer -->
+        <a href="Transformer.html" class="sim-card" aria-label="访问变压器">
+            <div class="sim-card-header">
+                <span class="sim-card-icon" aria-hidden="true">🔩</span>
+                <div>
+                    <div class="sim-card-title">变压器</div>
+                    <div class="sim-card-subtitle">Transformer</div>
+                </div>
+            </div>
+            <div class="sim-card-desc">互感原理与理想变压器匝数比。Vp/Vs = Np/Ns，升压降压实时演示。</div>
+            <span class="tag">电磁学 / Electromagnetism</span>
+        </a>
+
+
+        <div class="sim-card" style="opacity:0.5;cursor:default;border:2px dashed #e0d0c0;"><div class="sim-card-header" style="justify-content:center;"><span class="sim-card-icon">📝</span><div><div class="sim-card-title">更新中</div><div class="sim-card-subtitle">More Coming Soon</div></div></div><div class="sim-card-desc" style="text-align:center;">新模拟持续添加中，敬请期待。</div></div>
+</main>
+
+    <footer>
+        © 2025 Wuli布雷克 | MIT License 
+    </footer>
+
+</body>
+
+</html>

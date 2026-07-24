@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wuli布雷克物理模拟实验室 - 动量 / Momentum。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:title" content="动量 / Momentum - Wuli布雷克">
+    <meta property="og:description" content="Wuli布雷克物理模拟实验室 - 动量 / Momentum。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wuliblake.com/Momentum.html">
+    <meta property="og:site_name" content="Wuli布雷克物理模拟实验室">
+    <link rel="stylesheet" href="common.css">
+    <meta name="author" content="Wuli布雷克">
+    <meta name="copyright" content="Copyright 2025 Wuli布雷克">
+    <title>动量 / Momentum - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>        :root {
+    --m-color: #3498db; --v-color: #e74c3c; --p-color: #9b59b6;
+        }
+#m-slider::-webkit-slider-thumb { background: var(--m-color); }
+#v-slider::-webkit-slider-thumb { background: var(--v-color); }</style>
+</head>
+
+<body>
+    <div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
+<a href="mechanics.html" class="back-link" aria-label="返回力学分类页">← 返回力学</a>
+    <div class="container" id="main">
+        <header><h1>动量 / Momentum</h1></header>
+
+        <section class="formula-display" aria-label="公式与实时数值">
+            <div class="formula-container" id="formula-root"></div>
+            <div class="result-row">
+                <span>p = <strong id="res-m" style="color:var(--m-color)">0</strong> kg &times; <strong id="res-v" style="color:var(--v-color)">0</strong> m/s = <strong id="res-p" style="color:var(--p-color)">0.00</strong> kg&middot;m/s</span>
+            </div>
+            <div class="legend" aria-label="图例说明">
+                <div class="legend-item"><span class="legend-dot" style="background:var(--p-color)"></span> p: 动量 Momentum</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--m-color)"></span> m: 质量 Mass</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--v-color)"></span> v: 速度 Velocity</div>
+            </div>
+        </section>
+
+        <section class="diagram-section" aria-label="模拟动画区"><canvas id="simCanvas" role="img" aria-label="动量模拟动画 — 交互式物理仿真画面"></canvas></section>
+
+        <section class="controls-section" aria-label="参数控制区">
+            <div class="control-panel">
+                <div class="control-group">
+                    <div class="label-row"><span style="color:var(--m-color)">质量 m / Mass</span><span id="m-badge" class="val-badge" aria-live="polite">20 kg</span></div>
+                    <input type="range" id="m-slider" min="1" max="100" value="20" aria-valuemin="1" aria-valuemax="100" aria-valuenow="20" aria-valuetext="20匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+                </div>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:var(--v-color)">速度 v / Velocity</span><span id="v-badge" class="val-badge" aria-live="polite">10 m/s</span></div>
+                    <input type="range" id="v-slider" min="0" max="50" value="10" aria-valuemin="0" aria-valuemax="50" aria-valuenow="10" aria-valuetext="10匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+                </div>
+                <div class="btn-row">
+                    <button id="btn-start" class="ctrl-btn start" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false">开始 Start</button>
+                    <button id="btn-reset" class="ctrl-btn reset" aria-label="重置参数" aria-label="重置参数">重置 Reset</button>
+                </div>
+            </div>
+            <div class="info-card">
+                <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem">演示要点 / Key Points</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(155,89,182,0.1);color:var(--p-color);font-weight:700">p</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">p = m &middot; v</div><div style="font-size:0.78rem;color:#6B6B6B">动量是质量和速度的乘积，矢量方向与速度相同。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:var(--m-color);font-weight:700">m</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">球大小代表质量</div><div style="font-size:0.78rem;color:#6B6B6B">质量越大球体越大，质量越大动量也越大。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(231,76,60,0.1);color:var(--v-color);font-weight:700">v</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">箭头长度代表速度</div><div style="font-size:0.78rem;color:#6B6B6B">速度越大箭头越长，动量也线性增大。</div></div>
+                    </div>
+                </div>
+                <div style="margin-top:10px; padding-top:8px; border-top:1px solid #eee; text-align:center;">
+                    <canvas id="gaugeCanvas" width="300" height="180" style="max-width:100%" role="img" aria-label="动量模拟动画 — 交互式物理仿真画面"></canvas>
+                    <div style="font-weight:700;font-size:0.85rem;color:#555;">动量指示 Momentum Gauge</div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas'), ctx = canvas.getContext('2d');
+        const gCanvas = document.getElementById('gaugeCanvas'), gCtx = gCanvas.getContext('2d');
+
+        const sM = document.getElementById('m-slider'), sV = document.getElementById('v-slider');
+        const bM = document.getElementById('m-badge'), bV = document.getElementById('v-badge');
+        const resP = document.getElementById('res-p'), resM = document.getElementById('res-m'), resV = document.getElementById('res-v');
+        const formulaRoot = document.getElementById('formula-root');
+        const btnStart = document.getElementById('btn-start'), btnReset = document.getElementById('btn-reset');
+
+        const state = {
+            m: 20, v: 10,
+            ballX: 100,
+            isPlaying: false
+        };
+
+        function resize() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            draw();
+        }
+        window.addEventListener('resize', resize);
+
+        function update() {
+            state.m = parseInt(sM.value);
+            state.v = parseInt(sV.value);
+
+            bM.textContent = state.m + ' kg';
+            bV.textContent = state.v + ' m/s';
+
+            if (state.isPlaying && state.v > 0) {
+                state.ballX += state.v * 0.2;
+                if (state.ballX > canvas.width + 100) {
+                    state.ballX = -100;
+                }
+            }
+
+            updateFormula();
+            draw();
+            drawGauge();
+            requestAnimationFrame(update);
+        }
+
+        function updateFormula() {
+            const p = state.m * state.v;
+            resM.textContent = state.m;
+            resV.textContent = state.v;
+            resP.textContent = p.toFixed(2);
+
+            const baseSize = 48;
+            const scaleM = 1 + (state.m / 100) * 0.3;
+            const scaleV = 1 + (state.v / 50) * 0.3;
+            const scaleP = 1 + (p / 5000) * 0.3;
+
+            const parts = [
+                { l: 'p', c: 'var(--p-color)', s: scaleP },
+                { l: '=', c: 'var(--text-dark)', s: 1 },
+                { l: 'm', c: 'var(--m-color)', s: scaleM },
+                { l: '·', c: 'var(--text-dark)', s: 1 },
+                { l: 'v', c: 'var(--v-color)', s: scaleV }
+            ];
+
+            const html = parts.map(p => `<span style="color:${p.c}; font-weight:700; font-size:${baseSize * p.s}px; display:inline-block; transition:all 0.2s;">${p.l}</span>`).join('<span style="width:15px; display:inline-block"></span>');
+            if (formulaRoot.innerHTML !== html) formulaRoot.innerHTML = html;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cy = canvas.height / 2;
+
+            // Floor
+            ctx.beginPath(); ctx.strokeStyle = '#eee'; ctx.lineWidth = 2;
+            ctx.moveTo(0, cy + 100); ctx.lineTo(canvas.width, cy + 100); ctx.stroke();
+
+            const r = 20 + (state.m / 100) * 60;
+            const ballY = cy + 100 - r;
+
+            // Ball
+            ctx.beginPath();
+            ctx.arc(state.ballX, ballY, r, 0, Math.PI * 2);
+            const grad = ctx.createRadialGradient(state.ballX - r * 0.3, ballY - r * 0.3, r * 0.1, state.ballX, ballY, r);
+            grad.addColorStop(0, '#5DADE2'); grad.addColorStop(1, '#2E86C1');
+            ctx.fillStyle = grad;
+            ctx.shadowBlur = 15; ctx.shadowColor = 'rgba(0,0,0,0.1)';
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Mass Label
+            ctx.fillStyle = 'white'; ctx.font = 'bold 16px Arial'; ctx.textAlign = 'center';
+            ctx.fillText(state.m + 'kg', state.ballX, ballY + 5);
+            // Vector
+            if (state.v > 0) {
+                const arrowLen = 60 + state.v * 5;
+                const arrowY = ballY - r - 30;
+                drawArrow(state.ballX, arrowY, state.ballX + arrowLen, arrowY, varColor('--v-color'), 6, `v = ${state.v} m/s`);
+            }
+        }
+
+        function drawArrow(x1, y1, x2, y2, color, width, label) {
+            const headlen = 12;
+            const dx = x2 - x1, dy = y2 - y1;
+            const angle = Math.atan2(dy, dx);
+            ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+            ctx.strokeStyle = color; ctx.lineWidth = width; ctx.lineCap = 'round'; ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x2, y2);
+            ctx.lineTo(x2 - headlen * Math.cos(angle - Math.PI / 6), y2 - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(x2 - headlen * Math.cos(angle + Math.PI / 6), y2 - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.closePath(); ctx.fillStyle = color; ctx.fill();
+            if (label) {
+                ctx.fillStyle = color; ctx.font = 'bold 18px Arial'; ctx.textAlign = 'center';
+                ctx.fillText(label, x1 + (x2 - x1) / 2, y1 - 15);
+            }
+        }
+
+        function drawGauge() {
+            gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
+            const cx = gCanvas.width / 2, cy = gCanvas.height * 0.75, r = 80;
+            const startAngle = Math.PI * 0.8, endAngle = Math.PI * 2.2;
+            const range = endAngle - startAngle;
+
+            const p = state.m * state.v;
+            const maxP = 100 * 50;
+
+            gCtx.beginPath(); gCtx.arc(cx, cy, r, startAngle, endAngle); gCtx.lineWidth = 10; gCtx.strokeStyle = '#f0f0f0'; gCtx.lineCap = 'round'; gCtx.stroke();
+
+            const normVal = Math.min(p / maxP, 1);
+            const currentAngle = startAngle + range * normVal;
+
+            gCtx.beginPath(); gCtx.arc(cx, cy, r, startAngle, currentAngle);
+            gCtx.strokeStyle = varColor('--p-color'); gCtx.lineWidth = 10; gCtx.stroke();
+
+            gCtx.beginPath(); gCtx.lineWidth = 3; gCtx.strokeStyle = '#333';
+            gCtx.moveTo(cx, cy); gCtx.lineTo(cx + (r - 12) * Math.cos(currentAngle), cy + (r - 12) * Math.sin(currentAngle));
+            gCtx.stroke();
+            gCtx.beginPath(); gCtx.arc(cx, cy, 6, 0, Math.PI * 2); gCtx.fillStyle = '#333'; gCtx.fill();
+
+            gCtx.font = 'bold 20px Fredoka'; gCtx.fillStyle = '#444'; gCtx.textAlign = 'center';
+            gCtx.fillText(p.toFixed(0) + ' kg·m/s', cx, cy + 35);
+        }
+
+        function varColor(name) {
+            return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        }
+
+        btnStart.onclick = () => {
+            state.isPlaying = !state.isPlaying;
+            btnStart.textContent = state.isPlaying ? '暂停 Pause' : '开始 Start';
+            btnStart.classList.toggle('start', !state.isPlaying);
+            btnStart.classList.toggle('pause', state.isPlaying);
+        };
+
+        btnReset.onclick = () => {
+            state.isPlaying = false; state.ballX = 100;
+            btnStart.textContent = '开始 Start'; btnStart.className = 'ctrl-btn start';
+        };
+
+        resize();
+        update();
+    
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+</script>
+<div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
+</body>
+</html>

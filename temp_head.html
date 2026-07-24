@@ -7,68 +7,28 @@
     <meta name="author" content="Wuli布雷克">
     <meta name="copyright" content="Copyright 2025 Wuli布雷克">
     <title>抛体运动 / Projectile Motion - Wuli布雷克</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-color: #FFF9F0; --primary: #FF8c42; --secondary: #FFC75F;
-            --accent: #FF5E5B; --text-dark: #4A403A; --card-bg: #FFFFFF;
-            --shadow: 0 6px 30px rgba(255,140,66,0.18);
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Fredoka','Noto Sans SC',sans-serif; background: var(--bg-color); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 5px 40px 10px; }
-        .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
-        .logo { font-weight: 700; font-size: 1.3rem; color: #fff; background: var(--primary); padding: 6px 18px; border-radius: 16px; box-shadow: 4px 4px 15px rgba(255,140,66,0.3); }
-        .container { width: 100%; max-width: 1400px; margin-top: 8px; display: grid; grid-template-areas:"header header" "formula formula" "diagram controls"; grid-template-columns: 1fr 400px; gap: 12px; }
-        header { grid-area: header; text-align: center; }
-        h1 { font-size: 2rem; color: var(--text-dark); margin-bottom: 2px; }
-        .subtitle { font-size: 0.85rem; color: #999; }
-
-        .formula-display { grid-area: formula; background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb; }
-        .formula-container { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; min-height: 40px; }
-        .formula-item { font-size: 0.9rem; font-weight: 600; padding: 3px 10px; border-radius: 10px; background: #fafaf7; }
-        .result-row { font-size: 0.95rem; font-weight: 600; margin-top: 4px; display: flex; gap: 20px; justify-content: center; }
-        .legend { display: flex; gap: 16px; justify-content: center; border-top: 1px solid #eee; padding-top: 6px; width: 100%; }
-        .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
-        .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
-
-        .diagram-section { grid-area: diagram; display: flex; flex-direction: column; gap: 6px; }
-        .main-canvas-wrap { background: #fff; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; flex: 1; min-height: 220px; border: 2px solid #fff; }
-        #simCanvas { width: 100%; height: 100%; display: block; }
-        .sub-canvases { display: flex; flex-direction: column; gap: 6px; flex: 1; min-height: 180px; }
-        .sub-wrap { background: #fff; border-radius: 16px; box-shadow: var(--shadow); flex: 1; display: flex; flex-direction: column; border: 1px solid #fff5eb; overflow: hidden; }
-        .sub-label { background: #fff; padding: 3px 10px; font-weight: 700; font-size: 0.8rem; text-align: center; }
-        .sub-wrap canvas { width: 100%; flex: 1; display: block; }
-
-        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
-        .control-panel { background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
-        .control-group { display: flex; flex-direction: column; gap: 3px; }
-        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
-        .val-badge { background: #fff; padding: 1px 7px; border-radius: 7px; font-size: 0.85rem; border: 2px solid #f0f0f0; }
-        input[type=range] { width: 100%; appearance: none; height: 6px; background: #eee; border-radius: 3px; }
-        input[type=range]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; cursor: pointer; background: var(--primary); }
-        #slider-angle::-webkit-slider-thumb { background: var(--secondary); }
-        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px; }
-        .ctrl-btn { padding: 10px; border: none; border-radius: 14px; font-size: 1.05rem; font-weight: 700; cursor: pointer; color: white; }
-        .start { background: var(--primary); } .pause { background: #2ecc71; } .reset { background: #95a5a6; }
-        .info-card { background: #fff; border-radius: 20px; padding: 12px 16px; box-shadow: var(--shadow); font-size: 0.9rem; line-height: 1.4; color: #5D6D7E; }
-        @media (max-width: 1100px) { .container { grid-template-areas: "header" "formula" "diagram" "controls"; grid-template-columns: 1fr; } }
-    </style>
+<style>.sub-canvases { display: flex; flex-direction: column; gap: 6px; flex: 1; min-height: 180px; }
+#slider-angle::-webkit-slider-thumb { background: var(--secondary); }
+/* === 无障碍 Accessibility (批量注入) === */
+.skip-link { position: absolute; top: -40px; left: 8px; z-index: 2000; background: #185FA5; color: #fff; padding: 8px 16px; border-radius: 10px; font-size: 0.9rem; font-weight: 600; text-decoration: none; transition: top 0.2s; }
+.skip-link:focus { top: 8px; }
+:focus-visible { outline: 3px solid #185FA5; outline-offset: 2px; border-radius: 6px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+</style>
 </head>
 
 <body>
     <div class="branding"><div class="logo">Wuli布雷克</div></div>
-    <div class="container">
+    <div class="container" id="main">
         <header>
             <h1>抛体运动 / Projectile Motion</h1>
             <p class="subtitle">v₀: 初速度 &nbsp; θ: 发射角 &nbsp; g = 9.8 m/s²</p>
         </header>
 
-        <section class="formula-display">
+        <section class="formula-display" aria-label="公式与实时数值">
             <div class="formula-container" id="formula-root"></div>
             <div class="result-row" id="result-area"></div>
-            <div class="legend">
+            <div class="legend" aria-label="图例说明">
                 <div class="legend-item"><span class="legend-dot" style="background:var(--primary)"></span> 轨迹</div>
                 <div class="legend-item"><span style="color:#3498db">--</span> 射程 R</div>
                 <div class="legend-item"><span style="color:#2ecc71">--</span> 最大高度 H</div>
@@ -76,33 +36,33 @@
             </div>
         </section>
 
-        <section class="diagram-section">
-            <div class="main-canvas-wrap"><canvas id="simCanvas"></canvas></div>
+        <section class="diagram-section" aria-label="模拟动画区">
+            <div class="main-canvas-wrap"><canvas id="simCanvas" role="img" aria-label="抛体运动模拟动画 — 交互式物理仿真画面"></canvas></div>
             <div class="sub-canvases">
                 <div class="sub-wrap">
                     <div class="sub-label" style="color:#3498db;">水平方向 Horizontal（匀速：Vh = v₀cosθ 恒定）</div>
-                    <canvas id="canvasH"></canvas>
+                    <canvas id="canvasH" role="img" aria-label="抛体运动模拟动画 — 交互式物理仿真画面"></canvas>
                 </div>
                 <div class="sub-wrap">
                     <div class="sub-label" style="color:#2ecc71;">竖直方向 Vertical（匀变速：Vv = v₀sinθ − gt）</div>
-                    <canvas id="canvasV"></canvas>
+                    <canvas id="canvasV" role="img" aria-label="抛体运动模拟动画 — 交互式物理仿真画面"></canvas>
                 </div>
             </div>
         </section>
 
-        <section class="controls-section">
+        <section class="controls-section" aria-label="参数控制区">
             <div class="control-panel">
                 <div class="control-group">
-                    <div class="label-row"><span>初速度 v₀ (Initial Velocity)</span><span id="badge-v0" class="val-badge">15 m/s</span></div>
-                    <input type="range" id="slider-v0" min="5" max="25" step="0.5" value="15">
+                    <label for="slider-v0" class="label-row"><span>初速度 v₀ (Initial Velocity)</span><span id="badge-v0" class="val-badge" aria-live="polite">15 m/s</span></label>
+                    <input type="range" id="slider-v0" min="5" max="25" step="0.5" value="15" aria-valuemin="5" aria-valuemax="25" aria-valuenow="15" aria-valuetext="15匝">>
                 </div>
                 <div class="control-group">
-                    <div class="label-row"><span>发射角 θ (Launch Angle)</span><span id="badge-angle" class="val-badge">45°</span></div>
-                    <input type="range" id="slider-angle" min="10" max="80" step="1" value="45">
+                    <label for="slider-angle" class="label-row"><span>发射角 θ (Launch Angle)</span><span id="badge-angle" class="val-badge" aria-live="polite">45°</span></label>
+                    <input type="range" id="slider-angle" min="10" max="80" step="1" value="45" aria-valuemin="10" aria-valuemax="80" aria-valuenow="45" aria-valuetext="45匝">>
                 </div>
                 <div class="btn-row">
-                    <button id="btn-start" class="ctrl-btn start">开始 Start</button>
-                    <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
+                    <button id="btn-start" class="ctrl-btn start" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false">开始 Start</button>
+                    <button id="btn-reset" class="ctrl-btn reset" aria-label="重置参数" aria-label="重置参数" aria-label="重置参数" aria-label="重置参数" aria-label="重置参数">重置 Reset</button>
                 </div>
             </div>
             <div class="info-card">
@@ -110,23 +70,23 @@
                 <div style="display:flex;flex-direction:column;gap:6px;">
                     <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
                         <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:#3498db;font-weight:700;">R</div>
-                        <div><div style="font-weight:700;font-size:0.9rem;">R = v₀² sin(2θ) / g</div><div style="font-size:0.78rem;color:#888;">水平射程，45°时最大。</div></div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">R = v₀² sin(2θ) / g</div><div style="font-size:0.78rem;color:#6B6B6B;">水平射程，45°时最大。</div></div>
                     </div>
                     <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
                         <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:#2ecc71;font-weight:700;">H</div>
-                        <div><div style="font-weight:700;font-size:0.9rem;">H = v₀² sin²θ / (2g)</div><div style="font-size:0.78rem;color:#888;">最高点垂直高度。</div></div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">H = v₀² sin²θ / (2g)</div><div style="font-size:0.78rem;color:#6B6B6B;">最高点垂直高度。</div></div>
                     </div>
                     <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
                         <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;">T</div>
-                        <div><div style="font-weight:700;font-size:0.9rem;">T = 2v₀ sinθ / g</div><div style="font-size:0.78rem;color:#888;">飞行总时间。</div></div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">T = 2v₀ sinθ / g</div><div style="font-size:0.78rem;color:#6B6B6B;">飞行总时间。</div></div>
                     </div>
                     <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
                         <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:#3498db;font-weight:700;">↔</div>
-                        <div><div style="font-weight:700;font-size:0.9rem;">水平匀速：Vh = v₀cosθ</div><div style="font-size:0.78rem;color:#888;">水平不受力，速度恒定。</div></div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">水平匀速：Vh = v₀cosθ</div><div style="font-size:0.78rem;color:#6B6B6B;">水平不受力，速度恒定。</div></div>
                     </div>
                     <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
                         <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:#2ecc71;font-weight:700;">↕</div>
-                        <div><div style="font-weight:700;font-size:0.9rem;">竖直匀变速：Vv = v₀sinθ − gt</div><div style="font-size:0.78rem;color:#888;">受重力 a=−g，速度线性减小后反向。</div></div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">竖直匀变速：Vv = v₀sinθ − gt</div><div style="font-size:0.78rem;color:#6B6B6B;">受重力 a=−g，速度线性减小后反向。</div></div>
                     </div>
                 </div>
             </div>

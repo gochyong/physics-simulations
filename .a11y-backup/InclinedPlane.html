@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wuli布雷克物理模拟实验室 - 斜面运动 / Inclined Plane。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:title" content="斜面运动 / Inclined Plane - Wuli布雷克">
+    <meta property="og:description" content="Wuli布雷克物理模拟实验室 - 斜面运动 / Inclined Plane。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wuliblake.com/InclinedPlane.html">
+    <meta property="og:site_name" content="Wuli布雷克物理模拟实验室">
+    <link rel="stylesheet" href="common.css">
+    <meta name="author" content="Wuli布雷克">
+    <meta name="copyright" content="Copyright 2025 Wuli布雷克">
+    <title>斜面运动 / Inclined Plane - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>.back-link { position: fixed; top: 10px; right: 20px; z-index: 1000; text-decoration: none; color: var(--primary); font-weight: 700; font-size: 0.9rem; background: rgba(255,255,255,0.9); padding: 6px 14px; border-radius: 16px; box-shadow: 0 2px 10px rgba(255,140,66,0.15); }</style>
+</head>
+<body>
+<div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
+<a href="mechanics.html" class="back-link" aria-label="返回力学分类页">← 返回力学</a>
+<div class="container" id="main">
+    <header><h1>斜面运动 / Inclined Plane</h1></header>
+    <section class="formula-display" aria-label="公式与实时数值">
+        <div class="formula-container" id="formula-root"></div>
+        <div class="result-row">
+            <span>a = <strong style="color:var(--accent)" id="res-a">—</strong> m/s²</span>
+            <span>F_net = <strong style="color:#3498db" id="res-fnet">—</strong> N</span>
+            <span>v = <strong style="color:#2ecc71" id="res-v">0.0</strong> m/s</span>
+        </div>
+        <div class="legend" aria-label="图例说明">
+            <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> mg sinθ 下滑力</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#9b59b6"></span> mg cosθ 正压力</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#2ecc71"></span> N 支持力</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#e67e22"></span> f 摩擦力</div>
+        </div>
+    </section>
+    <section class="diagram-section" aria-label="模拟动画区"><canvas id="simCanvas" role="img" aria-label="斜面运动模拟动画 — 交互式物理仿真画面"></canvas></section>
+    <section class="controls-section" aria-label="参数控制区">
+        <div class="control-panel">
+            <div class="control-group">
+                <div class="label-row"><span>斜面角度 θ</span><span id="badge-theta" class="val-badge">30°</span></div>
+                <input type="range" id="slider-theta" min="5" max="80" value="30" aria-valuemin="5" aria-valuemax="80" aria-valuenow="30" aria-valuetext="30匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+            </div>
+            <div class="control-group">
+                <label for="slider-m" class="label-row"><span>质量 m</span><span id="badge-m" class="val-badge" aria-live="polite">2.0 kg</span></label>
+                <input type="range" id="slider-m" min="0.5" max="10" step="0.1" value="2.0" aria-valuemin="0.5" aria-valuemax="10" aria-valuenow="2.0" aria-valuetext="2.0匝">>
+            </div>
+            <div class="control-group">
+                <label for="slider-mu" class="label-row"><span>摩擦系数 μ</span><span id="badge-mu" class="val-badge" aria-live="polite">0.10</span></label>
+                <input type="range" id="slider-mu" min="0" max="1" step="0.01" value="0.10" aria-valuemin="0" aria-valuemax="1" aria-valuenow="0.10" aria-valuetext="0.10匝">>
+            </div>
+            <div class="btn-row">
+                <button id="btn-start" class="ctrl-btn start" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false">释放 Release</button>
+                <button id="btn-reset" class="ctrl-btn reset" aria-label="重置参数" aria-label="重置参数">重置 Reset</button>
+            </div>
+        </div>
+        <div class="info-card">
+            <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem;">演示要点 / Key Points</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;">θ</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">下滑力 = mg sinθ</div><div style="font-size:0.78rem;color:#6B6B6B;">重力沿斜面分量：θ越大，下滑力越大。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(155,89,182,0.1);color:#9b59b6;font-weight:700;">N</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">正压力 = mg cosθ，支持力 N ⊥ 斜面</div><div style="font-size:0.78rem;color:#6B6B6B;">正压力垂直斜面向下；支持力垂直斜面向上，与正压力互为反作用力。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(230,126,34,0.1);color:#e67e22;font-weight:700;">f</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">摩擦力 = μN = μmg cosθ</div><div style="font-size:0.78rem;color:#6B6B6B;">净加速度 a = g(sinθ − μcosθ)，当 tanθ>μ时物体下滑。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:#2ecc71;font-weight:700;">μ</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">μ=0 光滑，μ>0 粗糙</div><div style="font-size:0.78rem;color:#6B6B6B;">无摩擦时 a=g sinθ；有摩擦时加速度减小甚至静止。</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<script>
+const canvas=document.getElementById('simCanvas'),ctx=canvas.getContext('2d');
+const sTh=document.getElementById('slider-theta'),sM=document.getElementById('slider-m'),sMu=document.getElementById('slider-mu');
+const bTh=document.getElementById('badge-theta'),bM=document.getElementById('badge-m'),bMu=document.getElementById('badge-mu');
+const resA=document.getElementById('res-a'),resFn=document.getElementById('res-fnet'),resV=document.getElementById('res-v');
+const fRoot=document.getElementById('formula-root');
+const G=9.8;
+const S={theta:30,m:2,mu:0.1,v:0,pos:0,playing:false};
+
+function resize(){canvas.width=canvas.clientWidth;canvas.height=canvas.clientHeight;}
+window.addEventListener('resize',resize);
+
+function update(){
+    S.theta=parseInt(sTh.value);S.m=parseFloat(sM.value);S.mu=parseFloat(sMu.value);
+    bTh.textContent=S.theta+'°';bM.textContent=S.m.toFixed(1)+' kg';bMu.textContent=S.mu.toFixed(2);
+    const thRad=S.theta*Math.PI/180;
+    const sinTh=Math.sin(thRad),cosTh=Math.cos(thRad);
+    const fric=S.mu*S.m*G*cosTh;
+    const rawNetForce=S.m*G*sinTh-fric;
+    let accel=rawNetForce/S.m;
+    let dispNetForce=rawNetForce;
+    // Physics: static friction holds when rawNetForce <= 0 and at rest
+    if(rawNetForce<=0){
+        if(Math.abs(S.v)<0.001){accel=0;S.v=0;dispNetForce=0;}  // static friction balances
+        else{accel=rawNetForce/S.m;dispNetForce=rawNetForce;}  // decelerate
+    }
+    const dt=0.016;
+    if(S.playing){
+        S.v+=accel*dt;
+        if(S.v<0)S.v=0;
+        S.pos+=S.v*dt;
+        if(S.pos>=1){S.pos=1;S.v=0;S.playing=false;
+            document.getElementById('btn-start').textContent='释放 Release';
+            document.getElementById('btn-start').className='ctrl-btn start';
+        }
+    }
+    resA.textContent=accel.toFixed(2);
+    resFn.textContent=dispNetForce.toFixed(2);
+    resV.textContent=S.v.toFixed(2);
+
+    fRoot.innerHTML='<span style="font-size:22px;font-weight:700;color:var(--accent);">F<sub>net</sub>=mg(sinθ−μcosθ)</span>'+
+        '<span style="font-size:22px;">= '+dispNetForce.toFixed(1)+' N</span>'+
+        '<span style="font-size:20px;color:#6B6B6B;">&nbsp; a = '+accel.toFixed(2)+' m/s²</span>';
+    draw();requestAnimationFrame(update);
+}
+
+function draw(){
+    const w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);ctx.fillStyle='#fafaf7';ctx.fillRect(0,0,w,h);
+    const thRad=S.theta*Math.PI/180;
+    const sinTh=Math.sin(thRad),cosTh=Math.cos(thRad);
+
+    // --- Dynamic slope: angle changes with θ ---
+    const slopeLen=Math.min(w,h)*0.65;
+    const slopeMX=w*0.42,slopeMY=h*0.55;
+    const hl=slopeLen/2;
+    const baseX=slopeMX+hl*cosTh,baseY=slopeMY+hl*sinTh;   // lower-right
+    const topX=slopeMX-hl*cosTh,topY=slopeMY-hl*sinTh;     // upper-left
+
+    // Slope fill
+    ctx.fillStyle='#8B7355';ctx.beginPath();
+    ctx.moveTo(baseX,baseY);ctx.lineTo(topX,topY);ctx.lineTo(topX,baseY);ctx.closePath();ctx.fill();
+    ctx.strokeStyle='#5D4E37';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(topX,topY);ctx.lineTo(baseX,baseY);ctx.stroke();
+    // Ground
+    ctx.strokeStyle='#333';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(baseX-40,baseY);ctx.lineTo(w-20,baseY);ctx.stroke();
+    // Angle arc
+    ctx.strokeStyle='#e67e22';ctx.lineWidth=2;ctx.beginPath();
+    ctx.arc(baseX,baseY,35,-Math.PI,thRad-Math.PI,false);ctx.stroke();
+    ctx.fillStyle='#e67e22';ctx.font='bold 14px Fredoka';ctx.fillText('θ='+S.theta+'°',baseX+45,baseY-10);
+
+    // --- Block positioned ON the slope surface ---
+    const t=0.04+S.pos*0.96;
+    const blockW=40,blockH=25;
+    // Point on slope surface
+    const sx=topX+(baseX-topX)*t;
+    const sy=topY+(baseY-topY)*t;
+    // Offset perpendicular to surface (outward = away from slope body)
+    const offset=blockH/2;  // flush with surface
+    const bcx=sx+offset*sinTh;   // outward normal x = sinθ
+    const bcy=sy+offset*(-cosTh); // outward normal y = -cosθ (canvas y-down)
+    const bx=bcx-blockW/2,by=bcy-blockH/2;
+
+    // Draw block rotated to slope
+    ctx.save();ctx.translate(bcx,bcy);ctx.rotate(thRad);ctx.translate(-bcx,-bcy);
+    ctx.fillStyle='#e74c3c';ctx.fillRect(bx,by,blockW,blockH);
+    ctx.fillStyle='#fff';ctx.font='bold 10px Fredoka';ctx.textAlign='center';ctx.fillText(S.m.toFixed(1)+'kg',bcx,bcy+5);
+    ctx.restore();
+
+    // --- Force vectors (length proportional to magnitude) ---
+    const mg_N=S.m*G;                    // gravity (N)
+    const mgSin_N=mg_N*sinTh;            // downhill component
+    const mgCos_N=mg_N*cosTh;            // normal component (= |N|)
+    const fric_N=S.mu*mgCos_N;           // friction
+    const pxPerN=4.0;                    // pixels per Newton
+
+    // 1. Gravity mg — straight down
+    arrow(ctx,bcx,bcy,bcx,bcy+mg_N*pxPerN,'#333',2.5,'mg');
+
+    // 2. mg sinθ — down-slope
+    arrow(ctx,bcx,bcy,bcx+mgSin_N*pxPerN*cosTh,bcy+mgSin_N*pxPerN*sinTh,'var(--accent)',2.5,'mg sinθ');
+
+    // 3. 正压力 mg cosθ — INTO surface
+    arrow(ctx,bcx,bcy,bcx+mgCos_N*pxPerN*(-sinTh),bcy+mgCos_N*pxPerN*cosTh,'#9b59b6',2.5,'mg cosθ');
+
+    // 4. 支持力 N — AWAY from surface (same magnitude as mg cosθ)
+    arrow(ctx,bcx,bcy,bcx+mgCos_N*pxPerN*sinTh,bcy+mgCos_N*pxPerN*(-cosTh),'#2ecc71',2.5,'N');
+
+    // 5. Friction f — up-slope
+    if(S.mu>0 && mgSin_N>0){
+        arrow(ctx,bcx,bcy,bcx+fric_N*pxPerN*(-cosTh),bcy+fric_N*pxPerN*(-sinTh),'#e67e22',2,'f');
+    }
+
+    // Speed
+    ctx.fillStyle='#2ecc71';ctx.font='bold 14px Fredoka';ctx.textAlign='right';ctx.fillText('v='+S.v.toFixed(2)+' m/s',w-20,30);
+
+}
+
+function arrow(c,x1,y1,x2,y2,clr,lw,label){
+    const a=Math.atan2(y2-y1,x2-x1),h=9;
+    c.strokeStyle=clr;c.fillStyle=clr;c.lineWidth=lw||2;
+    c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();
+    c.beginPath();c.moveTo(x2,y2);
+    c.lineTo(x2-h*Math.cos(a-Math.PI/6),y2-h*Math.sin(a-Math.PI/6));
+    c.lineTo(x2-h*Math.cos(a+Math.PI/6),y2-h*Math.sin(a+Math.PI/6));
+    c.closePath();c.fill();
+    if(label){c.font='bold 12px Fredoka';c.fillText(label,x2+6,y2-3);}
+}
+
+function resetSim(){
+    S.v=0;S.pos=0;S.playing=false;
+    sTh.value=30;sM.value=2.0;sMu.value=0.10;
+    S.theta=30;S.m=2.0;S.mu=0.10;
+    bTh.textContent='30°';bM.textContent='2.0 kg';bMu.textContent='0.10';
+    document.getElementById('btn-start').textContent='释放 Release';
+    document.getElementById('btn-start').className='ctrl-btn start';
+}
+document.getElementById('btn-start').onclick=()=>{
+    S.playing=!S.playing;
+    const b=document.getElementById('btn-start');
+    b.textContent=S.playing?'暂停 Pause':'释放 Release';
+    b.classList.toggle('start',!S.playing);b.classList.toggle('pause',S.playing);
+    // Reset position when re-releasing from bottom
+    if(S.pos>=1){S.pos=0;S.v=0;}
+};
+document.getElementById('btn-reset').onclick=resetSim;
+resize();requestAnimationFrame(update);
+
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+</script>
+<div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
+</body>
+</html>

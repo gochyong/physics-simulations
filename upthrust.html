@@ -14,66 +14,41 @@
     <meta name="author" content="Wuli布雷克">
     <meta name="copyright" content="Copyright 2025 Wuli布雷克">
     <title>阿基米德原理 / Archimedes' Principle - Wuli布雷克</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-color: #FFF9F0; --primary: #FF8c42; --secondary: #FFC75F;
-            --accent: #FF5E5B; --text-dark: #4A403A; --card-bg: #FFFFFF;
-            --shadow: 0 6px 30px rgba(255,140,66,0.18);
-            --fluid-color: rgba(33, 150, 243, 0.45);
+<style>        :root {
+    --fluid-color: rgba(33, 150, 243, 0.45);
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Fredoka','Noto Sans SC',sans-serif; background: var(--bg-color); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 5px 40px 10px; }
-        .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
-        .logo { font-weight: 700; font-size: 1.3rem; color: #fff; background: var(--primary); padding: 6px 18px; border-radius: 16px; box-shadow: 4px 4px 15px rgba(255,140,66,0.3); }
-        .container { width: 100%; max-width: 1400px; margin-top: 8px; display: grid; grid-template-areas:"header header" "formula formula" "diagram controls"; grid-template-columns: 1fr 400px; gap: 12px; }
-        header { grid-area: header; text-align: center; }
-        h1 { font-size: 2rem; color: var(--text-dark); margin-bottom: 2px; }
-        .formula-display { grid-area: formula; background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb; }
-        .formula-container { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; min-height: 50px; }
-        .result-row { font-size: 1rem; font-weight: 600; margin-top: 6px; display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; align-items: center; }
-        .legend { display: flex; gap: 16px; justify-content: center; border-top: 1px solid #eee; padding-top: 6px; width: 100%; flex-wrap: wrap; }
-        .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
-        .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
-        .diagram-section { grid-area: diagram; background: #fff; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; min-height: 380px; display: flex; flex-direction: column; border: 2px solid #fff5eb; }
-        #cvs { width: 100%; flex: 1; display: block; }
-        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
-        .control-panel { background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
-        .control-group { display: flex; flex-direction: column; gap: 3px; }
-        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
-        .val-badge { background: #fff; padding: 1px 7px; border-radius: 7px; font-size: 0.85rem; border: 2px solid #f0f0f0; }
-        select { font-family: inherit; font-size: 0.9rem; padding: 6px 10px; border-radius: 8px; border: 2px solid #f0f0f0; background: #fff; color: var(--text-dark); cursor: pointer; }
-        input[type=range] { width: 100%; appearance: none; height: 6px; background: #eee; border-radius: 3px; }
-        input[type=range]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; cursor: pointer; background: var(--primary); }
-        #sld-rhol::-webkit-slider-thumb { background: #1976d2; }
-        #sld-rhoo::-webkit-slider-thumb { background: var(--accent); }
-        #sld-vo::-webkit-slider-thumb { background: #d84315; }
-        .button-row { display: grid; grid-template-columns: 1.8fr 1fr; gap: 10px; margin-top: 5px; }
-        .btn { padding: 12px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 1rem; color: white; font-family: inherit; transition: all 0.2s; }
-        .btn-check { background-color: #4caf50; box-shadow: 0 4px #2e7d32; }
-        .btn-check:hover { background-color: #43a047; }
-        .btn-check:active { transform: translateY(3px); box-shadow: 0 1px #2e7d32; }
-        .btn-reset { background-color: #e91e63; box-shadow: 0 4px #c2185b; }
-        .btn-reset:hover { background-color: #d81b60; }
-        .btn-reset:active { transform: translateY(3px); box-shadow: 0 1px #c2185b; }
-        .info-card { background: #fff; border-radius: 20px; padding: 12px 16px; box-shadow: var(--shadow); font-size: 0.9rem; line-height: 1.4; color: #5D6D7E; }
-        .material-tag { display: inline-block; background: rgba(255,140,66,0.1); color: var(--primary); padding: 4px 14px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; }
-        .sym { display: inline-block; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .active-res { color: var(--accent) !important; }
-        .active-v { color: #1976d2 !important; }
-        @media(max-width:1100px){.container{grid-template-areas:"header" "formula" "diagram" "controls";grid-template-columns:1fr}}
-    </style>
+#cvs { width: 100%; flex: 1; display: block; }
+select { font-family: inherit; font-size: 0.9rem; padding: 6px 10px; border-radius: 8px; border: 2px solid #f0f0f0; background: #fff; color: var(--text-dark); cursor: pointer; }
+#sld-rhol::-webkit-slider-thumb { background: #1976d2; }
+#sld-rhoo::-webkit-slider-thumb { background: var(--accent); }
+#sld-vo::-webkit-slider-thumb { background: #d84315; }
+.button-row { display: grid; grid-template-columns: 1.8fr 1fr; gap: 10px; margin-top: 5px; }
+.btn { padding: 12px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 1rem; color: white; font-family: inherit; transition: all 0.2s; }
+.btn-check { background-color: #4caf50; box-shadow: 0 4px #2e7d32; }
+.btn-check:hover { background-color: #43a047; }
+.btn-check:active { transform: translateY(3px); box-shadow: 0 1px #2e7d32; }
+.btn-reset { background-color: #e91e63; box-shadow: 0 4px #c2185b; }
+.btn-reset:hover { background-color: #d81b60; }
+.btn-reset:active { transform: translateY(3px); box-shadow: 0 1px #c2185b; }
+.material-tag { display: inline-block; background: rgba(255,140,66,0.1); color: var(--primary); padding: 4px 14px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; }
+.sym { display: inline-block; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.active-res { color: var(--accent) !important; }
+.active-v { color: #1976d2 !important; }
+/* === 无障碍 Accessibility (批量注入) === */
+.skip-link { position: absolute; top: -40px; left: 8px; z-index: 2000; background: #185FA5; color: #fff; padding: 8px 16px; border-radius: 10px; font-size: 0.9rem; font-weight: 600; text-decoration: none; transition: top 0.2s; }
+.skip-link:focus { top: 8px; }
+:focus-visible { outline: 3px solid #185FA5; outline-offset: 2px; border-radius: 6px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+</style>
 </head>
 
 <body>
     <div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
-<a href="mechanics.html" class="back-link">← 返回力学</a>
-    <div class="container">
+<a href="mechanics.html" class="back-link" aria-label="返回力学分类页">← 返回力学</a>
+    <div class="container" id="main">
         <header><h1>阿基米德原理 / Archimedes' Principle</h1></header>
 
-        <section class="formula-display">
+        <section class="formula-display" aria-label="公式与实时数值">
             <div class="formula-container">
                 <span id="f-fb" class="sym" style="color:var(--accent);font-size:2.5rem;font-weight:700;line-height:1;">F<sub>up</sub></span>
                 <span style="font-size:26px;color:#ccc;">=</span>
@@ -88,7 +63,7 @@
                 <span id="res-vdisp" style="color:#bdbdbd;font-weight:bold;">V<sub>disp</sub>: -- m³</span>
                 <span id="status" class="material-tag">等待验证 / Waiting</span>
             </div>
-            <div class="legend">
+            <div class="legend" aria-label="图例说明">
                 <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> F<sub>up</sub>: 浮力 / Upthrust (N)</div>
                 <div class="legend-item"><span class="legend-dot" style="background:#1976d2"></span> ρ<sub>l</sub>: 液体密度 / Liquid Density (kg/m³)</div>
                 <div class="legend-item"><span class="legend-dot" style="background:#388e3c"></span> g: 重力场强度 / Gravitational field (9.81 m/s²)</div>
@@ -96,9 +71,9 @@
             </div>
         </section>
 
-        <section class="diagram-section"><canvas id="cvs"></canvas></section>
+        <section class="diagram-section" aria-label="模拟动画区"><canvas id="cvs" role="img" aria-label="阿基米德原理模拟动画 — 交互式物理仿真画面"></canvas></section>
 
-        <section class="controls-section">
+        <section class="controls-section" aria-label="参数控制区">
             <div class="control-panel">
                 <div class="control-group">
                     <label class="label-row"><span>物体形状 / Object Shape</span></label>
@@ -110,23 +85,23 @@
                 </div>
 
                 <div class="control-group">
-                    <div class="label-row"><span style="color:#1976d2">液体密度 / ρ<sub>l</sub></span><span id="txt-rhol" class="val-badge">1000 kg/m³</span></div>
-                    <input type="range" id="sld-rhol" min="500" max="2000" step="50" value="1000">
+                    <div class="label-row"><span style="color:#1976d2">液体密度 / ρ<sub>l</sub></span><span id="txt-rhol" class="val-badge" aria-live="polite">1000 kg/m³</span></div>
+                    <input type="range" id="sld-rhol" min="500" max="2000" step="50" value="1000" aria-valuemin="500" aria-valuemax="2000" aria-valuenow="1000" aria-valuetext="1000匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
                 </div>
 
                 <div class="control-group">
-                    <div class="label-row"><span style="color:var(--accent)">物体密度 / ρ<sub>o</sub></span><span id="txt-rhoo" class="val-badge">600 kg/m³</span></div>
-                    <input type="range" id="sld-rhoo" min="100" max="2500" step="50" value="600">
+                    <div class="label-row"><span style="color:var(--accent)">物体密度 / ρ<sub>o</sub></span><span id="txt-rhoo" class="val-badge" aria-live="polite">600 kg/m³</span></div>
+                    <input type="range" id="sld-rhoo" min="100" max="2500" step="50" value="600" aria-valuemin="100" aria-valuemax="2500" aria-valuenow="600" aria-valuetext="600匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
                 </div>
 
                 <div class="control-group">
-                    <div class="label-row"><span style="color:#d84315">物体体积 / V<sub>o</sub></span><span id="txt-vo" class="val-badge">1.0 m³</span></div>
-                    <input type="range" id="sld-vo" min="0.1" max="2.0" step="0.1" value="1.0">
+                    <div class="label-row"><span style="color:#d84315">物体体积 / V<sub>o</sub></span><span id="txt-vo" class="val-badge" aria-live="polite">1.0 m³</span></div>
+                    <input type="range" id="sld-vo" min="0.1" max="2.0" step="0.1" value="1.0" aria-valuemin="0.1" aria-valuemax="2.0" aria-valuenow="1.0" aria-valuetext="1.0匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
                 </div>
 
                 <div class="button-row">
                     <button id="btn-check" class="btn btn-check">检查 / CHECK</button>
-                    <button id="btn-reset" class="btn btn-reset">重置 / RESET</button>
+                    <button id="btn-reset" class="btn btn-reset" aria-label="重置参数" aria-label="重置参数" aria-label="重置参数" aria-label="重置参数" aria-label="重置参数" aria-label="重置参数">重置 / RESET</button>
                 </div>
             </div>
             <div class="info-card">
@@ -134,15 +109,15 @@
                 <div style="display:flex;flex-direction:column;gap:6px">
                     <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
                         <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700">F</div>
-                        <div><div style="font-weight:700;font-size:0.9rem">F<sub>up</sub> = ρ<sub>l</sub> · g · V<sub>disp</sub></div><div style="font-size:0.78rem;color:#888">浮力等于排开液体的重量，这是阿基米德原理的核心。</div></div>
+                        <div><div style="font-weight:700;font-size:0.9rem">F<sub>up</sub> = ρ<sub>l</sub> · g · V<sub>disp</sub></div><div style="font-size:0.78rem;color:#6B6B6B">浮力等于排开液体的重量，这是阿基米德原理的核心。</div></div>
                     </div>
                     <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
                         <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(76,175,80,0.1);color:#4caf50;font-weight:700">↑</div>
-                        <div><div style="font-weight:700;font-size:0.9rem">沉浮条件</div><div style="font-size:0.78rem;color:#888">ρ<sub>o</sub> &lt; ρ<sub>l</sub> 漂浮；ρ<sub>o</sub> = ρ<sub>l</sub> 悬浮；ρ<sub>o</sub> &gt; ρ<sub>l</sub> 下沉。</div></div>
+                        <div><div style="font-weight:700;font-size:0.9rem">沉浮条件</div><div style="font-size:0.78rem;color:#6B6B6B">ρ<sub>o</sub> &lt; ρ<sub>l</sub> 漂浮；ρ<sub>o</sub> = ρ<sub>l</sub> 悬浮；ρ<sub>o</sub> &gt; ρ<sub>l</sub> 下沉。</div></div>
                     </div>
                     <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
                         <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(33,150,243,0.1);color:#1976d2;font-weight:700">V</div>
-                        <div><div style="font-weight:700;font-size:0.9rem">排开体积</div><div style="font-size:0.78rem;color:#888">漂浮时 V<sub>disp</sub> &lt; V<sub>o</sub>；完全浸没时 V<sub>disp</sub> = V<sub>o</sub>。</div></div>
+                        <div><div style="font-weight:700;font-size:0.9rem">排开体积</div><div style="font-size:0.78rem;color:#6B6B6B">漂浮时 V<sub>disp</sub> &lt; V<sub>o</sub>；完全浸没时 V<sub>disp</sub> = V<sub>o</sub>。</div></div>
                     </div>
                 </div>
             </div>
@@ -291,7 +266,25 @@
 
         window.addEventListener('load', () => setTimeout(resetAll, 100));
         window.onresize = drawLoop;
-    </script>
+    
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+</script>
 <div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
 </body>
 

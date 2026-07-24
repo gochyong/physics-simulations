@@ -14,10 +14,7 @@
     <meta name="author" content="Wuli布雷克">
     <meta name="copyright" content="Copyright 2025 Wuli布雷克">
     <title>牛顿定律 / Newton's Laws - Wuli布雷克</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
-    <style>
+<style>
         :root {
             --bg-color: #FFF9F0; --primary: #FF8c42; --secondary: #FFC75F;
             --accent: #FF5E5B; --text-dark: #4A403A; --card-bg: #FFFFFF;
@@ -50,7 +47,7 @@
 
         .law-description { text-align: center; max-width: 900px; margin-bottom: 8px; background: #fff; padding: 12px 25px; border-radius: 16px; border-left: 5px solid var(--primary); box-shadow: var(--shadow); }
         .law-description h2 { color: var(--primary); margin-bottom: 4px; font-size: 1.2rem; }
-        .english-text { font-style: italic; color: #888; margin-top: 3px; font-size: 0.85rem; }
+        .english-text { font-style: italic; color: #6B6B6B; margin-top: 3px; font-size: 0.85rem; }
 
         .simulation-container { width: 100%; background: #fff; border-radius: 20px; position: relative; overflow: hidden; display: flex; flex-direction: column; border: 2px solid #fff5eb; box-shadow: var(--shadow); }
 
@@ -63,7 +60,7 @@
         .action-btn:active { transform: translateY(4px); box-shadow: none; }
         .action-btn.secondary { background: #93A1A1; box-shadow: 0 4px 0 #6d7979; }
 
-        .formula-display { display: flex; align-items: center; justify-content: center; gap: 15px; font-family: 'Times New Roman',serif; font-size: 2rem; font-weight: bold; margin-bottom: 8px; padding: 14px; background: #fff; border-radius: 16px; box-shadow: var(--shadow); }
+        .formula-display { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 15px; font-family: 'Times New Roman',serif; font-size: 2rem; font-weight: bold; margin-bottom: 8px; padding: 14px; background: #fff; border-radius: 16px; box-shadow: var(--shadow); }
         .formula-part { transition: font-size 0.3s, color 0.3s; }
         #force-display { color: var(--blue); }
         #mass-display { color: #2aa198; }
@@ -151,13 +148,31 @@
             .law3-scene { border-right: none; border-bottom: 2px solid #fff5eb; }
             .gauges-container { gap: 20px; }
         }
-    </style>
+
+        /* === 无障碍 Accessibility (批量注入) === */
+        .skip-link { position: absolute; top: -40px; left: 8px; z-index: 2000; background: #185FA5; color: #fff; padding: 8px 16px; border-radius: 10px; font-size: 0.9rem; font-weight: 600; text-decoration: none; transition: top 0.2s; }
+        .skip-link:focus { top: 8px; }
+        :focus-visible { outline: 3px solid #185FA5; outline-offset: 2px; border-radius: 6px; }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+  
+    /* === 无障碍 Accessibility (批量注入) === */
+    .skip-link { position: absolute; top: -40px; left: 8px; z-index: 2000; background: #185FA5; color: #fff; padding: 8px 16px; border-radius: 10px; font-size: 0.9rem; font-weight: 600; text-decoration: none; transition: top 0.2s; }
+    .skip-link:focus { top: 8px; }
+    :focus-visible { outline: 3px solid #185FA5; outline-offset: 2px; border-radius: 6px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+  
+/* === 无障碍 Accessibility (批量注入) === */
+.skip-link { position: absolute; top: -40px; left: 8px; z-index: 2000; background: #185FA5; color: #fff; padding: 8px 16px; border-radius: 10px; font-size: 0.9rem; font-weight: 600; text-decoration: none; transition: top 0.2s; }
+.skip-link:focus { top: 8px; }
+:focus-visible { outline: 3px solid #185FA5; outline-offset: 2px; border-radius: 6px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+</style>
 </head>
 
 <body>
     <div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
-<a href="mechanics.html" class="back-link">← 返回力学</a>
-    <div class="container">
+<a href="mechanics.html" class="back-link" aria-label="返回力学分类页">← 返回力学</a>
+    <div class="container" id="main">
         <header><h1>牛顿定律 / Newton's Laws</h1></header>
         <nav class="law-tabs">
             <button class="tab-btn active" data-law="1"><span class="law-num">I</span><span class="law-name">惯性定律<br><small>Inertia</small></span></button>
@@ -175,15 +190,15 @@
                 <div class="simulation-container">
                     <p style="text-align:center;color:var(--primary);font-weight:bold;margin:8px 0;">
                         无摩擦时倾角越小，物体滑的越远；如果倾角为0度时会怎么样呢？<br>
-                        <span style="font-size:0.85em;font-weight:normal;color:#888;">Without friction, the smaller the angle, the farther the object slides. What if the angle is 0°?</span>
+                        <span style="font-size:0.85em;font-weight:normal;color:#6B6B6B;">Without friction, the smaller the angle, the farther the object slides. What if the angle is 0°?</span>
                     </p>
                     <div class="canvas-wrapper">
-                        <canvas id="ramp-canvas" width="1440" height="400"></canvas>
+                        <canvas id="ramp-canvas" width="1440" height="400" role="img" aria-label="牛顿定律模拟动画 — 交互式物理仿真画面"></canvas>
                     </div>
                     <div class="controls">
                         <div class="control-group">
                             <label class="label-row">右斜面角度 (Right Ramp Angle): <span id="val-angle">30</span>°</label>
-                            <input type="range" id="range-angle" min="0" max="60" value="30">
+                            <input type="range" id="range-angle" min="0" max="60" value="30" aria-valuemin="0" aria-valuemax="60" aria-valuenow="30" aria-valuetext="30匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
                         </div>
                         <label class="toggle-control" style="margin-left:15px;">
                             <input type="checkbox" id="friction-toggle-1">
@@ -238,11 +253,11 @@
                     <div class="controls" style="flex-wrap:wrap;">
                         <div class="control-group">
                             <label class="label-row">力 (Force) F: <span id="val-f">10</span> N</label>
-                            <input type="range" id="range-f" min="0" max="50" value="10">
+                            <input type="range" id="range-f" min="0" max="50" value="10" aria-valuemin="0" aria-valuemax="50" aria-valuenow="10" aria-valuetext="10匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
                         </div>
                         <div class="control-group" style="margin-left:20px;">
                             <label class="label-row">质量 (Mass) m: <span id="val-m">10</span> kg</label>
-                            <input type="range" id="range-m" min="1" max="50" value="10">
+                            <input type="range" id="range-m" min="1" max="50" value="10" aria-valuemin="1" aria-valuemax="50" aria-valuenow="10" aria-valuetext="10匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
                         </div>
                         <label class="toggle-control" style="margin-left:20px;">
                             <input type="checkbox" id="friction-toggle-2">
@@ -491,7 +506,16 @@
                 if (expl) { expl.style.display = (expl.style.display === 'block' ? 'none' : 'block'); }
             };
         });
-    </script>
+    
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+</script>
 <div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
 </body>
 </html>

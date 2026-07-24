@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wuli布雷克物理模拟实验室 - 液体压强 / Liquid Pressure。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:title" content="液体压强 / Liquid Pressure - Wuli布雷克">
+    <meta property="og:description" content="Wuli布雷克物理模拟实验室 - 液体压强 / Liquid Pressure。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wuliblake.com/LiquidPressure.html">
+    <meta property="og:site_name" content="Wuli布雷克物理模拟实验室">
+    <link rel="stylesheet" href="common.css">
+    <meta name="author" content="Wuli布雷克">
+    <meta name="copyright" content="Copyright 2025 Wuli布雷克">
+    <title>液体压强 / Liquid Pressure - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>#pressureCanvas { max-width: 100%; height: auto; display: block; }
+#slider-rho::-webkit-slider-thumb { background: var(--primary); }
+#slider-h::-webkit-slider-thumb { background: #0081a7; }</style>
+</head>
+
+<body>
+    <div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
+<a href="mechanics.html" class="back-link" aria-label="返回力学分类页">← 返回力学</a>
+    <div class="container" id="main">
+        <header><h1>液体压强 / Liquid Pressure</h1></header>
+
+        <section class="formula-display" aria-label="公式与实时数值">
+            <div class="formula-container" id="formula-root"></div>
+            <div class="result-row">
+                <span>压强 P = <strong id="res-p" style="color:var(--accent)">19620</strong> Pa</span>
+            </div>
+            <div class="legend" aria-label="图例说明">
+                <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> P 压强</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--primary)"></span> ρ 密度</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--secondary)"></span> g 重力场强度</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#0081a7"></span> h 深度</div>
+            </div>
+        </section>
+
+        <section class="diagram-section" aria-label="模拟动画区"><canvas id="pressureCanvas" width="500" height="400" role="img" aria-label="液体压强模拟动画 — 交互式物理仿真画面"></canvas></section>
+
+        <section class="controls-section" aria-label="参数控制区">
+            <div class="control-panel">
+                <div class="control-group">
+                    <div class="label-row"><span style="color:var(--primary)">密度 ρ / Density</span><span id="disp-rho" class="val-badge" aria-live="polite">1000 kg/m³</span></div>
+                    <input type="range" id="slider-rho" min="500" max="2000" step="50" value="1000" aria-valuemin="500" aria-valuemax="2000" aria-valuenow="1000" aria-valuetext="1000匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+                </div>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:var(--secondary)">重力场强度 g / Gravitational field strength</span><span id="disp-g" class="val-badge" aria-live="polite">9.81 N/kg</span></div>
+                    <input type="range" id="slider-g" min="1" max="20" step="0.1" value="9.81" aria-valuemin="1" aria-valuemax="20" aria-valuenow="9.81" aria-valuetext="9.81匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')"> disabled style="opacity:0.5; cursor:not-allowed;">
+                </div>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:#0081a7">深度 h / Depth</span><span id="disp-h" class="val-badge" aria-live="polite">2.0 m</span></div>
+                    <input type="range" id="slider-h" min="0" max="10" step="0.1" value="2" aria-valuemin="0" aria-valuemax="10" aria-valuenow="2" aria-valuetext="2匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+                </div>
+            </div>
+            <div class="info-card">
+                <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem">演示要点 / Key Points</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,94,91,0.1);color:var(--accent);font-weight:700">P</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">P = ρgh</div><div style="font-size:0.78rem;color:#6B6B6B">液体压强随深度线性增加，与密度和重力场强度成正比。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700">ρ</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">液体颜色深浅代表密度</div><div style="font-size:0.78rem;color:#6B6B6B">密度越大颜色越深，同等深度下压强越大。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(0,129,167,0.1);color:#0081a7;font-weight:700">h</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">球体位置代表深度</div><div style="font-size:0.78rem;color:#6B6B6B">越深压强越大，球体被压缩得越小，周围压力箭头越长。</div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const sliderRho = document.getElementById('slider-rho');
+        const sliderG = document.getElementById('slider-g');
+        const sliderH = document.getElementById('slider-h');
+
+        const dispRho = document.getElementById('disp-rho');
+        const dispG = document.getElementById('disp-g');
+        const dispH = document.getElementById('disp-h');
+
+        const resP = document.getElementById('res-p');
+        const fRoot = document.getElementById('formula-root');
+
+        const canvas = document.getElementById('pressureCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let state = {
+            rho: 1000,
+            g: 9.81,
+            h: 2
+        };
+
+        function init() {
+            addListeners();
+            update();
+        }
+
+        function addListeners() {
+            sliderRho.addEventListener('input', (e) => {
+                state.rho = parseFloat(e.target.value);
+                update();
+            });
+            sliderH.addEventListener('input', (e) => {
+                state.h = parseFloat(e.target.value);
+                update();
+            });
+        }
+
+        function update() {
+            dispRho.textContent = state.rho;
+            dispG.textContent = state.g.toFixed(2);
+            dispH.textContent = state.h.toFixed(1);
+
+            const pressure = state.rho * state.g * state.h;
+            resP.textContent = pressure.toFixed(0);
+
+            updateFormulaDisplay(pressure);
+            drawDiagram(pressure);
+        }
+
+        function mapRange(value, inMin, inMax, outMin, outMax) {
+            return ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
+        }
+
+        function updateFormulaDisplay(pressure) {
+            const scaleRho = mapRange(state.rho, 500, 2000, 1.0, 1.8);
+            const scaleG = mapRange(state.g, 1, 20, 0.8, 1.5);
+            const scaleH = mapRange(state.h, 0, 10, 0.8, 2.0);
+            const scaleP = Math.max(1, Math.log10(pressure + 1) * 0.4);
+
+            const rhoFS = Math.min(80, Math.max(28, 36 * scaleRho));
+            const gFS = Math.min(70, Math.max(24, 30 * scaleG));
+            const hFS = Math.min(80, Math.max(28, 36 * scaleH));
+            const pFS = Math.min(90, Math.max(28, 36 * Math.min(scaleP, 2.5)));
+
+            fRoot.innerHTML = `
+                <span style="color:var(--accent);font-size:${pFS}px;font-weight:700;line-height:1;">P</span>
+                <span style="font-size:26px;color:#ccc;">=</span>
+                <span style="color:var(--primary);font-size:${rhoFS}px;font-weight:700;line-height:1;">ρ</span>
+                <span style="color:var(--secondary);font-size:${gFS}px;font-weight:700;line-height:1;">g</span>
+                <span style="color:#0081a7;font-size:${hFS}px;font-weight:700;line-height:1;">h</span>
+                <span style="font-size:20px;color:#999;">P = ρgh = ${pressure.toFixed(0)} Pa</span>
+            `;
+        }
+
+        function drawDiagram(pressure) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const tankWidth = 200;
+            const tankHeight = 300;
+            const tankTop = 50;
+            const waterLevelY = tankTop + 20;
+            const tankBottom = tankTop + tankHeight;
+
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(cx - tankWidth / 2, tankTop);
+            ctx.lineTo(cx - tankWidth / 2, tankBottom);
+            ctx.lineTo(cx + tankWidth / 2, tankBottom);
+            ctx.lineTo(cx + tankWidth / 2, tankTop);
+            ctx.stroke();
+
+            const lightness = mapRange(state.rho, 500, 2000, 90, 40);
+            ctx.fillStyle = `hsl(200, 80%, ${lightness}%)`;
+            ctx.fillRect(cx - tankWidth / 2 + 2, waterLevelY, tankWidth - 4, tankBottom - waterLevelY - 2);
+
+            const maxVisualDepth = tankBottom - waterLevelY - 20;
+            const visualDepth = mapRange(state.h, 0, 10, 0, maxVisualDepth);
+            const pointY = waterLevelY + visualDepth;
+
+            if (state.h > 0) {
+                ctx.setLineDash([5, 5]);
+                ctx.strokeStyle = '#555';
+                ctx.beginPath();
+                ctx.moveTo(cx - tankWidth / 2 - 20, waterLevelY);
+                ctx.lineTo(cx + tankWidth / 2 + 20, waterLevelY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                ctx.beginPath();
+                ctx.moveTo(cx - tankWidth / 2 - 20, pointY);
+                ctx.lineTo(cx, pointY);
+                ctx.stroke();
+
+                drawDimensionLine(cx - tankWidth / 2 - 10, waterLevelY, pointY, 'h');
+
+                const maxRadius = 35;
+                const minRadius = 5;
+                const radius = mapRange(pressure, 0, 200000, maxRadius, minRadius);
+
+                ctx.fillStyle = '#FF5E5B';
+                ctx.beginPath();
+                ctx.arc(cx, pointY, radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                ctx.beginPath();
+                ctx.arc(cx - radius * 0.3, pointY - radius * 0.3, radius * 0.2, 0, Math.PI * 2);
+                ctx.fill();
+
+                const arrowLength = mapRange(pressure, 0, 200000, 15, 90);
+                drawPressureArrowsOnSphere(cx, pointY, radius, arrowLength);
+            } else {
+                ctx.fillStyle = '#FF5E5B';
+                ctx.beginPath();
+                ctx.arc(cx, waterLevelY, 25, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function drawPressureArrowsOnSphere(cx, cy, radius, length) {
+            ctx.strokeStyle = '#FF8c42';
+            ctx.lineWidth = 3;
+            const numArrows = 8;
+
+            for (let i = 0; i < numArrows; i++) {
+                const angle = (Math.PI * 2 * i) / numArrows;
+                const startR = radius + length + 5;
+                const endR = radius + 2;
+
+                const x1 = cx + Math.cos(angle) * startR;
+                const y1 = cy + Math.sin(angle) * startR;
+                const x2 = cx + Math.cos(angle) * endR;
+                const y2 = cy + Math.sin(angle) * endR;
+
+                drawSingleArrow(x1, y1, x2, y2);
+            }
+        }
+
+        function drawDimensionLine(x, yStart, yEnd, label) {
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(x, yStart);
+            ctx.lineTo(x, yEnd);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(x - 3, yStart + 5);
+            ctx.lineTo(x, yStart);
+            ctx.lineTo(x + 3, yStart + 5);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(x - 3, yEnd - 5);
+            ctx.lineTo(x, yEnd);
+            ctx.lineTo(x + 3, yEnd - 5);
+            ctx.stroke();
+
+            ctx.fillStyle = '#000';
+            ctx.font = '14px Fredoka, "Noto Sans SC", Arial, sans-serif';
+            ctx.textAlign = 'right';
+            ctx.fillText(label, x - 5, (yStart + yEnd) / 2 + 5);
+        }
+
+        function drawSingleArrow(x1, y1, x2, y2) {
+            const headLen = 5;
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(x2, y2);
+            ctx.lineTo(x2 - headLen * Math.cos(angle - Math.PI / 6), y2 - headLen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(x2 - headLen * Math.cos(angle + Math.PI / 6), y2 - headLen * Math.sin(angle + Math.PI / 6));
+            ctx.fillStyle = '#FF8c42';
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        init();
+    
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+</script>
+<div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
+</body>
+</html>

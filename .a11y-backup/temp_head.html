@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Wuli布雷克">
+    <meta name="copyright" content="Copyright 2025 Wuli布雷克">
+    <title>抛体运动 / Projectile Motion - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>.sub-canvases { display: flex; flex-direction: column; gap: 6px; flex: 1; min-height: 180px; }
+#slider-angle::-webkit-slider-thumb { background: var(--secondary); }</style>
+</head>
+
+<body>
+    <div class="branding"><div class="logo">Wuli布雷克</div></div>
+    <div class="container" id="main">
+        <header>
+            <h1>抛体运动 / Projectile Motion</h1>
+            <p class="subtitle">v₀: 初速度 &nbsp; θ: 发射角 &nbsp; g = 9.8 m/s²</p>
+        </header>
+
+        <section class="formula-display" aria-label="公式与实时数值">
+            <div class="formula-container" id="formula-root"></div>
+            <div class="result-row" id="result-area"></div>
+            <div class="legend" aria-label="图例说明">
+                <div class="legend-item"><span class="legend-dot" style="background:var(--primary)"></span> 轨迹</div>
+                <div class="legend-item"><span style="color:#3498db">--</span> 射程 R</div>
+                <div class="legend-item"><span style="color:#2ecc71">--</span> 最大高度 H</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#FF5E5B"></span> 小球</div>
+            </div>
+        </section>
+
+        <section class="diagram-section" aria-label="模拟动画区">
+            <div class="main-canvas-wrap"><canvas id="simCanvas" role="img" aria-label="抛体运动模拟动画 — 交互式物理仿真画面"></canvas></div>
+            <div class="sub-canvases">
+                <div class="sub-wrap">
+                    <div class="sub-label" style="color:#3498db;">水平方向 Horizontal（匀速：Vh = v₀cosθ 恒定）</div>
+                    <canvas id="canvasH" role="img" aria-label="抛体运动模拟动画 — 交互式物理仿真画面"></canvas>
+                </div>
+                <div class="sub-wrap">
+                    <div class="sub-label" style="color:#2ecc71;">竖直方向 Vertical（匀变速：Vv = v₀sinθ − gt）</div>
+                    <canvas id="canvasV" role="img" aria-label="抛体运动模拟动画 — 交互式物理仿真画面"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section class="controls-section" aria-label="参数控制区">
+            <div class="control-panel">
+                <div class="control-group">
+                    <label for="slider-v0" class="label-row"><span>初速度 v₀ (Initial Velocity)</span><span id="badge-v0" class="val-badge" aria-live="polite">15 m/s</span></label>
+                    <input type="range" id="slider-v0" min="5" max="25" step="0.5" value="15" aria-valuemin="5" aria-valuemax="25" aria-valuenow="15" aria-valuetext="15匝">>
+                </div>
+                <div class="control-group">
+                    <label for="slider-angle" class="label-row"><span>发射角 θ (Launch Angle)</span><span id="badge-angle" class="val-badge" aria-live="polite">45°</span></label>
+                    <input type="range" id="slider-angle" min="10" max="80" step="1" value="45" aria-valuemin="10" aria-valuemax="80" aria-valuenow="45" aria-valuetext="45匝">>
+                </div>
+                <div class="btn-row">
+                    <button id="btn-start" class="ctrl-btn start" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false">开始 Start</button>
+                    <button id="btn-reset" class="ctrl-btn reset" aria-label="重置参数" aria-label="重置参数">重置 Reset</button>
+                </div>
+            </div>
+            <div class="info-card">
+                <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem;">演示要点 / Key Points</div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:#3498db;font-weight:700;">R</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">R = v₀² sin(2θ) / g</div><div style="font-size:0.78rem;color:#6B6B6B;">水平射程，45°时最大。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:#2ecc71;font-weight:700;">H</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">H = v₀² sin²θ / (2g)</div><div style="font-size:0.78rem;color:#6B6B6B;">最高点垂直高度。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;">T</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">T = 2v₀ sinθ / g</div><div style="font-size:0.78rem;color:#6B6B6B;">飞行总时间。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:#3498db;font-weight:700;">↔</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">水平匀速：Vh = v₀cosθ</div><div style="font-size:0.78rem;color:#6B6B6B;">水平不受力，速度恒定。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:#2ecc71;font-weight:700;">↕</div>
+                        <div><div style="font-weight:700;font-size:0.9rem;">竖直匀变速：Vv = v₀sinθ − gt</div><div style="font-size:0.78rem;color:#6B6B6B;">受重力 a=−g，速度线性减小后反向。</div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const simC = document.getElementById('simCanvas'), ctx = simC.getContext('2d');
+        const hC = document.getElementById('canvasH'), ctxH = hC.getContext('2d');
+        const vC = document.getElementById('canvasV'), ctxV = vC.getContext('2d');
+        const sV0 = document.getElementById('slider-v0'), sAng = document.getElementById('slider-angle');
+        const bV0 = document.getElementById('badge-v0'), bAng = document.getElementById('badge-angle');
+        const bStart = document.getElementById('btn-start'), bReset = document.getElementById('btn-reset');
+        const fRoot = document.getElementById('formula-root'), rArea = document.getElementById('result-area');
+
+        const G = 9.8;
+        const state = { v0: 15, angle: 45, time: 0, playing: false, ts: 0.5 };
+
+        function resize() {
+            simC.width = simC.clientWidth; simC.height = simC.clientHeight;
+            hC.width = hC.clientWidth; hC.height = hC.clientHeight;
+            vC.width = vC.clientWidth; vC.height = vC.clientHeight;
+        }
+
+        // Compute physics from current state — always fresh

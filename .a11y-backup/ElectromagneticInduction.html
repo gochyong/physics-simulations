@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wuli布雷克物理模拟实验室 - 电磁感应 / Electromagnetic Induction。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:title" content="电磁感应 / Electromagnetic Induction - Wuli布雷克">
+    <meta property="og:description" content="Wuli布雷克物理模拟实验室 - 电磁感应 / Electromagnetic Induction。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wuliblake.com/ElectromagneticInduction.html">
+    <meta property="og:site_name" content="Wuli布雷克物理模拟实验室">
+    <link rel="stylesheet" href="common.css">
+    <meta name="author" content="Wuli布雷克">
+    <meta name="copyright" content="Copyright 2025 Wuli布雷克">
+    <title>电磁感应 / Electromagnetic Induction - Wuli布雷克</title>
+</head>
+<body>
+<a href="#main" class="skip-link">跳到主内容</a>
+<div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
+<a href="electricity.html" class="back-link" aria-label="返回电磁学分类页">← 返回电磁学</a>
+<div class="container" id="main">
+<header><h1>电磁感应 / Electromagnetic Induction</h1></header>
+<section class="formula-display" aria-label="公式与实时数值">
+    <div class="formula-container" id="formula-root"></div>
+    <div class="result-row" id="result-row"></div>
+    <div class="legend" aria-label="图例说明">
+        <div class="legend-item"><span class="legend-dot" style="background:#e74c3c"></span> N极</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#3498db"></span> S极</div>
+        <div class="legend-item"><span style="color:#D4956B">――</span> 线圈</div>
+        <div class="legend-item"><span style="color:#27ae60">→</span> 速度 v</div>
+    </div>
+</section>
+<section class="diagram-section" aria-label="模拟动画区">
+    <div class="main-wrap"><canvas id="simCanvas" role="img" aria-label="电磁感应模拟动画 — 交互式物理仿真画面"></canvas></div>
+    <div class="sub-wrap">
+        <div class="sub-label">感应电动势 EMF vs 磁铁位置 &nbsp; (法拉第定律 ε = −N dΦ/dt)</div>
+        <canvas id="canvasEMF" role="img" aria-label="电磁感应模拟动画 — 交互式物理仿真画面"></canvas>
+    </div>
+</section>
+<section class="controls-section" aria-label="参数控制区">
+    <div class="control-panel">
+        <div class="param-section" style="border-left:5px solid #e74c3c;">
+            <div class="param-section-header">🧲 磁铁 / Magnet</div>
+            <div class="control-group"><label for="slider-speed" class="label-row"><span>磁铁速度 Speed</span><span id="badge-speed" class="val-badge" aria-live="polite">2</span></label><input type="range" id="slider-speed" min="1" max="5" step="1" value="2" aria-valuemin="1" aria-valuemax="5" aria-valuenow="2" aria-valuetext="2匝">></div>
+            <div class="toggle-row" style="margin-top:2px;">
+                <span style="font-size:0.8rem;font-weight:600;">NS 方向 NS Dir:</span>
+                <button class="tog-btn sel" id="btn-nl" onclick="S.nsDir='N-left';updateTog()">N左S右</button>
+                <button class="tog-btn" id="btn-nr" onclick="S.nsDir='N-right';updateTog()">N右S左</button>
+            </div>
+        </div>
+        <div class="param-section" style="border-left:5px solid #8e44ad;">
+            <div class="param-section-header">🔗 线圈 / Coil</div>
+            <div class="control-group"><label for="slider-N" class="label-row"><span>匝数 N</span><span id="badge-N" class="val-badge" aria-live="polite">5</span></label><input type="range" id="slider-N" min="1" max="10" step="1" value="5" aria-valuemin="1" aria-valuemax="10" aria-valuenow="5" aria-valuetext="5匝">></div>
+            <div class="control-group" style="margin-top:4px;"><label for="slider-B" class="label-row"><span>磁铁强度 B</span><span id="badge-B" class="val-badge" aria-live="polite">3</span></label><input type="range" id="slider-B" min="1" max="5" step="1" value="3" aria-valuemin="1" aria-valuemax="5" aria-valuenow="3" aria-valuetext="3匝">></div>
+        </div>
+        <div class="btn-row"><button id="btn-start" class="ctrl-btn start" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false">开始 Start</button><button id="btn-reset" class="ctrl-btn reset" aria-label="重置参数" aria-label="重置参数" aria-label="重置参数" aria-label="重置参数">重置 Reset</button></div>
+    </div>
+    <div class="info-card">
+        <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem;">物理要点 / Key Points</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;">ε</div><div><div style="font-weight:700;font-size:0.9rem;">ε = −N dΦ/dt</div><div style="font-size:0.78rem;color:#6B6B6B;">感应电动势等于磁通量变化率的负值乘以匝数。</div></div></div>
+            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:#2ecc71;font-weight:700;">🔄</div><div><div style="font-weight:700;font-size:0.9rem;">楞次定律</div><div style="font-size:0.78rem;color:#6B6B6B;">感应电流方向总是阻碍磁通量的变化。</div></div></div>
+            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(142,68,173,0.1);color:#8e44ad;font-weight:700;">Φ</div><div><div style="font-weight:700;font-size:0.9rem;">磁铁进出线圈→EMF反向</div><div style="font-size:0.78rem;color:#6B6B6B;">进入和离开线圈时感应电动势方向相反。</div></div></div>
+        </div>
+    </div>
+</section>
+</div>
+
+<script>
+const simC = document.getElementById('simCanvas'), ctx = simC.getContext('2d');
+const emfC = document.getElementById('canvasEMF'), ctxE = emfC.getContext('2d');
+const sSpeed = document.getElementById('slider-speed'), sN = document.getElementById('slider-N'), sB = document.getElementById('slider-B');
+const bSpeed = document.getElementById('badge-speed'), bN = document.getElementById('badge-N'), bB = document.getElementById('badge-B');
+const bStart = document.getElementById('btn-start'), bReset = document.getElementById('btn-reset');
+const fRoot = document.getElementById('formula-root'), rRow = document.getElementById('result-row');
+
+const S = { speed: 2, N: 5, B: 3, side: 'left', nsDir: 'N-left', playing: false, magnetX: 0, time: 0 };
+let lt = 0;
+const EMF_POS = []; // {x, emf} — EMF vs magnet position
+
+function updateTog() {
+    document.getElementById('btn-nl').className = 'tog-btn' + (S.nsDir === 'N-left' ? ' sel' : '');
+    document.getElementById('btn-nr').className = 'tog-btn' + (S.nsDir === 'N-right' ? ' sel' : '');
+    EMF_POS.length = 0;
+}
+
+function resize() {
+    simC.width = simC.clientWidth; simC.height = simC.clientHeight;
+    emfC.width = emfC.clientWidth; emfC.height = emfC.clientHeight;
+}
+window.addEventListener('resize', resize);
+
+function arrow(c, x, y, dx, dy, clr, lw) {
+    const a = Math.atan2(dy, dx), h = 7, tx = x + dx, ty = y + dy;
+    c.strokeStyle = clr; c.fillStyle = clr; c.lineWidth = lw || 2; c.lineCap = 'round';
+    c.beginPath(); c.moveTo(x, y); c.lineTo(tx, ty); c.stroke();
+    c.beginPath(); c.moveTo(tx, ty);
+    c.lineTo(tx - h * Math.cos(a - Math.PI / 6), ty - h * Math.sin(a - Math.PI / 6));
+    c.lineTo(tx - h * Math.cos(a + Math.PI / 6), ty - h * Math.sin(a + Math.PI / 6));
+    c.closePath(); c.fill();
+}
+
+function draw() {
+    ctx.clearRect(0, 0, simC.width, simC.height);
+    const cw = simC.width, ch = simC.height;
+    if (cw < 10 || ch < 10) return;
+    ctx.fillStyle = '#fdfdfa'; ctx.fillRect(0, 0, cw, ch);
+
+    const coilCx = cw * 0.50, coilCy = ch * 0.50;
+    const coilW = 100, turnSp = Math.min(22, (ch * 0.6) / (S.N + 1));
+    const coilHalfH = S.N * turnSp / 2;
+    const coilLeft = coilCx - coilW / 2, coilRight = coilCx + coilW / 2;
+
+    // Magnet
+    const magnetW = 110, magnetH = Math.max(12, (S.N * turnSp * 0.7 + 20) / 3);
+    const edgeMargin = 30;
+    const startX = S.side === 'left' ? edgeMargin : cw - edgeMargin - magnetW;
+    const endX = S.side === 'left' ? cw - edgeMargin - magnetW : edgeMargin;
+    const travelDist = endX - startX;
+    const speedPx = S.speed * 60; // px/s
+    const travelTime = Math.abs(travelDist) / speedPx;
+
+    const mx = S.magnetX, my = coilCy;
+    const magnetLeft = mx, magnetRight = mx + magnetW;
+    const magnetTop = my - magnetH / 2, magnetBot = my + magnetH / 2;
+
+    // --- Physics: dual-pole model ---
+    // N and S poles separated by magnet length, each contributes a Gaussian to the flux
+    const magCx = mx + magnetW / 2;
+    const poleSep = magnetW * 0.8;
+    const isNLeft = S.nsDir === 'N-left';
+    const nPX = magCx + (isNLeft ? -poleSep / 2 : poleSep / 2);
+    const sPX = magCx + (isNLeft ? poleSep / 2 : -poleSep / 2);
+    const sigmaP = coilW * 1.2;
+    const phiN = S.B * 3 * Math.exp(-(nPX - coilCx) * (nPX - coilCx) / (2 * sigmaP * sigmaP));
+    const phiS = S.B * 3 * Math.exp(-(sPX - coilCx) * (sPX - coilCx) / (2 * sigmaP * sigmaP));
+    const flux = phiN + phiS; // both poles contribute → max at center
+    const vPx = S.playing ? speedPx * (S.side === 'left' ? 1 : -1) : 0;
+    const dPhiNDt = -phiN * (nPX - coilCx) / (sigmaP * sigmaP) * vPx;
+    const dPhiSDt = -phiS * (sPX - coilCx) / (sigmaP * sigmaP) * vPx;
+    const dFluxDt = dPhiNDt + dPhiSDt; // sum of derivatives
+    const emf = S.N * dFluxDt * (isNLeft ? 1 : -1);
+    const emfAbs = Math.abs(emf);
+
+    // --- Draw solenoid (helical coil, horizontal, connected to galvanometer) ---
+    const solCY = coilCy, solR = Math.max(coilHalfH, 24);
+    const solL = coilLeft, solRr = coilRight, solLen = coilW;
+    // Wave-form solenoid: sine wave along horizontal axis, N complete cycles
+    const waveAmp = solR * 0.7; // wave amplitude
+    const nWaves = S.N; // exactly N cycles
+
+    // Cylinder body (subtle background)
+    ctx.fillStyle = 'rgba(200,185,160,0.08)';
+    ctx.fillRect(solL, solCY - solR, solLen, solR * 2);
+    ctx.strokeStyle = '#ddd'; ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(solL, solCY - solR); ctx.lineTo(solRr, solCY - solR); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(solL, solCY + solR); ctx.lineTo(solRr, solCY + solR); ctx.stroke();
+
+    // Main sine wave — front-facing coil wire
+    ctx.strokeStyle = '#D4956B'; ctx.lineWidth = 3.0; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.beginPath();
+    for (let i = 0; i <= nWaves * 40; i++) {
+        const t = i / (nWaves * 40);
+        const x = solL + t * solLen;
+        const y = solCY - waveAmp * Math.sin(t * nWaves * Math.PI * 2);
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+
+
+    // --- Galvanometer above coil ---
+    const galvX = coilCx, galvY = coilCy - coilHalfH - 40;
+    const galvR = 22;
+    ctx.beginPath(); ctx.arc(galvX, galvY, galvR, 0, Math.PI * 2);
+    ctx.fillStyle = '#fff'; ctx.fill();
+    ctx.strokeStyle = '#555'; ctx.lineWidth = 2; ctx.stroke();
+    // Needle — proportional deflection, not on/off
+    const refEMF = S.N * S.B * S.speed * 1.2;
+    const rawAngle = (emf / Math.max(refEMF, 1)) * 1.2;
+    const needleAngle = Math.max(-0.35 * Math.PI, Math.min(0.35 * Math.PI, rawAngle));
+    const nx = galvX + (galvR - 8) * Math.sin(needleAngle);
+    const ny = galvY - (galvR - 8) * Math.cos(needleAngle);
+    ctx.beginPath(); ctx.moveTo(galvX, galvY); ctx.lineTo(nx, ny);
+    ctx.strokeStyle = '#FF5E5B'; ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.stroke();
+    ctx.fillStyle = '#FF5E5B'; ctx.beginPath(); ctx.arc(galvX, galvY, 3.5, 0, Math.PI * 2); ctx.fill();
+    // Galvanometer wire loop — closed circuit with solenoid
+    // Left wave endpoint connects up to G left, right wave endpoint to G right
+    const waveLeftY = solCY - waveAmp * Math.sin(0); // ≈ solCY
+    const waveRightY = solCY - waveAmp * Math.sin(nWaves * Math.PI * 2); // ≈ solCY
+    ctx.strokeStyle = '#999'; ctx.lineWidth = 1.5; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    // Left: wave start → up → G left bottom edge
+    ctx.beginPath(); ctx.moveTo(solL, waveLeftY);
+    ctx.lineTo(solL, galvY + galvR);
+    ctx.lineTo(galvX - 14, galvY + galvR); ctx.stroke();
+    // Right: wave end → up → G right bottom edge
+    ctx.beginPath(); ctx.moveTo(solRr, waveRightY);
+    ctx.lineTo(solRr, galvY + galvR);
+    ctx.lineTo(galvX + 14, galvY + galvR); ctx.stroke();
+    // G label
+    ctx.fillStyle = '#6B6B6B'; ctx.font = '10px Fredoka'; ctx.textAlign = 'center';
+    ctx.fillText('G', galvX, galvY + 4);
+
+    // --- Draw magnet ---
+    const nColor = '#e74c3c', sColor = '#3498db';
+    const gradM = ctx.createLinearGradient(magnetLeft, 0, magnetRight, 0);
+    gradM.addColorStop(0, isNLeft ? nColor : sColor);
+    gradM.addColorStop(0.48, isNLeft ? nColor : sColor);
+    gradM.addColorStop(0.52, isNLeft ? sColor : nColor);
+    gradM.addColorStop(1, isNLeft ? sColor : nColor);
+    ctx.fillStyle = gradM;
+    const rr = 6;
+    ctx.beginPath();
+    ctx.moveTo(magnetLeft + rr, magnetTop);
+    ctx.lineTo(magnetRight - rr, magnetTop);
+    ctx.arcTo(magnetRight, magnetTop, magnetRight, magnetTop + rr, rr);
+    ctx.lineTo(magnetRight, magnetBot - rr);
+    ctx.arcTo(magnetRight, magnetBot, magnetRight - rr, magnetBot, rr);
+    ctx.lineTo(magnetLeft + rr, magnetBot);
+    ctx.arcTo(magnetLeft, magnetBot, magnetLeft, magnetBot - rr, rr);
+    ctx.lineTo(magnetLeft, magnetTop + rr);
+    ctx.arcTo(magnetLeft, magnetTop, magnetLeft + rr, magnetTop, rr);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = '#555'; ctx.lineWidth = 2; ctx.stroke();
+
+    // --- Field lines: N side → arc → S side (3 above, 3 below) ---
+    const nSideX = isNLeft ? mx : mx + magnetW;  // N pole on left→left edge; N on right→right edge
+    const sSideX = isNLeft ? mx + magnetW : mx;  // S pole opposite edge
+    const nDir = isNLeft ? -1 : 1; // N pole edge: lines go outward (left or right)
+    const sDir = isNLeft ? 1 : -1; // S pole edge: lines come inward
+    // Field lines start from various heights along the magnet side edges
+    const nLines = S.B * 2; const edgeHeights = [];
+    for (let k = 1; k <= nLines; k++) {
+        const h = k / (nLines + 1) * 0.95; edgeHeights.push(h, -h);
+    } // dynamic count from B
+    for (let i = 0; i < edgeHeights.length; i++) {
+        const frac = edgeHeights[i];
+        const sy = my + frac * magnetH * 0.45;
+        const sign = frac >= 0 ? 1 : -1;
+        const dist = Math.abs(frac);
+        const bulge = magnetW * 0.5 * (1.5 + dist * 2); // min bulge large so inner lines also curve sharply
+        const cpx = (nSideX + sSideX) / 2;
+        const cpy = sy + sign * bulge * 1.2;
+        ctx.strokeStyle = 'rgba(127,140,141,0.4)'; ctx.lineWidth = 1.3;
+        ctx.beginPath(); ctx.moveTo(nSideX, sy);
+        ctx.quadraticCurveTo(cpx, cpy, sSideX, sy); ctx.stroke();
+        // Arrow at midpoint
+        const t = 0.5;
+        const ax = (1-t)*(1-t)*nSideX + 2*(1-t)*t*cpx + t*t*sSideX;
+        const ay = (1-t)*(1-t)*sy + 2*(1-t)*t*cpy + t*t*sy;
+        const tx2 = 2*(1-t)*(cpx-nSideX) + 2*t*(sSideX-cpx);
+        const ty2 = 2*(1-t)*(cpy-sy) + 2*t*(sy-cpy);
+        const ang = Math.atan2(ty2, tx2), sz2 = 5;
+        ctx.fillStyle = 'rgba(127,140,141,0.45)';
+        ctx.beginPath(); ctx.moveTo(ax + sz2 * Math.cos(ang), ay + sz2 * Math.sin(ang));
+        ctx.lineTo(ax - sz2 * 0.5 * Math.cos(ang - 0.8), ay - sz2 * 0.5 * Math.sin(ang - 0.8));
+        ctx.lineTo(ax - sz2 * 0.5 * Math.cos(ang + 0.8), ay - sz2 * 0.5 * Math.sin(ang + 0.8));
+        ctx.closePath(); ctx.fill();
+    }
+    // N pole: 1 long center line + 2 arcs above (up-right) + 2 arcs below (down-right)
+    const pLen = 44;
+    arrow(ctx, nSideX, my, nDir * pLen, 0, 'rgba(127,140,141,0.55)', 1.6);
+    // Arcs: start at magnet surface, curve away from axis
+    for (let si = 0; si < 2; si++) {
+        const sign = si === 0 ? -1 : 1;
+        for (let j = 0; j < S.B; j++) {
+            const dy = (j + 1) * 9;
+            const sy = my + sign * dy;
+            const ex = nSideX + nDir * pLen;
+            const ey = my + sign * (dy + 25);
+            const cpx = nSideX + nDir * pLen * 0.25;
+            const cpy = my + sign * 5; // gentle bulge
+            ctx.strokeStyle = 'rgba(127,140,141,0.4)'; ctx.lineWidth = 1.2;
+            ctx.beginPath(); ctx.moveTo(nSideX, sy);
+            ctx.quadraticCurveTo(cpx, cpy, ex, ey); ctx.stroke();
+            // Arrow at 40% along curve
+            const t = 0.4;
+            const ax = (1-t)*(1-t)*nSideX + 2*(1-t)*t*cpx + t*t*ex;
+            const ay = (1-t)*(1-t)*sy + 2*(1-t)*t*cpy + t*t*ey;
+            const dang = Math.atan2(ey-sy, ex-nSideX), sz = 4;
+            ctx.fillStyle = 'rgba(127,140,141,0.5)';
+            ctx.beginPath(); ctx.moveTo(ax+sz*Math.cos(dang), ay+sz*Math.sin(dang));
+            ctx.lineTo(ax-sz*0.5*Math.cos(dang-0.8), ay-sz*0.5*Math.sin(dang-0.8));
+            ctx.lineTo(ax-sz*0.5*Math.cos(dang+0.8), ay-sz*0.5*Math.sin(dang+0.8));
+            ctx.closePath(); ctx.fill();
+        }
+    }
+
+    // S pole: 1 long center line + 2 arcs above + 2 arcs below (all pointing inward)
+    arrow(ctx, sSideX + sDir * pLen, my, -sDir * pLen, 0, 'rgba(127,140,141,0.55)', 1.6);
+    for (let si = 0; si < 2; si++) {
+        const sign = si === 0 ? -1 : 1;
+        for (let j = 0; j < S.B; j++) {
+            const dy = (j + 1) * 9;
+            const sy = my + sign * dy;
+            const sx = sSideX + sDir * pLen;
+            const sY = my + sign * (dy + 25);
+            const cpx = sSideX + sDir * pLen * 0.75;
+            const cpy = my + sign * 5;
+            ctx.strokeStyle = 'rgba(127,140,141,0.4)'; ctx.lineWidth = 1.2;
+            ctx.beginPath(); ctx.moveTo(sx, sY);
+            ctx.quadraticCurveTo(cpx, cpy, sSideX, sy); ctx.stroke();
+            const t = 0.6;
+            const ax = (1-t)*(1-t)*sx + 2*(1-t)*t*cpx + t*t*sSideX;
+            const ay = (1-t)*(1-t)*sY + 2*(1-t)*t*cpy + t*t*sy;
+            const dang = Math.atan2(sy-sY, sSideX-sx), sz = 4;
+            ctx.fillStyle = 'rgba(127,140,141,0.5)';
+            ctx.beginPath(); ctx.moveTo(ax+sz*Math.cos(dang), ay+sz*Math.sin(dang));
+            ctx.lineTo(ax-sz*0.5*Math.cos(dang-0.8), ay-sz*0.5*Math.sin(dang-0.8));
+            ctx.lineTo(ax-sz*0.5*Math.cos(dang+0.8), ay-sz*0.5*Math.sin(dang+0.8));
+            ctx.closePath(); ctx.fill();
+        }
+    }
+
+    // N/S labels
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 15px Fredoka'; ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const nlX = isNLeft ? mx + magnetW * 0.2 : mx + magnetW * 0.8;
+    const slX = isNLeft ? mx + magnetW * 0.8 : mx + magnetW * 0.2;
+    ctx.fillText('N', nlX, my);
+    ctx.fillText('S', slX, my);
+
+    // Velocity arrow
+    if (S.playing) {
+        const vDir = S.side === 'left' ? 1 : -1;
+        const ax = mx + magnetW / 2, ay = magnetTop - 20;
+        arrow(ctx, ax, ay, vDir * 25, 0, '#27ae60', 2.5);
+        ctx.fillStyle = '#27ae60'; ctx.font = 'bold 10px Fredoka'; ctx.textAlign = 'center';
+        ctx.fillText('v', ax + vDir * 32, ay - 2);
+    }
+
+    // Labels
+    ctx.fillStyle = '#6B6B6B'; ctx.font = '11px Fredoka'; ctx.textAlign = 'center';
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillText('线圈 (' + S.N + '匝)', coilCx, coilCy + coilHalfH + 16);
+
+    // --- EMF vs Position graph (progressive drawing) ---
+    const ew = emfC.width, eh = emfC.height;
+    ctxE.clearRect(0, 0, ew, eh);
+    ctxE.fillStyle = '#fdfcf8'; ctxE.fillRect(0, 0, ew, eh);
+
+    // Compute current EMF at magnet position for history
+    const spE = S.side === 'left' ? 1 : -1;
+    const magPoleSepE = magnetW * 0.8;
+    const mcE = S.magnetX + magnetW / 2;
+    const nXE = mcE + (isNLeft ? -magPoleSepE / 2 : magPoleSepE / 2);
+    const sXE = mcE + (isNLeft ? magPoleSepE / 2 : -magPoleSepE / 2);
+    const pNE = S.B * 3 * Math.exp(-(nXE - coilCx) * (nXE - coilCx) / (2 * sigmaP * sigmaP));
+    const pSE = S.B * 3 * Math.exp(-(sXE - coilCx) * (sXE - coilCx) / (2 * sigmaP * sigmaP));
+    const dNE = -pNE * (nXE - coilCx) / (sigmaP * sigmaP) * speedPx * spE;
+    const dSE = -pSE * (sXE - coilCx) / (sigmaP * sigmaP) * speedPx * spE;
+    const curEMF = S.N * (dNE + dSE) * (isNLeft ? 1 : -1);
+    if (S.playing) EMF_POS.push({ x: S.magnetX, emf: curEMF });
+    if (EMF_POS.length > 500) EMF_POS.shift();
+
+    if (ew > 10 && eh > 10 && EMF_POS.length > 1) {
+        const mL = 45, mR = 15, mT = 10, mB = 25;
+        const pw = ew - mL - mR, ph = eh - mT - mB, midY = mT + ph / 2;
+        ctxE.strokeStyle = '#ddd'; ctxE.lineWidth = 1; ctxE.setLineDash([4, 4]);
+        ctxE.beginPath(); ctxE.moveTo(mL, midY); ctxE.lineTo(ew - mR, midY); ctxE.stroke();
+        ctxE.setLineDash([]);
+
+        // Fixed reference scale so curve starts near zero, not at max
+        const refMax = S.N * S.B * S.speed * 3;
+        const scale = (ph / 2) / Math.max(refMax, 1);
+        // Actual max for labels
+        let labelMax = 0.5;
+        for (const pt of EMF_POS) { if (Math.abs(pt.emf) > labelMax) labelMax = Math.abs(pt.emf); }
+        labelMax = Math.max(labelMax, 1);
+
+        // Draw filled area for recorded history
+        ctxE.beginPath();
+        ctxE.moveTo(mL, midY);
+        for (let i = 0; i < EMF_POS.length; i++) {
+            const xFrac = (EMF_POS[i].x - startX) / Math.max(travelDist, 1);
+            const sx = mL + xFrac * pw;
+            const sy = midY - EMF_POS[i].emf * scale;
+            ctxE.lineTo(sx, sy);
+        }
+        ctxE.lineTo(mL + pw, midY); ctxE.closePath();
+        const gE = ctxE.createLinearGradient(0, mT, 0, mT + ph);
+        gE.addColorStop(0, 'rgba(255,140,66,0.2)');
+        gE.addColorStop(0.5, 'rgba(255,140,66,0.03)');
+        gE.addColorStop(1, 'rgba(52,152,219,0.2)');
+        ctxE.fillStyle = gE; ctxE.fill();
+
+        // Draw curve line
+        ctxE.strokeStyle = '#FF8c42'; ctxE.lineWidth = 2.5; ctxE.lineCap = 'round';
+        ctxE.beginPath();
+        for (let i = 0; i < EMF_POS.length; i++) {
+            const xFrac = (EMF_POS[i].x - startX) / Math.max(travelDist, 1);
+            const sx = mL + xFrac * pw;
+            const sy = midY - EMF_POS[i].emf * scale;
+            if (i === 0) ctxE.moveTo(sx, sy); else ctxE.lineTo(sx, sy);
+        }
+        ctxE.stroke();
+
+        // Current position dot
+        const xFrac = (S.magnetX - startX) / Math.max(travelDist, 1);
+        ctxE.fillStyle = '#FF5E5B'; ctxE.beginPath();
+        ctxE.arc(mL + xFrac * pw, midY - curEMF * scale, 4.5, 0, Math.PI * 2); ctxE.fill();
+        ctxE.strokeStyle = '#fff'; ctxE.lineWidth = 1.5; ctxE.stroke();
+
+        // Coil marker
+        const coilFrac = (coilCx - magnetW / 2 - startX) / Math.max(travelDist, 1);
+        const coilSx = mL + coilFrac * pw;
+        ctxE.strokeStyle = '#D4956B'; ctxE.lineWidth = 1.5; ctxE.setLineDash([3, 5]);
+        ctxE.beginPath(); ctxE.moveTo(coilSx, mT); ctxE.lineTo(coilSx, mT + ph); ctxE.stroke();
+        ctxE.setLineDash([]);
+        ctxE.fillStyle = '#D4956B'; ctxE.font = '9px Fredoka'; ctxE.textAlign = 'center';
+        ctxE.fillText('线圈', coilSx, mT + ph + 14);
+
+        // Axis labels with actual max
+        ctxE.fillStyle = '#6B6B6B'; ctxE.font = '9px Fredoka'; ctxE.textAlign = 'right';
+        ctxE.fillText('+' + labelMax.toFixed(0) + 'mV', mL - 4, mT + 10);
+        ctxE.fillText('0', mL - 4, midY + 4);
+        ctxE.fillText('-' + labelMax.toFixed(0) + 'mV', mL - 4, mT + ph);
+        ctxE.textAlign = 'center';
+        ctxE.fillText('磁铁位置 Magnet Position', ew / 2, eh - 4);
+    }
+
+    // --- Update UI ---
+    bSpeed.textContent = S.speed; bN.textContent = S.N; bB.textContent = S.B;
+    let formulaMax = 0;
+    for (const pt of EMF_POS) { const a = Math.abs(pt.emf); if (a > formulaMax) formulaMax = a; }
+    fRoot.innerHTML =
+        '<span class="formula-item" style="color:#8e44ad"><b>ε = −N dΦ/dt</b></span>' +
+        '<span class="formula-item" style="color:#3498db">Φ = BA (磁通量)</span>' +
+        '<span class="formula-item" style="color:var(--primary)">|ε_max| = ' + formulaMax.toFixed(1) + ' mV</span>';
+    rRow.innerHTML =
+        '<span>当前 ε = <b style="color:' + (emf > 0 ? '#e67e22' : '#2980b9') + '">' + emf.toFixed(1) + ' mV</b></span>' +
+        '<span>|ε_max| = <b style="color:#e74c3c">' + formulaMax.toFixed(1) + ' mV</b></span>';
+}
+
+function loop(ts) {
+    if (!lt) lt = ts;
+    let dt = (ts - lt) / 1000; lt = ts;
+    if (dt > 0.1) dt = 0.016;
+    if (S.playing) {
+        S.time += dt;
+        const edgeMargin = 40;
+        const cw = simC.width;
+        const magnetW = 110;
+        const startX = S.side === 'left' ? edgeMargin : cw - edgeMargin - magnetW;
+        const endX = S.side === 'left' ? cw - edgeMargin - magnetW : edgeMargin;
+        const travelDist = endX - startX;
+        const speedPx = S.speed * 60;
+        const travelTime = Math.abs(travelDist) / speedPx;
+        const frac = Math.min(1, S.time / travelTime);
+        S.magnetX = startX + frac * travelDist;
+        if (frac >= 1) { S.playing = false; bStart.textContent = '开始 Start'; bStart.className = 'ctrl-btn start'; }
+    }
+    draw();
+  // aria状态同步
+  (function syncAria(){
+    const ranges=document.querySelectorAll('input[type=range]');
+    ranges.forEach(r=>{
+      const v=r.value,min=r.min,max=r.max;
+      const unit=r.id.includes('freq')?'赫兹':r.id.includes('vp')?'伏':'匝';
+      r.setAttribute('aria-valuenow',v);
+      r.setAttribute('aria-valuetext',v+unit);
+    });
+    const startBtn=document.getElementById('btn-start');
+    if(startBtn&&startBtn.textContent.includes('暂停')){
+      startBtn.setAttribute('aria-pressed','true');
+      startBtn.setAttribute('aria-label','暂停模拟');
+    }
+  })();
+
+    requestAnimationFrame(loop);
+}
+
+function onChg() {
+    S.speed = parseInt(sSpeed.value);
+    S.N = parseInt(sN.value);
+    S.B = parseInt(sB.value);
+    const edgeMargin = 40;
+    const startX = S.side === 'left' ? edgeMargin : simC.width - edgeMargin - 110;
+    S.magnetX = startX; S.time = 0; lt = 0; EMF_POS.length = 0;
+    draw();
+}
+sSpeed.addEventListener('input', onChg);
+sN.addEventListener('input', onChg);
+sB.addEventListener('input', onChg);
+
+bStart.onclick = () => {
+    if (!S.playing) {
+        // Only reset to start if magnet completed its travel
+        const edgeMargin = 40;
+        const cw = simC.width;
+        const startX = S.side === 'left' ? edgeMargin : cw - edgeMargin - 110;
+        const endX = S.side === 'left' ? cw - edgeMargin - 110 : edgeMargin;
+        if ((S.side === 'left' && S.magnetX >= endX - 2) || (S.side === 'right' && S.magnetX <= endX + 2)) {
+            S.magnetX = startX; S.time = 0;
+        }
+    }
+    S.playing = !S.playing;
+    bStart.textContent = S.playing ? '暂停 Pause' : '开始 Start';
+    bStart.className = 'ctrl-btn ' + (S.playing ? 'pause' : 'start');
+};
+
+bReset.onclick = () => {
+    const edgeMargin = 40;
+    const startX = S.side === 'left' ? edgeMargin : simC.width - edgeMargin - 110;
+    S.magnetX = startX; S.time = 0; S.playing = false; lt = 0; EMF_POS.length = 0;
+    bStart.textContent = '开始 Start'; bStart.className = 'ctrl-btn start';
+    draw();
+};
+
+resize(); draw();
+  // aria状态同步
+  (function syncAria(){
+    const ranges=document.querySelectorAll('input[type=range]');
+    ranges.forEach(r=>{
+      const v=r.value,min=r.min,max=r.max;
+      const unit=r.id.includes('freq')?'赫兹':r.id.includes('vp')?'伏':'匝';
+      r.setAttribute('aria-valuenow',v);
+      r.setAttribute('aria-valuetext',v+unit);
+    });
+    const startBtn=document.getElementById('btn-start');
+    if(startBtn&&startBtn.textContent.includes('暂停')){
+      startBtn.setAttribute('aria-pressed','true');
+      startBtn.setAttribute('aria-label','暂停模拟');
+    }
+  })();
+
+requestAnimationFrame(loop);
+
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+</script>
+<div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
+</body>
+</html>

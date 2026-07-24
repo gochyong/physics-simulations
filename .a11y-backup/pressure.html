@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wuli布雷克物理模拟实验室 - 压强 / Pressure。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:title" content="压强 / Pressure - Wuli布雷克">
+    <meta property="og:description" content="Wuli布雷克物理模拟实验室 - 压强 / Pressure。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wuliblake.com/pressure.html">
+    <meta property="og:site_name" content="Wuli布雷克物理模拟实验室">
+    <link rel="stylesheet" href="common.css">
+    <meta name="author" content="Wuli布雷克">
+    <meta name="copyright" content="Copyright 2025 Wuli布雷克">
+    <title>压强 / Pressure - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>#f-slider::-webkit-slider-thumb { background: #3498db; }
+#s-slider::-webkit-slider-thumb { background: #b58900; }</style>
+</head>
+
+<body>
+    <div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
+<a href="mechanics.html" class="back-link" aria-label="返回力学分类页">← 返回力学</a>
+    <div class="container" id="main">
+        <header style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;">
+            <h1 style="margin:0;">压强 / Pressure</h1>
+            <a href="https://www.bilibili.com/video/BV1r8vxBaE1n?vd_source=3224f35e098a02c0a9fb70d0049a72fb&spm_id_from=333.788.videopod.sections" target="_blank" rel="noopener"
+               style="display:inline-flex;align-items:center;gap:4px;background:#FB7299;color:#fff;padding:4px 14px;border-radius:14px;font-size:0.85rem;font-weight:600;text-decoration:none;transition:all 0.2s;box-shadow:0 2px 8px rgba(251,114,153,0.3);"
+               onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+               📺 视频讲解
+            </a>
+        </header>
+
+        <section class="formula-display" aria-label="公式与实时数值">
+            <div class="formula-container" id="formula-root"></div>
+            <div class="result-row">
+                <span>压强 P = <strong id="res-p" style="color:var(--accent)">0.50</strong> N/cm² (×10⁴ Pa)</span>
+            </div>
+            <div class="legend" aria-label="图例说明">
+                <div class="legend-item"><span class="legend-dot" style="background:#3498db"></span> 压力 F (N)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#b58900"></span> 面积 S (cm²)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> 压强 P</div>
+            </div>
+        </section>
+
+        <section class="diagram-section" aria-label="模拟动画区"><canvas id="simCanvas" role="img" aria-label="压强模拟动画 — 交互式物理仿真画面"></canvas></section>
+
+        <section class="controls-section" aria-label="参数控制区">
+            <div class="control-panel">
+                <div class="control-group">
+                    <div class="label-row"><span style="color:#3498db">压力 F / Force</span><span id="f-badge" class="val-badge" aria-live="polite">50 N</span></div>
+                    <input type="range" id="f-slider" min="10" max="200" value="50" aria-valuemin="10" aria-valuemax="200" aria-valuenow="50" aria-valuetext="50匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+                </div>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:#b58900">受力面积 S / Area</span><span id="s-badge" class="val-badge" aria-live="polite">100 cm²</span></div>
+                    <input type="range" id="s-slider" min="40" max="250" value="100" aria-valuemin="40" aria-valuemax="250" aria-valuenow="100" aria-valuetext="100匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+                </div>
+            </div>
+            <div class="info-card">
+                <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem">演示要点 / Key Points</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,94,91,0.1);color:var(--accent);font-weight:700">P</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">P = F / S</div><div style="font-size:0.78rem;color:#6B6B6B">压强等于压力除以受力面积，压力越大或面积越小，压强越大。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:#3498db;font-weight:700">F</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">重力箭头代表压力</div><div style="font-size:0.78rem;color:#6B6B6B">箭头越长表示压力越大，方块颜色越深表示受力越大。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(181,137,0,0.1);color:#b58900;font-weight:700">S</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">方块宽度代表受力面积</div><div style="font-size:0.78rem;color:#6B6B6B">面积越小（越尖锐），表面形变越明显，压强大。</div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas'), ctx = canvas.getContext('2d');
+        const fSlider = document.getElementById('f-slider'), sSlider = document.getElementById('s-slider');
+        const fBadge = document.getElementById('f-badge'), sBadge = document.getElementById('s-badge');
+        const resP = document.getElementById('res-p'), fRoot = document.getElementById('formula-root');
+
+        function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; update(); }
+        window.addEventListener('resize', () => { resize(); update(); });
+
+        function update() {
+            const f = parseFloat(fSlider.value), s = parseFloat(sSlider.value);
+            const p = f / s * 10000;
+
+            fBadge.textContent = f + ' N'; sBadge.textContent = s + ' cm²';
+            resP.textContent = (f / s).toFixed(2);
+
+            const fFS = Math.min(80, Math.max(22, 28 + (f / 200) * 50));
+            const sFS = Math.min(80, Math.max(22, 28 + (s / 250) * 50));
+            const pFS = Math.min(90, Math.max(24, 32 + Math.min(p / 10000 * 45, 50)));
+
+            fRoot.innerHTML = `
+                <span style="color:var(--accent);font-size:${pFS}px;font-weight:700;line-height:1;">P</span>
+                <span style="font-size:26px;color:#ccc;">=</span>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+                    <span style="color:#3498db;font-size:${fFS}px;font-weight:700;line-height:1;">F</span>
+                    <div style="width:60px;height:3px;background:#ccc;border-radius:2px;"></div>
+                    <span style="color:#b58900;font-size:${sFS}px;font-weight:700;line-height:1;">S</span>
+                </div>
+                <span style="font-size:20px;color:#999;">P = F/S = ${(f/s).toFixed(2)} N/cm²</span>
+            `;
+
+            draw(f, s, p);
+        }
+
+        function draw(f, s, p) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const groundY = centerY + 100;
+
+            const sag = Math.min(p / 10000 * 60, 60);
+            const areaWidth = s * 1.5;
+
+            ctx.beginPath();
+            ctx.moveTo(0, groundY);
+            ctx.lineTo(centerX - areaWidth / 2 - 50, groundY);
+            ctx.bezierCurveTo(
+                centerX - areaWidth / 2, groundY,
+                centerX - areaWidth / 4, groundY + sag,
+                centerX, groundY + sag
+            );
+            ctx.bezierCurveTo(
+                centerX + areaWidth / 4, groundY + sag,
+                centerX + areaWidth / 2, groundY,
+                centerX + areaWidth / 2 + 50, groundY
+            );
+            ctx.lineTo(canvas.width, groundY);
+            ctx.strokeStyle = '#93a1a1';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            ctx.lineTo(canvas.width, canvas.height);
+            ctx.lineTo(0, canvas.height);
+            ctx.fillStyle = '#e5dec1';
+            ctx.fill();
+
+            const boxHeight = 100;
+            const boxX = centerX - areaWidth / 2;
+            const boxY = groundY + sag - boxHeight;
+
+            ctx.fillStyle = 'rgba(0,0,0,0.1)';
+            ctx.fillRect(boxX + 5, boxY + 5, areaWidth, boxHeight);
+
+            const colorIntensity = Math.floor(160 - (f / 200) * 60);
+            ctx.fillStyle = `rgb(${colorIntensity}, ${colorIntensity - 30}, ${colorIntensity - 60})`;
+            ctx.fillRect(boxX, boxY, areaWidth, boxHeight);
+
+            ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(boxX, boxY, areaWidth, boxHeight);
+
+            const arrowLen = 20 + (f / 200) * 80;
+            drawArrow(centerX, boxY + 30, centerX, boxY + 30 + arrowLen, '#268bd2', `F = ${f}N`);
+        }
+
+        function drawArrow(x1, y1, x2, y2, color, label) {
+            const headlen = 10;
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(x2, y2);
+            ctx.lineTo(x2 - headlen, y2 - headlen);
+            ctx.lineTo(x2 + headlen, y2 - headlen);
+            ctx.fillStyle = color;
+            ctx.fill();
+
+            ctx.fillStyle = color;
+            ctx.font = 'bold 14px Fredoka, "Noto Sans SC", Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, x1, y1 - 10);
+        }
+
+        fSlider.addEventListener('input', update);
+        sSlider.addEventListener('input', update);
+
+        resize();
+    
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+</script>
+<div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
+</body>
+</html>

@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wuli布雷克物理模拟实验室 - 比热容 / Specific Heat Capacity。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:title" content="比热容 / Specific Heat Capacity - Wuli布雷克">
+    <meta property="og:description" content="Wuli布雷克物理模拟实验室 - 比热容 / Specific Heat Capacity。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wuliblake.com/SpecificHeatCapacity.html">
+    <meta property="og:site_name" content="Wuli布雷克物理模拟实验室">
+    <link rel="stylesheet" href="common.css">
+    <meta name="author" content="Wuli布雷克">
+    <meta name="copyright" content="Copyright 2025 Wuli布雷克">
+    <title>比热容 / Specific Heat Capacity - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>        :root {
+    --radius: 28px;
+        }
+.back-link {
+            position: fixed; top: 10px; right: 20px; z-index: 1000;
+            text-decoration: none; color: var(--primary); font-weight: 700;
+            font-size: 0.95rem; background: rgba(255,255,255,0.9);
+            padding: 6px 16px; border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(255,140,66,0.15);
+            transition: all 0.3s;
+        }
+.back-link:hover { background: #fff; box-shadow: 0 4px 18px rgba(255,140,66,0.3); }
+/* Formula Section */
+        .formula-display {
+            grid-area: formula; background: var(--card-bg); border-radius: var(--radius);
+            box-shadow: var(--shadow); padding: 14px 24px;
+            display: flex; flex-direction: column; align-items: center;
+            border: 2px solid #fff5eb;
+        }
+/* Diagram */
+        .diagram-section {
+            grid-area: diagram; background: #fff; border-radius: 20px;
+            box-shadow: var(--shadow); overflow: hidden; min-height: 420px;
+            display: flex; flex-direction: column; border: 2px solid #fff5eb;
+        }
+/* Controls */
+        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
+#m-slider::-webkit-slider-thumb { background: #9b59b6; }
+#c-slider::-webkit-slider-thumb  { background: #e67e22; }
+#q-slider::-webkit-slider-thumb  { background: #FF5E5B; }
+/* Substance selector pills */
+        .substance-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.sub-pill {
+            padding: 5px 12px; border-radius: 14px; font-size: 0.8rem; font-weight: 700;
+            border: 2px solid #e0e0e0; background: #fafafa; cursor: pointer;
+            transition: all 0.2s; color: #666;
+        }
+.sub-pill:hover { border-color: #e67e22; background: #fff8f0; }
+.sub-pill.active { background: #e67e22; color: #fff; border-color: #e67e22; box-shadow: 0 2px 8px rgba(230,126,34,0.3); }
+/* Buttons */
+        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+/* Info card (demo key points) */
+        .info-card {
+            background: #fff; border-radius: 20px; box-shadow: var(--shadow);
+            padding: 14px 16px; display: flex; flex-direction: column;
+            border: 2px solid #fff5eb;
+        }
+/* Fraction */
+        .fraction { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; font-size: 0.8em; margin: 0 5px; }
+.fraction-top { border-bottom: 2px solid currentColor; padding: 0 4px; }
+.fraction-bottom { padding: 0 4px; }</style>
+</head>
+
+<body>
+    <div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
+    <a href="thermal.html" class="back-link" aria-label="返回热学分类页">← 返回热学</a>
+
+    <div class="container" id="main">
+        <header>
+            <div style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;">
+            <h1 style="margin:0;">比热容 / Specific Heat Capacity</h1>
+            <a href="https://www.bilibili.com/video/BV1fdNv6jEbd/?vd_source=3224f35e098a02c0a9fb70d0049a72fb" target="_blank" rel="noopener"
+               style="display:inline-flex;align-items:center;gap:4px;background:#FB7299;color:#fff;padding:4px 14px;border-radius:14px;font-size:0.85rem;font-weight:600;text-decoration:none;transition:all 0.2s;box-shadow:0 2px 8px rgba(251,114,153,0.3);"
+               onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+               📺 视频讲解
+            </a>
+            </div>
+            <div style="font-size:0.9rem;color:#8d6e63;margin-top:4px;font-style:italic;line-height:1.5">
+                The amount of heat required to raise the temperature of 1 kg of a substance by 1°C.<br>
+                单位质量物质温度升高 1°C 所需吸收的热量。
+            </div>
+        </header>
+
+        <section class="formula-display" aria-label="公式与实时数值">
+            <div class="formula-container" id="formula-root"></div>
+            <div class="result-row">
+                Q = <span id="res-m" style="color:#9b59b6">1.0</span> kg &times;
+                <span id="res-c" style="color:#e67e22">4200</span> J/(kg&middot;°C) &times;
+                <span id="res-dt" style="color:var(--accent)">0.0</span> °C
+                = <strong id="res-Q" style="color:var(--accent)">0</strong> J
+            </div>
+            <div class="legend" aria-label="图例说明">
+                <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> Q 热量</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#9b59b6"></span> m 质量</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#e67e22"></span> c 比热容</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#3498db"></span> &Delta;T 温度变化</div>
+            </div>
+        </section>
+
+        <section class="diagram-section" aria-label="模拟动画区"><canvas id="simCanvas" role="img" aria-label="比热容模拟动画 — 交互式物理仿真画面"></canvas></section>
+
+        <section class="controls-section" aria-label="参数控制区">
+            <div class="control-panel">
+                <!-- Substance selector -->
+                <div class="control-group">
+                    <div class="label-row"><span style="color:#e67e22">物质 / Substance</span></div>
+                    <div class="substance-pills" id="substance-pills">
+                        <button class="sub-pill active" data-c="4200" data-name="水" data-color="#4da6ff" data-phase="liquid">💧 水</button>
+                        <button class="sub-pill" data-c="2100" data-name="冰" data-color="#b3e0ff" data-phase="solid">❄️ 冰</button>
+                        <button class="sub-pill" data-c="2010" data-name="酒精" data-color="#c8a2ff" data-phase="liquid">🧪 酒精</button>
+                        <button class="sub-pill" data-c="450" data-name="铁" data-color="#b0b0b0" data-phase="solid">🔩 铁</button>
+                        <button class="sub-pill" data-c="900" data-name="铝" data-color="#d4d4d4" data-phase="solid">🪶 铝</button>
+                        <button class="sub-pill" data-c="390" data-name="铜" data-color="#e8a060" data-phase="solid">🪙 铜</button>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:#9b59b6">质量 m / Mass</span><span id="m-badge" class="val-badge" aria-live="polite">1.0 kg</span></div>
+                    <input type="range" id="m-slider" min="0.5" max="5" step="0.1" value="1.0" aria-valuemin="0.5" aria-valuemax="5" aria-valuenow="1.0" aria-valuetext="1.0匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+                </div>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:#e67e22">比热容 c / Specific Heat</span><span id="c-badge" class="val-badge" aria-live="polite">4200 J/(kg·°C)</span></div>
+                    <input type="range" id="c-slider" min="100" max="5000" step="10" value="4200" aria-valuemin="100" aria-valuemax="5000" aria-valuenow="4200" aria-valuetext="4200匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+                </div>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:var(--accent)">加热功率 / Heating Power</span><span id="q-badge" class="val-badge" aria-live="polite">500 W</span></div>
+                    <input type="range" id="q-slider" min="100" max="2000" step="50" value="500" aria-valuemin="100" aria-valuemax="2000" aria-valuenow="500" aria-valuetext="500匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+                </div>
+                <div class="btn-row">
+                    <button id="btn-start" class="ctrl-btn start" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false">加热 Heat</button>
+                    <button id="btn-reset" class="ctrl-btn reset" aria-label="重置参数" aria-label="重置参数">重置 Reset</button>
+                </div>
+            </div>
+            <div class="info-card">
+                <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem">演示要点 / Key Points</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700">c</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">比热容越大，升温越慢</div><div style="font-size:0.78rem;color:#6B6B6B">相同热量 Q 下，c 越大 → ΔT 越小。水的比热容大，升温缓慢。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(155,89,182,0.1);color:#9b59b6;font-weight:700">m</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">质量越大，升温越慢</div><div style="font-size:0.78rem;color:#6B6B6B">相同热量下，质量翻倍 → ΔT 减半。ΔT = Q / (m·c)</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:#3498db;font-weight:700">ΔT</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">Q = m·c·ΔT 线性关系</div><div style="font-size:0.78rem;color:#6B6B6B">热量与温度变化成正比，斜率由 m·c 决定。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(231,76,60,0.1);color:#e74c3c;font-weight:700">⚡</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">固体 vs 液体</div><div style="font-size:0.78rem;color:#6B6B6B">金属比热容小（铁 450、铜 390），同样热量升温远快于水（4200）。</div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas'), ctx = canvas.getContext('2d');
+
+        const sM = document.getElementById('m-slider'), sC = document.getElementById('c-slider'), sQ = document.getElementById('q-slider');
+        const bM = document.getElementById('m-badge'), bC = document.getElementById('c-badge'), bQ = document.getElementById('q-badge');
+        const resQ = document.getElementById('res-Q'), resM = document.getElementById('res-m'), resC = document.getElementById('res-c'), resDt = document.getElementById('res-dt');
+        const formulaRoot = document.getElementById('formula-root');
+        const btnStart = document.getElementById('btn-start'), btnReset = document.getElementById('btn-reset');
+        const subPills = document.getElementById('substance-pills');
+
+        const ROOM_TEMP = 20;
+
+        // Boiling points for liquids (°C)
+        const BOIL_POINTS = { '水': 100, '酒精': 78 };
+
+        const state = {
+            m: 1.0,
+            c: 4200,
+            power: 500,
+            temperature: ROOM_TEMP,
+            totalHeat: 0,
+            isPlaying: false,
+            substanceName: '水',
+            substanceColor: '#4da6ff',
+            phase: 'liquid',
+            boilPoint: 100,
+            isBoiling: false,
+            lastTime: 0,
+            bubbles: []
+        };
+
+        // --- Substance Pills ---
+        subPills.addEventListener('click', (e) => {
+            const pill = e.target.closest('.sub-pill');
+            if (!pill) return;
+            subPills.querySelectorAll('.sub-pill').forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            state.c = parseFloat(pill.dataset.c);
+            state.substanceName = pill.dataset.name;
+            state.substanceColor = pill.dataset.color;
+            state.phase = pill.dataset.phase || 'liquid';
+            state.boilPoint = BOIL_POINTS[state.substanceName] || Infinity;
+            state.isBoiling = false;
+            sC.value = state.c;
+            bC.textContent = state.c + ' J/(kg·°C)';
+            // Reset temperature and bubbles on substance change
+            state.temperature = ROOM_TEMP;
+            state.totalHeat = 0;
+            state.bubbles = [];
+        });
+
+        // --- Resize ---
+        function resize() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            draw();
+        }
+        window.addEventListener('resize', resize);
+
+        // --- Main loop ---
+        function update(timestamp) {
+            if (!state.lastTime) state.lastTime = timestamp;
+            const dt = Math.min((timestamp - state.lastTime) / 1000, 0.1); // cap at 0.1s
+            state.lastTime = timestamp;
+
+            state.m = parseFloat(sM.value);
+            state.c = parseFloat(sC.value);
+            state.power = parseFloat(sQ.value);
+
+            bM.textContent = state.m.toFixed(1) + ' kg';
+            bC.textContent = state.c + ' J/(kg·°C)';
+            bQ.textContent = state.power + ' W';
+
+            // Sync substance pill
+            const activePill = subPills.querySelector('.sub-pill.active');
+            if (activePill && parseFloat(activePill.dataset.c) !== state.c) {
+                subPills.querySelectorAll('.sub-pill').forEach(p => p.classList.remove('active'));
+                const match = subPills.querySelector(`[data-c="${state.c}"]`);
+                if (match) {
+                    match.classList.add('active');
+                    state.substanceName = match.dataset.name;
+                    state.substanceColor = match.dataset.color;
+                    state.phase = match.dataset.phase || 'liquid';
+                    state.boilPoint = BOIL_POINTS[state.substanceName] || Infinity;
+                } else {
+                    state.substanceName = '自定义';
+                    state.substanceColor = '#95a5a6';
+                    state.phase = 'liquid';
+                    state.boilPoint = Infinity;
+                }
+            }
+
+            // Heating
+            if (state.isPlaying) {
+                const heatThisFrame = state.power * dt;
+                state.totalHeat += heatThisFrame;
+
+                if (state.isBoiling) {
+                    // At boiling point: heat goes into phase change, temperature stays constant
+                    // Bubbles continue vigorously
+                } else {
+                    const deltaT = heatThisFrame / (state.m * state.c);
+                    const newTemp = state.temperature + deltaT;
+                    if (state.phase === 'liquid' && state.boilPoint !== Infinity && newTemp >= state.boilPoint) {
+                        state.temperature = state.boilPoint;
+                        state.isBoiling = true;
+                    } else {
+                        state.temperature = Math.min(newTemp, state.boilPoint);
+                    }
+                }
+
+                // Bubbles for liquids near/at boiling
+                if (state.phase === 'liquid' && state.temperature >= state.boilPoint - 10 && Math.random() < (state.isBoiling ? 0.6 : 0.3)) {
+                    state.bubbles.push({
+                        x: 0.3 + Math.random() * 0.4,
+                        y: 0.6,
+                        r: 2 + Math.random() * (state.isBoiling ? 6 : 4),
+                        vy: -(1 + Math.random() * (state.isBoiling ? 3 : 2)),
+                        life: 1.0
+                    });
+                }
+                // Update bubbles
+                for (let b of state.bubbles) {
+                    b.y += b.vy * 0.01;
+                    b.life -= 0.02;
+                }
+                state.bubbles = state.bubbles.filter(b => b.life > 0);
+            }
+
+            updateFormula();
+            draw();  // draws both beaker scene and mini-gauge on same canvas
+            requestAnimationFrame(update);
+        }
+
+        function updateFormula() {
+            const totalQ = state.totalHeat;
+            const dt_val = state.temperature - ROOM_TEMP;
+
+            resQ.textContent = Math.round(totalQ);
+            resM.textContent = state.m.toFixed(1);
+            resC.textContent = state.c;
+            resDt.textContent = dt_val.toFixed(1);
+
+            // Animated formula display
+            const baseSize = 44;
+            const scaleM = 1 + (state.m / 5) * 0.2;
+            const scaleC = 1 + (state.c / 5000) * 0.2;
+
+            const html = `
+                <span style="color:var(--accent);font-weight:700;font-size:${baseSize * 1.1}px;transition:all 0.2s;">Q</span>
+                <span style="width:8px"></span>
+                <span style="color:var(--text-dark);font-size:${baseSize}px">=</span>
+                <span style="width:8px"></span>
+                <span style="color:#9b59b6;font-weight:700;font-size:${baseSize * scaleM}px;transition:all 0.2s;">m</span>
+                <span style="color:var(--text-dark);font-size:${baseSize}px" style="width:4px">&middot;</span>
+                <span style="color:#e67e22;font-weight:700;font-size:${baseSize * scaleC}px;transition:all 0.2s;">c</span>
+                <span style="color:var(--text-dark);font-size:${baseSize}px" style="width:4px">&middot;</span>
+                <span style="color:#3498db;font-weight:700;font-size:${baseSize}px;">&Delta;T</span>
+            `;
+            if (formulaRoot.innerHTML !== html) formulaRoot.innerHTML = html;
+        }
+
+        // --- Canvas Drawing ---
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const w = canvas.width, h = canvas.height;
+            const isSolid = state.phase === 'solid';
+
+            // --- Burner ---
+            const burnerX = w * 0.5, burnerY = h * 0.80;
+            const burnerW = 70, burnerH = 50;
+
+            ctx.fillStyle = '#555';
+            ctx.fillRect(burnerX - burnerW * 0.5, burnerY + 10, burnerW, 8);
+            ctx.fillStyle = '#444';
+            ctx.fillRect(burnerX - burnerW * 0.3, burnerY - burnerH + 10, burnerW * 0.6, burnerH);
+
+            // Flame
+            if (state.isPlaying) {
+                const flameIntensity = state.power / 2000;
+                const flicker = Math.sin(Date.now() * 0.02) * 5;
+                const flameH = 30 + flameIntensity * 50 + flicker;
+                const flameW = 15 + flameIntensity * 15 + Math.sin(Date.now() * 0.03) * 3;
+
+                const flameGrad = ctx.createLinearGradient(burnerX, burnerY, burnerX, burnerY - flameH);
+                flameGrad.addColorStop(0, 'rgba(255,140,42,0.9)');
+                flameGrad.addColorStop(0.4, 'rgba(255,200,50,0.7)');
+                flameGrad.addColorStop(1, 'rgba(255,255,200,0)');
+                ctx.beginPath();
+                ctx.moveTo(burnerX - flameW, burnerY);
+                ctx.quadraticCurveTo(burnerX - flameW * 0.5, burnerY - flameH * 0.5, burnerX + flicker * 0.3, burnerY - flameH);
+                ctx.quadraticCurveTo(burnerX + flameW * 0.5, burnerY - flameH * 0.5, burnerX + flameW, burnerY);
+                ctx.fillStyle = flameGrad;
+                ctx.fill();
+
+                const innerGrad = ctx.createLinearGradient(burnerX, burnerY, burnerX, burnerY - flameH * 0.6);
+                innerGrad.addColorStop(0, 'rgba(50,150,255,0.8)');
+                innerGrad.addColorStop(1, 'rgba(200,240,255,0)');
+                ctx.beginPath();
+                ctx.moveTo(burnerX - flameW * 0.5, burnerY);
+                ctx.quadraticCurveTo(burnerX, burnerY - flameH * 0.3, burnerX + flicker * 0.2, burnerY - flameH * 0.6);
+                ctx.quadraticCurveTo(burnerX + flameW * 0.3, burnerY - flameH * 0.3, burnerX + flameW * 0.5, burnerY);
+                ctx.fillStyle = innerGrad;
+                ctx.fill();
+            }
+
+            // --- Beaker ---
+            const beakerW = 160, beakerH = 200;
+            const beakerX = w * 0.5, beakerBottom = burnerY - 18;
+            const beakerTop = beakerBottom - beakerH;
+            const beakerLeft = beakerX - beakerW * 0.5;
+            const fillRatio = 0.35 + (state.m / 5) * 0.6;
+            const fillTop = beakerBottom - beakerH * fillRatio;
+            const fillH = beakerBottom - fillTop;
+            const bpRef = state.boilPoint === Infinity ? 150 : state.boilPoint;
+            const tempRatio = Math.min((state.temperature - ROOM_TEMP) / (bpRef - ROOM_TEMP), 1.0);
+            const tr = Math.round(50 + tempRatio * 205);
+            const tg = Math.round(150 + (1 - tempRatio) * 50);
+            const tb = Math.round(255 - tempRatio * 155);
+            const fillAlpha = 0.75;
+
+            // Beaker glass outline
+            ctx.beginPath();
+            ctx.moveTo(beakerLeft, beakerTop);
+            ctx.lineTo(beakerLeft, beakerBottom);
+            ctx.lineTo(beakerLeft + beakerW, beakerBottom);
+            ctx.lineTo(beakerLeft + beakerW, beakerTop);
+            ctx.strokeStyle = 'rgba(100,100,120,0.4)';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+            ctx.fillStyle = 'rgba(200,220,240,0.06)';
+            ctx.fill();
+
+            if (isSolid) {
+                // --- SOLID BLOCK with metal color ---
+                // Parse substance base color
+                const hex = state.substanceColor.replace('#','');
+                const br = parseInt(hex.substring(0,2), 16);
+                const bg = parseInt(hex.substring(2,4), 16);
+                const bb = parseInt(hex.substring(4,6), 16);
+                // Blend metal base with temperature tint (hotter = slightly more red)
+                const heatBlend = Math.min(tempRatio, 1.0);
+                const mr = Math.round(br + heatBlend * (255 - br) * 0.3);
+                const mg = Math.round(bg * (1 - heatBlend * 0.3));
+                const mb = Math.round(bb * (1 - heatBlend * 0.3));
+
+                const blockLeft = beakerLeft + 6;
+                const blockRight = beakerLeft + beakerW - 6;
+                const blockBottom = beakerBottom - 4;
+                const blockH = fillH - 6;
+                const blockTop = blockBottom - blockH;
+                const bevel = 8;
+
+                // Front face — metallic vertical gradient
+                const frontGrad = ctx.createLinearGradient(0, blockTop, 0, blockBottom);
+                frontGrad.addColorStop(0, `rgba(${Math.round(mr*1.15)},${Math.round(mg*1.1)},${Math.round(mb*1.05)},0.92)`);
+                frontGrad.addColorStop(0.35, `rgba(${mr},${mg},${mb},0.88)`);
+                frontGrad.addColorStop(0.7, `rgba(${Math.round(mr*0.75)},${Math.round(mg*0.75)},${Math.round(mb*0.75)},0.85)`);
+                frontGrad.addColorStop(1, `rgba(${Math.round(mr*0.55)},${Math.round(mg*0.55)},${Math.round(mb*0.55)},0.9)`);
+                ctx.fillStyle = frontGrad;
+                ctx.fillRect(blockLeft, blockTop, blockRight - blockLeft, blockH);
+
+                // Top face — brighter highlight
+                ctx.beginPath();
+                ctx.moveTo(blockLeft, blockTop);
+                ctx.lineTo(blockLeft + bevel, blockTop - bevel);
+                ctx.lineTo(blockRight + bevel, blockTop - bevel);
+                ctx.lineTo(blockRight, blockTop);
+                ctx.closePath();
+                ctx.fillStyle = `rgba(${Math.round(mr*1.35)},${Math.round(mg*1.3)},${Math.round(mb*1.25)},0.9)`;
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Right face — darker shade
+                ctx.beginPath();
+                ctx.moveTo(blockRight, blockTop);
+                ctx.lineTo(blockRight + bevel, blockTop - bevel);
+                ctx.lineTo(blockRight + bevel, blockBottom - bevel);
+                ctx.lineTo(blockRight, blockBottom);
+                ctx.closePath();
+                ctx.fillStyle = `rgba(${Math.round(mr*0.5)},${Math.round(mg*0.5)},${Math.round(mb*0.5)},0.85)`;
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(0,0,0,0.1)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Specular highlight streak (metallic sheen)
+                ctx.fillStyle = 'rgba(255,255,255,0.12)';
+                ctx.fillRect(blockLeft + 6, blockTop + 8, blockRight - blockLeft - 12, 3);
+                ctx.fillStyle = 'rgba(255,255,255,0.06)';
+                ctx.fillRect(blockLeft + 10, blockTop + 20, blockRight - blockLeft - 20, 2);
+
+                // Subtle horizontal grain lines
+                ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+                ctx.lineWidth = 1;
+                for (let ly = blockTop + 35; ly < blockBottom; ly += 18) {
+                    ctx.beginPath();
+                    ctx.moveTo(blockLeft + 4, ly);
+                    ctx.lineTo(blockRight - 4, ly);
+                    ctx.stroke();
+                }
+
+                // Thermometer pierces into solid
+                const thermoX = beakerLeft + beakerW - 22;
+                const thermoTop = beakerTop + 15;
+                const thermoBottom = beakerBottom - 6;
+                const thermoH = thermoBottom - thermoTop;
+
+                ctx.fillStyle = 'rgba(255,255,255,0.9)';
+                ctx.fillRect(thermoX - 4, thermoTop, 8, thermoH);
+                ctx.strokeStyle = 'rgba(100,100,120,0.5)';
+                ctx.lineWidth = 1.5;
+                ctx.strokeRect(thermoX - 4, thermoTop, 8, thermoH);
+
+                ctx.beginPath();
+                ctx.arc(thermoX, thermoBottom, 7, 0, Math.PI * 2);
+                ctx.fillStyle = '#FF5E5B';
+                ctx.fill();
+                ctx.stroke();
+
+                const thermoMax = state.boilPoint === Infinity ? 150 : state.boilPoint + 40;
+                const thermoRatio = Math.min((state.temperature - ROOM_TEMP) / (thermoMax - ROOM_TEMP), 1);
+                const mercuryTop = thermoBottom - thermoH * thermoRatio;
+                ctx.fillStyle = '#FF5E5B';
+                ctx.fillRect(thermoX - 2.5, mercuryTop, 5, thermoBottom - mercuryTop);
+
+                ctx.fillStyle = '#555';
+                ctx.font = '10px Fredoka';
+                ctx.textAlign = 'left';
+                const solidMax = state.boilPoint === Infinity ? '150°C' : (state.boilPoint + 40) + '°C';
+                ctx.fillText(solidMax, thermoX + 6, thermoTop + 10);
+                ctx.fillText('20°C', thermoX + 6, thermoBottom);
+
+            } else {
+                // --- LIQUID ---
+                const liquidGrad = ctx.createLinearGradient(0, fillTop, 0, beakerBottom);
+                liquidGrad.addColorStop(0, `rgba(${tr},${tg},${tb},${fillAlpha * 0.8})`);
+                liquidGrad.addColorStop(1, `rgba(${tr},${tg},${tb},${fillAlpha})`);
+                ctx.fillStyle = liquidGrad;
+                ctx.fillRect(beakerLeft + 3, fillTop, beakerW - 6, fillH);
+
+                // Wavy surface
+                ctx.beginPath();
+                const surfMid = beakerX;
+                const surfWave = state.isPlaying ? Math.sin(Date.now() * 0.01) * 2 : 0;
+                ctx.moveTo(beakerLeft + 3, fillTop);
+                ctx.quadraticCurveTo(surfMid, fillTop + surfWave, beakerLeft + beakerW - 3, fillTop);
+                ctx.lineTo(beakerLeft + 3, fillTop - 4);
+                ctx.fillStyle = `rgba(${tr},${tg},${tb},${fillAlpha})`;
+                ctx.fill();
+
+                // Bubbles
+                for (let b of state.bubbles) {
+                    const bx = beakerLeft + b.x * beakerW;
+                    const by = beakerBottom - b.y * fillH;
+                    ctx.beginPath();
+                    ctx.arc(bx, by, b.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255,255,255,${b.life * 0.6})`;
+                    ctx.fill();
+                    ctx.strokeStyle = `rgba(200,200,200,${b.life * 0.4})`;
+                    ctx.lineWidth = 0.5;
+                    ctx.stroke();
+                }
+
+                // Thermometer
+                const thermoX = beakerLeft + beakerW - 25;
+                const thermoTop = beakerTop + 15;
+                const thermoBottom = beakerBottom - 10;
+                const thermoH = thermoBottom - thermoTop;
+
+                ctx.fillStyle = 'rgba(255,255,255,0.9)';
+                ctx.fillRect(thermoX - 4, thermoTop, 8, thermoH);
+                ctx.strokeStyle = 'rgba(100,100,120,0.5)';
+                ctx.lineWidth = 1.5;
+                ctx.strokeRect(thermoX - 4, thermoTop, 8, thermoH);
+
+                ctx.beginPath();
+                ctx.arc(thermoX, thermoBottom, 8, 0, Math.PI * 2);
+                ctx.fillStyle = '#FF5E5B';
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(100,100,120,0.5)';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                const thermoMaxL = state.boilPoint === Infinity ? 150 : state.boilPoint + 20;
+                const thermoRatio = Math.min((state.temperature - ROOM_TEMP) / (thermoMaxL - ROOM_TEMP), 1);
+                const mercuryTop = thermoBottom - thermoH * thermoRatio;
+                ctx.fillStyle = '#FF5E5B';
+                ctx.fillRect(thermoX - 2.5, mercuryTop, 5, thermoBottom - mercuryTop);
+
+                ctx.fillStyle = '#555';
+                ctx.font = '10px Fredoka';
+                ctx.textAlign = 'left';
+                const liquidMax = state.boilPoint === Infinity ? '150°C' : (state.boilPoint + 10) + '°C';
+                ctx.fillText(liquidMax, thermoX + 6, thermoTop + 10);
+                ctx.fillText('20°C', thermoX + 6, thermoBottom);
+            }
+
+            // Heat arrows
+            if (state.isPlaying) {
+                for (let i = 0; i < 5; i++) {
+                    const ax = burnerX - 20 + (i / 4) * 40;
+                    const ay = burnerY - 10 - (Math.sin(Date.now() * 0.003 + i) * 0.5 + 0.5) * 20;
+                    ctx.fillStyle = `rgba(255,140,42,${0.3 + Math.random() * 0.3})`;
+                    ctx.font = '12px sans-serif';
+                    ctx.fillText('🔥', ax - 6, ay);
+                }
+            }
+
+            // Temp label
+            ctx.fillStyle = state.isBoiling ? '#e74c3c' : 'rgba(0,0,0,0.7)';
+            ctx.font = 'bold 16px Fredoka';
+            ctx.textAlign = 'center';
+            const tempText = state.temperature.toFixed(1) + ' °C';
+            ctx.fillText(tempText, beakerX, beakerTop - 15);
+
+            // Boiling indicator
+            if (state.isBoiling) {
+                ctx.fillStyle = '#e74c3c';
+                ctx.font = 'bold 13px "Noto Sans SC"';
+                ctx.fillText('沸騰中 Boiling', beakerX, beakerTop - 35);
+            } else {
+                // Substance name
+                const phaseIcon = isSolid ? '🧱' : '💧';
+                ctx.fillStyle = '#6B6B6B';
+                ctx.font = 'bold 14px "Noto Sans SC"';
+                ctx.fillText(phaseIcon + ' ' + state.substanceName, beakerX, beakerTop - 35);
+            }
+
+            // --- Mini Gauge (top-right of canvas) ---
+            drawMiniGauge();
+        }
+
+        // --- Mini Gauge drawn on main canvas (top-right corner) ---
+        function drawMiniGauge() {
+            const w = canvas.width;
+            const gaugeCX = w - 90, gaugeCY = 90;
+            const gaugeR = 65;
+            const startAngle = Math.PI * 0.7, endAngle = Math.PI * 2.3, range = endAngle - startAngle;
+            const tempMin = ROOM_TEMP;
+            const bp = state.boilPoint === Infinity ? 150 : state.boilPoint;
+            const tempMax = state.phase === 'liquid' ? bp + 10 : 150;
+
+            // Background panel
+            ctx.fillStyle = 'rgba(255,255,255,0.85)';
+            ctx.beginPath();
+            ctx.roundRect(gaugeCX - 80, gaugeCY - 85, 160, 170, 16);
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(0,0,0,0.06)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // Background arc
+            ctx.beginPath();
+            ctx.arc(gaugeCX, gaugeCY, gaugeR, startAngle, endAngle);
+            ctx.lineWidth = 14;
+            ctx.strokeStyle = '#f0f0f0';
+            ctx.lineCap = 'round';
+            ctx.stroke();
+
+            // Active arc with temperature color
+            const normVal = Math.max(0, Math.min((state.temperature - tempMin) / (tempMax - tempMin), 1));
+            if (normVal > 0) {
+                const segments = 30;
+                for (let i = 0; i < segments * normVal; i++) {
+                    const a1 = startAngle + (range * i) / segments;
+                    const a2 = startAngle + (range * (i + 1)) / segments;
+                    const t = (i / segments) / Math.max(normVal, 0.01);
+                    const rr = Math.round(50 + t * 205);
+                    const gg = Math.round(150 + (1 - t) * 50);
+                    const bb = Math.round(255 - t * 155);
+                    ctx.beginPath();
+                    ctx.arc(gaugeCX, gaugeCY, gaugeR, a1, a2);
+                    ctx.strokeStyle = `rgb(${rr},${gg},${bb})`;
+                    ctx.lineWidth = 12;
+                    ctx.stroke();
+                }
+            }
+
+            // Needle
+            const needleAngle = startAngle + range * normVal;
+            ctx.beginPath();
+            ctx.lineWidth = 2.5;
+            ctx.strokeStyle = '#333';
+            ctx.moveTo(gaugeCX, gaugeCY);
+            ctx.lineTo(gaugeCX + (gaugeR - 15) * Math.cos(needleAngle), gaugeCY + (gaugeR - 15) * Math.sin(needleAngle));
+            ctx.stroke();
+
+            // Center dot
+            ctx.beginPath();
+            ctx.arc(gaugeCX, gaugeCY, 6, 0, Math.PI * 2);
+            ctx.fillStyle = '#333';
+            ctx.fill();
+
+            // Temp reading
+            ctx.font = 'bold 22px Fredoka';
+            ctx.fillStyle = '#444';
+            ctx.fillText(state.temperature.toFixed(1) + '°C', gaugeCX, gaugeCY + 45);
+
+            // Labels
+            ctx.font = '10px Fredoka';
+            ctx.fillStyle = '#bbb';
+            ctx.fillText(tempMin + '°C', gaugeCX - gaugeR - 12, gaugeCY + 5);
+            ctx.fillText(tempMax + '°C', gaugeCX + gaugeR + 12, gaugeCY + 5);
+        }
+
+        // --- Buttons ---
+        function resetSim() {
+            state.temperature = ROOM_TEMP;
+            state.totalHeat = 0;
+            state.bubbles = [];
+            state.isBoiling = false;
+            state.lastTime = 0;
+        }
+
+        btnStart.onclick = () => {
+            state.isPlaying = !state.isPlaying;
+            btnStart.textContent = state.isPlaying ? '暂停 Pause' : '加热 Heat';
+            btnStart.classList.toggle('start', !state.isPlaying);
+            btnStart.classList.toggle('pause', state.isPlaying);
+        };
+        btnReset.onclick = resetSim;
+
+        btnStart.classList.add('start');
+
+        // --- Init ---
+        if (canvas.clientWidth) {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+        }
+        resize();
+        requestAnimationFrame(update);
+    
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+</script>
+<div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
+</body>
+</html>

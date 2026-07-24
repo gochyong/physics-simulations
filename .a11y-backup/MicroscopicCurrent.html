@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电流微观表达式 / Microscopic Current - Wuli布雷克</title>
+    <link rel="stylesheet" href="common.css">
+    <meta name="author" content="Wuli布雷克">
+    <meta name="copyright" content="Copyright 2025 Wuli布雷克">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>select { width: 100%; padding: 9px 10px; border-radius: 12px; border: 2px solid #e0e0e0; font-family: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer; background: #fafafa; color: #555; outline: none; }
+select:focus { border-color: var(--primary); }</style>
+</head>
+<body>
+<div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
+<a href="ElectricCurrent.html" class="back-link" aria-label="返回电流分类页">← 返回电流</a>
+<div class="container" id="main">
+    <header><h1>电流微观表达式 / Microscopic Current</h1></header>
+    <section class="formula-display" aria-label="公式与实时数值">
+        <div class="formula-container" id="formula-root"></div>
+        <div class="result-row">
+            <span>I = <strong style="color:var(--accent);font-size:1.3rem" id="res-i">—</strong> A</span>
+            <span>n = <strong style="color:#e67e22;font-size:1.3rem" id="res-n">8.47</strong> ×10²⁸ m⁻³</span>
+            <span>A = <strong style="color:#3498db;font-size:1.3rem" id="res-a">1.0</strong> mm²</span>
+            <span>v = <strong style="color:#2ecc71;font-size:1.3rem" id="res-v">1.0</strong> mm/s</span>
+            <span>q = <strong style="color:#9b59b6;font-size:1.3rem" id="res-q">1.60×10⁻¹⁹</strong> C</span>
+        </div>
+        <div class="legend" aria-label="图例说明">
+            <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> I 电流</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#e67e22"></span> n 载流子密度</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#3498db"></span> A 截面积</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#2ecc71"></span> v 漂移速度</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#9b59b6"></span> q 电子电量</div>
+        </div>
+    </section>
+    <section class="diagram-section" aria-label="模拟动画区"><canvas id="simCanvas" role="img" aria-label="电流微观表达式模拟动画 — 交互式物理仿真画面"></canvas></section>
+    <section class="controls-section" aria-label="参数控制区">
+        <div class="control-panel">
+            <div class="control-group">
+                <div class="label-row"><span style="color:#e67e22;">金属种类（决定 n）</span><span id="badge-n" class="val-badge" aria-live="polite">8.47 ×10²⁸ m⁻³</span></div>
+                <select id="sel-metal"></select>
+            </div>
+            <div class="control-group">
+                <div class="label-row"><span style="color:#3498db;">截面积 A</span><span id="badge-a" class="val-badge" aria-live="polite">1.0 mm²</span></div>
+                <input type="range" id="slider-a" min="0.5" max="4" step="0.1" value="1.0" aria-valuemin="0.5" aria-valuemax="4" aria-valuenow="1.0" aria-valuetext="1.0匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+            </div>
+            <div class="control-group">
+                <div class="label-row"><span style="color:#2ecc71;">漂移速度 v</span><span id="badge-v" class="val-badge" aria-live="polite">1.0 mm/s</span></div>
+                <input type="range" id="slider-v" min="0.1" max="5" step="0.1" value="1.0" aria-valuemin="0.1" aria-valuemax="5" aria-valuenow="1.0" aria-valuetext="1.0匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+            </div>
+            <div class="btn-row">
+                <button id="btn-play" class="ctrl-btn" style="background:#2ecc71;">▶ 开始 Play</button>
+                <button id="btn-reset" class="ctrl-btn reset" aria-label="重置参数" aria-label="重置参数">重置</button>
+            </div>
+        </div>
+        <div class="info-card">
+            <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem;">演示要点 / Key Points</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;">I</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">I = nAvq 微观表达式</div><div style="font-size:0.78rem;color:#6B6B6B;">在 t 时间内，体积 A·v·t 内的 n·Avt 个载流子全部穿过截面，携带电量 n·Avt·q，故 I = nAvq。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(230,126,34,0.1);color:#e67e22;font-weight:700;">n</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">不同金属 n 不同 ~ 10²⁸ m⁻³</div><div style="font-size:0.78rem;color:#6B6B6B;">铜的自由电子密度约 8.47×10²⁸ m⁻³；下拉切换常见金属，n 改变时电子密集程度随之变化。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:#2ecc71;font-weight:700;">v</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">漂移速度极慢 ~ mm/s</div><div style="font-size:0.78rem;color:#6B6B6B;">电子热运动~10⁵m/s 但漂移速度仅 ~10⁻³m/s，电信号以光速传播是电场建立快。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:#3498db;font-weight:700;">⇄</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">电流方向与电子运动方向相反</div><div style="font-size:0.78rem;color:#6B6B6B;">金属中实际定向移动的是电子（向左），但电流方向规定为正电荷移动方向（向右），二者相反。</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<script>
+const canvas=document.getElementById('simCanvas'),ctx=canvas.getContext('2d');
+const selM=document.getElementById('sel-metal'),sV=document.getElementById('slider-v'),sA=document.getElementById('slider-a');
+const bN=document.getElementById('badge-n'),bV=document.getElementById('badge-v'),bA=document.getElementById('badge-a');
+const resI=document.getElementById('res-i'),resN=document.getElementById('res-n'),resV=document.getElementById('res-v'),resA=document.getElementById('res-a'),resQ=document.getElementById('res-q');
+const fRoot=document.getElementById('formula-root'),btnPlay=document.getElementById('btn-play');
+const QE=1.6e-19;
+// 常见金属的自由电子密度 n（单位 ×10²⁸ m⁻³）
+const METALS=[{name:'锂 Li',n:4.70},{name:'钠 Na',n:2.65},{name:'镁 Mg',n:8.61},{name:'铝 Al',n:18.10},{name:'铜 Cu',n:8.47},{name:'锌 Zn',n:13.20},{name:'银 Ag',n:5.86},{name:'金 Au',n:5.90}];
+const SUP={0:'⁰',1:'¹',2:'²',3:'³',4:'⁴',5:'⁵',6:'⁶',7:'⁷',8:'⁸',9:'⁹','-':'⁻'};
+// 把数值格式化为 10 的幂次方形式（含上标 Unicode 指数）
+function fmtExp(v){if(!isFinite(v)||v===0)return'0';const e=Math.floor(Math.log10(Math.abs(v)));const m=v/Math.pow(10,e);const es=Math.abs(e).toString().split('').map(d=>SUP[d]).join('');return m.toFixed(2)+'×10'+(e<0?SUP['-']:'')+es}
+const S={metalIdx:4,v:1.0,a:1.0,electrons:[],flash:0,passed:0,windowT:0,running:false};
+let lastTs=performance.now(),rafId=null;
+// 填充金属下拉框
+METALS.forEach((m,i)=>{const o=document.createElement('option');o.value=i;o.textContent=m.name+'    (n = '+m.n.toFixed(2)+'×10²⁸ m⁻³)';selM.appendChild(o)});
+selM.value=S.metalIdx;
+function nVal(){return METALS[S.metalIdx].n}
+function geom(){const w=canvas.width,h=canvas.height,barY=h*0.52,barH=30+S.a*22,barL=Math.min(w*0.62,640),barX=(w-barL)/2;return{w,h,barY,barH,barL,barX,sectionX:barX+barL/2}}
+function targetCount(){return Math.min(90,Math.max(8,Math.round(nVal()*5)))}  // 电子数量随 n 变化
+function speed(){return Math.min(Math.max(S.v*34,20),210)}                     // 漂移速度随 v 变化（电子向左）
+
+function initElectrons(){const g=geom();S.electrons=[];const rows=Math.max(2,Math.round(g.barH/14));const cnt=targetCount();
+for(let i=0;i<cnt;i++){const row=i%rows;S.electrons.push({x:g.barX+Math.random()*g.barL,y:g.barY-g.barH/2+8+(row+0.5)*(g.barH-16)/rows,jit:Math.random()*Math.PI*2,js:0.4+Math.random()*0.8,counted:false})}}
+
+function updateText(){
+    S.v=parseFloat(sV.value);S.a=parseFloat(sA.value);
+    const nn=nVal();
+    bN.textContent=nn.toFixed(2)+' ×10²⁸ m⁻³';bV.textContent=S.v.toFixed(1)+' mm/s';bA.textContent=S.a.toFixed(1)+' mm²';
+    const nReal=nn*1e28,vReal=S.v*1e-3,aReal=S.a*1e-6;
+    const I=nReal*QE*vReal*aReal;          // I = n·A·v·q
+    resI.textContent=fmtExp(I);resN.textContent=nn.toFixed(2);resV.textContent=S.v.toFixed(1);resA.textContent=S.a.toFixed(1);resQ.textContent=fmtExp(QE);
+    fRoot.innerHTML=`<span style="font-size:26px;font-weight:700;color:#FF5E5B">I</span><span style="font-size:26px">=</span><span style="font-size:26px;font-weight:700;color:#e67e22">n</span><span style="font-size:26px;font-weight:700;color:#3498db">A</span><span style="font-size:26px;font-weight:700;color:#2ecc71">v</span><span style="font-size:26px;font-weight:700;color:#9b59b6">q</span><span style="font-size:26px">= <b>${fmtExp(I)} A</b></span>`;
+}
+
+function frame(ts){
+    if(!S.running)return;
+    const dt=Math.min(0.05,(ts-lastTs)/1000);lastTs=ts;
+    const g=geom();
+    // 电子数量随金属 n 动态增删
+    const tgt=targetCount();
+    if(S.electrons.length<tgt){const rows=Math.max(2,Math.round(g.barH/14));for(let i=S.electrons.length;i<tgt;i++){const row=i%rows;S.electrons.push({x:g.barX+Math.random()*g.barL,y:g.barY-g.barH/2+8+(row+0.5)*(g.barH-16)/rows,jit:Math.random()*Math.PI*2,js:0.4+Math.random()*0.8,counted:false})}}
+    else if(S.electrons.length>tgt)S.electrons.length=tgt;
+    const sp=speed();
+    for(const e of S.electrons){
+        const prev=e.x;e.x-=sp*dt;            // 电子向左漂移
+        e.jit+=e.js*dt;
+        if(!e.counted && prev>g.sectionX && e.x<=g.sectionX){e.counted=true;S.passed++;S.flash=1}
+        if(e.x<g.barX-6){e.x=g.barX+g.barL+Math.random()*30;e.y=g.barY-g.barH/2+8+Math.random()*(g.barH-16);e.counted=false}
+    }
+    S.flash*=0.88;
+    const nn=nVal(),nReal=nn*1e28,vReal=S.v*1e-3,aReal=S.a*1e-6;
+    const I=nReal*QE*vReal*aReal;
+    draw(g,I);
+    rafId=requestAnimationFrame(frame);
+}
+
+function draw(g,I){
+    const {w,h,barY,barH,barL,barX,sectionX}=g;
+    ctx.clearRect(0,0,w,h);ctx.fillStyle='#fafaf7';ctx.fillRect(0,0,w,h);
+    // 导体
+    const g1=ctx.createLinearGradient(0,barY-barH/2,0,barY+barH/2);
+    g1.addColorStop(0,'#ececdf');g1.addColorStop(0.5,'#d8d8cc');g1.addColorStop(1,'#c4c4b8');
+    ctx.fillStyle=g1;ctx.fillRect(barX,barY-barH/2,barL,barH);
+    ctx.strokeStyle='#8a8a7a';ctx.lineWidth=2;ctx.strokeRect(barX,barY-barH/2,barL,barH);
+    // 中央截面（电子穿过时闪烁）
+    ctx.strokeStyle=S.flash>0.25?'#e74c3c':'rgba(231,76,60,0.5)';
+    ctx.lineWidth=S.flash>0.25?3.5:2;ctx.setLineDash([6,5]);
+    ctx.beginPath();ctx.moveTo(sectionX,barY-barH/2-22);ctx.lineTo(sectionX,barY+barH/2+22);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#e74c3c';ctx.font='bold 12px Fredoka';ctx.textAlign='center';
+    ctx.fillText('截面 A',sectionX,barY-barH/2-28);
+    // 电子（向左漂移，叠加纵向热运动抖动）
+    ctx.textBaseline='middle';
+    for(const e of S.electrons){
+        const py=e.y+Math.sin(e.jit)*1.5;
+        ctx.fillStyle='#3498db';ctx.beginPath();ctx.arc(e.x,py,4,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle='#fff';ctx.font='bold 6px Fredoka';ctx.textAlign='center';ctx.fillText('−',e.x,py+0.5);
+    }
+    ctx.textBaseline='alphabetic';
+    // 电子运动方向（导体上方，向左）
+    const ey=barY-barH/2-54;
+    ctx.strokeStyle='#3498db';ctx.lineWidth=3.5;ctx.fillStyle='#3498db';
+    ctx.beginPath();ctx.moveTo(barX+barL-4,ey);ctx.lineTo(barX+10,ey);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(barX,ey);ctx.lineTo(barX+13,ey-7);ctx.lineTo(barX+13,ey+7);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#3498db';ctx.font='bold 13px Fredoka';ctx.textAlign='center';
+    ctx.fillText('电子定向漂移 v = '+S.v.toFixed(1)+' mm/s（向左）',barX+barL/2,ey-9);
+    // 电流方向（导体下方，向右）—— 与电子运动方向相反
+    const iy=barY+barH/2+50;
+    ctx.strokeStyle='#FF8c42';ctx.lineWidth=3.5;ctx.fillStyle='#FF8c42';
+    ctx.beginPath();ctx.moveTo(barX+4,iy);ctx.lineTo(barX+barL-10,iy);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(barX+barL,iy);ctx.lineTo(barX+barL-13,iy-7);ctx.lineTo(barX+barL-13,iy+7);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#FF8c42';ctx.font='bold 15px Fredoka';ctx.textAlign='center';
+    ctx.fillText('电流方向 I（向右）= '+fmtExp(I)+' A',barX+barL/2,iy+18);
+    // 金属与密度提示
+    ctx.fillStyle='#e67e22';ctx.font='bold 12px Fredoka';ctx.textAlign='left';
+    ctx.fillText('金属：'+METALS[S.metalIdx].name+'   n = '+nVal().toFixed(2)+'×10²⁸ m⁻³',barX,barY-barH/2-78);
+}
+
+// 开始/暂停切换
+function togglePlay(){
+    S.running=!S.running;
+    if(S.running){lastTs=performance.now();rafId=requestAnimationFrame(frame);btnPlay.textContent='⏸ 暂停 Pause';btnPlay.style.background='var(--primary)'}
+    else{if(rafId)cancelAnimationFrame(rafId);rafId=null;btnPlay.textContent='▶ 开始 Play';btnPlay.style.background='#2ecc71'}
+}
+
+function resize(){canvas.width=canvas.clientWidth;canvas.height=canvas.clientHeight;initElectrons()}
+window.addEventListener('resize',resize);
+selM.onchange=()=>{S.metalIdx=parseInt(selM.value);updateText()};
+sV.addEventListener('input',updateText);sA.addEventListener('input',updateText);
+btnPlay.onclick=togglePlay;
+document.getElementById('btn-reset').onclick=()=>{selM.value=4;S.metalIdx=4;sV.value=1;sA.value=1;S.passed=0;S.windowT=0;updateText();initElectrons()};
+resize();updateText();draw(geom(),nVal()*1e28*QE*S.v*1e-3*S.a*1e-6);
+
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+</script>
+<div class="site-footer">© 2025 Wuli布雷克 | MIT License </div>
+</body>
+</html>

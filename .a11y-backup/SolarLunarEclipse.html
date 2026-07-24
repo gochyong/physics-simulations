@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wuli布雷克物理模拟实验室 - 月相变化 / Moon Phases。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:title" content="月相变化 / Moon Phases - Wuli布雷克">
+    <meta property="og:description" content="Wuli布雷克物理模拟实验室 - 月相变化 / Moon Phases。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wuliblake.com/SolarLunarEclipse.html">
+    <meta property="og:site_name" content="Wuli布雷克物理模拟实验室">
+    <link rel="stylesheet" href="common.css">
+    <meta name="author" content="Wuli布雷克">
+    <meta name="copyright" content="Copyright 2025 Wuli布雷克">
+    <title>月相变化 / Moon Phases - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>.back-link { position: fixed; top: 10px; right: 20px; z-index: 1000; text-decoration: none; color: var(--primary); font-weight: 700; font-size: 0.9rem; background: rgba(255,255,255,0.9); padding: 6px 14px; border-radius: 16px; box-shadow: 0 2px 10px rgba(255,140,66,0.15); }</style>
+</head>
+<body>
+<div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
+<a href="astronomy.html" class="back-link" aria-label="返回天文分类页">← 返回天文</a>
+<div class="container" id="main">
+    <header><h1>月相变化 / Moon Phases</h1></header>
+    <section class="formula-display" aria-label="公式与实时数值">
+        <div class="formula-container" id="formula-root"></div>
+        <div class="result-row">
+            <span>月相: <strong style="color:#3498db" id="res-phase">—</strong></span>
+            <span style="color:var(--accent)" id="res-eclipse"></span>
+        </div>
+    </section>
+    <section class="diagram-section" aria-label="模拟动画区"><canvas id="simCanvas" role="img" aria-label="月相变化模拟动画 — 交互式物理仿真画面"></canvas></section>
+    <section class="controls-section" aria-label="参数控制区">
+        <div class="control-panel">
+            <div class="control-group">
+                <div class="label-row"><span>月球轨道位置</span><span id="badge-angle" class="val-badge" aria-live="polite">0°</span></div>
+                <input type="range" id="slider-angle" min="0" max="360" value="0" aria-valuemin="0" aria-valuemax="360" aria-valuenow="0" aria-valuetext="0匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+            </div>
+            <div class="btn-row">
+                <button id="btn-start" class="ctrl-btn start" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false">自动运行 Auto</button>
+                <button id="btn-reset" class="ctrl-btn reset" aria-label="重置参数" aria-label="重置参数">重置 Reset</button>
+            </div>
+        </div>
+        <div class="info-card">
+            <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem;">演示要点 / Key Points</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;">🌙</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">月相由日-月-地相对位置决定</div><div style="font-size:0.78rem;color:#6B6B6B;">月球绕地球公转，太阳照亮月球半面，地球赤道红点视角观察亮面比例周期性变化。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:#2ecc71;font-weight:700;">🌑</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">朔(新月)→上弦→望(满月)→下弦</div><div style="font-size:0.78rem;color:#6B6B6B;">一个朔望月约29.5天。新月时日月地共线(月球大致在中间)，满月时日地月共线(地球大致在中间)。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(231,76,60,0.1);color:#e74c3c;font-weight:700;">☀</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">日食：新月时月球挡住太阳</div><div style="font-size:0.78rem;color:#6B6B6B;">月球位于日地之间且接近黄道面时发生日食。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(155,89,182,0.1);color:#9b59b6;font-weight:700;">🌍</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">月食：满月时地球挡住太阳光</div><div style="font-size:0.78rem;color:#6B6B6B;">月球进入地球本影时呈暗红色（血月），发生在满月且接近黄道面时。</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<script>
+const canvas=document.getElementById('simCanvas'),ctx=canvas.getContext('2d');
+const sAngle=document.getElementById('slider-angle');
+const bAngle=document.getElementById('badge-angle');
+const resPhase=document.getElementById('res-phase'),resEclipse=document.getElementById('res-eclipse');
+const fRoot=document.getElementById('formula-root');
+const S={moonAngle:0,earthAngle:0,playing:false};  // 0° = moon between Sun-Earth (new moon)
+
+// --- Phase name from relative sun-earth-moon angle ---
+function getPhaseName(relDeg){
+    const a=((relDeg%360)+360)%360;
+    if(a<5||a>=355)return'🌑 新月 New Moon';
+    if(a<85)return'🌒 蛾眉月 Waxing Crescent';
+    if(a<95)return'🌓 上弦月 First Quarter';
+    if(a<175)return'🌔 盈凸月 Waxing Gibbous';
+    if(a<185)return'🌕 满月 Full Moon';
+    if(a<265)return'🌖 亏凸月 Waning Gibbous';
+    if(a<275)return'🌗 下弦月 Last Quarter';
+    if(a<355)return'🌘 残月 Waning Crescent';
+    return'🌑 新月 New Moon';
+}
+
+function getEclipseInfo(deg){
+    const a=((deg%360)+360)%360;
+    if(a<3||a>357)return'⚠ 日食 Solar Eclipse';
+    if(a>177&&a<183)return'⚠ 月食 Lunar Eclipse';
+    return'';
+}
+
+function resize(){canvas.width=canvas.clientWidth;canvas.height=canvas.clientHeight;}
+window.addEventListener('resize',resize);
+
+function update(){
+    S.moonAngle=parseInt(sAngle.value);
+    bAngle.textContent=S.moonAngle+'°';
+    if(S.playing){
+        // Moon: 360° per lunar month (~30s real time)
+        S.moonAngle=(S.moonAngle+0.6)%360;   // 10s per orbit at 60fps
+        S.earthAngle=(S.earthAngle+0.02)%360;  // ~12° per lunar month
+        sAngle.value=Math.round(S.moonAngle);
+        bAngle.textContent=Math.round(S.moonAngle)+'°';
+    }
+    const earthOrbitDeg=S.earthAngle;
+    const earthRotDeg=(S.moonAngle*30)%360;
+    // moonAngle=0: new moon (dark). moonAngle=180: full moon
+    const relDeg=(S.moonAngle+360)%360;
+
+    resPhase.textContent=getPhaseName(relDeg);
+    const eclipse=getEclipseInfo(relDeg);
+    resEclipse.textContent=eclipse;
+    resEclipse.style.display=eclipse?'inline':'none';
+    fRoot.innerHTML=`<span style="font-size:24px;font-weight:700;">${getPhaseName(relDeg)}</span>`;
+    draw(earthOrbitDeg,S.moonAngle,earthRotDeg,relDeg);
+    requestAnimationFrame(update);
+}
+
+function drawMoonPhase(cx,cy,r,relDeg){
+    const a=((relDeg%360)+360)%360;
+    const litFrac=(1-Math.cos(a*Math.PI/180))/2; // 0=dark, 1=fully lit
+
+    // Sunlit portion (white crescent on dark background)
+    ctx.fillStyle='#1a1a2e';ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fill();
+    if(litFrac>0.01){
+        ctx.fillStyle='#ddd';
+        ctx.save();ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.clip();
+        if(a<=180){
+            // Waxing: lit from right, moving left
+            const litLeft=cx+r*(1-2*litFrac);
+            ctx.fillRect(litLeft,cy-r-1,r*2,r*2+2);
+        }else{
+            // Waning: lit from left side
+            ctx.fillRect(cx-r,cy-r-1,r*2*litFrac,r*2+2);
+        }
+        ctx.restore();
+    }
+    ctx.strokeStyle='rgba(255,255,255,0.5)';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.stroke();
+}
+
+function draw(earthDeg,moonDeg,rotDeg,relDeg){
+    const w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);
+    ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,w,h);
+
+    // Stars
+    ctx.fillStyle='rgba(255,255,255,0.2)';
+    for(let i=0;i<40;i++){const sx=(i*173+37)%w,sy=(i*241+59)%h;ctx.fillRect(sx,sy,1,1);}
+
+    // Sun at center
+    const sunX=w*0.42,sunY=h*0.52,sunR=28;
+    const glow=ctx.createRadialGradient(sunX,sunY,sunR*0.2,sunX,sunY,sunR*2.5);
+    glow.addColorStop(0,'rgba(255,255,200,1)');glow.addColorStop(0.4,'rgba(255,200,50,0.5)');glow.addColorStop(1,'rgba(255,150,50,0)');
+    ctx.fillStyle=glow;ctx.beginPath();ctx.arc(sunX,sunY,sunR*2.5,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#ffdd57';ctx.beginPath();ctx.arc(sunX,sunY,sunR,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#fff';ctx.font='bold 12px Fredoka';ctx.textAlign='center';
+    ctx.fillText('Sun 太阳',sunX,sunY+sunR+18);
+
+    // Earth orbit
+    const earthOrbitR=120;
+    const earthRad=earthDeg*Math.PI/180;
+    const earthX=sunX+earthOrbitR*Math.cos(earthRad);
+    const earthY=sunY-earthOrbitR*Math.sin(earthRad);
+    ctx.strokeStyle='rgba(255,255,255,0.07)';ctx.lineWidth=1;ctx.setLineDash([3,6]);
+    ctx.beginPath();ctx.arc(sunX,sunY,earthOrbitR,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+
+    // Earth body
+    const earthR=16;
+    ctx.fillStyle='#3498db';ctx.beginPath();ctx.arc(earthX,earthY,earthR,0,Math.PI*2);ctx.fill();
+    // Red dot on equator (observer)
+    const dotAngle=-rotDeg*Math.PI/180;
+    const dotR=earthR*0.85;
+    const dotX=earthX+dotR*Math.cos(dotAngle);
+    const dotY=earthY+dotR*Math.sin(dotAngle);
+    ctx.fillStyle='#e74c3c';ctx.beginPath();ctx.arc(dotX,dotY,3,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#fff';ctx.font='bold 9px Fredoka';ctx.fillText('Earth',earthX,earthY+earthR+14);
+
+    // Moon orbit around Earth
+    const moonOrbitR=38;
+    const moonRad=moonDeg*Math.PI/180;
+    const moonX=earthX-moonOrbitR*Math.cos(moonRad);
+    const moonY=earthY+moonOrbitR*Math.sin(moonRad);
+    ctx.strokeStyle='rgba(255,255,255,0.08)';ctx.lineWidth=0.5;ctx.setLineDash([2,3]);
+    ctx.beginPath();ctx.arc(earthX,earthY,moonOrbitR,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+
+    // Moon body
+    const moonR=6;
+    ctx.fillStyle='#ddd';ctx.beginPath();ctx.arc(moonX,moonY,moonR,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#fff';ctx.font='bold 8px Fredoka';ctx.fillText('Moon',moonX,moonY-moonR-5);
+
+    // Sunlight direction lines
+    ctx.strokeStyle='rgba(255,255,200,0.06)';ctx.lineWidth=0.5;
+    ctx.beginPath();ctx.moveTo(sunX,sunY);ctx.lineTo(moonX,moonY);ctx.stroke();
+
+    // ---- Moon phase inset (top-right) ----
+    const pcx=w-60,pcy=70,pr=32;
+    ctx.fillStyle='rgba(0,0,0,0.3)';ctx.beginPath();ctx.arc(pcx,pcy,pr+5,0,Math.PI*2);ctx.fill();
+    drawMoonPhase(pcx,pcy,pr,relDeg);
+    ctx.fillStyle='#fff';ctx.font='bold 10px Fredoka';ctx.textAlign='center';
+    ctx.fillText('红点视角',pcx,pcy+pr+14);
+
+    // Eclipse
+    const eclipse=getEclipseInfo(relDeg);
+    if(eclipse){
+        ctx.fillStyle='var(--accent)';ctx.font='bold 14px Fredoka';ctx.textAlign='center';
+        ctx.fillText(eclipse,w/2,h-16);
+    }
+}
+
+sAngle.addEventListener('input',()=>{S.playing=false;document.getElementById('btn-start').textContent='自动运行 Auto';document.getElementById('btn-start').className='ctrl-btn start';});
+document.getElementById('btn-start').onclick=()=>{S.playing=!S.playing;const b=document.getElementById('btn-start');b.textContent=S.playing?'暂停 Pause':'自动运行 Auto';b.classList.toggle('start',!S.playing);b.classList.toggle('pause',S.playing);};
+document.getElementById('btn-reset').onclick=()=>{S.moonAngle=0;S.earthAngle=0;S.playing=false;sAngle.value=0;bAngle.textContent='0°';document.getElementById('btn-start').textContent='自动运行 Auto';document.getElementById('btn-start').className='ctrl-btn start';};
+resize();requestAnimationFrame(update);
+
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+</script>
+<div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
+</body>
+</html>

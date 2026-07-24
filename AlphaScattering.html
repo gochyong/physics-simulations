@@ -14,105 +14,70 @@
     <meta name="author" content="Wuli布雷克">
     <meta name="copyright" content="Copyright 2025 Wuli布雷克">
     <title>卢瑟福散射 / Rutherford Scattering - Wuli布雷克</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-color: #FFF9F0; --primary: #FF8c42; --secondary: #FFC75F;
-            --accent: #FF5E5B; --text-dark: #4A403A; --card-bg: #FFFFFF;
-            --shadow: 0 6px 30px rgba(255,140,66,0.18);
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Fredoka','Noto Sans SC',sans-serif; background: var(--bg-color); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 5px 40px 10px; }
-        .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
-        .logo { font-weight: 700; font-size: 1.3rem; color: #fff; background: var(--primary); padding: 6px 18px; border-radius: 16px; box-shadow: 4px 4px 15px rgba(255,140,66,0.3); }
-        .container { width: 100%; max-width: 1400px; margin-top: 8px; display: grid; grid-template-areas:"header header" "formula formula" "diagram controls"; grid-template-columns: 1fr 400px; gap: 12px; }
-        header { grid-area: header; text-align: center; }
-        h1 { font-size: 2rem; color: var(--text-dark); margin-bottom: 2px; }
-
-        .formula-display { grid-area: formula; background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb; }
-        .formula-container { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; min-height: 50px; }
-        .result-row { font-size: 1rem; font-weight: 600; margin-top: 6px; display: flex; gap: 20px; justify-content: center; }
-        .legend { display: flex; gap: 16px; justify-content: center; border-top: 1px solid #eee; padding-top: 6px; width: 100%; flex-wrap: wrap; }
-        .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
-        .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
-
-        .diagram-section { grid-area: diagram; background: #0a0a0a; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; min-height: 450px; display: flex; flex-direction: column; position: relative; border: 2px solid #e8ddd0; }
-        #simCanvas { width: 100%; flex: 1; display: block; }
-
-        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
-        .control-panel { background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
-        .control-group { display: flex; flex-direction: column; gap: 3px; }
-        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
-
-        .btn {
+<style>.btn {
             padding: 10px 20px; border-radius: 25px; border: none;
             font-family: 'Fredoka','Noto Sans SC',sans-serif;
             font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: 0.2s;
         }
-        .btn-primary { background: var(--primary); color: #fff; }
-        .btn-primary:hover { background: #e67a30; }
-        .btn-primary.active { background: var(--accent); }
-        .btn-secondary { background: #bbb; color: #fff; }
-        .btn-secondary:hover { background: #999; }
-
-        .stat-row { padding: 10px; border-radius: 12px; cursor: pointer; transition: 0.3s; background: rgba(255,255,255,0.6); border: 2px solid #f0f0f0; }
-        .stat-row.unlocked { border-color: var(--primary); background: #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        .stat-label { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 5px; font-size: 0.9rem; }
-        .progress-bg { height: 10px; background: #e0e0e0; border-radius: 5px; overflow: hidden; }
-        .progress-bar { height: 100%; transition: width 0.4s; }
-
-        .conclusion { background: white; padding: 12px; border-radius: 12px; border-left: 5px solid var(--primary); display: none; animation: fadeIn 0.5s ease; margin-top: 6px; font-size: 0.85rem; }
-        .visible { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .conc-title { display: block; font-weight: 700; color: var(--text-dark); margin-bottom: 4px; }
-        .lang-en { display: block; font-size: 0.8rem; color: #8d6e63; font-style: italic; border-top: 1px solid #eee; margin-top: 5px; padding-top: 5px; }
-
-        .info-card { background: #fff; border-radius: 20px; padding: 12px 16px; box-shadow: var(--shadow); font-size: 0.9rem; line-height: 1.4; color: #5D6D7E; }
-
-        /* Overlay elements on canvas */
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: #e67a30; }
+.btn-primary.active { background: var(--accent); }
+.btn-secondary { background: #bbb; color: #fff; }
+.btn-secondary:hover { background: #999; }
+.stat-row { padding: 10px; border-radius: 12px; cursor: pointer; transition: 0.3s; background: rgba(255,255,255,0.6); border: 2px solid #f0f0f0; }
+.stat-row.unlocked { border-color: var(--primary); background: #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+.stat-label { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 5px; font-size: 0.9rem; }
+.progress-bg { height: 10px; background: #e0e0e0; border-radius: 5px; overflow: hidden; }
+.progress-bar { height: 100%; transition: width 0.4s; }
+.conclusion { background: white; padding: 12px; border-radius: 12px; border-left: 5px solid var(--primary); display: none; animation: fadeIn 0.5s ease; margin-top: 6px; font-size: 0.85rem; }
+.visible { display: block; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.conc-title { display: block; font-weight: 700; color: var(--text-dark); margin-bottom: 4px; }
+.lang-en { display: block; font-size: 0.8rem; color: #8d6e63; font-style: italic; border-top: 1px solid #eee; margin-top: 5px; padding-top: 5px; }
+/* Overlay elements on canvas */
         .alpha-diagram {
             position: absolute; top: 15px; left: 15px;
             background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3);
             padding: 10px; border-radius: 12px; text-align: center;
             backdrop-filter: blur(4px); z-index: 10;
         }
-        .nucleon-grid { display: grid; grid-template-columns: repeat(2, 25px); gap: 4px; margin-top: 5px; }
-        .nucleon { width: 25px; height: 25px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; font-weight: bold; }
-        .p { background: #ff4444; box-shadow: 0 0 8px #ff4444; }
-        .n { background: #4444ff; box-shadow: 0 0 8px #4444ff; }
-
-        .color-legend {
+.nucleon-grid { display: grid; grid-template-columns: repeat(2, 25px); gap: 4px; margin-top: 5px; }
+.nucleon { width: 25px; height: 25px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; font-weight: bold; }
+.p { background: #ff4444; box-shadow: 0 0 8px #ff4444; }
+.n { background: #4444ff; box-shadow: 0 0 8px #4444ff; }
+.color-legend {
             position: absolute; top: 15px; right: 15px;
             background: rgba(0,0,0,0.7); color: white; padding: 10px;
             border-radius: 8px; font-size: 0.8rem; border: 1px solid #444; z-index: 10;
         }
-        .dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; vertical-align: middle; }
-
-        @media(max-width:1100px){.container{grid-template-areas:"header" "formula" "diagram" "controls";grid-template-columns:1fr}}
-    </style>
+.dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; vertical-align: middle; }
+/* === 无障碍 Accessibility (批量注入) === */
+.skip-link { position: absolute; top: -40px; left: 8px; z-index: 2000; background: #185FA5; color: #fff; padding: 8px 16px; border-radius: 10px; font-size: 0.9rem; font-weight: 600; text-decoration: none; transition: top 0.2s; }
+.skip-link:focus { top: 8px; }
+:focus-visible { outline: 3px solid #185FA5; outline-offset: 2px; border-radius: 6px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+</style>
 </head>
 
 <body>
     <div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
-<a href="modern-physics.html" class="back-link">← 返回近代物理</a>
-    <div class="container">
+<a href="modern-physics.html" class="back-link" aria-label="返回近代物理分类页">← 返回近代物理</a>
+    <div class="container" id="main">
         <header><h1>卢瑟福散射 / Rutherford Scattering</h1></header>
 
-        <section class="formula-display">
+        <section class="formula-display" aria-label="公式与实时数值">
             <div class="result-row">
                 <span>Total / 粒子总数: <strong id="totalTxt" style="color:var(--primary)">0</strong></span>
             </div>
-            <div class="legend">
+            <div class="legend" aria-label="图例说明">
                 <div class="legend-item"><span class="legend-dot" style="background:#4caf50"></span> Straight 直线</div>
                 <div class="legend-item"><span class="legend-dot" style="background:#ff9800"></span> Deflected 偏转</div>
                 <div class="legend-item"><span class="legend-dot" style="background:#f44336"></span> Rebound 反弹</div>
             </div>
         </section>
 
-        <section class="diagram-section">
-            <canvas id="simCanvas"></canvas>
+        <section class="diagram-section" aria-label="模拟动画区">
+            <canvas id="simCanvas" role="img" aria-label="卢瑟福散射模拟动画 — 交互式物理仿真画面"></canvas>
             <div class="alpha-diagram">
                 <div style="color:white; font-size:12px; margin-bottom:5px;">Alpha Particle (α)</div>
                 <div class="nucleon-grid">
@@ -129,7 +94,7 @@
             </div>
         </section>
 
-        <section class="controls-section">
+        <section class="controls-section" aria-label="参数控制区">
             <div class="control-panel">
                 <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
                     <button class="btn btn-primary" id="startBtn">START / 开始发射</button>
@@ -170,15 +135,15 @@
                 <div style="display:flex;flex-direction:column;gap:6px">
                     <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
                         <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(76,175,80,0.1);color:#4caf50;font-weight:700">99%</div>
-                        <div><div style="font-weight:700;font-size:0.9rem">大部分α粒子直线穿过</div><div style="font-size:0.78rem;color:#888">原子内部绝大部分是空的空间，因此α粒子大多不受力。</div></div>
+                        <div><div style="font-weight:700;font-size:0.9rem">大部分α粒子直线穿过</div><div style="font-size:0.78rem;color:#6B6B6B">原子内部绝大部分是空的空间，因此α粒子大多不受力。</div></div>
                     </div>
                     <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
                         <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,152,0,0.1);color:#ff9800;font-weight:700">&lt;1%</div>
-                        <div><div style="font-weight:700;font-size:0.9rem">少数α粒子发生偏转</div><div style="font-size:0.78rem;color:#888">原子中心存在带正电的原子核，库仑力使α粒子偏转。</div></div>
+                        <div><div style="font-weight:700;font-size:0.9rem">少数α粒子发生偏转</div><div style="font-size:0.78rem;color:#6B6B6B">原子中心存在带正电的原子核，库仑力使α粒子偏转。</div></div>
                     </div>
                     <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
                         <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(244,67,54,0.1);color:#f44336;font-weight:700">~0</div>
-                        <div><div style="font-weight:700;font-size:0.9rem">极少数α粒子大角度反弹</div><div style="font-size:0.78rem;color:#888">原子质量几乎全部集中在极小的原子核内。</div></div>
+                        <div><div style="font-weight:700;font-size:0.9rem">极少数α粒子大角度反弹</div><div style="font-size:0.78rem;color:#6B6B6B">原子质量几乎全部集中在极小的原子核内。</div></div>
                     </div>
                 </div>
             </div>
@@ -337,7 +302,25 @@
         }
 
         init(); window.onresize = init; render();
-    </script>
+    
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+</script>
 <div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
 </body>
 

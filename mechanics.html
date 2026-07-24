@@ -14,29 +14,12 @@
     <meta name="author" content="Wuli布雷克">
     <meta name="copyright" content="Copyright 2025 Wuli布雷克">
     <title>力学 / Mechanics - Wuli布雷克</title>
-    <style>
-        :root {
-            --bg-color: #fffaf5;
-            --primary-warm: #ff9800;
-            --accent-warm: #f57c00;
-            --text-main: #3e2723;
-            --card-bg: #ffffff;
+    <style>        :root {
+    --primary-warm: #ff9800;
+    --accent-warm: #f57c00;
+    --text-main: #3e2723;
         }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: 'Segoe UI', 'PingFang SC', system-ui, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        /* Back link */
+/* Back link */
         .back-link {
             position: fixed;
             top: 20px;
@@ -52,13 +35,12 @@
             box-shadow: 0 2px 12px rgba(245, 124, 0, 0.15);
             transition: all 0.3s ease;
         }
-        .back-link:hover {
+.back-link:hover {
             background: #fff;
             box-shadow: 0 4px 20px rgba(245, 124, 0, 0.3);
             transform: translateX(-3px);
         }
-
-        /* Header */
+/* Header */
         header {
             width: 100%;
             padding: 40px 0 20px;
@@ -66,15 +48,13 @@
             flex-direction: column;
             align-items: center;
         }
-
-        .brand-logo {
+.brand-logo {
             display: flex;
             flex-direction: column;
             align-items: center;
             margin-bottom: 20px;
         }
-
-        .logo-main {
+.logo-main {
             font-size: 2.2rem;
             font-weight: 900;
             color: #fff;
@@ -83,8 +63,7 @@
             border-radius: 15px 15px 15px 0;
             box-shadow: 5px 5px 20px rgba(245, 124, 0, 0.2);
         }
-
-        .logo-sub {
+.logo-sub {
             font-size: 0.9rem;
             letter-spacing: 4px;
             color: var(--accent-warm);
@@ -92,23 +71,21 @@
             font-weight: bold;
             text-transform: uppercase;
         }
-
-        .page-title {
+.page-title {
             font-size: 1.8rem;
             font-weight: 800;
             color: var(--text-main);
             letter-spacing: 2px;
             margin-top: 10px;
         }
-        .page-subtitle {
+.page-subtitle {
             font-size: 1rem;
             color: #795548;
             opacity: 0.8;
             margin-top: 4px;
             font-weight: 500;
         }
-
-        /* Grid Container */
+/* Grid Container */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -117,8 +94,7 @@
             max-width: 1100px;
             padding: 20px 0 50px;
         }
-
-        /* Sim Card */
+/* Sim Card */
         .sim-card {
             text-decoration: none;
             color: var(--text-main);
@@ -135,7 +111,7 @@
             position: relative;
             overflow: hidden;
         }
-        .sim-card::before {
+.sim-card::before {
             content: '';
             position: absolute;
             top: 0;
@@ -145,44 +121,41 @@
             background: linear-gradient(135deg, var(--accent-warm), var(--primary-warm));
             border-radius: 0 0 4px 4px;
         }
-        .sim-card:hover {
+.sim-card:hover {
             transform: translateY(-6px);
             box-shadow: 0 16px 45px rgba(245, 124, 0, 0.18);
             border-color: #ffe0c0;
         }
-
-        .sim-card-header {
+.sim-card-header {
             display: flex;
             align-items: center;
             gap: 10px;
             margin-bottom: 8px;
             width: 100%;
         }
-        .sim-card-icon {
+.sim-card-icon {
             font-size: 1.6rem;
             line-height: 1;
         }
-        .sim-card-title {
+.sim-card-title {
             font-size: 1.15rem;
             font-weight: 800;
             color: var(--text-main);
             line-height: 1.3;
         }
-        .sim-card-subtitle {
+.sim-card-subtitle {
             font-size: 0.85rem;
             color: #8d6e63;
             font-weight: 500;
         }
-
-        .sim-card-desc {
+.sim-card-desc {
             font-size: 0.88rem;
             color: #6d4c41;
             line-height: 1.5;
             margin-bottom: 12px;
             flex: 1;
         }
-
-        /* Tag */
+/* Tag */
         .tag {
             display: inline-block;
             background: linear-gradient(135deg, #fff3e0, #ffe0b2);
@@ -193,15 +166,13 @@
             border-radius: 12px;
             letter-spacing: 1px;
         }
-
-        footer {
+footer {
             margin-top: auto;
             padding: 40px;
             font-size: 0.85rem;
             color: #a1887f;
         }
-
-        @media (max-width: 800px) {
+@media (max-width: 800px) {
             .grid-container {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 16px;
@@ -213,12 +184,17 @@
                 font-size: 1rem;
             }
         }
-        @media (max-width: 480px) {
+@media (max-width: 480px) {
             .grid-container {
                 grid-template-columns: 1fr;
             }
         }
-    </style>
+/* === 无障碍 Accessibility (批量注入) === */
+.skip-link { position: absolute; top: -40px; left: 8px; z-index: 2000; background: #185FA5; color: #fff; padding: 8px 16px; border-radius: 10px; font-size: 0.9rem; font-weight: 600; text-decoration: none; transition: top 0.2s; }
+.skip-link:focus { top: 8px; }
+:focus-visible { outline: 3px solid #185FA5; outline-offset: 2px; border-radius: 6px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+</style>
 </head>
 
 <body>
@@ -232,12 +208,12 @@
     </header>
 
     <!-- Sim Card Grid -->
-    <main class="grid-container">
+    <main class="grid-container" id="main">
 
         <!-- 1. 密度 / Density -->
-        <a href="density.html" class="sim-card">
+        <a href="density.html" class="sim-card" aria-label="访问密度">
             <div class="sim-card-header">
-                <span class="sim-card-icon">⚖️</span>
+                <span class="sim-card-icon" aria-hidden="true">⚖️</span>
                 <div>
                     <div class="sim-card-title">密度</div>
                     <div class="sim-card-subtitle">Density</div>
@@ -248,9 +224,9 @@
         </a>
 
         <!-- 2. 压强 / Pressure -->
-        <a href="pressure.html" class="sim-card">
+        <a href="pressure.html" class="sim-card" aria-label="访问压强">
             <div class="sim-card-header">
-                <span class="sim-card-icon">📐</span>
+                <span class="sim-card-icon" aria-hidden="true">📐</span>
                 <div>
                     <div class="sim-card-title">压强</div>
                     <div class="sim-card-subtitle">Pressure</div>
@@ -261,9 +237,9 @@
         </a>
 
         <!-- 3. 液体压强 / Liquid Pressure -->
-        <a href="LiquidPressure.html" class="sim-card">
+        <a href="LiquidPressure.html" class="sim-card" aria-label="访问液体压强">
             <div class="sim-card-header">
-                <span class="sim-card-icon">💧</span>
+                <span class="sim-card-icon" aria-hidden="true">💧</span>
                 <div>
                     <div class="sim-card-title">液体压强</div>
                     <div class="sim-card-subtitle">Liquid Pressure</div>
@@ -274,9 +250,9 @@
         </a>
 
         <!-- 4. 阿基米德原理 / Archimedes' Principle -->
-        <a href="upthrust.html" class="sim-card">
+        <a href="upthrust.html" class="sim-card" aria-label="访问阿基米德原理">
             <div class="sim-card-header">
-                <span class="sim-card-icon">🚢</span>
+                <span class="sim-card-icon" aria-hidden="true">🚢</span>
                 <div>
                     <div class="sim-card-title">阿基米德原理</div>
                     <div class="sim-card-subtitle">Archimedes' Principle</div>
@@ -287,9 +263,9 @@
         </a>
 
         <!-- 5. 力的合成与分解 / Vector Addition & Decomposition -->
-        <a href="ForceCompositionDecomposition.html" class="sim-card">
+        <a href="ForceCompositionDecomposition.html" class="sim-card" aria-label="访问力的合成与分解">
             <div class="sim-card-header">
-                <span class="sim-card-icon">➕</span>
+                <span class="sim-card-icon" aria-hidden="true">➕</span>
                 <div>
                     <div class="sim-card-title">力的合成与分解</div>
                     <div class="sim-card-subtitle">Vector Addition & Decomposition</div>
@@ -300,9 +276,9 @@
         </a>
 
         <!-- 6. 牛顿定律 / Newton's Laws -->
-        <a href="NewtonLaw.html" class="sim-card">
+        <a href="NewtonLaw.html" class="sim-card" aria-label="访问牛顿定律">
             <div class="sim-card-header">
-                <span class="sim-card-icon">🍎</span>
+                <span class="sim-card-icon" aria-hidden="true">🍎</span>
                 <div>
                     <div class="sim-card-title">牛顿定律</div>
                     <div class="sim-card-subtitle">Newton's Laws</div>
@@ -313,9 +289,9 @@
         </a>
 
         <!-- 7. 胡克定律 / Hooke's Law -->
-        <a href="HookesLaw.html" class="sim-card">
+        <a href="HookesLaw.html" class="sim-card" aria-label="访问胡克定律">
             <div class="sim-card-header">
-                <span class="sim-card-icon">🪝</span>
+                <span class="sim-card-icon" aria-hidden="true">🪝</span>
                 <div>
                     <div class="sim-card-title">胡克定律</div>
                     <div class="sim-card-subtitle">Hooke's Law</div>
@@ -326,9 +302,9 @@
         </a>
 
         <!-- 8. 斜面运动 / Inclined Plane -->
-        <a href="InclinedPlane.html" class="sim-card">
+        <a href="InclinedPlane.html" class="sim-card" aria-label="访问斜面运动">
             <div class="sim-card-header">
-                <span class="sim-card-icon">📐</span>
+                <span class="sim-card-icon" aria-hidden="true">📐</span>
                 <div>
                     <div class="sim-card-title">斜面运动</div>
                     <div class="sim-card-subtitle">Inclined Plane</div>
@@ -339,9 +315,9 @@
         </a>
 
         <!-- 9. 抛体运动 / Projectile Motion -->
-        <a href="ProjectileMotion.html" class="sim-card">
+        <a href="ProjectileMotion.html" class="sim-card" aria-label="访问抛体运动">
             <div class="sim-card-header">
-                <span class="sim-card-icon">🎯</span>
+                <span class="sim-card-icon" aria-hidden="true">🎯</span>
                 <div>
                     <div class="sim-card-title">抛体运动</div>
                     <div class="sim-card-subtitle">Projectile Motion</div>
@@ -352,9 +328,9 @@
         </a>
 
         <!-- 10. 圆周运动 / Circular Motion -->
-        <a href="CircularMotion.html" class="sim-card">
+        <a href="CircularMotion.html" class="sim-card" aria-label="访问圆周运动">
             <div class="sim-card-header">
-                <span class="sim-card-icon">🔵</span>
+                <span class="sim-card-icon" aria-hidden="true">🔵</span>
                 <div>
                     <div class="sim-card-title">圆周运动</div>
                     <div class="sim-card-subtitle">Circular Motion</div>
@@ -365,9 +341,9 @@
         </a>
 
         <!-- 11. 简谐运动 / Simple Harmonic Motion -->
-        <a href="SimpleHarmonicMotion.html" class="sim-card">
+        <a href="SimpleHarmonicMotion.html" class="sim-card" aria-label="访问简谐运动">
             <div class="sim-card-header">
-                <span class="sim-card-icon">🔄</span>
+                <span class="sim-card-icon" aria-hidden="true">🔄</span>
                 <div>
                     <div class="sim-card-title">简谐运动</div>
                     <div class="sim-card-subtitle">Simple Harmonic Motion</div>
@@ -378,9 +354,9 @@
         </a>
 
         <!-- 12. 动量 / Momentum -->
-        <a href="Momentum.html" class="sim-card">
+        <a href="Momentum.html" class="sim-card" aria-label="访问动量">
             <div class="sim-card-header">
-                <span class="sim-card-icon">🏃</span>
+                <span class="sim-card-icon" aria-hidden="true">🏃</span>
                 <div>
                     <div class="sim-card-title">动量</div>
                     <div class="sim-card-subtitle">Momentum</div>
@@ -391,9 +367,9 @@
         </a>
 
         <!-- 13. 冲量 / Impulse -->
-        <a href="Impulse.html" class="sim-card">
+        <a href="Impulse.html" class="sim-card" aria-label="访问冲量">
             <div class="sim-card-header">
-                <span class="sim-card-icon">💥</span>
+                <span class="sim-card-icon" aria-hidden="true">💥</span>
                 <div>
                     <div class="sim-card-title">冲量</div>
                     <div class="sim-card-subtitle">Impulse</div>
@@ -404,9 +380,9 @@
         </a>
 
         <!-- 14. 动量守恒 / Momentum Conservation -->
-        <a href="MomentumConservation.html" class="sim-card">
+        <a href="MomentumConservation.html" class="sim-card" aria-label="访问动量守恒">
             <div class="sim-card-header">
-                <span class="sim-card-icon">🎱</span>
+                <span class="sim-card-icon" aria-hidden="true">🎱</span>
                 <div>
                     <div class="sim-card-title">动量守恒</div>
                     <div class="sim-card-subtitle">Momentum Conservation</div>
@@ -417,9 +393,9 @@
         </a>
 
         <!-- 15. 功 / Work -->
-        <a href="Work.html" class="sim-card">
+        <a href="Work.html" class="sim-card" aria-label="访问功">
             <div class="sim-card-header">
-                <span class="sim-card-icon">📦</span>
+                <span class="sim-card-icon" aria-hidden="true">📦</span>
                 <div>
                     <div class="sim-card-title">功</div>
                     <div class="sim-card-subtitle">Work</div>
@@ -430,9 +406,9 @@
         </a>
 
         <!-- 16. 功率 / Power -->
-        <a href="Power.html" class="sim-card">
+        <a href="Power.html" class="sim-card" aria-label="访问功率">
             <div class="sim-card-header">
-                <span class="sim-card-icon">⚙️</span>
+                <span class="sim-card-icon" aria-hidden="true">⚙️</span>
                 <div>
                     <div class="sim-card-title">功率</div>
                     <div class="sim-card-subtitle">Power</div>
@@ -443,9 +419,9 @@
         </a>
 
         <!-- 17. 动能 / Kinetic Energy -->
-        <a href="KineticEnergy.html" class="sim-card">
+        <a href="KineticEnergy.html" class="sim-card" aria-label="访问动能">
             <div class="sim-card-header">
-                <span class="sim-card-icon">⚡</span>
+                <span class="sim-card-icon" aria-hidden="true">⚡</span>
                 <div>
                     <div class="sim-card-title">动能</div>
                     <div class="sim-card-subtitle">Kinetic Energy</div>
@@ -456,9 +432,9 @@
         </a>
 
         <!-- 18. 重力势能 / Gravitational Potential Energy -->
-        <a href="PotentialEnergy.html" class="sim-card">
+        <a href="PotentialEnergy.html" class="sim-card" aria-label="访问重力势能">
             <div class="sim-card-header">
-                <span class="sim-card-icon">🏔️</span>
+                <span class="sim-card-icon" aria-hidden="true">🏔️</span>
                 <div>
                     <div class="sim-card-title">重力势能</div>
                     <div class="sim-card-subtitle">Gravitational Potential Energy</div>
@@ -469,9 +445,9 @@
         </a>
 
         <!-- 19. 能量守恒 / Energy Conservation -->
-        <a href="EnergyConservation.html" class="sim-card">
+        <a href="EnergyConservation.html" class="sim-card" aria-label="访问能量守恒">
             <div class="sim-card-header">
-                <span class="sim-card-icon">🎢</span>
+                <span class="sim-card-icon" aria-hidden="true">🎢</span>
                 <div>
                     <div class="sim-card-title">能量守恒</div>
                     <div class="sim-card-subtitle">Energy Conservation</div>
@@ -482,9 +458,9 @@
         </a>
 
         <!-- 20. 力矩 / Torque -->
-        <a href="Torque.html" class="sim-card">
+        <a href="Torque.html" class="sim-card" aria-label="访问力矩">
             <div class="sim-card-header">
-                <span class="sim-card-icon">🔧</span>
+                <span class="sim-card-icon" aria-hidden="true">🔧</span>
                 <div>
                     <div class="sim-card-title">力矩</div>
                     <div class="sim-card-subtitle">Torque</div>
@@ -495,9 +471,9 @@
         </a>
 
         <!-- 21. 杠杆平衡 / Lever Balance -->
-        <a href="MomentBalance.html" class="sim-card">
+        <a href="MomentBalance.html" class="sim-card" aria-label="访问杠杆平衡">
             <div class="sim-card-header">
-                <span class="sim-card-icon">⚖️</span>
+                <span class="sim-card-icon" aria-hidden="true">⚖️</span>
                 <div>
                     <div class="sim-card-title">杠杆平衡</div>
                     <div class="sim-card-subtitle">Lever Balance</div>
@@ -508,9 +484,9 @@
         </a>
 
         <!-- 22. 单摆 / Simple Pendulum -->
-        <a href="SimplePendulum.html" class="sim-card">
+        <a href="SimplePendulum.html" class="sim-card" aria-label="访问单摆">
             <div class="sim-card-header">
-                <span class="sim-card-icon">⏰</span>
+                <span class="sim-card-icon" aria-hidden="true">⏰</span>
                 <div>
                     <div class="sim-card-title">单摆</div>
                     <div class="sim-card-subtitle">Simple Pendulum</div>
@@ -521,9 +497,9 @@
         </a>
 
         <!-- 23. 滑轮 / Pulley -->
-        <a href="Pulley.html" class="sim-card">
+        <a href="Pulley.html" class="sim-card" aria-label="访问滑轮">
             <div class="sim-card-header">
-                <span class="sim-card-icon">🪢</span>
+                <span class="sim-card-icon" aria-hidden="true">🪢</span>
                 <div>
                     <div class="sim-card-title">滑轮</div>
                     <div class="sim-card-subtitle">Pulley</div>

@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wuli布雷克物理模拟实验室 - 变压器 / Transformer。免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:title" content="变压器 / Transformer - Wuli布雷克">
+    <meta property="og:description" content="Wuli布雷克物理模拟实验室 - 变压器 / Transformer。互感原理、理想变压器匝数比 Vp/Vs = Np/Ns 可视化演示。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wuliblake.com/Transformer.html">
+    <meta property="og:site_name" content="Wuli布雷克物理模拟实验室">
+    <link rel="stylesheet" href="common.css">
+    <meta name="author" content="Wuli布雷克">
+    <meta name="copyright" content="Copyright 2025 Wuli布雷克">
+    <title>变压器 / Transformer - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>#slider-freq::-webkit-slider-thumb { background: var(--secondary); }</style>
+</head>
+<body>
+<a href="#main-content" class="skip-link">跳到主内容</a>
+<div class="branding"><a href="index.html" class="logo" aria-label="返回首页 Wuli布雷克">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
+<a href="electricity.html" class="back-link" aria-label="返回电磁学分类页">← 返回电磁学</a>
+<div class="container" id="main-content">
+<header>
+    <h1>变压器 / Transformer</h1>
+</header>
+<section class="formula-display" aria-label="公式与实时数值">
+    <div class="formula-container" id="formula-root" aria-live="polite"></div>
+    <div class="result-row" id="result-row" aria-live="polite"></div>
+    <div class="legend" aria-label="图例说明">
+        <div class="legend-item"><span class="legend-dot" style="background:var(--primary)" aria-hidden="true"></span> 原线圈电压 Vp</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#3498db" aria-hidden="true"></span> 副线圈电压 Vs</div>
+        <div class="legend-item"><span style="color:#7f8c8d" aria-hidden="true">━━</span> 铁芯磁通 Φ</div>
+        <div class="legend-item"><span style="color:#e67e22" aria-hidden="true">→</span> 原线圈电流</div>
+        <div class="legend-item"><span style="color:#9b59b6" aria-hidden="true">→</span> 副线圈电流</div>
+    </div>
+</section>
+<section class="diagram-section" aria-label="模拟动画区">
+    <div class="main-wrap"><canvas id="simCanvas" role="img" aria-label="变压器主模拟画布：左侧铁芯上的原线圈连接交流电源，右侧副线圈连接负载符号，铁芯内有随时间交替反向的磁通箭头，电路中有流动的电荷点表示电流方向，灯泡亮度随副线圈电压变化"></canvas></div>
+    <div class="sub-wrap">
+        <div class="sub-label" id="wave-label">原线圈电压 Vp &amp; 副线圈电压 Vs 波形对比 &nbsp; (体现匝数比 Ns/Np)</div>
+        <canvas id="canvasWave" role="img" aria-labelledby="wave-label"></canvas>
+    </div>
+</section>
+<section class="controls-section">
+    <div class="control-panel">
+        <div class="param-section" style="border-left:5px solid var(--primary);" aria-labelledby="primary-header">
+            <div class="param-section-header" id="primary-header">🔌 原线圈 / Primary</div>
+            <div class="control-group"><label for="slider-np" class="label-row"><span>匝数 Np</span><span id="badge-np" class="val-badge" aria-live="polite">10</span></label><input type="range" id="slider-np" min="2" max="20" step="1" value="10" aria-valuemin="2" aria-valuemax="20" aria-valuenow="10" aria-valuetext="10匝"></div>
+            <div class="control-group" style="margin-top:4px;"><label for="slider-vp" class="label-row"><span>输入电压 Vp (Input Voltage)</span><span id="badge-vp" class="val-badge" aria-live="polite">6 V</span></label><input type="range" id="slider-vp" min="1" max="12" step="0.5" value="6" aria-valuemin="1" aria-valuemax="12" aria-valuenow="6" aria-valuetext="6伏"></div>
+        </div>
+        <div class="param-section" style="border-left:5px solid #3498db;" aria-labelledby="secondary-header">
+            <div class="param-section-header" id="secondary-header">💡 副线圈 / Secondary</div>
+            <div class="control-group"><label for="slider-ns" class="label-row"><span>匝数 Ns</span><span id="badge-ns" class="val-badge" aria-live="polite">10</span></label><input type="range" id="slider-ns" min="2" max="20" step="1" value="10" aria-valuemin="2" aria-valuemax="20" aria-valuenow="10" aria-valuetext="10匝"></div>
+            <div class="control-group" style="margin-top:4px;"><label for="slider-freq" class="label-row"><span>交流频率 f (Frequency)</span><span id="badge-freq" class="val-badge" aria-live="polite">1.0 Hz</span></label><input type="range" id="slider-freq" min="0.3" max="3" step="0.1" value="1" aria-valuemin="0.3" aria-valuemax="3" aria-valuenow="1" aria-valuetext="1.0赫兹"></div>
+        </div>
+        <div class="btn-row"><button id="btn-start" class="ctrl-btn start" aria-label="开始或暂停模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false">开始 Start</button><button id="btn-reset" class="ctrl-btn reset" aria-label="重置参数到初始值" aria-label="重置参数">重置 Reset</button></div>
+    </div>
+    <div class="info-card">
+        <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem;">物理要点 / Key Points</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;">V</div><div><div style="font-weight:700;font-size:0.9rem;">Vs = Vp × (Ns/Np)</div><div style="font-size:0.78rem;color:#6B6B6B;">副线圈电压由匝数比决定：Ns>Np 升压，Ns&lt;Np 降压。</div></div></div>
+            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:#2ecc71;font-weight:700;">Φ</div><div><div style="font-weight:700;font-size:0.9rem;">交变磁通耦合</div><div style="font-size:0.78rem;color:#6B6B6B;">原线圈交变电流→铁芯交变磁通→副线圈感应电动势。</div></div></div>
+            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(142,68,173,0.1);color:#8e44ad;font-weight:700;">P</div><div><div style="font-weight:700;font-size:0.9rem;">理想变压器 P入=P出</div><div style="font-size:0.78rem;color:#6B6B6B;">不计损耗时 Vp·Ip = Vs·Is，电流与匝数成反比。</div></div></div>
+            <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;"><div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:#3498db;font-weight:700;">⏵</div><div><div style="font-weight:700;font-size:0.9rem;">Vp = -Np·dΦ/dt</div><div style="font-size:0.78rem;color:#6B6B6B;">法拉第定律：电压与匝数、磁通变化率成正比。</div></div></div>
+        </div>
+    </div>
+</section>
+</div>
+
+<script>
+const simC = document.getElementById('simCanvas'), ctx = simC.getContext('2d');
+const wC = document.getElementById('canvasWave'), ctxW = wC.getContext('2d');
+const sNp = document.getElementById('slider-np'), sNs = document.getElementById('slider-ns'), sVp = document.getElementById('slider-vp'), sF = document.getElementById('slider-freq');
+const bNp = document.getElementById('badge-np'), bNs = document.getElementById('badge-ns'), bVp = document.getElementById('badge-vp'), bF = document.getElementById('badge-freq');
+const bStart = document.getElementById('btn-start'), bReset = document.getElementById('btn-reset');
+const fRoot = document.getElementById('formula-root'), rRow = document.getElementById('result-row');
+
+const S = { Np: 10, Ns: 10, Vp: 6, f: 1.0, time: 0, playing: false };
+let lt = 0;
+const WAVE = []; // {t, vp, vs} waveform history
+
+function resize() {
+    simC.width = simC.clientWidth; simC.height = simC.clientHeight;
+    wC.width = wC.clientWidth; wC.height = wC.clientHeight;
+}
+window.addEventListener('resize', resize);
+
+// Draw an arrow
+function arrow(c, x, y, dx, dy, clr, lw) {
+    const a = Math.atan2(dy, dx), h = 7, tx = x + dx, ty = y + dy;
+    c.strokeStyle = clr; c.fillStyle = clr; c.lineWidth = lw || 2; c.lineCap = 'round';
+    c.beginPath(); c.moveTo(x, y); c.lineTo(tx, ty); c.stroke();
+    c.beginPath(); c.moveTo(tx, ty);
+    c.lineTo(tx - h * Math.cos(a - Math.PI / 6), ty - h * Math.sin(a - Math.PI / 6));
+    c.lineTo(tx - h * Math.cos(a + Math.PI / 6), ty - h * Math.sin(a + Math.PI / 6));
+    c.closePath(); c.fill();
+}
+
+// Moving charge dots along a path of points
+function drawCharges(c, pts, phase, dir, count, speed, clr) {
+    if (pts.length < 2) return;
+    // total length
+    let segLen = [0], total = 0;
+    for (let i = 1; i < pts.length; i++) { total += Math.hypot(pts[i].x-pts[i-1].x, pts[i].y-pts[i-1].y); segLen.push(total); }
+    for (let k = 0; k < count; k++) {
+        const u = ((phase * dir * speed + k / count) % 1 + 1) % 1;
+        const target = u * total;
+        let si = 1; while (si < segLen.length && segLen[si] < target) si++;
+        const p0 = pts[si-1], p1 = pts[si];
+        const frac = (target - segLen[si-1]) / Math.max(segLen[si]-segLen[si-1], 0.001);
+        const x = p0.x + (p1.x-p0.x)*frac, y = p0.y + (p1.y-p0.y)*frac;
+        c.fillStyle = clr; c.beginPath(); c.arc(x, y, 2.6, 0, Math.PI*2); c.fill();
+    }
+}
+
+function draw() {
+    ctx.clearRect(0, 0, simC.width, simC.height);
+    const cw = simC.width, ch = simC.height;
+    if (cw < 10 || ch < 10) return;
+    ctx.fillStyle = '#fdfdfa'; ctx.fillRect(0, 0, cw, ch);
+
+    const omega = 2 * Math.PI * S.f;
+    const vp = S.Vp * Math.sin(omega * S.time);            // primary voltage (V)
+    const vs = vp * (S.Ns / S.Np);                          // secondary voltage (ideal)
+    // flux: Vp = Np·dΦ/dt  →  Φ = (1/Np)∫Vp dt = -(Vp_peak/(Np·ω))·cos(ωt), lags Vp by 90°
+    const phiPeak = S.Vp / (Math.max(S.Np,1) * Math.max(omega,0.01));
+    const phi = -phiPeak * Math.cos(omega * S.time);       // Φ lags Vp by 90°, + = up-left leg
+    const Iload = Math.abs(vs) / 10;                         // load resistance ~10Ω
+    const Ip = Math.abs(Iload * (S.Ns/S.Np));               // reflected primary current
+
+    // === Geometry of iron core (rectangular ring, centered) ===
+    const cx = cw * 0.50, cy = ch * 0.50;
+    const coreHalfW = Math.min(115, cw*0.20), coreHalfH = Math.min(110, ch*0.36);
+    const thick = 26;
+    const leftLegX = cx - coreHalfW, rightLegX = cx + coreHalfW;
+    const topY = cy - coreHalfH, botY = cy + coreHalfH;
+    const legTop = topY + thick, legBot = botY - thick;
+
+    // --- Iron core (laminated look) ---
+    ctx.save();
+    ctx.fillStyle = '#8d8580';
+    ctx.strokeStyle = '#5d5550'; ctx.lineWidth = 2;
+    // outer rect
+    roundRect(ctx, cx-coreHalfW, cy-coreHalfH, coreHalfW*2, coreHalfH*2, 8); ctx.fill(); ctx.stroke();
+    // inner hole
+    ctx.fillStyle = '#fdfdfa';
+    roundRect(ctx, cx-coreHalfW+thick, cy-coreHalfH+thick, coreHalfW*2-thick*2, coreHalfH*2-thick*2, 5); ctx.fill();
+    ctx.strokeStyle = '#5d5550'; ctx.stroke();
+    ctx.restore();
+    // lamination hatching on the yokes
+    ctx.save();
+    ctx.beginPath(); ctx.rect(cx-coreHalfW, cy-coreHalfH, coreHalfW*2, thick); ctx.clip();
+    ctx.strokeStyle = 'rgba(93,85,80,0.35)'; ctx.lineWidth = 0.7;
+    for (let x = cx-coreHalfW; x < cx+coreHalfW; x += 4) { ctx.beginPath(); ctx.moveTo(x, cy-coreHalfH); ctx.lineTo(x+thick, cy-coreHalfH+thick); ctx.stroke(); }
+    ctx.restore();
+    ctx.save();
+    ctx.beginPath(); ctx.rect(cx-coreHalfW, botY-thick, coreHalfW*2, thick); ctx.clip();
+    ctx.strokeStyle = 'rgba(93,85,80,0.35)'; ctx.lineWidth = 0.7;
+    for (let x = cx-coreHalfW; x < cx+coreHalfW; x += 4) { ctx.beginPath(); ctx.moveTo(x, botY-thick); ctx.lineTo(x+thick, botY); ctx.stroke(); }
+    ctx.restore();
+
+    // --- Flux arrows in core (alternating direction) ---
+    const fluxDir = phi >= 0 ? 1 : -1;
+    const fluxMag = Math.min(1, Math.abs(phi) / Math.max(phiPeak,0.001));
+    ctx.save();
+    ctx.globalAlpha = 0.35 + 0.5 * fluxMag;
+    ctx.fillStyle = '#7f8c8d'; ctx.strokeStyle = '#7f8c8d'; ctx.lineWidth = 2.2; ctx.lineCap='round';
+    // left leg: arrow up (fluxDir=+1) or down
+    const arrCnt = 3;
+    for (let i=0;i<arrCnt;i++){
+        const yy = legTop + (i+0.5)*(legBot-legTop)/arrCnt;
+        arrow(ctx, leftLegX-2, yy, 0, -14*fluxDir, '#7f8c8d', 2.2);
+    }
+    // top yoke: arrow right (when fluxDir=+1)
+    for (let i=0;i<arrCnt;i++){
+        const xx = leftLegX + thick + (i+0.5)*(rightLegX-leftLegX-thick*2)/arrCnt;
+        arrow(ctx, xx, cy-coreHalfH+thick/2, 14*fluxDir, 0, '#7f8c8d', 2.2);
+    }
+    // right leg: arrow down (fluxDir=+1)
+    for (let i=0;i<arrCnt;i++){
+        const yy = legTop + (i+0.5)*(legBot-legTop)/arrCnt;
+        arrow(ctx, rightLegX+2, yy, 0, 14*fluxDir, '#7f8c8d', 2.2);
+    }
+    // bottom yoke: arrow left (fluxDir=+1)
+    for (let i=0;i<arrCnt;i++){
+        const xx = leftLegX + thick + (i+0.5)*(rightLegX-leftLegX-thick*2)/arrCnt;
+        arrow(ctx, xx, botY-thick/2, -14*fluxDir, 0, '#7f8c8d', 2.2);
+    }
+    ctx.restore();
+    // Φ label
+    ctx.fillStyle = '#7f8c8d'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign='center';
+    ctx.fillText('Φ', cx, cy+4);
+
+    // --- Coils (sine wave wrapping each leg vertically) ---
+    // Primary on left leg
+    drawCoil(leftLegX, legTop, legBot, thick, S.Np, '#e67e22');
+    // Secondary on right leg
+    drawCoil(rightLegX, legTop, legBot, thick, S.Ns, '#9b59b6');
+
+    // --- AC source (left side) ---
+    const srcX = Math.max(70, leftLegX - 130), srcY = cy;
+    const srcR = 22;
+    // wires: source terminals → primary coil endpoints (connect at legTop/legBot)
+    ctx.strokeStyle = '#bbb'; ctx.lineWidth = 2.5; ctx.lineCap='round'; ctx.lineJoin='round';
+    ctx.beginPath();
+    ctx.moveTo(srcX, srcY-srcR); ctx.lineTo(srcX, legTop); ctx.lineTo(leftLegX, legTop);  // top terminal → coil top
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(srcX, srcY+srcR); ctx.lineTo(srcX, legBot); ctx.lineTo(leftLegX, legBot);  // bottom terminal → coil bottom
+    ctx.stroke();
+    // AC source circle with ~
+    ctx.beginPath(); ctx.arc(srcX, srcY, srcR, 0, Math.PI*2);
+    ctx.fillStyle = '#fff'; ctx.fill(); ctx.strokeStyle = '#555'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.strokeStyle = '#e67e22'; ctx.lineWidth = 2.2;
+    ctx.beginPath();
+    ctx.moveTo(srcX-9, srcY); ctx.quadraticCurveTo(srcX-4.5, srcY-8, srcX, srcY);
+    ctx.quadraticCurveTo(srcX+4.5, srcY+8, srcX+9, srcY); ctx.stroke();
+    ctx.fillStyle = '#6B6B6B'; ctx.font='bold 11px Fredoka'; ctx.textAlign='center';
+    ctx.fillText('AC', srcX, srcY+srcR+14);
+
+    // --- Secondary AC symbol (right side) — same circle + sine wave as primary ---
+    const outX = Math.min(cw-70, rightLegX + 130), outY = cy;
+    const outR = 22;
+    ctx.strokeStyle = '#bbb'; ctx.lineWidth = 2.5; ctx.lineCap='round'; ctx.lineJoin='round';
+    ctx.beginPath();
+    ctx.moveTo(outX, outY-outR); ctx.lineTo(outX, legTop); ctx.lineTo(rightLegX, legTop);  // top terminal → coil top
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(outX, outY+outR); ctx.lineTo(outX, legBot); ctx.lineTo(rightLegX, legBot);  // bottom terminal → coil bottom
+    ctx.stroke();
+    // AC symbol circle with ~ sine wave (blue — secondary theme)
+    ctx.beginPath(); ctx.arc(outX, outY, outR, 0, Math.PI*2);
+    ctx.fillStyle = '#fff'; ctx.fill(); ctx.strokeStyle = '#555'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.strokeStyle = '#3498db'; ctx.lineWidth = 2.2;
+    ctx.beginPath();
+    ctx.moveTo(outX-9, outY); ctx.quadraticCurveTo(outX-4.5, outY-8, outX, outY);
+    ctx.quadraticCurveTo(outX+4.5, outY+8, outX+9, outY); ctx.stroke();
+    ctx.fillStyle = '#6B6B6B'; ctx.font='bold 11px Fredoka'; ctx.textAlign='center';
+    ctx.fillText('AC', outX, outY+outR+14);
+
+    // --- Moving charges (current flow), alternating with AC ---
+    if (S.playing) {
+        const phase = (omega * S.time) / (2*Math.PI); // cycles
+        const dirP = Math.sin(omega*S.time) >= 0 ? 1 : -1;
+        const dirS = dirP; // secondary current in phase for resistive load
+        // primary circuit path: source top → up → across → down coil → across → up to source bottom
+        const pPts = [
+            {x:srcX, y:srcY-srcR}, {x:srcX, y:legTop}, {x:leftLegX, y:legTop},
+            {x:leftLegX, y:legBot}, {x:srcX, y:legBot}, {x:srcX, y:srcY+srcR}
+        ];
+        // secondary path: out top → up → across → down coil → across → down to out bottom
+        const sPts = [
+            {x:outX, y:outY-outR}, {x:outX, y:legTop}, {x:rightLegX, y:legTop},
+            {x:rightLegX, y:legBot}, {x:outX, y:legBot}, {x:outX, y:outY+outR}
+        ];
+        const pCount = 8 + Math.round(8*Math.min(Ip,3));
+        drawCharges(ctx, pPts, phase, dirP, pCount, 1, '#e67e22');
+        const sCount = 6 + Math.round(10*Math.min(Iload,3));
+        drawCharges(ctx, sPts, phase, dirS, sCount, 1, '#9b59b6');
+    }
+
+    // --- Coil turn labels ---
+    ctx.fillStyle = '#e67e22'; ctx.font='bold 12px Fredoka'; ctx.textAlign='center';
+    ctx.fillText('原线圈 Np='+S.Np, leftLegX, botY+26);
+    ctx.fillStyle = '#9b59b6';
+    ctx.fillText('副线圈 Ns='+S.Ns, rightLegX, botY+26);
+    ctx.fillStyle = '#7f8c8d'; ctx.font='11px Fredoka';
+    ctx.fillText('铁芯 Iron Core', cx, botY+26);
+
+    // --- Vp / Vs labels near source & output symbol ---
+    ctx.fillStyle = '#e67e22'; ctx.font='bold 13px Fredoka'; ctx.textAlign='center';
+    ctx.fillText('Vp='+vp.toFixed(1)+'V', srcX, srcY-srcR-22);
+    ctx.fillStyle = '#3498db';
+    ctx.fillText('Vs='+vs.toFixed(1)+'V', outX, outY-outR-22);
+
+    // --- Waveform sub-canvas ---
+    drawWave(vp, vs);
+
+    // --- UI update ---
+    bNp.textContent = S.Np; bNs.textContent = S.Ns; bVp.textContent = S.Vp+' V'; bF.textContent = S.f.toFixed(1)+' Hz';
+    let typeText, typeColor;
+    if (S.Ns > S.Np) { typeText='升压变压器 Step-Up'; typeColor='#e74c3c'; }
+    else if (S.Ns < S.Np) { typeText='降压变压器 Step-Down'; typeColor='#2980b9'; }
+    else { typeText='隔离变压器 Isolation'; typeColor='#7f8c8d'; }
+    fRoot.innerHTML =
+        '<span class="formula-item" style="color:var(--primary)"><b>Vp / Vs = Np / Ns</b></span>' +
+        '<span class="formula-item" style="color:#3498db">Vs = Vp × (Ns/Np) = '+(S.Vp*S.Ns/S.Np).toFixed(2)+' V</span>' +
+        '<span class="formula-item '+(S.Ns>S.Np?'':'')+'" style="color:'+typeColor+'"><b>'+typeText+'</b></span>';
+    rRow.innerHTML =
+        '<span>Vp(t) = <b style="color:#e67e22">'+vp.toFixed(2)+' V</b></span>' +
+        '<span>Vs(t) = <b style="color:#3498db">'+vs.toFixed(2)+' V</b></span>' +
+        '<span>匝数比 Np:Ns = <b>'+S.Np+':'+S.Ns+'</b></span>' +
+        '<span>Is/Ip = <b>'+(S.Np/S.Ns).toFixed(2)+'</b></span>';
+}
+
+// Draw a sine-wave coil wrapping a vertical leg
+function drawCoil(legX, top, bot, legThick, turns, clr) {
+    const amp = legThick * 0.55 + 6;
+    const span = bot - top;
+    ctx.strokeStyle = clr; ctx.lineWidth = 3.0; ctx.lineCap='round'; ctx.lineJoin='round';
+    ctx.beginPath();
+    const steps = turns * 30;
+    for (let i=0;i<=steps;i++){
+        const t = i/steps;
+        const y = top + t*span;
+        const x = legX + amp*Math.sin(t*turns*Math.PI*2);
+        if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    // subtle back side (lighter)
+    ctx.globalAlpha = 0.25; ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let i=0;i<=steps;i++){
+        const t = i/steps;
+        const y = top + t*span;
+        const x = legX + amp*Math.sin(t*turns*Math.PI*2 + Math.PI);
+        if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+}
+
+function roundRect(c, x, y, w, h, r) {
+    c.beginPath();
+    c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+h,r); c.arcTo(x+w,y+h,x,y+h,r);
+    c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath();
+}
+
+function drawWave(curVp, curVs) {
+    const ew = wC.width, eh = wC.height;
+    ctxW.clearRect(0,0,ew,eh);
+    ctxW.fillStyle = '#fdfcf8'; ctxW.fillRect(0,0,ew,eh);
+    if (ew<10||eh<10) return;
+    const mL=46, mR=16, mT=10, mB=24;
+    const pw=ew-mL-mR, ph=eh-mT-mB, midY=mT+ph/2;
+    // axis
+    ctxW.strokeStyle='#ddd'; ctxW.lineWidth=1; ctxW.setLineDash([4,4]);
+    ctxW.beginPath(); ctxW.moveTo(mL,midY); ctxW.lineTo(ew-mR,midY); ctxW.stroke();
+    ctxW.setLineDash([]);
+    // voltage scale: reference max from Vp peak (so curves keep steady scale)
+    const refMax = 12;
+    const scale = (ph/2)/refMax;
+    // history window: 2 periods
+    const win = 2 / Math.max(S.f,0.3);
+    if (S.playing) {
+        WAVE.push({t:S.time, vp:curVp, vs:curVs});
+        while (WAVE.length>0 && S.time - WAVE[0].t > win) WAVE.shift();
+    }
+    if (WAVE.length>1) {
+        // Vp curve (orange, filled)
+        plotCurve(ctxW, WAVE, S.time, win, 'vp', mL, mT, pw, ph, midY, scale, '#FF8c42', 'rgba(255,140,66,0.12)');
+        // Vs curve (blue)
+        plotCurve(ctxW, WAVE, S.time, win, 'vs', mL, mT, pw, ph, midY, scale, '#3498db', 'rgba(52,152,219,0.10)');
+    }
+    // current point markers
+    const xCur = mL + pw; // right edge = now
+    ctxW.fillStyle='#FF8c42'; ctxW.beginPath(); ctxW.arc(xCur, midY-curVp*scale, 4, 0, Math.PI*2); ctxW.fill();
+    ctxW.strokeStyle='#fff'; ctxW.lineWidth=1.2; ctxW.stroke();
+    ctxW.fillStyle='#3498db'; ctxW.beginPath(); ctxW.arc(xCur, midY-curVs*scale, 4, 0, Math.PI*2); ctxW.fill();
+    ctxW.stroke();
+    // axis labels
+    ctxW.fillStyle='#6B6B6B'; ctxW.font='9px Fredoka'; ctxW.textAlign='right';
+    ctxW.fillText('+12V', mL-4, mT+8);
+    ctxW.fillText('0', mL-4, midY+3);
+    ctxW.fillText('-12V', mL-4, mT+ph);
+    ctxW.textAlign='center';
+    ctxW.fillText('时间 Time (2 周期)', ew/2, eh-4);
+}
+
+function plotCurve(c, data, now, win, key, mL, mT, pw, ph, midY, scale, lineClr, fillClr) {
+    c.beginPath();
+    for (let i=0;i<data.length;i++){
+        const age = now - data[i].t;
+        const xFrac = 1 - age/win;
+        if (xFrac<0) continue;
+        const x = mL + xFrac*pw;
+        const y = midY - data[i][key]*scale;
+        if (i===0) c.moveTo(x,y); else c.lineTo(x,y);
+    }
+    // fill under curve
+    c.lineTo(mL+pw, midY); c.lineTo(mL, midY); c.closePath();
+    c.fillStyle = fillClr; c.fill();
+    // stroke line
+    c.beginPath();
+    let started=false;
+    for (let i=0;i<data.length;i++){
+        const age = now - data[i].t;
+        const xFrac = 1 - age/win;
+        if (xFrac<0) continue;
+        const x = mL + xFrac*pw;
+        const y = midY - data[i][key]*scale;
+        if (!started){c.moveTo(x,y);started=true;} else c.lineTo(x,y);
+    }
+    c.strokeStyle=lineClr; c.lineWidth=2.4; c.lineCap='round'; c.stroke();
+}
+
+function loop(ts) {
+    if (!lt) lt = ts;
+    let dt = (ts-lt)/1000; lt = ts;
+    if (dt>0.1) dt=0.016;
+    if (S.playing) S.time += dt;
+    draw();
+    requestAnimationFrame(loop);
+}
+
+function onChg() {
+    S.Np = parseInt(sNp.value); S.Ns = parseInt(sNs.value);
+    S.Vp = parseFloat(sVp.value); S.f = parseFloat(sF.value);
+    sNp.setAttribute('aria-valuenow', S.Np); sNp.setAttribute('aria-valuetext', S.Np+'匝');
+    sNs.setAttribute('aria-valuenow', S.Ns); sNs.setAttribute('aria-valuetext', S.Ns+'匝');
+    sVp.setAttribute('aria-valuenow', S.Vp); sVp.setAttribute('aria-valuetext', S.Vp+'伏');
+    sF.setAttribute('aria-valuenow', S.f); sF.setAttribute('aria-valuetext', S.f.toFixed(1)+'赫兹');
+    draw();
+}
+sNp.addEventListener('input', onChg); sNs.addEventListener('input', onChg);
+sVp.addEventListener('input', onChg); sF.addEventListener('input', onChg);
+
+function togglePlay() {
+    S.playing = !S.playing;
+    bStart.textContent = S.playing ? '暂停 Pause' : '开始 Start';
+    bStart.className = 'ctrl-btn ' + (S.playing ? 'pause' : 'start');
+    bStart.setAttribute('aria-pressed', S.playing);
+    bStart.setAttribute('aria-label', S.playing ? '暂停模拟' : '开始模拟');
+}
+function doReset() {
+    S.time = 0; S.playing = false; lt = 0; WAVE.length = 0;
+    bStart.textContent = '开始 Start'; bStart.className = 'ctrl-btn start';
+    bStart.setAttribute('aria-pressed', 'false');
+    bStart.setAttribute('aria-label', '开始模拟');
+    draw();
+}
+bStart.onclick = togglePlay;
+bReset.onclick = doReset;
+
+document.addEventListener('keydown', (e) => {
+    const tag = e.target.tagName;
+    if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
+    if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+    else if (e.code === 'KeyR') { e.preventDefault(); doReset(); }
+});
+
+resize(); draw();
+requestAnimationFrame(loop);
+</script>
+<div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
+</body>
+</html>

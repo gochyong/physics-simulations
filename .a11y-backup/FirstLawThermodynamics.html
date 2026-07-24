@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wuli布雷克物理模拟实验室 - 热力学第一定律 / First Law of Thermodynamics。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:title" content="热力学第一定律 / First Law of Thermodynamics - Wuli布雷克">
+    <meta property="og:description" content="Wuli布雷克物理模拟实验室 - 热力学第一定律 / First Law of Thermodynamics。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wuliblake.com/FirstLawThermodynamics.html">
+    <meta property="og:site_name" content="Wuli布雷克物理模拟实验室">
+    <link rel="stylesheet" href="common.css">
+    <meta name="author" content="Wuli布雷克">
+    <meta name="copyright" content="Copyright 2025 Wuli布雷克">
+    <title>热力学第一定律 / First Law of Thermodynamics - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>        :root {
+    --dU-color: #FF8c42;
+    --Q-color: #FF5E5B;
+    --W-color: #2ecc71;
+        }
+.back-link {
+            position: fixed; top: 10px; right: 20px; z-index: 1000;
+            text-decoration: none; color: var(--primary); font-weight: 700;
+            font-size: 0.95rem; background: rgba(255,255,255,0.9);
+            padding: 6px 16px; border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(255,140,66,0.15);
+            transition: all 0.3s;
+        }
+.back-link:hover { background: #fff; box-shadow: 0 4px 18px rgba(255,140,66,0.3); }
+.formula-main .dU { color: var(--dU-color); }
+.formula-main .Qc { color: var(--Q-color); }
+.formula-main .Wc { color: var(--W-color); }
+.mode-row { display: flex; gap: 6px; }
+.mode-btn {
+            flex: 1; padding: 9px 6px; border: 2px solid #e0e0e0; border-radius: 14px;
+            font-size: 0.78rem; font-weight: 700; cursor: pointer; background: #fff;
+            color: #666; transition: all 0.25s ease; text-align: center;
+            font-family: inherit; line-height: 1.3;
+        }
+.mode-btn:hover { border-color: var(--primary); color: var(--primary); }
+.mode-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); box-shadow: 0 4px 15px rgba(255,140,66,0.3); }
+.energy-panels {
+            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;
+        }
+.ep {
+            text-align: center; padding: 8px 4px; border-radius: 14px;
+            font-weight: 700; font-size: 0.78rem; line-height: 1.4;
+        }
+.ep-dU { background: rgba(255,140,66,0.1); color: var(--dU-color); }
+.ep-Q  { background: rgba(255,94,91,0.1);  color: var(--Q-color); }
+.ep-W  { background: rgba(46,204,113,0.1);  color: var(--W-color); }
+.ep-val { font-size: 1.1rem; font-weight: 800; }
+.btn-heat { background: var(--accent); }
+.btn-heat:hover { background: #e04845; }
+.btn-heat.on { background: #e04845; animation: pulse-heat 0.8s ease-in-out infinite alternate; }
+@keyframes pulse-heat { from { box-shadow: 0 0 8px rgba(255,94,91,0.4); } to { box-shadow: 0 0 20px rgba(255,94,91,0.8); } }
+.btn-pause { background: var(--primary); }
+.btn-pause:hover { background: #e67a30; }
+.btn-reset { background: #95a5a6; }
+.btn-reset:hover { background: #7f8c8d; }</style>
+</head>
+<body>
+
+<div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
+<a href="thermal.html" class="back-link">&larr; 返回热学</a>
+
+<div class="container" id="main">
+
+    <header>
+        <h1>热力学第一定律 / First Law of Thermodynamics</h1>
+    </header>
+
+    <section class="formula-display" aria-label="公式与实时数值">
+        <div class="formula-main">
+            <span class="dU">&Delta;U</span>
+            <span style="color:#999;">=</span>
+            <span class="Qc">Q</span>
+            <span style="color:#999;">+</span>
+            <span class="Wc">W</span>
+        </div>
+        <div class="energy-values" id="energy-values">
+            <span class="energy-item"><span class="energy-dot" style="background:var(--dU-color)"></span> &Delta;U = <b id="val-dU">0.0</b> J</span>
+            <span class="energy-item"><span class="energy-dot" style="background:var(--Q-color)"></span> Q = <b id="val-Q">0.0</b> J</span>
+            <span class="energy-item"><span class="energy-dot" style="background:var(--W-color)"></span> W = <b id="val-W">0.0</b> J</span>
+        </div>
+        <div class="legend" aria-label="图例说明">
+            <div class="legend-item"><span class="legend-dot" style="background:var(--dU-color)"></span> 内能变化 &Delta;U</div>
+            <div class="legend-item"><span class="legend-dot" style="background:var(--Q-color)"></span> 吸热 Q</div>
+            <div class="legend-item"><span class="legend-dot" style="background:var(--W-color)"></span> 对内做功 W</div>
+        </div>
+    </section>
+
+    <section class="diagram-section" aria-label="模拟动画区">
+        <div class="main-canvas-wrap">
+            <canvas id="simCanvas" role="img" aria-label="热力学第一定律模拟动画 — 交互式物理仿真画面"></canvas>
+        </div>
+    </section>
+
+    <section class="controls-section" aria-label="参数控制区">
+        <div class="control-panel">
+            <div class="mode-row">
+                <button id="btn-isoT" class="mode-btn active">等温 Isothermal<br><span style="font-size:0.68rem;opacity:0.8;">活塞自由 &Delta;U=0</span></button>
+                <button id="btn-isoV" class="mode-btn">等容 Isochoric<br><span style="font-size:0.68rem;opacity:0.8;">活塞锁定 W=0</span></button>
+                <button id="btn-adi" class="mode-btn">绝热 Adiabatic<br><span style="font-size:0.68rem;opacity:0.8;">无热交换 Q=0</span></button>
+            </div>
+
+            <div class="control-group">
+                <label for="slider-T" class="label-row"><span>初始温度 T</span><span id="badge-T" class="val-badge" aria-live="polite">300 K</span></label>
+                <input type="range" id="slider-T" min="200" max="500" step="5" value="300" aria-valuemin="200" aria-valuemax="500" aria-valuenow="300" aria-valuetext="300匝">>
+            </div>
+            <div class="control-group">
+                <label for="slider-N" class="label-row"><span>气体粒子数 N</span><span id="badge-N" class="val-badge" aria-live="polite">40</span></label>
+                <input type="range" id="slider-N" min="10" max="80" step="2" value="40" aria-valuemin="10" aria-valuemax="80" aria-valuenow="40" aria-valuetext="40匝">>
+            </div>
+            <div class="control-group">
+                <div class="label-row"><span>外部压强 P<sub>ext</sub></span><span id="badge-P" class="val-badge">101 kPa</span></div>
+                <input type="range" id="slider-P" min="50" max="200" step="1" value="101" aria-valuemin="50" aria-valuemax="200" aria-valuenow="101" aria-valuetext="101匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+            </div>
+
+            <div class="energy-panels">
+                <div class="ep ep-dU">
+                    <div style="font-size:0.7rem;opacity:0.8;">&Delta;U 内能变化</div>
+                    <div class="ep-val" id="ep-dU">0.0 J</div>
+                </div>
+                <div class="ep ep-Q">
+                    <div style="font-size:0.7rem;opacity:0.8;">Q 吸热</div>
+                    <div class="ep-val" id="ep-Q">0.0 J</div>
+                </div>
+                <div class="ep ep-W">
+                    <div style="font-size:0.7rem;opacity:0.8;">W 对内做功</div>
+                    <div class="ep-val" id="ep-W">0.0 J</div>
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button id="btn-heat" class="ctrl-btn btn-heat">&#x1F525; 加热</button>
+                <button id="btn-pause" class="ctrl-btn btn-pause">暂停</button>
+                <button id="btn-reset" class="ctrl-btn btn-reset" aria-label="重置参数" aria-label="重置参数">重置</button>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.05rem;">演示要点 / Key Points</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;font-size:1.1rem;">&#9651;</div>
+                    <div>
+                        <div style="font-weight:700;font-size:0.88rem;">&Delta;U = Q + W（针对理想气体）</div>
+                        <div style="font-size:0.78rem;color:#6B6B6B;">W为外界对内做功。内能变化=吸热+外界对内做功，能量守恒在热现象中的体现。</div>
+                    </div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:var(--W-color);font-weight:700;font-size:1.1rem;">T</div>
+                    <div>
+                        <div style="font-weight:700;font-size:0.88rem;">等温: &Delta;U=0, Q=&minus;W</div>
+                        <div style="font-size:0.78rem;color:#6B6B6B;">温度不变，内能不变。加热时气体膨胀（活塞上移），对内做功为负，Q=&minus;W。</div>
+                    </div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,94,91,0.1);color:var(--Q-color);font-weight:700;font-size:1.1rem;">V</div>
+                    <div>
+                        <div style="font-weight:700;font-size:0.88rem;">等容: W=0, &Delta;U=Q</div>
+                        <div style="font-size:0.78rem;color:#6B6B6B;">体积不变，W=0。吸收的热量全部用于增加内能（升温）。</div>
+                    </div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:#3498db;font-weight:700;font-size:1.1rem;">Q=0</div>
+                    <div>
+                        <div style="font-weight:700;font-size:0.88rem;">绝热: Q=0, &Delta;U=W（可拖拽活塞）</div>
+                        <div style="font-size:0.78rem;color:#6B6B6B;">无热交换。下压活塞对内做功→升温；上拉对外做功→降温。可拖拽活塞体验。</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<script>
+(function(){
+'use strict';
+
+// ====== Canvas roundRect polyfill ======
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+    CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+        if (typeof r === 'number') r = { tl: r, tr: r, br: r, bl: r };
+        this.beginPath();
+        this.moveTo(x + r.tl, y);
+        this.lineTo(x + w - r.tr, y);
+        this.quadraticCurveTo(x + w, y, x + w, y + r.tr);
+        this.lineTo(x + w, y + h - r.br);
+        this.quadraticCurveTo(x + w, y + h, x + w - r.br, y + h);
+        this.lineTo(x + r.bl, y + h);
+        this.quadraticCurveTo(x, y + h, x, y + h - r.bl);
+        this.lineTo(x, y + r.tl);
+        this.quadraticCurveTo(x, y, x + r.tl, y);
+        this.closePath();
+        return this;
+    };
+}
+
+// ====== DOM refs ======
+var canvas = document.getElementById('simCanvas');
+var ctx = canvas.getContext('2d');
+
+var btnIsoT = document.getElementById('btn-isoT');
+var btnIsoV = document.getElementById('btn-isoV');
+var btnAdi  = document.getElementById('btn-adi');
+var btnHeat = document.getElementById('btn-heat');
+var btnPause = document.getElementById('btn-pause');
+var btnReset = document.getElementById('btn-reset');
+
+var sT = document.getElementById('slider-T');
+var sN = document.getElementById('slider-N');
+var sP = document.getElementById('slider-P');
+var bT = document.getElementById('badge-T');
+var bN = document.getElementById('badge-N');
+var bP = document.getElementById('badge-P');
+
+// ====== Simulation state ======
+var sim = {
+    mode: 'isothermal',
+    T: 300,
+    T_init: 300,
+    N: 40,
+    P_ext: 101,
+    pistonY: 0,
+    pistonTargetY: 0,
+    pistonVy: 0,
+    particles: [],
+    flameParticles: [],
+    Q_cum: 0,
+    W_cum: 0,
+    U_init: 0,
+    heating: false,
+    heatingRate: 80,
+    playing: true,
+    cylL: 0,
+    cylR: 0,
+    cylB: 0,
+    pistonThick: 16,
+    minPistonY: 0,
+    maxPistonY: 0,
+    cylW: 0
+};
+
+var N_MOLES = 0.0405;  // V = nRT/P ≈ 1.00L at 300K, 101kPa
+var R_CONST = 8.314;
+
+function internalEnergy(T) {
+    return 1.5 * N_MOLES * R_CONST * T;
+}
+
+function getCalibFactor() {
+    var refGasH = 0.55 * (sim.maxPistonY - sim.minPistonY);
+    var refV = sim.cylW * refGasH;
+    if (refV <= 0) return 0.01;
+    return N_MOLES * R_CONST * 300 / (101 * refV);
+}
+
+// ====== Resize & Layout ======
+function resize() {
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
+    recalcLayout();
+}
+window.addEventListener('resize', resize);
+
+function recalcLayout() {
+    var cw = canvas.width;
+    var ch = canvas.height;
+    if (cw < 10 || ch < 10) return;
+
+    sim.cylW = Math.min(180, cw * 0.28);
+    sim.cylL = cw * 0.35 - sim.cylW / 2;
+    sim.cylR = sim.cylL + sim.cylW;
+    sim.cylB = ch * 0.82;
+    sim.maxPistonY = sim.cylB - 30;
+    sim.minPistonY = ch * 0.12;
+
+    var k = getCalibFactor();
+    var V_eq = N_MOLES * R_CONST * sim.T / (k * sim.P_ext);
+    var hGas_eq = V_eq / Math.max(1, sim.cylW);
+    hGas_eq = Math.max(30, Math.min(sim.cylB - sim.minPistonY, hGas_eq));
+    sim.pistonTargetY = sim.cylB - hGas_eq;
+
+    if (sim.pistonY === 0 || sim.pistonY < sim.minPistonY || sim.pistonY > sim.maxPistonY) {
+        sim.pistonY = sim.pistonTargetY;
+    }
+}
+
+// ====== Particles ======
+function tColor(T) {
+    var t = Math.max(0, Math.min(1, (T - 200) / 300));
+    var r = Math.floor(80 + t * 170);
+    var g = Math.floor(180 - t * 100);
+    var b = Math.floor(220 - t * 160);
+    return 'rgb(' + r + ',' + g + ',' + b + ')';
+}
+
+function createGasParticle() {
+    var left = sim.cylL + 6;
+    var right = sim.cylR - 6;
+    var top = sim.pistonY + 6;
+    var bottom = sim.cylB - 6;
+    var x = left + Math.random() * Math.max(1, right - left);
+    var y = top + Math.random() * Math.max(1, bottom - top);
+    var r = 4 + Math.random() * 5;
+    var speed = 4.5 * Math.sqrt(sim.T / 300);
+    var angle = Math.random() * Math.PI * 2;
+    return {
+        x: x, y: y, r: r,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        color: tColor(sim.T)
+    };
+}
+
+function syncParticleCount() {
+    while (sim.particles.length < sim.N) {
+        sim.particles.push(createGasParticle());
+    }
+    while (sim.particles.length > sim.N) {
+        sim.particles.pop();
+    }
+    for (var i = 0; i < sim.particles.length; i++) {
+        sim.particles[i].color = tColor(sim.T);
+    }
+}
+
+function scaleParticleSpeeds(factor) {
+    for (var i = 0; i < sim.particles.length; i++) {
+        sim.particles[i].vx *= factor;
+        sim.particles[i].vy *= factor;
+    }
+}
+
+function getAvgParticleSpeed() {
+    var total = 0;
+    for (var i = 0; i < sim.particles.length; i++) {
+        total += Math.hypot(sim.particles[i].vx, sim.particles[i].vy);
+    }
+    return sim.particles.length > 0 ? total / sim.particles.length : 0;
+}
+
+function rescaleParticlesToTemp(targetT) {
+    var targetSpeed = 4.5 * Math.sqrt(targetT / 300);
+    var avgSpd = getAvgParticleSpeed();
+    if (avgSpd > 0.01) {
+        scaleParticleSpeeds(targetSpeed / avgSpd);
+    }
+}
+
+function updateParticles(dt) {
+    var left = sim.cylL + 4;
+    var right = sim.cylR - 4;
+    var bottom = sim.cylB - 4;
+    var top = sim.pistonY + 4;
+    var ts = dt * 60;
+
+    for (var i = 0; i < sim.particles.length; i++) {
+        var p = sim.particles[i];
+        p.x += p.vx * ts;
+        p.y += p.vy * ts;
+
+        var br = 0.12 * Math.sqrt(sim.T / 300);
+        p.vx += (Math.random() - 0.5) * br;
+        p.vy += (Math.random() - 0.5) * br;
+
+        var maxSpd = 14 * Math.sqrt(sim.T / 300);
+        var spd = Math.hypot(p.vx, p.vy);
+        if (spd > maxSpd) { var s = maxSpd / spd; p.vx *= s; p.vy *= s; }
+
+        if (p.x - p.r < left)  { p.x = left + p.r;  p.vx = Math.abs(p.vx); }
+        if (p.x + p.r > right) { p.x = right - p.r; p.vx = -Math.abs(p.vx); }
+        if (p.y + p.r > bottom) { p.y = bottom - p.r; p.vy = -Math.abs(p.vy); }
+
+        if (p.y - p.r < top) {
+            p.y = top + p.r;
+            p.vy = (2 * sim.pistonVy) - p.vy;
+        }
+        if (p.y - p.r < top) {
+            p.y = top + p.r;
+            if (p.vy < 0) p.vy = Math.abs(p.vy);
+        }
+    }
+}
+
+// ====== Flame particles ======
+function spawnFlameParticle() {
+    var cx = (sim.cylL + sim.cylR) / 2;
+    var w = sim.cylW * 0.6;
+    return {
+        x: cx - w/2 + Math.random() * w,
+        y: sim.cylB + 10,
+        vx: (Math.random() - 0.5) * 1.2,
+        vy: -(2 + Math.random() * 4),
+        life: 0.6 + Math.random() * 0.6,
+        maxLife: 0.6 + Math.random() * 0.6,
+        r: 3 + Math.random() * 6,
+        hue: 15 + Math.random() * 25
+    };
+}
+
+function updateFlameParticles(dt) {
+    var ts = dt * 60;
+    if (sim.heating) {
+        for (var i = 0; i < 4; i++) {
+            sim.flameParticles.push(spawnFlameParticle());
+        }
+        if (sim.flameParticles.length > 80) {
+            sim.flameParticles.splice(0, sim.flameParticles.length - 80);
+        }
+    }
+    for (var j = sim.flameParticles.length - 1; j >= 0; j--) {
+        var fp = sim.flameParticles[j];
+        fp.x += fp.vx * ts;
+        fp.y += fp.vy * ts;
+        fp.life -= dt;
+        fp.r *= 0.995;
+        if (fp.life <= 0) sim.flameParticles.splice(j, 1);
+    }
+    if (!sim.heating) {
+        for (var k = sim.flameParticles.length - 1; k >= 0; k--) {
+            sim.flameParticles[k].life -= dt * 2;
+            if (sim.flameParticles[k].life <= 0) sim.flameParticles.splice(k, 1);
+        }
+    }
+}
+
+// ====== Piston physics ======
+function updatePiston(dt) {
+    if (sim.mode === 'isochoric') {
+        sim.pistonVy = 0;
+        return;
+    }
+    // Don't auto-move piston while user is dragging (adiabatic mode)
+    if (draggingPiston) return;
+
+    if (sim.mode === 'isothermal') {
+        // Isothermal: T constant, PV = const at given T and P_ext
+        var fullStroke = sim.maxPistonY - sim.minPistonY;
+        if (fullStroke <= 0) fullStroke = 300;
+        var k = getCalibFactor();
+        var V_eq_base = N_MOLES * R_CONST * sim.T / (k * sim.P_ext);
+        // Heating adds expansion: ΔV = Q_cum / P_ext (from W_by_gas = P_ext * ΔV = Q)
+        var WORK_SCALE_ISO = 200 / (sim.P_ext * fullStroke * sim.cylW);
+        var dV_from_heat = (sim.Q_cum / sim.P_ext) / WORK_SCALE_ISO;  // pixel volume
+        var V_eq_total = V_eq_base + dV_from_heat;
+        var hGas_eq = V_eq_total / Math.max(1, sim.cylW);
+        hGas_eq = Math.max(30, Math.min(sim.cylB - sim.minPistonY, hGas_eq));
+        var targetY = sim.cylB - hGas_eq;
+        sim.pistonY = targetY;  // instant equilibrium: position delta → W = -Q
+        sim.pistonVy = 0;
+    } else if (sim.mode === 'adiabatic') {
+        // In adiabatic, piston is moved by user drag only (no auto-movement)
+        // Just damp any residual velocity
+        sim.pistonVy *= 0.9;
+        sim.pistonY += sim.pistonVy * dt * 60;
+    }
+
+    if (sim.pistonY < sim.minPistonY) { sim.pistonY = sim.minPistonY; sim.pistonVy = 0; }
+    if (sim.pistonY > sim.maxPistonY) { sim.pistonY = sim.maxPistonY; sim.pistonVy = 0; }
+}
+
+// ====== Energy tracking ======
+function updateEnergy(dt) {
+    // Track actual piston position change for work calculation
+    if (sim._prevPistonY === undefined) sim._prevPistonY = sim.pistonY;
+    var dpistonY = sim.pistonY - sim._prevPistonY;  // positive = piston moved down (compression)
+    var dV_px = -sim.cylW * dpistonY;  // positive = volume increased (expansion)
+
+    // Scale: a full stroke (maxPistonY-minPistonY) at 101 kPa = ~200 J reference
+    var fullStroke = sim.maxPistonY - sim.minPistonY;
+    if (fullStroke <= 0) fullStroke = 300;
+    var WORK_SCALE = 200 / (sim.P_ext * fullStroke * sim.cylW);
+    var dW_on_gas = -sim.P_ext * dV_px * WORK_SCALE;  // W = work ON gas
+    sim.W_cum += dW_on_gas;
+    sim._prevPistonY = sim.pistonY;
+
+    var dQ = 0;
+    if (sim.heating && sim.mode !== 'adiabatic') {
+        dQ = sim.heatingRate * dt;
+        sim.Q_cum += dQ;
+    }
+
+    if (sim.mode === 'isothermal') {
+        // ΔU=0 → Q + W = 0 → W = -Q exactly
+        sim.W_cum = -sim.Q_cum;
+        // Keep T constant, particle speeds match temperature
+        var targetSpeed = 4.5 * Math.sqrt(sim.T / 300);
+        var avgSpd = getAvgParticleSpeed();
+        if (avgSpd > 0.01) {
+            var adj = 1 + (targetSpeed / avgSpd - 1) * 0.15;
+            scaleParticleSpeeds(adj);
+        }
+    } else if (sim.mode === 'isochoric') {
+        // W=0 → ΔU=Q (piston locked, no volume change)
+        sim.T += dQ / (1.5 * N_MOLES * R_CONST);
+        sim.T = Math.max(50, Math.min(800, sim.T));
+        rescaleParticlesToTemp(sim.T);
+    } else if (sim.mode === 'adiabatic') {
+        // Q=0 → ΔU=W (work ON gas from piston movement)
+        var U_current = internalEnergy(sim.T);
+        var U_new = U_current + dW_on_gas;
+        sim.T = (2 * U_new) / (3 * N_MOLES * R_CONST);
+        sim.T = Math.max(50, Math.min(800, sim.T));
+        rescaleParticlesToTemp(sim.T);
+    }
+
+    for (var i = 0; i < sim.particles.length; i++) {
+        sim.particles[i].color = tColor(sim.T);
+    }
+}
+
+// ====== Draw ======
+function drawRoundedRect(x, y, w, h, r, fillColor, strokeColor, strokeWidth) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+    if (fillColor) { ctx.fillStyle = fillColor; ctx.fill(); }
+    if (strokeColor) { ctx.strokeStyle = strokeColor; ctx.lineWidth = strokeWidth || 1; ctx.stroke(); }
+}
+
+function draw() {
+    var cw = canvas.width;
+    var ch = canvas.height;
+    if (cw < 10 || ch < 10) return;
+
+    ctx.clearRect(0, 0, cw, ch);
+    ctx.fillStyle = '#FFFBF5';
+    ctx.fillRect(0, 0, cw, ch);
+
+    // Grid
+    ctx.strokeStyle = 'rgba(255,200,150,0.1)';
+    ctx.lineWidth = 0.5;
+    for (var x = 0; x < cw; x += 30) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,ch); ctx.stroke(); }
+    for (var y = 0; y < ch; y += 30) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(cw,y); ctx.stroke(); }
+
+    var L = sim.cylL, R = sim.cylR, B = sim.cylB;
+    var pY = sim.pistonY, pT = sim.pistonThick;
+    var cylW = sim.cylW;
+
+    // Burner base
+    var burnerY = B + 6;
+    var burnerW = cylW * 1.1;
+    var burnerX = (L+R)/2 - burnerW/2;
+    var burnerH = 10;
+
+    var bGrad = ctx.createLinearGradient(0, burnerY, 0, burnerY + burnerH);
+    bGrad.addColorStop(0, '#8B7355'); bGrad.addColorStop(0.5, '#A0845C'); bGrad.addColorStop(1, '#6B5B4F');
+    ctx.fillStyle = bGrad;
+    drawRoundedRect(burnerX, burnerY, burnerW, burnerH, 5, bGrad, '#5C4A3A', 1.5);
+
+    ctx.fillStyle = '#3A2A1A';
+    for (var h = 1; h <= 7; h++) {
+        ctx.beginPath();
+        ctx.arc(burnerX + h * (burnerW/8), burnerY + burnerH/2, 2.5, 0, Math.PI*2);
+        ctx.fill();
+    }
+
+    // Flame glow
+    if (sim.heating) {
+        var glow = ctx.createRadialGradient((L+R)/2, B, 5, (L+R)/2, B, cylW*0.8);
+        glow.addColorStop(0, 'rgba(255,140,50,0.22)'); glow.addColorStop(1, 'rgba(255,140,50,0)');
+        ctx.fillStyle = glow;
+        ctx.fillRect(L-cylW*0.4, B-cylW*0.4, R-L+cylW*0.8, cylW*0.5);
+    }
+
+    // Flame particles
+    for (var fi = 0; fi < sim.flameParticles.length; fi++) {
+        var fp = sim.flameParticles[fi];
+        var alpha = fp.life / fp.maxLife;
+        ctx.fillStyle = 'hsla(' + fp.hue + ',90%,' + (45+alpha*35) + '%,' + alpha + ')';
+        ctx.beginPath(); ctx.arc(fp.x, fp.y, fp.r, 0, Math.PI*2); ctx.fill();
+    }
+
+    // Gas region background
+    var tFrac = (sim.T - 200) / 300;
+    ctx.fillStyle = 'rgb(255,' + Math.floor(251-tFrac*15) + ',' + Math.floor(245-tFrac*35) + ')';
+    ctx.fillRect(L, pY, cylW, B - pY);
+
+    // Gas region grid lines
+    ctx.strokeStyle = 'rgba(200,180,160,0.15)'; ctx.lineWidth = 0.5;
+    for (var gy = pY + 15; gy < B; gy += 15) {
+        ctx.beginPath(); ctx.moveTo(L+4, gy); ctx.lineTo(R-4, gy); ctx.stroke();
+    }
+
+    // Gas particles
+    for (var pi = 0; pi < sim.particles.length; pi++) {
+        var p = sim.particles[pi];
+        if (p.x-p.r > L && p.x+p.r < R && p.y-p.r > pY-2 && p.y+p.r < B+2) {
+            ctx.beginPath(); ctx.arc(p.x+1, p.y+1, p.r, 0, Math.PI*2);
+            ctx.fillStyle = 'rgba(0,0,0,0.06)'; ctx.fill();
+
+            var pg = ctx.createRadialGradient(p.x-p.r*0.3, p.y-p.r*0.3, p.r*0.1, p.x, p.y, p.r);
+            pg.addColorStop(0, 'rgba(255,255,255,0.5)'); pg.addColorStop(1, p.color);
+            ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+            ctx.fillStyle = pg; ctx.fill();
+
+            ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+            ctx.strokeStyle = 'rgba(0,0,0,0.15)'; ctx.lineWidth = 0.8; ctx.stroke();
+        }
+    }
+
+    // Cylinder walls
+    ctx.strokeStyle = '#8B7355'; ctx.lineWidth = 7; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(L, pY-5); ctx.lineTo(L, B+8); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(R, pY-5); ctx.lineTo(R, B+8); ctx.stroke();
+    ctx.lineWidth = 9;
+    ctx.beginPath(); ctx.moveTo(L-4, B); ctx.lineTo(R+4, B); ctx.stroke();
+
+    // Piston
+    var pGrad = ctx.createLinearGradient(0, pY-pT, 0, pY);
+    pGrad.addColorStop(0, '#D4A574'); pGrad.addColorStop(0.5, '#C4956A'); pGrad.addColorStop(1, '#A07850');
+    ctx.fillStyle = pGrad; ctx.fillRect(L-3, pY-pT, cylW+6, pT);
+    ctx.strokeStyle = '#7A5C3E'; ctx.lineWidth = 2; ctx.strokeRect(L-3, pY-pT, cylW+6, pT);
+
+    // Piston rod
+    var rodX = (L+R)/2;
+    ctx.strokeStyle = '#9B8570'; ctx.lineWidth = 5; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(rodX, pY-pT); ctx.lineTo(rodX, pY-pT-35); ctx.stroke();
+    ctx.beginPath(); ctx.arc(rodX, pY-pT-38, 9, 0, Math.PI*2);
+    ctx.fillStyle = '#C4956A'; ctx.fill();
+    ctx.strokeStyle = '#7A5C3E'; ctx.lineWidth = 2; ctx.stroke();
+
+    // Isochoric lock indicator
+    if (sim.mode === 'isochoric') {
+        var lockY = pY - pT/2;
+        ctx.fillStyle = '#e74c3c';
+        drawRoundedRect(L-23, lockY-10, 8, 20, 3, '#e74c3c', null);
+        drawRoundedRect(L-28, lockY-3, 18, 6, 3, '#e74c3c', null);
+        drawRoundedRect(R+15, lockY-10, 8, 20, 3, '#e74c3c', null);
+        drawRoundedRect(R+10, lockY-3, 18, 6, 3, '#e74c3c', null);
+        ctx.fillStyle = '#e74c3c'; ctx.font = 'bold 13px Fredoka, Noto Sans SC'; ctx.textAlign = 'center';
+        ctx.fillText('LOCKED', (L+R)/2, pY-pT-42);
+    }
+
+    // Adiabatic insulation indicator
+    if (sim.mode === 'adiabatic') {
+        ctx.strokeStyle = '#3498db'; ctx.lineWidth = 4; ctx.setLineDash([8, 4]);
+        ctx.strokeRect(L-12, pY-pT-8, cylW+24, B-pY+pT+16); ctx.setLineDash([]);
+        ctx.fillStyle = '#3498db'; ctx.font = 'bold 12px Fredoka, Noto Sans SC'; ctx.textAlign = 'right';
+        ctx.fillText('Insulated', L-18, (pY+B)/2+5);
+        // Drag hint
+        ctx.fillStyle = 'rgba(52,152,219,0.7)'; ctx.font = 'italic 11px Fredoka, Noto Sans SC'; ctx.textAlign = 'center';
+        ctx.fillText('↕ 拖拽活塞 Drag piston', (L+R)/2, pY-pT-45);
+    }
+
+    // Temperature bar (right)
+    var tBarX = R + 28, tBarW = 14, tBarH = B - sim.minPistonY, tBarTop = sim.minPistonY;
+    var tF = Math.max(0, Math.min(1, (sim.T-200)/300));
+    drawRoundedRect(tBarX, tBarTop, tBarW, tBarH, 7, '#f0ebe0', '#ccc', 1.5);
+
+    var tGrad = ctx.createLinearGradient(0, tBarTop+tBarH, 0, tBarTop);
+    tGrad.addColorStop(0, '#3498db'); tGrad.addColorStop(0.5, '#f1c40f'); tGrad.addColorStop(1, '#e74c3c');
+    var fillH = tBarH * tF;
+    ctx.fillStyle = tGrad;
+    drawRoundedRect(tBarX, tBarTop+tBarH-fillH, tBarW, fillH, 7, tGrad, null);
+
+    ctx.fillStyle = '#6B5B4F'; ctx.font = 'bold 12px Fredoka'; ctx.textAlign = 'left';
+    ctx.fillText('T = ' + Math.round(sim.T) + ' K', tBarX+tBarW+6, tBarTop+tBarH/2+4);
+    ctx.font = '9px Fredoka'; ctx.fillStyle = '#999';
+    ctx.fillText('500K', tBarX+tBarW+6, tBarTop+10);
+    ctx.fillText('200K', tBarX+tBarW+6, tBarTop+tBarH);
+
+    // Volume bar (left)
+    var vBarX = L - 30, vBarW = 12, vBarH = B - sim.minPistonY, vBarTop = sim.minPistonY;
+    var vF = (B-pY) / (B-sim.minPistonY);
+    drawRoundedRect(vBarX, vBarTop, vBarW, vBarH, 6, '#f0ebe0', '#ccc', 1.5);
+
+    var vGrad = ctx.createLinearGradient(0, vBarTop+vBarH, 0, vBarTop);
+    vGrad.addColorStop(0, '#2ecc71'); vGrad.addColorStop(1, '#27ae60');
+    var vFillH = vBarH * vF;
+    ctx.fillStyle = vGrad;
+    drawRoundedRect(vBarX, vBarTop+vBarH-vFillH, vBarW, vFillH, 6, vGrad, null);
+
+    var V_ml = (B-pY) * sim.cylW * getCalibFactor() * 1000;
+    ctx.fillStyle = '#6B5B4F'; ctx.font = 'bold 11px Fredoka'; ctx.textAlign = 'right';
+    ctx.fillText('V=' + V_ml.toFixed(0) + 'mL', vBarX-6, vBarTop+vBarH/2+4);
+
+    // Mode label
+    var modeLabels = { isothermal: '等温 Isothermal  (ΔU=0)', isochoric: '等容 Isochoric  (W=0)', adiabatic: '绝热 Adiabatic  (Q=0)' };
+    ctx.fillStyle = '#999'; ctx.font = 'italic 13px Fredoka, Noto Sans SC'; ctx.textAlign = 'center';
+    ctx.fillText(modeLabels[sim.mode], (L+R)/2, Math.max(10, pY-pT-55));
+
+    // Labels
+    ctx.fillStyle = '#A0845C'; ctx.font = 'bold 12px Fredoka, Noto Sans SC'; ctx.textAlign = 'right';
+    ctx.fillText('Cylinder', L-8, pY+25);
+    ctx.fillStyle = '#6B5B4F'; ctx.font = '600 11px Fredoka, Noto Sans SC'; ctx.textAlign = 'left';
+    ctx.fillText('Piston', rodX+14, pY-pT-10);
+}
+
+// ====== UI update ======
+function updateUI() {
+    var dU = internalEnergy(sim.T) - sim.U_init;
+    bT.textContent = Math.round(sim.T) + ' K';
+    bN.textContent = sim.N;
+    bP.textContent = sim.P_ext + ' kPa';
+    document.getElementById('val-dU').textContent = dU.toFixed(1);
+    document.getElementById('val-Q').textContent = sim.Q_cum.toFixed(1);
+    document.getElementById('val-W').textContent = sim.W_cum.toFixed(1);
+    document.getElementById('ep-dU').textContent = dU.toFixed(1) + ' J';
+    document.getElementById('ep-Q').textContent = sim.Q_cum.toFixed(1) + ' J';
+    document.getElementById('ep-W').textContent = sim.W_cum.toFixed(1) + ' J';
+}
+
+// ====== Main loop ======
+var lastTime = 0;
+function loop(ts) {
+    if (!lastTime) lastTime = ts;
+    var dt = (ts - lastTime) / 1000;
+    lastTime = ts;
+    if (dt > 0.1) dt = 0.016;
+    if (dt <= 0) dt = 0.016;
+
+    if (sim.playing) {
+        updateFlameParticles(dt);
+        updatePiston(dt);
+        updateParticles(dt);
+        updateEnergy(dt);
+    }
+    draw();
+    updateUI();
+  // aria状态同步
+  (function syncAria(){
+    const ranges=document.querySelectorAll('input[type=range]');
+    ranges.forEach(r=>{
+      const v=r.value,min=r.min,max=r.max;
+      const unit=r.id.includes('freq')?'赫兹':r.id.includes('vp')?'伏':'匝';
+      r.setAttribute('aria-valuenow',v);
+      r.setAttribute('aria-valuetext',v+unit);
+    });
+    const startBtn=document.getElementById('btn-start');
+    if(startBtn&&startBtn.textContent.includes('暂停')){
+      startBtn.setAttribute('aria-pressed','true');
+      startBtn.setAttribute('aria-label','暂停模拟');
+    }
+  })();
+
+    requestAnimationFrame(loop);
+}
+
+// ====== Piston drag (adiabatic mode) ======
+var draggingPiston = false;
+var dragStartY = 0;
+var dragStartPistonY = 0;
+
+canvas.addEventListener('mousedown', function(e) {
+    if (sim.mode !== 'adiabatic') return;
+    var rect = canvas.getBoundingClientRect();
+    var mx = e.clientX - rect.left;
+    var my = e.clientY - rect.top;
+    // Check if click is near piston
+    if (Math.abs(my - sim.pistonY) < 30 && mx > sim.cylL - 20 && mx < sim.cylR + 20) {
+        draggingPiston = true;
+        dragStartY = my;
+        dragStartPistonY = sim.pistonY;
+        sim.pistonVy = 0;
+        canvas.style.cursor = 'grabbing';
+    }
+});
+
+canvas.addEventListener('mousemove', function(e) {
+    if (!draggingPiston) {
+        // Hover cursor
+        if (sim.mode === 'adiabatic') {
+            var rect = canvas.getBoundingClientRect();
+            var mx = e.clientX - rect.left;
+            var my = e.clientY - rect.top;
+            if (Math.abs(my - sim.pistonY) < 30 && mx > sim.cylL - 20 && mx < sim.cylR + 20) {
+                canvas.style.cursor = 'grab';
+            } else {
+                canvas.style.cursor = 'default';
+            }
+        }
+        return;
+    }
+    var rect = canvas.getBoundingClientRect();
+    var my = e.clientY - rect.top;
+    var newY = dragStartPistonY + (my - dragStartY);
+    newY = Math.max(sim.minPistonY, Math.min(sim.maxPistonY, newY));
+    sim.pistonVy = (newY - sim.pistonY) * 5;  // reasonable velocity for particle bounce
+    sim.pistonY = newY;
+});
+
+canvas.addEventListener('mouseup', function() {
+    draggingPiston = false;
+    canvas.style.cursor = 'default';
+});
+
+canvas.addEventListener('mouseleave', function() {
+    draggingPiston = false;
+    canvas.style.cursor = 'default';
+});
+
+// Touch support
+canvas.addEventListener('touchstart', function(e) {
+    if (sim.mode !== 'adiabatic') return;
+    var rect = canvas.getBoundingClientRect();
+    var my = e.touches[0].clientY - rect.top;
+    var mx = e.touches[0].clientX - rect.left;
+    if (Math.abs(my - sim.pistonY) < 40 && mx > sim.cylL - 20 && mx < sim.cylR + 20) {
+        draggingPiston = true;
+        dragStartY = my;
+        dragStartPistonY = sim.pistonY;
+        sim.pistonVy = 0;
+        e.preventDefault();
+    }
+}, {passive: false});
+
+canvas.addEventListener('touchmove', function(e) {
+    if (!draggingPiston) return;
+    var rect = canvas.getBoundingClientRect();
+    var my = e.touches[0].clientY - rect.top;
+    var newY = dragStartPistonY + (my - dragStartY);
+    newY = Math.max(sim.minPistonY, Math.min(sim.maxPistonY, newY));
+    sim.pistonVy = (newY - sim.pistonY) * 5;
+    sim.pistonY = newY;
+    e.preventDefault();
+}, {passive: false});
+
+canvas.addEventListener('touchend', function() {
+    draggingPiston = false;
+});
+
+// ====== Event handlers ======
+function setMode(mode) {
+    sim.mode = mode;
+    btnIsoT.classList.toggle('active', mode === 'isothermal');
+    btnIsoV.classList.toggle('active', mode === 'isochoric');
+    btnAdi.classList.toggle('active', mode === 'adiabatic');
+    if (mode === 'isochoric') sim.pistonVy = 0;
+    if (mode === 'adiabatic') { sim.heating = false; btnHeat.classList.remove('on'); btnHeat.textContent = '🔥 加热'; }
+    sim.Q_cum = 0; sim.W_cum = 0; sim.U_init = internalEnergy(sim.T);
+    sim._prevPistonY = sim.pistonY;
+}
+
+btnIsoT.onclick = function(){ setMode('isothermal'); };
+btnIsoV.onclick = function(){ setMode('isochoric'); };
+btnAdi.onclick  = function(){ setMode('adiabatic'); };
+
+btnHeat.onclick = function(){
+    if (sim.mode === 'adiabatic') return;
+    sim.heating = !sim.heating;
+    if (sim.heating) { btnHeat.classList.add('on'); btnHeat.textContent = '🔥 加热中'; }
+    else { btnHeat.classList.remove('on'); btnHeat.textContent = '🔥 加热'; }
+};
+
+btnPause.onclick = function(){
+    sim.playing = !sim.playing;
+    btnPause.textContent = sim.playing ? '暂停' : '开始';
+    btnPause.style.background = sim.playing ? 'var(--primary)' : '#2ecc71';
+    lastTime = 0;
+};
+
+btnReset.onclick = function(){
+    sim.T = sim.T_init;
+    sim.heating = false; sim.playing = true; sim.pistonVy = 0;
+    btnHeat.classList.remove('on'); btnHeat.textContent = '🔥 加热';
+    btnPause.textContent = '暂停'; btnPause.style.background = 'var(--primary)';
+    resize(); sim.pistonY = sim.pistonTargetY;
+    sim._prevPistonY = sim.pistonY;
+    sim.particles = []; sim.flameParticles = [];
+    syncParticleCount();
+    sim.Q_cum = 0; sim.W_cum = 0; sim.U_init = internalEnergy(sim.T);
+    lastTime = 0;
+};
+
+sT.oninput = function(){
+    var newT = parseFloat(sT.value);
+    if (sim.mode === 'isothermal') { scaleParticleSpeeds(Math.sqrt(newT/Math.max(1,sim.T))); }
+    sim.T = newT; sim.T_init = newT;
+    recalcLayout(); sim.pistonY = sim.pistonTargetY; sim.pistonVy = 0;
+    syncParticleCount();
+    sim.Q_cum = 0; sim.W_cum = 0; sim.U_init = internalEnergy(sim.T);
+};
+
+sN.oninput = function(){
+    sim.N = parseInt(sN.value); syncParticleCount();
+    sim.Q_cum = 0; sim.W_cum = 0; sim.U_init = internalEnergy(sim.T);
+};
+
+sP.oninput = function(){
+    sim.P_ext = parseFloat(sP.value); recalcLayout();
+    sim.Q_cum = 0; sim.W_cum = 0; sim.U_init = internalEnergy(sim.T);
+};
+
+// ====== Init ======
+resize();
+sim.pistonY = sim.pistonTargetY;
+sim._prevPistonY = sim.pistonY;
+syncParticleCount();
+sim.U_init = internalEnergy(sim.T);
+updateUI();
+draw();
+  // aria状态同步
+  (function syncAria(){
+    const ranges=document.querySelectorAll('input[type=range]');
+    ranges.forEach(r=>{
+      const v=r.value,min=r.min,max=r.max;
+      const unit=r.id.includes('freq')?'赫兹':r.id.includes('vp')?'伏':'匝';
+      r.setAttribute('aria-valuenow',v);
+      r.setAttribute('aria-valuetext',v+unit);
+    });
+    const startBtn=document.getElementById('btn-start');
+    if(startBtn&&startBtn.textContent.includes('暂停')){
+      startBtn.setAttribute('aria-pressed','true');
+      startBtn.setAttribute('aria-label','暂停模拟');
+    }
+  })();
+
+requestAnimationFrame(loop);
+
+})();
+
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+</script>
+
+<div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
+</body>
+</html>

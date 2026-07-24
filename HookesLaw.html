@@ -14,10 +14,7 @@
     <meta name="author" content="Wuli布雷克">
     <meta name="copyright" content="Copyright 2025 Wuli布雷克">
     <title>胡克定律 / Hooke's Law - Wuli布雷克</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
-    <style>
+<style>
         :root {
             --bg-color: #FFF9F0; --primary: #FF8c42; --secondary: #FFC75F;
             --accent: #FF5E5B; --text-dark: #4A403A; --card-bg: #FFFFFF;
@@ -64,16 +61,34 @@
         .result-box { text-align: center; font-size: 1.1rem; font-weight: bold; color: #0081a7; padding: 8px 0; }
         canvas { display: block; }
         @media(max-width:1100px){.container{grid-template-areas:"header" "formula" "diagram" "controls" "graph";grid-template-columns:1fr}}
-    </style>
+
+        /* === 无障碍 Accessibility (批量注入) === */
+        .skip-link { position: absolute; top: -40px; left: 8px; z-index: 2000; background: #185FA5; color: #fff; padding: 8px 16px; border-radius: 10px; font-size: 0.9rem; font-weight: 600; text-decoration: none; transition: top 0.2s; }
+        .skip-link:focus { top: 8px; }
+        :focus-visible { outline: 3px solid #185FA5; outline-offset: 2px; border-radius: 6px; }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+  
+    /* === 无障碍 Accessibility (批量注入) === */
+    .skip-link { position: absolute; top: -40px; left: 8px; z-index: 2000; background: #185FA5; color: #fff; padding: 8px 16px; border-radius: 10px; font-size: 0.9rem; font-weight: 600; text-decoration: none; transition: top 0.2s; }
+    .skip-link:focus { top: 8px; }
+    :focus-visible { outline: 3px solid #185FA5; outline-offset: 2px; border-radius: 6px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+  
+/* === 无障碍 Accessibility (批量注入) === */
+.skip-link { position: absolute; top: -40px; left: 8px; z-index: 2000; background: #185FA5; color: #fff; padding: 8px 16px; border-radius: 10px; font-size: 0.9rem; font-weight: 600; text-decoration: none; transition: top 0.2s; }
+.skip-link:focus { top: 8px; }
+:focus-visible { outline: 3px solid #185FA5; outline-offset: 2px; border-radius: 6px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+</style>
 </head>
 
 <body>
     <div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
-<a href="mechanics.html" class="back-link">← 返回力学</a>
-    <div class="container">
+<a href="mechanics.html" class="back-link" aria-label="返回力学分类页">← 返回力学</a>
+    <div class="container" id="main">
         <header><h1>胡克定律 / Hooke's Law</h1></header>
 
-        <section class="formula-display">
+        <section class="formula-display" aria-label="公式与实时数值">
             <div class="formula-container">
                 <span id="sym-F" class="symbol" style="font-size:3rem;">F</span>
                 <span style="font-size:26px;color:#ccc;">=</span>
@@ -84,27 +99,27 @@
             <div class="result-row">
                 <span>形变量 x = F/k = <strong id="disp-x-res" style="color:#0081a7">2.50</strong> m</span>
             </div>
-            <div class="legend">
+            <div class="legend" aria-label="图例说明">
                 <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> F: 力 / Force (N)</div>
                 <div class="legend-item"><span class="legend-dot" style="background:var(--primary)"></span> k: 劲度系数 / Spring Constant (N/m)</div>
                 <div class="legend-item"><span class="legend-dot" style="background:#0081a7"></span> x: 形变量 / Extension (m)</div>
             </div>
         </section>
 
-        <section class="diagram-section">
-            <canvas id="springCanvas" width="450" height="400"></canvas>
+        <section class="diagram-section" aria-label="模拟动画区">
+            <canvas id="springCanvas" width="450" height="400" role="img" aria-label="胡克定律模拟动画 — 交互式物理仿真画面"></canvas>
         </section>
 
-        <section class="controls-section">
+        <section class="controls-section" aria-label="参数控制区">
             <div class="control-panel">
                 <div class="control-group">
-                    <div class="label-row"><span style="color:var(--accent)">拉力 / Force F</span><span id="disp-F" class="val-badge">50 N</span></div>
-                    <input type="range" id="slider-F" min="0" max="100" step="1" value="50">
+                    <div class="label-row"><span style="color:var(--accent)">拉力 / Force F</span><span id="disp-F" class="val-badge" aria-live="polite">50 N</span></div>
+                    <input type="range" id="slider-F" min="0" max="100" step="1" value="50" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" aria-valuetext="50匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
                 </div>
 
                 <div class="control-group">
-                    <div class="label-row"><span style="color:var(--primary)">劲度系数 / Constant k</span><span id="disp-k" class="val-badge">20 N/m</span></div>
-                    <input type="range" id="slider-k" min="10" max="50" step="1" value="20">
+                    <div class="label-row"><span style="color:var(--primary)">劲度系数 / Constant k</span><span id="disp-k" class="val-badge" aria-live="polite">20 N/m</span></div>
+                    <input type="range" id="slider-k" min="10" max="50" step="1" value="20" aria-valuemin="10" aria-valuemax="50" aria-valuenow="20" aria-valuetext="20匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
                 </div>
 
                 <div class="result-box">
@@ -112,8 +127,8 @@
                 </div>
 
                 <div class="button-row">
-                    <button id="btn-start" class="btn btn-start">开始 Start</button>
-                    <button id="btn-reset" class="btn btn-reset">重置 Reset</button>
+                    <button id="btn-start" class="btn btn-start" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false">开始 Start</button>
+                    <button id="btn-reset" class="btn btn-reset" aria-label="重置参数" aria-label="重置参数" aria-label="重置参数" aria-label="重置参数">重置 Reset</button>
                 </div>
             </div>
             <div class="info-card">
@@ -121,15 +136,15 @@
                 <div style="display:flex;flex-direction:column;gap:6px">
                     <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
                         <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700">F</div>
-                        <div><div style="font-weight:700;font-size:0.9rem">F = k · x</div><div style="font-size:0.78rem;color:#888">弹簧的伸长量（或压缩量）与施加的力成正比，比例系数为劲度系数k。</div></div>
+                        <div><div style="font-weight:700;font-size:0.9rem">F = k · x</div><div style="font-size:0.78rem;color:#6B6B6B">弹簧的伸长量（或压缩量）与施加的力成正比，比例系数为劲度系数k。</div></div>
                     </div>
                     <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
                         <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,94,91,0.1);color:var(--accent);font-weight:700">k</div>
-                        <div><div style="font-weight:700;font-size:0.9rem">劲度系数 k</div><div style="font-size:0.78rem;color:#888">k 越大，弹簧越"硬"，同样的力产生的形变越小。k 越小，弹簧越"软"。</div></div>
+                        <div><div style="font-weight:700;font-size:0.9rem">劲度系数 k</div><div style="font-size:0.78rem;color:#6B6B6B">k 越大，弹簧越"硬"，同样的力产生的形变越小。k 越小，弹簧越"软"。</div></div>
                     </div>
                     <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
                         <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(0,129,167,0.1);color:#0081a7;font-weight:700">x</div>
-                        <div><div style="font-weight:700;font-size:0.9rem">弹性限度</div><div style="font-size:0.78rem;color:#888">胡克定律仅在弹性限度内成立，超过限度弹簧发生永久形变。</div></div>
+                        <div><div style="font-weight:700;font-size:0.9rem">弹性限度</div><div style="font-size:0.78rem;color:#6B6B6B">胡克定律仅在弹性限度内成立，超过限度弹簧发生永久形变。</div></div>
                     </div>
                 </div>
             </div>
@@ -137,7 +152,7 @@
 
         <section class="graph-section">
             <div class="graph-title">x - F 图像 / Extension-Force Graph</div>
-            <canvas id="graphCanvas" width="800" height="300"></canvas>
+            <canvas id="graphCanvas" width="800" height="300" role="img" aria-label="胡克定律模拟动画 — 交互式物理仿真画面"></canvas>
         </section>
     </div>
 
@@ -494,7 +509,16 @@
 
         // Initial draw
         update();
-    </script>
+    
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+</script>
 <div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
 </body>
 

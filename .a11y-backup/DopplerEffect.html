@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wuli布雷克物理模拟实验室 - 多普勒效应 / Doppler Effect。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:title" content="多普勒效应 / Doppler Effect - Wuli布雷克">
+    <meta property="og:description" content="Wuli布雷克物理模拟实验室 - 多普勒效应 / Doppler Effect。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wuliblake.com/DopplerEffect.html">
+    <meta property="og:site_name" content="Wuli布雷克物理模拟实验室">
+    <link rel="stylesheet" href="common.css">
+    <meta name="author" content="Wuli布雷克">
+    <meta name="copyright" content="Copyright 2025 Wuli布雷克">
+    <title>多普勒效应 / Doppler Effect - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>        :root {
+    --f-color: #2ecc71; --fo-color: #e67e22; --v-color: #9b59b6; --vs-color: #f39c12;
+        }
+.subtitle-text { font-size: 0.95rem; color: #5D6D7E; line-height: 1.4; margin-top: 2px; }
+#vs-slider::-webkit-slider-thumb { background: var(--vs-color); }
+#v-slider::-webkit-slider-thumb { background: var(--v-color); }
+#f-slider::-webkit-slider-thumb { background: var(--f-color); }
+select { padding: 8px 10px; border-radius: 10px; border: 2px solid #eee; font-family: inherit; font-size: 0.9rem; outline: none; background: #fff; }
+.bar-container { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+.bar-header { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.85rem; }
+.bar-bg { background: #f0f0f0; height: 10px; border-radius: 5px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 5px; transition: width 0.3s cubic-bezier(0.175,0.885,0.32,1.275); }
+.observer-tag { position: absolute; bottom: 15px; right: 15px; background: rgba(255,255,255,0.9); padding: 6px 14px; border-radius: 10px; border: 2px solid var(--fo-color); font-weight: 700; font-size: 0.85rem; color: var(--fo-color); }</style>
+</head>
+
+<body>
+    <div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
+<a href="waves.html" class="back-link" aria-label="返回波分类页">← 返回波</a>
+
+    <div class="container" id="main">
+        <header>
+            <h1>多普勒效应 / Doppler Effect</h1>
+            <p class="subtitle-text">
+                The change in frequency of a wave when there is relative motion between source and observer.<br>
+                波源与观察者有相对运动时，观察者感知的波频率发生变化的现象。
+            </p>
+        </header>
+
+        <section class="formula-display" aria-label="公式与实时数值">
+            <div class="formula-container" id="formula-root"></div>
+            <div class="result-row">
+                <span id="res-calc" style="font-size:0.85rem;color:#6B6B6B;font-weight:normal;margin-right:10px;"></span>
+                <span style="color:var(--fo-color)">f' = <span id="res-f-prime">0</span> Hz</span>
+            </div>
+            <div class="legend" aria-label="图例说明">
+                <div class="legend-item"><span class="legend-dot" style="background:var(--fo-color)"></span> f' : Observed Frequency (观测频率)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--f-color)"></span> f : Source Frequency (波源频率)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--v-color)"></span> v : Wave Speed (波速)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--vs-color)"></span> v<sub>s</sub> : Source Velocity (波源速度)</div>
+            </div>
+        </section>
+
+        <section class="diagram-section" aria-label="模拟动画区">
+            <canvas id="simCanvas" role="img" aria-label="多普勒效应模拟动画 — 交互式物理仿真画面"></canvas>
+            <div class="observer-tag">OBSERVER 观察者 (静止)</div>
+        </section>
+
+        <section class="controls-section" aria-label="参数控制区">
+            <div class="control-panel">
+                <div class="control-group">
+                    <div class="label-row"><span>运动方向 / Direction</span></div>
+                    <select id="vs-dir">
+                        <option value="toward">靠近 Approaching</option>
+                        <option value="away">远离 Moving Away</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:var(--vs-color)">波源速率 v<sub>s</sub> / Source Speed</span><span id="vs-badge" class="val-badge" aria-live="polite">100 m/s</span></div>
+                    <input type="range" id="vs-slider" min="0" max="300" value="100" aria-valuemin="0" aria-valuemax="300" aria-valuenow="100" aria-valuetext="100匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+                </div>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:var(--v-color)">波速 v / Wave Speed</span><span id="v-badge" class="val-badge" aria-live="polite">340 m/s</span></div>
+                    <input type="range" id="v-slider" min="100" max="500" value="340" aria-valuemin="100" aria-valuemax="500" aria-valuenow="340" aria-valuetext="340匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+                </div>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:var(--f-color)">波源频率 f / Source Frequency</span><span id="f-badge" class="val-badge" aria-live="polite">10 Hz</span></div>
+                    <input type="range" id="f-slider" min="1" max="25" value="10" aria-valuemin="1" aria-valuemax="25" aria-valuenow="10" aria-valuetext="10匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+                </div>
+                <div class="btn-row">
+                    <button id="btn-start" class="ctrl-btn start" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false">开始 Start</button>
+                    <button id="btn-reset" class="ctrl-btn reset" aria-label="重置参数" aria-label="重置参数">重置 Reset</button>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem">频率对比 / Frequency Analysis</div>
+                <div class="bar-container">
+                    <div class="bar-header"><span>波源频率 f (Source)</span><span id="val-f">10 Hz</span></div>
+                    <div class="bar-bg"><div id="bar-f" class="bar-fill" style="background: var(--f-color); width: 40%;"></div></div>
+                </div>
+                <div class="bar-container">
+                    <div class="bar-header"><span>观测频率 f' (Observed)</span><span id="val-f-prime">12.5 Hz</span></div>
+                    <div class="bar-bg"><div id="bar-f-prime" class="bar-fill" style="background: var(--fo-color); width: 50%;"></div></div>
+                </div>
+                <div style="margin-top:10px;padding:10px 12px;background:#faf7f0;border-radius:12px;font-size:0.82rem;line-height:1.5;color:#5D6D7E;">
+                    <strong style="color:var(--primary)">提示：</strong> 当波源向观察者靠近时，波阵面被压缩，观测频率 <strong>升高</strong>；远离时波阵面被拉伸，频率 <strong>降低</strong>。
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas'), ctx = canvas.getContext('2d');
+        const sVs = document.getElementById('vs-slider'), sVsDir = document.getElementById('vs-dir'), sV = document.getElementById('v-slider'), sF = document.getElementById('f-slider');
+        const bVs = document.getElementById('vs-badge'), bV = document.getElementById('v-badge'), bF = document.getElementById('f-badge');
+        const resFp = document.getElementById('res-f-prime'), resCalc = document.getElementById('res-calc'), valF = document.getElementById('val-f'), valFp = document.getElementById('val-f-prime');
+        const barF = document.getElementById('bar-f'), barFp = document.getElementById('bar-f-prime');
+        const bStart = document.getElementById('btn-start'), bReset = document.getElementById('btn-reset');
+        const formulaRoot = document.getElementById('formula-root');
+
+        const state = {
+            vs: 100, v: 340, f: 10, dir: 'toward',
+            time: 0, isPlaying: false,
+            sourceX: 0,
+            waves: [] // {t0, x0}
+        };
+
+        function resize() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            if (state.sourceX === 0) state.sourceX = canvas.width / 2;
+        }
+        window.addEventListener('resize', resize);
+
+        function update() {
+            state.vs = parseFloat(sVs.value);
+            state.v = parseFloat(sV.value);
+            state.f = parseFloat(sF.value);
+            state.dir = sVsDir.value;
+
+            bVs.textContent = state.vs + ' m/s';
+            bV.textContent = state.v + ' m/s';
+            bF.textContent = state.f + ' Hz';
+
+            const scale = 200 / 340;
+            const dirVal = state.dir === 'toward' ? 1 : -1;
+            const pxVs = state.vs * scale * dirVal;
+            const pxV = state.v * scale;
+
+            if (state.isPlaying) {
+                state.time += 0.016;
+                state.sourceX += pxVs * 0.016;
+
+                const obsX = canvas.width * 0.94;
+                // Auto-pause logic
+                if (state.dir === 'toward' && state.sourceX >= obsX - 30) {
+                    state.isPlaying = false;
+                    pauseUI();
+                } else if (state.dir === 'away' && state.sourceX <= 30) {
+                    state.isPlaying = false;
+                    pauseUI();
+                }
+
+                // Emit wave
+                const period = 1 / state.f;
+                if (state.waves.length === 0 || (state.time - state.waves[state.waves.length - 1].t0) > period) {
+                    state.waves.push({ t0: state.time, x0: state.sourceX });
+                }
+
+                if (state.waves.length > 50) state.waves.shift();
+            }
+
+            const effectiveVs = state.dir === 'toward' ? state.vs : -state.vs;
+            const fPrime = state.f * (state.v / (state.v - effectiveVs));
+
+            updateUI(fPrime, effectiveVs);
+            draw(pxV);
+            requestAnimationFrame(update);
+        }
+
+        function pauseUI() {
+            bStart.textContent = '开始 Start';
+            bStart.classList.replace('pause', 'start');
+        }
+
+        function updateUI(fPrime, effectiveVs) {
+            const displayFp = Math.abs(fPrime) === Infinity || isNaN(fPrime) || fPrime < 0 ? "---" : Math.abs(fPrime).toFixed(1);
+            resFp.textContent = displayFp;
+
+            const sign = effectiveVs >= 0 ? '-' : '+';
+            resCalc.innerHTML = `f' = f × [v / (v ${sign} vₛ)] = ${state.f} × [${state.v} / (${state.v} ${sign} ${state.vs})] =`;
+
+            valF.textContent = state.f + ' Hz';
+            valFp.textContent = displayFp + ' Hz';
+
+            barF.style.width = (state.f / 25) * 100 + '%';
+            barFp.style.width = Math.min(100, (parseFloat(displayFp) || 0) / 25 * 100) + '%';
+
+            // Formula Scaling
+            const baseSize = 35;
+            const sF = 1 + (state.f / 25) * 0.3;
+            const sFp = 1 + (Math.min(50, parseFloat(displayFp) || 0) / 50) * 0.5;
+
+            formulaRoot.innerHTML = `
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="color:var(--fo-color); font-size:${baseSize * sFp}px; font-weight:700;">f'</span>
+                    <span style="font-size:${baseSize}px">=</span>
+                    <span style="color:var(--f-color); font-size:${baseSize * sF}px; font-weight:700;">f</span>
+                    <span style="font-size:30px; margin:0 5px">×</span>
+                    <div style="display:flex; flex-direction:column; align-items:center;">
+                        <span style="color:var(--v-color); font-size:${baseSize * 0.8}px; border-bottom:2px solid; padding:0 10px;">v</span>
+                        <div style="display:flex; align-items:center; gap:5px;">
+                            <span style="color:var(--v-color); font-size:${baseSize * 0.7}px;">v</span>
+                            <span style="font-size:18px">${effectiveVs >= 0 ? '-' : '+'}</span>
+                            <span style="color:var(--vs-color); font-size:${baseSize * 0.7}px;">v<sub>s</sub></span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function draw(pxV) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cy = canvas.height * 0.6; // Lower a bit for sky feel
+
+            // Observer at Right
+            const obsX = canvas.width * 0.94;
+            drawStickman(obsX, cy + 20);
+
+            // Draw Waves
+            state.waves.forEach(w => {
+                const dt = state.time - w.t0;
+                const r = pxV * dt;
+
+                if (r < canvas.width * 1.5) {
+                    ctx.beginPath();
+                    ctx.arc(w.x0, cy, r, 0, Math.PI * 2);
+                    // Fade out
+                    const opacity = Math.max(0, 0.6 - r / (canvas.width * 1.2));
+                    ctx.strokeStyle = `rgba(52, 152, 219, ${opacity})`;
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+
+                    // Check if wave hit observer
+                    if (Math.abs(r - Math.abs(obsX - w.x0)) < 5) {
+                        ctx.beginPath();
+                        ctx.arc(obsX, cy, 25, 0, Math.PI * 2);
+                        ctx.strokeStyle = `rgba(230, 126, 34, 0.5)`;
+                        ctx.lineWidth = 3;
+                        ctx.stroke();
+                    }
+                }
+            });
+
+            // Draw Source Car
+            const sX = state.sourceX;
+            ctx.save();
+            ctx.translate(sX, cy + 20);
+            if (state.dir === 'away') ctx.scale(-1, 1);
+
+            // Draw a more stylish car
+            ctx.fillStyle = '#4A403A'; // Chassis
+            ctx.roundRect(-40, 15, 80, 15, 5); ctx.fill();
+
+            ctx.fillStyle = '#FF8c42'; // Body
+            ctx.beginPath();
+            ctx.moveTo(-40, 15); ctx.lineTo(-30, -10); ctx.lineTo(10, -10); ctx.lineTo(40, 15);
+            ctx.fill();
+
+            ctx.fillStyle = 'rgba(255,255,255,0.4)'; // Window
+            ctx.beginPath();
+            ctx.moveTo(-25, -2); ctx.lineTo(-10, -2); ctx.lineTo(-10, 10); ctx.lineTo(-25, 10);
+            ctx.fill();
+
+            // Wheels
+            ctx.fillStyle = '#333';
+            ctx.beginPath(); ctx.arc(-22, 25, 12, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(22, 25, 12, 0, Math.PI * 2); ctx.fill();
+
+            // Light
+            ctx.beginPath();
+            ctx.arc(42, 5, 6, 0, Math.PI * 2);
+            ctx.fillStyle = state.isPlaying ? (Math.floor(state.time * 10) % 2 ? '#FF5E5B' : '#FFFFFF') : '#999';
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function drawStickman(x, y) {
+            ctx.strokeStyle = '#2C3E50'; ctx.lineWidth = 4; ctx.lineCap = 'round';
+            // Head
+            ctx.beginPath(); ctx.arc(x, y - 50, 10, 0, Math.PI * 2); ctx.stroke();
+            // Body
+            ctx.beginPath(); ctx.moveTo(x, y - 40); ctx.lineTo(x, y - 10); ctx.stroke();
+            // Arms
+            ctx.beginPath(); ctx.moveTo(x - 15, y - 30); ctx.lineTo(x + 15, y - 30); ctx.stroke();
+            // Legs
+            ctx.beginPath(); ctx.moveTo(x, y - 10); ctx.lineTo(x - 12, y + 15); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(x, y - 10); ctx.lineTo(x + 12, y + 15); ctx.stroke();
+
+            // Ear/Hearing indicator
+            if (state.isPlaying) {
+                ctx.beginPath(); ctx.arc(x + 15, y - 50, 5, -Math.PI / 2, Math.PI / 2); ctx.stroke();
+            }
+        }
+
+        function varColor(name) {
+            return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        }
+
+        bStart.onclick = () => {
+            state.isPlaying = !state.isPlaying;
+            bStart.textContent = state.isPlaying ? '暂停 Pause' : '开始 Start';
+            bStart.classList.toggle('start', !state.isPlaying);
+            bStart.classList.toggle('pause', state.isPlaying);
+        };
+
+        bReset.onclick = () => {
+            state.time = 0;
+            state.dir = sVsDir.value;
+            state.sourceX = canvas.width / 2;
+            state.waves = [];
+            state.isPlaying = false;
+            bStart.textContent = '开始 Start';
+            bStart.className = 'ctrl-btn start';
+        };
+
+        resize();
+        state.sourceX = canvas.width / 2; // Initial middle
+        update();
+    
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+</script>
+<div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
+</body>
+
+</html>

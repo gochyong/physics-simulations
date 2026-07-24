@@ -14,57 +14,17 @@
     <meta name="author" content="Wuli布雷克">
     <meta name="copyright" content="Copyright 2025 Wuli布雷克">
     <title>驻波形成 / Standing Wave Formation - Wuli布雷克</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap"
+<link
         rel="stylesheet">
-    <style>
-        :root {
-            --bg-color: #FFF9F0;
-            --primary: #FF8c42;
-            --secondary: #FFC75F;
-            --accent: #FF5E5B;
-            --text-dark: #4A403A;
-            --card-bg: #FFFFFF;
-            --shadow: 0 6px 30px rgba(255, 140, 66, 0.18);
-            --radius: 30px;
-            --w1-color: #e74c3c;
-            --w2-color: #3498db;
-            --standing-color: #9b59b6;
-            --node-color: #2ecc71;
-            --anti-color: #FF5E5B;
+    <style>        :root {
+    --radius: 30px;
+    --w1-color: #e74c3c;
+    --w2-color: #3498db;
+    --standing-color: #9b59b6;
+    --node-color: #2ecc71;
+    --anti-color: #FF5E5B;
         }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-dark);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            padding: 5px 40px 10px;
-        }
-
-        .container {
-            width: 100%; max-width: 1400px;
-            margin-top: 8px;
-            display: grid;
-            grid-template-areas:
-                "header header"
-                "formula formula"
-                "diagram controls";
-            grid-template-columns: 1fr 450px;
-            gap: 12px;
-        }
-
-        header { grid-area: header; text-align: center; }
-        h1 { font-size: 2rem; color: var(--text-dark); margin-bottom: 2px; }
-
-        /* Formula Section */
+/* Formula Section */
         .formula-display {
             grid-area: formula;
             background: var(--card-bg);
@@ -76,84 +36,36 @@
             align-items: center;
             border: 2px solid #fff5eb;
         }
-        .formula-container {
-            display: flex; align-items: center; justify-content: center;
-            gap: 8px; flex-wrap: wrap; min-height: 44px;
-        }
-        .result-row {
-            font-size: 0.95rem; font-weight: 600; color: var(--text-dark);
-            margin-top: 4px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;
-        }
-        .legend {
-            display: flex; gap: 16px; justify-content: center;
-            border-top: 1px solid #eee; padding-top: 6px; width: 100%; flex-wrap: wrap;
-        }
-        .legend-item {
-            font-size: 0.85rem; font-weight: 600;
-            display: flex; align-items: center; gap: 5px;
-        }
-        .legend-dot {
-            width: 11px; height: 11px; border-radius: 50%; display: inline-block;
-        }
-
-        /* Diagram Section */
+/* Diagram Section */
         .diagram-section {
             grid-area: diagram;
             background: var(--card-bg); border-radius: 20px;
             box-shadow: var(--shadow); position: relative; overflow: hidden;
             min-height: 380px; display: flex; flex-direction: column; border: 2px solid #fff;
         }
-        canvas { width: 100%; flex: 1; display: block; }
-
-        /* Controls Section */
+canvas { width: 100%; flex: 1; display: block; }
+/* Controls Section */
         .controls-section {
             grid-area: controls; display: flex; flex-direction: column; gap: 10px;
         }
-        .control-panel {
-            background: var(--card-bg); border-radius: 20px;
-            box-shadow: var(--shadow); padding: 14px 18px;
-            display: flex; flex-direction: column; gap: 10px;
-        }
-
-        /* Wave section header */
+/* Wave section header */
         .wave-section {
             background: #fff; border-radius: 14px;
             padding: 10px 14px 6px;
             border: 2px solid #f5f0eb;
         }
-        .wave-section.w1 { border-left: 5px solid var(--w1-color); }
-        .wave-section.w2 { border-left: 5px solid var(--w2-color); }
-        .wave-section-header {
+.wave-section.w1 { border-left: 5px solid var(--w1-color); }
+.wave-section.w2 { border-left: 5px solid var(--w2-color); }
+.wave-section-header {
             font-weight: 700; font-size: 0.95rem;
             margin-bottom: 6px; display: flex; align-items: center; gap: 6px;
         }
-        .wave-section-header .dot {
+.wave-section-header .dot {
             width: 12px; height: 12px; border-radius: 50%; display: inline-block;
         }
-
-        .control-group { display: flex; flex-direction: column; gap: 3px; margin-bottom: 1px; }
-        .label-row {
-            display: flex; justify-content: space-between;
-            font-weight: 600; font-size: 0.9rem;
-        }
-        .val-badge {
-            background: #fff; padding: 1px 7px; border-radius: 7px;
-            font-size: 0.85rem; border: 2px solid #f0f0f0;
-        }
-
-        input[type=range] {
-            width: 100%; appearance: none; height: 6px;
-            background: #eee; border-radius: 3px; outline: none;
-        }
-        input[type=range]::-webkit-slider-thumb {
-            appearance: none; width: 20px; height: 20px;
-            border-radius: 50%; cursor: pointer;
-            background: var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-        }
-        .w1-slider::-webkit-slider-thumb { background: var(--w1-color) !important; }
-        .w2-slider::-webkit-slider-thumb { background: var(--w2-color) !important; }
-
-        /* Dropdown */
+.w1-slider::-webkit-slider-thumb { background: var(--w1-color) !important; }
+.w2-slider::-webkit-slider-thumb { background: var(--w2-color) !important; }
+/* Dropdown */
         select.mode-select {
             width: 100%; padding: 8px 14px;
             font-family: 'Fredoka', 'Noto Sans SC', sans-serif;
@@ -168,52 +80,30 @@
             padding-right: 36px;
             transition: border-color 0.2s;
         }
-        select.mode-select:focus {
+select.mode-select:focus {
             outline: none; border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(255,140,66,0.12);
         }
-
-        .btn-row {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px;
-        }
-        .ctrl-btn {
-            padding: 10px; border: none; border-radius: 14px;
-            font-size: 1.05rem; font-weight: 700; cursor: pointer;
-            transition: all 0.2s; color: white;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .start { background-color: var(--primary); }
-        .pause { background-color: #2ecc71; }
-        .reset { background-color: #95a5a6; }
-        .ctrl-btn:active { transform: translateY(2px); box-shadow: none; }
-
-        .info-card {
-            background: var(--card-bg); border-radius: 20px;
-            padding: 12px 16px; box-shadow: var(--shadow);
-            font-size: 0.9rem; line-height: 1.4; color: #5D6D7E;
-        }
-
-        @media (max-width: 1100px) {
-            .container {
-                grid-template-areas: "header" "formula" "diagram" "controls";
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+/* === 无障碍 Accessibility (批量注入) === */
+.skip-link { position: absolute; top: -40px; left: 8px; z-index: 2000; background: #185FA5; color: #fff; padding: 8px 16px; border-radius: 10px; font-size: 0.9rem; font-weight: 600; text-decoration: none; transition: top 0.2s; }
+.skip-link:focus { top: 8px; }
+:focus-visible { outline: 3px solid #185FA5; outline-offset: 2px; border-radius: 6px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+</style>
 </head>
 
 <body>
-<a href="waves.html" class="back-link">← 返回波</a>
+<a href="waves.html" class="back-link" aria-label="返回波分类页">← 返回波</a>
     <div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div>
     </div>
 
-    <div class="container">
+    <div class="container" id="main">
         <header>
             <h1>驻波形成 / Standing Wave Formation</h1>
         </header>
 
         <!-- Formula Section -->
-        <section class="formula-display">
+        <section class="formula-display" aria-label="公式与实时数值">
             <div class="formula-container" id="formula-root">
                 <!-- Dynamic Formula injected by JS -->
             </div>
@@ -224,7 +114,7 @@
                 <span>波节 (Nodes): <strong style="color: var(--node-color)" id="res-nodes">5</strong></span>
                 <span>波腹 (Antinodes): <strong style="color: var(--anti-color)" id="res-anti">4</strong></span>
             </div>
-            <div class="legend">
+            <div class="legend" aria-label="图例说明">
                 <div class="legend-item"><span class="legend-dot" style="background: var(--w1-color)"></span> 右行波 Wave 1 (→)</div>
                 <div class="legend-item"><span class="legend-dot" style="background: var(--w2-color)"></span> 左行波 Wave 2 (←)</div>
                 <div class="legend-item"><span class="legend-dot" style="background: var(--standing-color)"></span> 合成波 Superposition</div>
@@ -234,12 +124,12 @@
         </section>
 
         <!-- Diagram Section -->
-        <section class="diagram-section">
-            <canvas id="simCanvas"></canvas>
+        <section class="diagram-section" aria-label="模拟动画区">
+            <canvas id="simCanvas" role="img" aria-label="驻波形成模拟动画 — 交互式物理仿真画面"></canvas>
         </section>
 
         <!-- Controls Section -->
-        <section class="controls-section">
+        <section class="controls-section" aria-label="参数控制区">
             <div class="control-panel">
 
                 <!-- Wave 1 -->
@@ -251,21 +141,21 @@
                     <div class="control-group">
                         <div class="label-row">
                             <span>频率 f₁ / Frequency</span>
-                            <span id="f1-badge" class="val-badge">2.0 Hz</span>
+                            <span id="f1-badge" class="val-badge" aria-live="polite">2.0 Hz</span>
                         </div>
                         <input type="range" id="f1-slider" class="w1-slider" min="0.5" max="20" step="0.1" value="2.0">
                     </div>
                     <div class="control-group">
                         <div class="label-row">
                             <span>波长 λ₁ / Wavelength</span>
-                            <span id="l1-badge" class="val-badge">10 cm</span>
+                            <span id="l1-badge" class="val-badge" aria-live="polite">10 cm</span>
                         </div>
                         <input type="range" id="l1-slider" class="w1-slider" min="4" max="25" step="0.5" value="10">
                     </div>
                     <div class="control-group">
                         <div class="label-row">
                             <span>振幅 A₁ / Amplitude</span>
-                            <span id="a1-badge" class="val-badge">2.5 cm</span>
+                            <span id="a1-badge" class="val-badge" aria-live="polite">2.5 cm</span>
                         </div>
                         <input type="range" id="a1-slider" class="w1-slider" min="1.0" max="4.5" step="0.1" value="2.5">
                     </div>
@@ -280,21 +170,21 @@
                     <div class="control-group">
                         <div class="label-row">
                             <span>频率 f₂ / Frequency</span>
-                            <span id="f2-badge" class="val-badge">2.0 Hz</span>
+                            <span id="f2-badge" class="val-badge" aria-live="polite">2.0 Hz</span>
                         </div>
                         <input type="range" id="f2-slider" class="w2-slider" min="0.5" max="20" step="0.1" value="2.0">
                     </div>
                     <div class="control-group">
                         <div class="label-row">
                             <span>波长 λ₂ / Wavelength</span>
-                            <span id="l2-badge" class="val-badge">10 cm</span>
+                            <span id="l2-badge" class="val-badge" aria-live="polite">10 cm</span>
                         </div>
                         <input type="range" id="l2-slider" class="w2-slider" min="4" max="25" step="0.5" value="10">
                     </div>
                     <div class="control-group">
                         <div class="label-row">
                             <span>振幅 A₂ / Amplitude</span>
-                            <span id="a2-badge" class="val-badge">2.5 cm</span>
+                            <span id="a2-badge" class="val-badge" aria-live="polite">2.5 cm</span>
                         </div>
                         <input type="range" id="a2-slider" class="w2-slider" min="1.0" max="4.5" step="0.1" value="2.5">
                     </div>
@@ -313,8 +203,8 @@
                 </div>
 
                 <div class="btn-row">
-                    <button id="btn-start" class="ctrl-btn start">开始 Start</button>
-                    <button id="btn-reset" class="ctrl-btn reset">重置 Reset</button>
+                    <button id="btn-start" class="ctrl-btn start" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false">开始 Start</button>
+                    <button id="btn-reset" class="ctrl-btn reset" aria-label="重置参数" aria-label="重置参数" aria-label="重置参数" aria-label="重置参数" aria-label="重置参数">重置 Reset</button>
                 </div>
             </div>
 
@@ -327,28 +217,28 @@
                         <div style="width: 32px; height: 32px; background: rgba(155,89,182,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--standing-color); font-weight: 700; font-size: 1.2rem;">↕</div>
                         <div>
                             <div style="font-weight: 700; font-size: 0.9rem;">两列波反向传播叠加</div>
-                            <div style="font-size: 0.85rem; color: #888;">Two waves traveling in opposite directions superpose.</div>
+                            <div style="font-size: 0.85rem; color: #6B6B6B;">Two waves traveling in opposite directions superpose.</div>
                         </div>
                     </div>
                     <div style="background: white; padding: 8px 10px; border: 1px solid #eee; border-radius: 12px; display: grid; grid-template-columns: 36px 1fr; gap: 8px; align-items: center;">
                         <div style="width: 32px; height: 32px; background: rgba(46,204,113,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--node-color); font-weight: 700; font-size: 1.2rem;">●</div>
                         <div>
                             <div style="font-weight: 700; font-size: 0.9rem;">f、λ 相同时形成稳定驻波</div>
-                            <div style="font-size: 0.85rem; color: #888;">Identical f and λ produce a stationary standing wave.</div>
+                            <div style="font-size: 0.85rem; color: #6B6B6B;">Identical f and λ produce a stationary standing wave.</div>
                         </div>
                     </div>
                     <div style="background: white; padding: 8px 10px; border: 1px solid #eee; border-radius: 12px; display: grid; grid-template-columns: 36px 1fr; gap: 8px; align-items: center;">
                         <div style="width: 32px; height: 32px; background: rgba(255,94,91,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--anti-color); font-weight: 700; font-size: 1.2rem;">◆</div>
                         <div>
                             <div style="font-weight: 700; font-size: 0.9rem;">改变单侧参数观察拍频现象</div>
-                            <div style="font-size: 0.85rem; color: #888;">Detune one wave to observe beating / traveling envelope.</div>
+                            <div style="font-size: 0.85rem; color: #6B6B6B;">Detune one wave to observe beating / traveling envelope.</div>
                         </div>
                     </div>
                     <div style="background: white; padding: 8px 10px; border: 1px solid #eee; border-radius: 12px; display: grid; grid-template-columns: 36px 1fr; gap: 8px; align-items: center;">
                         <div style="width: 32px; height: 32px; background: rgba(255,140,66,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--primary); font-weight: 700; font-size: 1.2rem;">↔</div>
                         <div>
                             <div style="font-weight: 700; font-size: 0.9rem;">波节间距 = λ/2，波腹振幅 = A₁+A₂</div>
-                            <div style="font-size: 0.85rem; color: #888;">Node spacing = λ/2, antinode amplitude = A₁+A₂.</div>
+                            <div style="font-size: 0.85rem; color: #6B6B6B;">Node spacing = λ/2, antinode amplitude = A₁+A₂.</div>
                         </div>
                     </div>
                 </div>
@@ -707,7 +597,25 @@
 
         resize();
         update();
-    </script>
+    
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+</script>
 <div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
 </body>
 

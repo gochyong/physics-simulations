@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wuli布雷克物理模拟实验室 - 质能方程 / Mass-Energy Equivalence。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:title" content="质能方程 / Mass-Energy Equivalence - Wuli布雷克">
+    <meta property="og:description" content="Wuli布雷克物理模拟实验室 - 质能方程 / Mass-Energy Equivalence。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wuliblake.com/MassEnergyEquivalence.html">
+    <meta property="og:site_name" content="Wuli布雷克物理模拟实验室">
+    <link rel="stylesheet" href="common.css">
+    <meta name="author" content="Wuli布雷克">
+    <meta name="copyright" content="Copyright 2025 Wuli布雷克">
+    <title>质能方程 / Mass-Energy Equivalence - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>.back-link { position: fixed; top: 10px; right: 20px; z-index: 1000; text-decoration: none; color: var(--primary); font-weight: 700; font-size: 0.9rem; background: rgba(255,255,255,0.9); padding: 6px 14px; border-radius: 16px; box-shadow: 0 2px 10px rgba(255,140,66,0.15); }
+.mode-pills { display: flex; gap: 6px; }
+.mode-pill { flex: 1; padding: 8px; border-radius: 12px; font-size: 0.78rem; font-weight: 700; border: 2px solid #e0e0e0; background: #fafafa; cursor: pointer; text-align: center; color: #666; }
+.mode-pill.active { background: var(--primary); color: #fff; border-color: var(--primary); }</style>
+</head>
+<body>
+<div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
+<a href="modern-physics.html" class="back-link" aria-label="返回近代物理分类页">← 返回近代物理</a>
+<div class="container" id="main">
+    <header><h1>质能方程 / Mass-Energy Equivalence</h1></header>
+    <section class="formula-display" aria-label="公式与实时数值">
+        <div class="formula-container" id="formula-root"></div>
+        <div class="result-row">
+            <span>质量亏损 Δm = <strong style="color:#9b59b6" id="res-dm">—</strong> u</span>
+            <span>E = <strong style="color:var(--accent)" id="res-e">—</strong> MeV</span>
+            <span>E = <strong style="color:#2ecc71" id="res-j">—</strong> J</span>
+        </div>
+        <div class="legend" aria-label="图例说明">
+            <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> E 能量</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#9b59b6"></span> Δm 质量亏损</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#3498db"></span> c 光速</div>
+        </div>
+    </section>
+    <section class="diagram-section" aria-label="模拟动画区"><canvas id="simCanvas" role="img" aria-label="质能方程模拟动画 — 交互式物理仿真画面"></canvas></section>
+    <section class="controls-section" aria-label="参数控制区">
+        <div class="control-panel">
+            <div class="control-group">
+                <div class="label-row"><span>核反应类型</span></div>
+                <div class="mode-pills" id="mode-pills">
+                    <button class="mode-pill active" data-mode="fission">核裂变 Fission</button>
+                    <button class="mode-pill" data-mode="fusion">核聚变 Fusion</button>
+                    <button class="mode-pill" data-mode="annihilation">正负电子湮灭 Annihilation</button>
+                </div>
+            </div>
+            <div class="btn-row">
+                <button id="btn-start" class="ctrl-btn start" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false">反应 React</button>
+                <button id="btn-reset" class="ctrl-btn reset" aria-label="重置参数" aria-label="重置参数">重置 Reset</button>
+            </div>
+        </div>
+        <div class="info-card">
+            <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem;">演示要点 / Key Points</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;">E</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">E = Δm·c²</div><div style="font-size:0.78rem;color:#6B6B6B;">1u质量亏损≈931.5MeV能量。质量不守恒，质能总量守恒。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(231,76,60,0.1);color:#e74c3c;font-weight:700;">⚛</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">²³⁵U裂变：Δm≈0.186u，E≈173MeV</div><div style="font-size:0.78rem;color:#6B6B6B;">一个铀核裂变释放~173MeV，1kg铀≈2000吨煤。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:#2ecc71;font-weight:700;">☀</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">D-T聚变：Δm≈0.0189u，E≈17.6MeV</div><div style="font-size:0.78rem;color:#6B6B6B;">氘氚聚变是可控核聚变的主要反应路径。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(155,89,182,0.1);color:#9b59b6;font-weight:700;">e±</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">正负电子湮灭：2mₑ，E≈1.022MeV</div><div style="font-size:0.78rem;color:#6B6B6B;">物质100%转化为能量，产生两个511keV光子。</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<script>
+const canvas=document.getElementById('simCanvas'),ctx=canvas.getContext('2d');
+const resE=document.getElementById('res-e'),resDM=document.getElementById('res-dm'),resJ=document.getElementById('res-j');
+const fRoot=document.getElementById('formula-root');
+const modePills=document.getElementById('mode-pills');
+const C=3e8;
+
+// Real nuclear reaction data
+const REACTIONS={
+    fission:{
+        eq:'₉₂²³⁵U + ₀¹n → ₃₆⁹²Kr + ₅₆¹⁴¹Ba + 3₀¹n',
+        dm_u:0.186,
+        E_MeV:173,
+        reactants:[
+            {name:'₉₂²³⁵U',p:92,n:143,color:'#e74c3c'},
+            {name:'₀¹n',p:0,n:1,color:'#95a5a6'}
+        ],
+        products:[
+            {name:'₃₆⁹²Kr',p:36,n:56,color:'#f39c12'},
+            {name:'₅₆¹⁴¹Ba',p:56,n:85,color:'#2ecc71'},
+            {name:'3₀¹n',p:0,n:1,color:'#95a5a6'}
+        ]
+    },
+    fusion:{
+        eq:'₁²H + ₁³H → ₂⁴He + ₀¹n',
+        dm_u:0.0189,
+        E_MeV:17.6,
+        reactants:[
+            {name:'₁²H',p:1,n:1,color:'#3498db'},
+            {name:'₁³H',p:1,n:2,color:'#9b59b6'}
+        ],
+        products:[
+            {name:'₂⁴He',p:2,n:2,color:'#2ecc71'},
+            {name:'₀¹n',p:0,n:1,color:'#95a5a6'}
+        ]
+    },
+    annihilation:{
+        eq:'e⁻ + e⁺ → γ + γ',
+        dm_u:0.001097,
+        E_MeV:1.022,
+        reactants:[
+            {name:'e⁻',p:-1,n:0,color:'#3498db'},
+            {name:'e⁺',p:1,n:0,color:'#e74c3c'}
+        ],
+        products:[
+            {name:'γ',p:0,n:0,color:'#f1c40f'},
+            {name:'γ',p:0,n:0,color:'#f1c40f'}
+        ]
+    }
+};
+
+const S={mode:'fission',exploding:false,explodeTime:0,particles:[]};
+
+function initParticles(num){
+    S.particles=[];
+    for(let i=0;i<(num||16);i++)S.particles.push({x:0,y:0,vx:(Math.random()-0.5)*3,vy:(Math.random()-0.5)*3,life:1});
+}
+initParticles();
+
+function resize(){canvas.width=canvas.clientWidth;canvas.height=canvas.clientHeight;}
+window.addEventListener('resize',resize);
+
+modePills.onclick=e=>{
+    const p=e.target.closest('.mode-pill');if(!p)return;
+    modePills.querySelectorAll('.mode-pill').forEach(x=>x.classList.remove('active'));
+    p.classList.add('active');S.mode=p.dataset.mode;S.exploding=false;initParticles();
+};
+
+const R=REACTIONS[S.mode];
+
+function update(){
+    const R=REACTIONS[S.mode];
+    resDM.textContent=R.dm_u.toFixed(4);
+    resE.textContent=R.E_MeV.toFixed(1);
+
+    if(S.exploding){S.explodeTime+=0.016;for(let p of S.particles){p.x+=p.vx*0.02;p.y+=p.vy*0.02;p.life-=0.015;}if(S.explodeTime>3){S.exploding=false;initParticles();}}
+
+    const eJ=R.dm_u*1.66054e-27*C*C;
+    const expJ=Math.floor(Math.log10(eJ));
+    const mantJ=eJ/Math.pow(10,expJ);
+    resJ.innerHTML=mantJ.toFixed(2)+'×10<sup>'+expJ+'</sup> J';
+    fRoot.innerHTML=`<span style="font-size:26px;font-weight:700;color:var(--accent);">E</span>
+        <span style="font-size:26px;">=</span>
+        <span style="font-size:26px;font-weight:700;color:#9b59b6;">Δm</span>
+        <span style="font-size:26px;font-weight:700;color:#3498db;">c</span>
+        <span style="font-size:18px;vertical-align:super;">2</span>
+        <span style="font-size:24px;">= ${R.dm_u.toFixed(4)}u × 931.5 MeV/u</span>
+        <span style="font-size:24px;font-weight:700;color:var(--accent);">= ${R.E_MeV.toFixed(1)} MeV</span>`;
+    draw();requestAnimationFrame(update);
+}
+
+function drawNucleus(x,y,data,scale){
+    const r2=Math.max(22, (14+data.p*0.12+data.n*0.08)*scale);
+    // Glow
+    const glow=ctx.createRadialGradient(x,y,r2*0.3,x,y,r2*1.4);
+    glow.addColorStop(0,data.color);glow.addColorStop(1,'rgba(26,26,46,0)');
+    ctx.fillStyle=glow;ctx.beginPath();ctx.arc(x,y,r2*1.4,0,Math.PI*2);ctx.fill();
+    // Nucleus body
+    ctx.fillStyle=data.color;ctx.beginPath();ctx.arc(x,y,r2,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,0.4)';ctx.lineWidth=1.5;ctx.stroke();
+
+    // Draw nuclide label: super/sub on LEFT, element on right
+    const rawName=data.name;
+    const isElectron=rawName.includes('e');
+    if(data.p>0&&!isElectron){
+        const mass=data.p+data.n;
+        const elem=rawName.replace(/[₀-₉²³⁴⁵⁶⁷⁸⁹¹⁰0-9]+/g,'');
+        ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';
+        // Superscript (mass) top-left, close to element
+        ctx.font='bold 11px Fredoka';ctx.textAlign='right';
+        ctx.fillText(mass,x+2,y-10);
+        // Subscript (atomic) bottom-left, close to element
+        ctx.font='bold 9px Fredoka';ctx.textAlign='right';
+        ctx.fillText(data.p,x+2,y+7);
+        // Element symbol
+        ctx.font='bold 18px Fredoka';ctx.textAlign='left';
+        ctx.fillText(elem,x+4,y+1);
+    }else{
+        ctx.fillStyle='#fff';ctx.font='bold 16px Fredoka';ctx.textAlign='center';ctx.textBaseline='middle';
+        ctx.fillText(data.name.replace(/[₀-₉²³⁴⁵⁶⁷⁸⁹¹⁰0-9]+/g,''),x,y);
+    }
+}
+
+function drawEqTerm(x,y,data){
+    const raw=data.name;
+    const coeffMatch=raw.match(/^(\d+)/);
+    let coeff='',rest=raw;
+    if(coeffMatch){coeff=coeffMatch[1];rest=raw.slice(coeff.length);}
+    const elem=rest.replace(/[₀-₉²³⁴⁵⁶⁷⁸⁹¹⁰0-9]+/g,'');
+    const isNuclide=data.p>0||data.n>0;
+    const isElectron=raw.includes('e');
+    ctx.fillStyle='#fff';ctx.textBaseline='middle';
+    let w=0;
+    if(coeff){
+        ctx.font='bold 16px Fredoka';ctx.textAlign='left';
+        ctx.fillText(coeff,x,y);
+        w+=ctx.measureText(coeff).width+3;
+        x+=w;
+    }
+    if(isNuclide&&!isElectron){
+        // Draw: superscript(mass) + subscript(atomic) on LEFT, then element symbol
+        const mass=data.p+data.n;
+        let lx=x;
+        ctx.font='bold 12px Fredoka';ctx.textAlign='right';
+        ctx.fillText(mass,lx+16,y-9);
+        ctx.font='bold 10px Fredoka';ctx.textAlign='right';
+        ctx.fillText(data.p,lx+16,y+7);
+        // Element right next to numbers
+        ctx.font='bold 20px Fredoka';ctx.textAlign='left';
+        ctx.fillText(elem,lx+18,y+1);
+        const totalW=w+ctx.measureText(elem).width+20;
+        return totalW;
+    }else{
+        ctx.font='bold 20px Fredoka';ctx.textAlign='left';
+        ctx.fillText(elem||rest,x,y+1);
+        return w+ctx.measureText(elem||rest).width+4;
+    }
+}
+function drawEqText(x,y,text){
+    ctx.fillStyle='#fff';ctx.font='bold 16px Fredoka';ctx.textAlign='left';ctx.textBaseline='middle';
+    ctx.fillText(text,x,y);
+    return ctx.measureText(text).width;
+}
+
+function draw(){
+    const w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,w,h);
+    const R=REACTIONS[S.mode];
+    const cx=w*0.5,cy=h*0.48;
+
+    // Draw reaction equation with aligned superscripts/subscripts
+    let eqX=w*0.12,eqY=35;
+    for(let i=0;i<R.reactants.length;i++){
+        eqX+=drawEqTerm(eqX,eqY,R.reactants[i])+4;
+        if(i<R.reactants.length-1){eqX+=drawEqText(eqX,eqY,'+')+4;}
+    }
+    eqX+=drawEqText(eqX,eqY,'→')+6;
+    for(let i=0;i<R.products.length;i++){
+        eqX+=drawEqTerm(eqX,eqY,R.products[i])+4;
+        if(i<R.products.length-1){eqX+=drawEqText(eqX,eqY,'+')+4;}
+    }
+
+    if(!S.exploding){
+        // === Before reaction: show only reactants ===
+        const rx=cx;
+        const total=R.reactants.length;
+        for(let i=0;i<total;i++){
+            const ry=cy-15+(i-(total-1)/2)*65;
+            drawNucleus(rx,ry,R.reactants[i],1.2);
+        }
+        ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='italic 13px Fredoka';ctx.textAlign='center';
+        ctx.fillText('点击 "反应" 按钮触发核反应',cx,cy+80);
+    }else{
+        // === During/after reaction: reactants gone, products appear ===
+        const px=cx;
+        const total=R.products.length;
+        const alpha=Math.min(1,S.explodeTime*2); // fade in
+        for(let i=0;i<total;i++){
+            const py=cy-15+(i-(total-1)/2)*65;
+            ctx.globalAlpha=alpha;
+            drawNucleus(px,py,R.products[i],1.2);
+        }
+        ctx.globalAlpha=1;
+
+        // Energy particles
+        for(let p of S.particles){
+            if(p.life<=0)continue;
+            const t=S.explodeTime;
+            const px2=cx+p.x*180*t,py2=cy+p.y*180*t;
+            ctx.fillStyle=`rgba(255,${Math.floor(200*p.life)},${Math.floor(50*p.life)},${p.life})`;
+            ctx.beginPath();ctx.arc(px2,py2,5*p.life,0,Math.PI*2);ctx.fill();
+        }
+    }
+
+    // Energy info at bottom
+    ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font='bold 14px Fredoka';ctx.textAlign='center';
+    ctx.fillText('Δm = '+R.dm_u.toFixed(4)+' u  →  E = '+R.E_MeV.toFixed(1)+' MeV',cx,h-22);
+    if(S.mode==='annihilation'){
+        ctx.fillText('物质 100% 转化为能量 (2×511 keV γ光子)',cx,h-6);
+    }
+}
+
+document.getElementById('btn-start').onclick=()=>{S.exploding=true;S.explodeTime=0;initParticles(20);};
+document.getElementById('btn-reset').onclick=()=>{S.exploding=false;initParticles();};
+resize();requestAnimationFrame(update);
+
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+</script>
+<div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
+</body>
+</html>

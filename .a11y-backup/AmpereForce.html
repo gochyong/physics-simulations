@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wuli布雷克物理模拟实验室 - 安培力 / Ampère Force。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:title" content="安培力 / Ampère Force - Wuli布雷克">
+    <meta property="og:description" content="Wuli布雷克物理模拟实验室 - 安培力 / Ampère Force。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wuliblake.com/AmpereForce.html">
+    <meta property="og:site_name" content="Wuli布雷克物理模拟实验室">
+    <link rel="stylesheet" href="common.css">
+    <meta name="author" content="Wuli布雷克">
+    <meta name="copyright" content="Copyright 2025 Wuli布雷克">
+    <title>安培力 / Ampère Force - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>.back-link { position: fixed; top: 10px; right: 20px; z-index: 1000; text-decoration: none; color: var(--primary); font-weight: 700; font-size: 0.9rem; background: rgba(255,255,255,0.9); padding: 6px 14px; border-radius: 16px; box-shadow: 0 2px 10px rgba(255,140,66,0.15); }
+.mode-pills { display: flex; gap: 6px; }
+.mode-pill { flex: 1; padding: 7px 6px; border-radius: 12px; font-size: 0.8rem; font-weight: 700; border: 2px solid #e0e0e0; background: #fafafa; cursor: pointer; text-align: center; color: #666; transition: all 0.2s; }
+.mode-pill:hover { border-color: var(--primary); }
+.mode-pill.active { background: var(--primary); color: #fff; border-color: var(--primary); }</style>
+</head>
+<body>
+<div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
+<a href="electricity.html" class="back-link" aria-label="返回电磁学分类页">← 返回电磁学</a>
+<div class="container" id="main">
+    <header><h1>安培力 / Ampère Force</h1></header>
+    <section class="formula-display" aria-label="公式与实时数值">
+        <div class="formula-container" id="formula-root"></div>
+        <div class="result-row">
+            <span>F = <strong style="color:var(--accent)" id="res-f">—</strong> N</span>
+            <span>B = <strong style="color:#9b59b6" id="res-bval">1.0</strong> T</span>
+            <span>θ = <strong style="color:#e67e22" id="res-theta">90</strong>°</span>
+        </div>
+        <div class="legend" aria-label="图例说明">
+            <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> F 安培力</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#9b59b6"></span> B 磁场</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#3498db"></span> I 电流</div>
+        </div>
+    </section>
+    <section class="diagram-section" aria-label="模拟动画区"><canvas id="simCanvas" role="img" aria-label="安培力模拟动画 — 交互式物理仿真画面"></canvas></section>
+    <section class="controls-section" aria-label="参数控制区">
+        <div class="control-panel">
+            <div class="control-group">
+                <div class="label-row"><span>电流 I</span><span id="badge-i" class="val-badge">5 A</span></div>
+                <input type="range" id="slider-i" min="1" max="10" value="5" aria-valuemin="1" aria-valuemax="10" aria-valuenow="5" aria-valuetext="5匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+            </div>
+            <div class="control-group">
+                <label for="slider-b" class="label-row"><span>磁感应强度 B</span><span id="badge-b" class="val-badge" aria-live="polite">1.0 T</span></label>
+                <input type="range" id="slider-b" min="0.2" max="3" step="0.1" value="1.0" aria-valuemin="0.2" aria-valuemax="3" aria-valuenow="1.0" aria-valuetext="1.0匝">>
+            </div>
+            <div class="control-group">
+                <label for="slider-l" class="label-row"><span>导线长度 L</span><span id="badge-l" class="val-badge" aria-live="polite">0.5 m</span></label>
+                <input type="range" id="slider-l" min="0.1" max="1.5" step="0.05" value="0.5" aria-valuemin="0.1" aria-valuemax="1.5" aria-valuenow="0.5" aria-valuetext="0.5匝">>
+            </div>
+            <div class="control-group">
+                <div class="label-row"><span>夹角 θ (B与I)</span><span id="badge-theta" class="val-badge" aria-live="polite">90°</span></div>
+                <input type="range" id="slider-theta" min="0" max="90" value="90" aria-valuemin="0" aria-valuemax="90" aria-valuenow="90" aria-valuetext="90匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+            </div>
+            <div class="control-group">
+                <div class="label-row"><span>电流方向 I direction</span></div>
+                <div class="mode-pills" id="i-dir-pills" style="display:flex;gap:6px;">
+                    <button class="mode-pill active" data-dir="1">↗ 沿导线向上</button>
+                    <button class="mode-pill" data-dir="-1">↙ 沿导线向下</button>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="label-row"><span>磁场方向 B direction</span></div>
+                <div class="mode-pills" id="b-dir-pills" style="display:flex;gap:6px;">
+                    <button class="mode-pill active" data-dir="1">→ 向右</button>
+                    <button class="mode-pill" data-dir="-1">← 向左</button>
+                </div>
+            </div>
+            <div class="btn-row">
+                <button id="btn-reset" class="ctrl-btn reset" aria-label="重置参数" aria-label="重置参数">重置 Reset</button>
+            </div>
+        </div>
+        <div class="info-card">
+            <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem;">演示要点 / Key Points</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;">F</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">F = BIL sinθ</div><div style="font-size:0.78rem;color:#6B6B6B;">安培力大小正比于B、I、L及sinθ。θ=90°时最大。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:#3498db;font-weight:700;">✋</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">左手定则判断方向</div><div style="font-size:0.78rem;color:#6B6B6B;">伸开左手，B穿入手心，四指指向I，拇指指向F。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(155,89,182,0.1);color:#9b59b6;font-weight:700;">B</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">B ⟂ I ⟂ F 三者正交</div><div style="font-size:0.78rem;color:#6B6B6B;">力方向始终垂直于B和I所在平面。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:#2ecc71;font-weight:700;">📐</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">θ=0时 F=0</div><div style="font-size:0.78rem;color:#6B6B6B;">当导线平行于磁场方向时，不受安培力。</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<script>
+const canvas=document.getElementById('simCanvas'),ctx=canvas.getContext('2d');
+const sI=document.getElementById('slider-i'),sB=document.getElementById('slider-b'),sL=document.getElementById('slider-l'),sTheta=document.getElementById('slider-theta');
+const bI=document.getElementById('badge-i'),bB=document.getElementById('badge-b'),bL=document.getElementById('badge-l'),bTheta=document.getElementById('badge-theta');
+const resF=document.getElementById('res-f'),resBv=document.getElementById('res-bval'),resT=document.getElementById('res-theta');
+const fRoot=document.getElementById('formula-root');
+const S={i:5,b:1.0,l:0.5,theta:90,iDir:1,bDir:1};
+function resize(){canvas.width=canvas.clientWidth;canvas.height=canvas.clientHeight;}
+window.addEventListener('resize',resize);
+function update(){
+    S.i=parseInt(sI.value);S.b=parseFloat(sB.value);S.l=parseFloat(sL.value);S.theta=parseInt(sTheta.value);
+    bI.textContent=S.i+' A';bB.textContent=S.b.toFixed(1)+' T';bL.textContent=S.l.toFixed(2)+' m';bTheta.textContent=S.theta+'°';
+    resBv.textContent=S.b.toFixed(1);
+    resT.textContent=S.theta;
+    fRoot.innerHTML=`<span style="font-size:24px;font-weight:700;color:var(--accent);">F</span>
+        <span style="font-size:24px;">=</span>
+        <span style="font-size:24px;font-weight:700;color:#9b59b6;">B</span>
+        <span style="font-size:24px;font-weight:700;color:#3498db;">I</span>
+        <span style="font-size:24px;font-weight:700;">L</span>
+        <span style="font-size:24px;">sin</span><span style="font-size:24px;color:#e67e22;">θ</span>`;
+    draw();requestAnimationFrame(update);
+}
+
+// Direction pill handlers
+document.getElementById('i-dir-pills').onclick=e=>{
+    const p=e.target.closest('.mode-pill');if(!p)return;
+    document.querySelectorAll('#i-dir-pills .mode-pill').forEach(x=>x.classList.remove('active'));
+    p.classList.add('active');S.iDir=parseInt(p.dataset.dir);
+};
+document.getElementById('b-dir-pills').onclick=e=>{
+    const p=e.target.closest('.mode-pill');if(!p)return;
+    document.querySelectorAll('#b-dir-pills .mode-pill').forEach(x=>x.classList.remove('active'));
+    p.classList.add('active');S.bDir=parseInt(p.dataset.dir);
+};
+function draw(){
+    const w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);ctx.fillStyle='#fafaf7';ctx.fillRect(0,0,w,h);
+    const cx=w*0.45,cy=h*0.55;
+    const thetaRad=S.theta*Math.PI/180;
+
+    // Wire visual length: fixed scale 1m = 200px
+    const wireLenPx=S.l*200;
+
+    // === B field region (rectangular boundary) ===
+    const bLeft=cx-140,bRight=cx+140,bTop=cy-100,bBottom=cy+100;
+    ctx.fillStyle='rgba(155,89,182,0.04)';ctx.fillRect(bLeft,bTop,bRight-bLeft,bBottom-bTop);
+    ctx.strokeStyle='rgba(155,89,182,0.25)';ctx.lineWidth=1;ctx.setLineDash([6,8]);
+    ctx.strokeRect(bLeft,bTop,bRight-bLeft,bBottom-bTop);ctx.setLineDash([]);
+
+    // === B field arrows (direction from bDir) ===
+    ctx.strokeStyle='#9b59b6';ctx.fillStyle='#9b59b6';ctx.lineWidth=1.5;
+    const bFrom=S.bDir>0?bLeft+10:bRight-20;
+    const bTo=S.bDir>0?bRight-20:bLeft+10;
+    for(let by=bTop+14;by<bBottom;by+=24){
+        ctx.beginPath();ctx.moveTo(bFrom,by);ctx.lineTo(bTo,by);ctx.stroke();
+        const ahx=S.bDir>0?bTo:bTo+10;
+        ctx.beginPath();ctx.moveTo(ahx,by);ctx.lineTo(ahx-S.bDir*10,by-5);ctx.lineTo(ahx-S.bDir*10,by+5);ctx.closePath();ctx.fill();
+    }
+    ctx.fillStyle='#9b59b6';ctx.font='bold 14px Fredoka';ctx.textAlign='center';
+    ctx.fillText('B='+S.b.toFixed(1)+'T'+(S.bDir>0?' →':' ←'),bRight-40,bTop-10);
+
+    // === Wire at angle θ ===
+    const wireMidY=cy;
+    const halfLen=wireLenPx/2;
+    const wx1=cx-halfLen*Math.cos(thetaRad);
+    const wy1=wireMidY+halfLen*Math.sin(thetaRad);
+    const wx2=cx+halfLen*Math.cos(thetaRad);
+    const wy2=wireMidY-halfLen*Math.sin(thetaRad);
+
+    // Compute effective length within B field by checking how much of the wire
+    // center (cx, wireMidY) is within the field, and clipping the wire ends
+    function clipToRect(x1,y1,x2,y2,left,right,top,bottom){
+        // Simple approach: find t values where the line crosses field boundaries
+        const dx=x2-x1,dy=y2-y1;
+        let tMin=0,tMax=1;
+        // Check each boundary
+        const boundaries=[
+            {p:-dx,q:x1-left},   // left: x >= left
+            {p:dx,q:right-x1},    // right: x <= right
+            {p:-dy,q:y1-top},     // top: y >= top
+            {p:dy,q:bottom-y1}    // bottom: y <= bottom
+        ];
+        for(const b of boundaries){
+            if(Math.abs(b.p)<1e-9){
+                if(b.q<0)return{t1:0,t2:0}; // parallel and outside
+                continue;
+            }
+            const t=b.q/b.p;
+            if(b.p<0){if(t>tMin)tMin=t;} // entering
+            else{if(t<tMax)tMax=t;}       // leaving
+        }
+        if(tMin>tMax)return{t1:0,t2:0};
+        return{t1:Math.max(0,tMin),t2:Math.min(1,tMax)};
+    }
+    const clip=clipToRect(wx1,wy1,wx2,wy2,bLeft,bRight,bTop,bBottom);
+    const effFrac=Math.max(0,clip.t2-clip.t1);
+    const effLen=S.l*effFrac; // effective length in meters
+
+    // Draw full wire (lighter outside field)
+    ctx.lineWidth=6;ctx.lineCap='round';
+    // Outside portions (dimmer)
+    if(clip.t1>0.001){
+        ctx.strokeStyle='rgba(231,76,60,0.3)';
+        ctx.beginPath();ctx.moveTo(wx1,wy1);
+        ctx.lineTo(wx1+(wx2-wx1)*clip.t1,wy1+(wy2-wy1)*clip.t1);ctx.stroke();
+    }
+    if(clip.t2<0.999){
+        ctx.strokeStyle='rgba(231,76,60,0.3)';
+        ctx.beginPath();ctx.moveTo(wx1+(wx2-wx1)*clip.t2,wy1+(wy2-wy1)*clip.t2);
+        ctx.lineTo(wx2,wy2);ctx.stroke();
+    }
+    // Inside portion (bright)
+    ctx.strokeStyle='#e74c3c';
+    ctx.beginPath();ctx.moveTo(wx1+(wx2-wx1)*clip.t1,wy1+(wy2-wy1)*clip.t1);
+    ctx.lineTo(wx1+(wx2-wx1)*clip.t2,wy1+(wy2-wy1)*clip.t2);ctx.stroke();
+
+    // Current arrow (direction based on iDir)
+    const idx=wx2-wx1,idy=wy2-wy1;
+    const ilen=Math.hypot(idx,idy);
+    if(ilen>0){
+        const iux=idx/ilen*S.iDir,iuy=idy/ilen*S.iDir;
+        const midT=(clip.t1+clip.t2)/2;
+        const iax=wx1+idx*midT,iay=wy1+idy*midT;
+        arrow(ctx,iax,iay,iax+iux*30,iay+iuy*30,'#3498db',2.5);
+    }
+    ctx.fillStyle='#3498db';ctx.font='bold 13px Fredoka';ctx.textAlign='left';
+    ctx.fillText('I='+S.i+'A'+(S.iDir>0?' ↗':' ↙'),wx2+8,wy2-4);
+
+    // === Force (based on effective length, left-hand rule) ===
+    const force=S.b*S.i*effLen*Math.sin(thetaRad);
+    // Direction: perpendicular to plane, into or out of page
+    // Left-hand rule: I along wire, B horizontal → F = I × B
+    // I direction along wire × B direction = force perpendicular to plane
+    const forceDir=-S.iDir*S.bDir; // +1=out of page (⊙), -1=into page (⊗)
+    const dirText=forceDir>0?'⊙ 向外 out of the page':'⊗ 向里 into the page';
+
+    // Update formula and result row with effective length
+    const Lused=effLen;
+    fRoot.innerHTML=`<span style="font-size:22px;font-weight:700;color:var(--accent);">F</span>
+        <span style="font-size:22px;">=</span>
+        <span style="font-size:22px;font-weight:700;color:#9b59b6;">B</span>
+        <span style="font-size:22px;font-weight:700;color:#3498db;">I</span>
+        <span style="font-size:22px;font-weight:700;">L<sub>eff</sub></span>
+        <span style="font-size:22px;">sin</span><span style="font-size:22px;color:#e67e22;">θ</span>
+        <span style="font-size:22px;">= <b>${force.toFixed(3)} N</b></span>`;
+    resF.textContent=force.toFixed(3);
+
+    // Force direction and magnitude at top of canvas
+    ctx.fillStyle='var(--accent)';ctx.font='bold 18px Fredoka';ctx.textAlign='center';
+    ctx.fillText('F = '+force.toFixed(3)+' N  '+dirText,cx,h*0.06);
+
+    // Effective length note
+    if(effFrac<0.99){
+        ctx.fillStyle='#e67e22';ctx.font='bold 11px Fredoka';ctx.textAlign='center';
+        ctx.fillText('L_eff='+effLen.toFixed(2)+'m (导线超出磁场，仅计有效长度)',cx,cy+130);
+    }
+
+    // === Angle arc ===
+    ctx.strokeStyle='#e67e22';ctx.lineWidth=2;
+    const arcR=40;
+    ctx.beginPath();
+    if(thetaRad>=0){ctx.arc(cx,wireMidY,arcR,0,-thetaRad,true);}
+    else{ctx.arc(cx,wireMidY,arcR,0,-thetaRad,false);}
+    ctx.stroke();
+    ctx.fillStyle='#e67e22';ctx.font='bold 12px Fredoka';
+    const labelAng=-thetaRad/2;
+    ctx.fillText('θ='+S.theta+'°',cx+arcR*Math.cos(labelAng)+10,wireMidY+arcR*Math.sin(labelAng)-6);
+
+    // B reference line
+    ctx.strokeStyle='rgba(155,89,182,0.3)';ctx.lineWidth=1;ctx.setLineDash([4,6]);
+    ctx.beginPath();ctx.moveTo(cx-arcR-20,wireMidY);ctx.lineTo(cx+arcR+20,wireMidY);ctx.stroke();
+    ctx.setLineDash([]);
+}
+function arrow(c,x1,y1,x2,y2,clr,lw){const a=Math.atan2(y2-y1,x2-x1),h=8;c.strokeStyle=clr;c.fillStyle=clr;c.lineWidth=lw||2;c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();c.beginPath();c.moveTo(x2,y2);c.lineTo(x2-h*Math.cos(a-Math.PI/6),y2-h*Math.sin(a-Math.PI/6));c.lineTo(x2-h*Math.cos(a+Math.PI/6),y2-h*Math.sin(a+Math.PI/6));c.closePath();c.fill();}
+document.getElementById('btn-reset').onclick=()=>{
+    sI.value=5;sB.value=1.0;sL.value=0.5;sTheta.value=90;
+    S.i=5;S.b=1.0;S.l=0.5;S.theta=90;S.iDir=1;S.bDir=1;
+    bI.textContent='5 A';bB.textContent='1.0 T';bL.textContent='0.50 m';bTheta.textContent='90°';
+    document.querySelectorAll('#i-dir-pills .mode-pill').forEach((x,i)=>x.classList.toggle('active',i===0));
+    document.querySelectorAll('#b-dir-pills .mode-pill').forEach((x,i)=>x.classList.toggle('active',i===0));
+    draw();
+};
+resize();requestAnimationFrame(update);
+
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+</script>
+<div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
+</body>
+</html>

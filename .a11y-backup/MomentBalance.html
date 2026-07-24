@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wuli布雷克物理模拟实验室 - 杠杆平衡 / Lever Balance。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:title" content="杠杆平衡 / Lever Balance - Wuli布雷克">
+    <meta property="og:description" content="Wuli布雷克物理模拟实验室 - 杠杆平衡 / Lever Balance。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wuliblake.com/MomentBalance.html">
+    <meta property="og:site_name" content="Wuli布雷克物理模拟实验室">
+    <link rel="stylesheet" href="common.css">
+    <meta name="author" content="Wuli布雷克">
+    <meta name="copyright" content="Copyright 2025 Wuli布雷克">
+    <title>杠杆平衡 / Lever Balance - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>.feedback-overlay { display: flex; align-items: center; gap: 10px; }
+.emoji { font-size: 2.5rem; line-height: 1; }
+#balanceCanvas { width: 100%; flex: 1; display: block; }
+.button-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.check-btn, .reset-btn { padding: 12px; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: transform 0.2s; font-family: 'Fredoka','Noto Sans SC',sans-serif; }
+.check-btn { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(255,140,66,0.3); }
+.check-btn:hover { transform: translateY(-2px); }
+hr { border: none; border-top: 1px solid #eee; margin: 4px 0; }</style>
+</head>
+
+<body>
+    <div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
+<a href="mechanics.html" class="back-link" aria-label="返回力学分类页">← 返回力学</a>
+    <div class="container" id="main">
+        <header><h1>杠杆平衡 / Lever Balance</h1></header>
+
+        <section class="formula-display" aria-label="公式与实时数值">
+            <div class="formula-container">
+                <span style="color:var(--accent);font-weight:700;font-size:2.8rem;">ΣM</span>
+                <span style="font-size:20px;color:#ccc;">=</span>
+                <span style="color:#27ae60;font-weight:700;font-size:2rem;">0</span>
+            </div>
+            <div class="result-row" id="feedback" style="opacity:0;transition:opacity 0.5s;">
+                <div class="feedback-overlay">
+                    <div id="emoji" class="emoji">😊</div>
+                    <span id="status-text" style="font-weight:700;">平衡！Balanced</span>
+                </div>
+            </div>
+            <div class="legend" aria-label="图例说明">
+                <div class="legend-item"><span class="legend-dot" style="background:#3498db"></span> 物体1 (m₁)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#e74c3c"></span> 物体2 (m₂)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#666"></span> 支点 Pivot</div>
+            </div>
+        </section>
+
+        <section class="diagram-section" aria-label="模拟动画区"><canvas id="balanceCanvas" role="img" aria-label="杠杆平衡模拟动画 — 交互式物理仿真画面"></canvas></section>
+
+        <section class="controls-section" aria-label="参数控制区">
+            <div class="control-panel">
+                <div class="control-group">
+                    <div class="label-row"><span style="color:#3498db">物体1 质量 m₁</span><span id="m1-val" class="val-badge">10 kg</span></div>
+                    <input type="range" id="m1-slider" min="0" max="50" value="10" aria-valuemin="0" aria-valuemax="50" aria-valuenow="10" aria-valuetext="10匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+                </div>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:#3498db">物体1 位置 x₁</span><span id="x1-val" class="val-badge">-5</span></div>
+                    <input type="range" id="x1-slider" min="-10" max="10" step="1" value="-5" aria-valuemin="-10" aria-valuemax="10" aria-valuenow="-5" aria-valuetext="-5匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+                </div>
+                <hr>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:#e74c3c">物体2 质量 m₂</span><span id="m2-val" class="val-badge">10 kg</span></div>
+                    <input type="range" id="m2-slider" min="0" max="50" value="10" aria-valuemin="0" aria-valuemax="50" aria-valuenow="10" aria-valuetext="10匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+                </div>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:#e74c3c">物体2 位置 x₂</span><span id="x2-val" class="val-badge">5</span></div>
+                    <input type="range" id="x2-slider" min="-10" max="10" step="1" value="5" aria-valuemin="-10" aria-valuemax="10" aria-valuenow="5" aria-valuetext="5匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+                </div>
+                <hr>
+                <div class="control-group">
+                    <label for="p-slider" class="label-row"><span>支点位置 Pivot</span><span id="p-val" class="val-badge" aria-live="polite">0</span></label>
+                    <input type="range" id="p-slider" min="-5" max="5" step="1" value="0" aria-valuemin="-5" aria-valuemax="5" aria-valuenow="0" aria-valuetext="0匝">>
+                </div>
+                <div class="control-group">
+                    <div class="label-row"><span>杠杆质量 M</span><span id="ml-val" class="val-badge" aria-live="polite">0 kg</span></div>
+                    <input type="range" id="ml-slider" min="0" max="20" value="0" aria-valuemin="0" aria-valuemax="20" aria-valuenow="0" aria-valuetext="0匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+                </div>
+                <div class="button-group">
+                    <button id="check-btn" class="check-btn">检查 Check</button>
+                    <button id="reset-btn" class="reset-btn">重置 Reset</button>
+                </div>
+            </div>
+            <div class="info-card">
+                <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem">演示要点 / Key Points</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,94,91,0.1);color:var(--accent);font-weight:700">ΣM</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">ΣM = 0</div><div style="font-size:0.78rem;color:#6B6B6B">杠杆平衡时，顺时针力矩之和等于逆时针力矩之和。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:#3498db;font-weight:700">m₁</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">力矩 = 质量 × 距支点距离</div><div style="font-size:0.78rem;color:#6B6B6B">调整质量和位置使两侧力矩相等即可平衡。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(231,76,60,0.1);color:#e74c3c;font-weight:700">M</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">杠杆自重的影响</div><div style="font-size:0.78rem;color:#6B6B6B">支点不在中心时，杠杆自身质量也会产生力矩。</div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('balanceCanvas');
+        const ctx = canvas.getContext('2d');
+        const feedback = document.getElementById('feedback');
+        const emoji = document.getElementById('emoji');
+        const statusText = document.getElementById('status-text');
+
+        // State
+        const state = {
+            m1: 10, x1: -5,
+            m2: 10, x2: 5,
+            pivot: 0,
+            mLever: 0,
+            isChecked: false,
+            tiltAngle: 0 // Target angle in degrees
+        };
+
+        let currentTilt = 0; // Current animation angle
+        let animationId = null;
+
+        // Element Wiring
+        const sliders = {
+            m1: document.getElementById('m1-slider'),
+            x1: document.getElementById('x1-slider'),
+            m2: document.getElementById('m2-slider'),
+            x2: document.getElementById('x2-slider'),
+            p: document.getElementById('p-slider'),
+            ml: document.getElementById('ml-slider')
+        };
+
+        function updateLabels() {
+            document.getElementById('m1-val').textContent = state.m1 + ' kg';
+            document.getElementById('x1-val').textContent = state.x1;
+            document.getElementById('m2-val').textContent = state.m2 + ' kg';
+            document.getElementById('x2-val').textContent = state.x2;
+            document.getElementById('p-val').textContent = state.pivot;
+            document.getElementById('ml-val').textContent = state.mLever + ' kg';
+        }
+
+        function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+        window.addEventListener('resize', () => { resize(); draw(); });
+
+        Object.keys(sliders).forEach(key => {
+            sliders[key].addEventListener('input', (e) => {
+                const val = parseFloat(e.target.value);
+                if (key === 'p') state.pivot = val;
+                else if (key === 'ml') state.mLever = val;
+                else state[key] = val;
+
+                state.isChecked = false;
+                state.tiltAngle = 0;
+                feedback.style.opacity = '0';
+                updateLabels();
+                startAnimation();
+            });
+        });
+
+        document.getElementById('check-btn').addEventListener('click', () => {
+            state.isChecked = true;
+
+            // Calculate Torque about pivot
+            // Moment = Mass * distance_from_pivot
+            // Left is negative position, right is positive
+            const torque1 = state.m1 * (state.x1 - state.pivot);
+            const torque2 = state.m2 * (state.x2 - state.pivot);
+            const torqueLever = state.mLever * (0 - state.pivot); // Lever CM is at 0
+
+            const totalTorque = torque1 + torque2 + torqueLever;
+
+            if (Math.abs(totalTorque) < 0.1) {
+                state.tiltAngle = 0;
+                emoji.textContent = '😊';
+                statusText.textContent = '平衡！Balanced';
+                statusText.style.color = '#27ae60';
+            } else {
+                // Tilt proportional to torque, more sensitive
+                state.tiltAngle = Math.max(-30, Math.min(30, totalTorque * 0.8));
+                emoji.textContent = '😟';
+                statusText.textContent = '不平衡! Unbalanced';
+                statusText.style.color = '#e74c3c';
+            }
+
+            feedback.style.opacity = '1';
+            startAnimation();
+        });
+
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            state.m1 = 10; state.x1 = -5;
+            state.m2 = 10; state.x2 = 5;
+            state.pivot = 0; state.mLever = 0;
+            state.isChecked = false;
+            state.tiltAngle = 0;
+
+            // Update sliders
+            sliders.m1.value = 10; sliders.x1.value = -5;
+            sliders.m2.value = 10; sliders.x2.value = 5;
+            sliders.p.value = 0; sliders.ml.value = 0;
+
+            feedback.style.opacity = '0';
+            updateLabels();
+            startAnimation();
+        });
+
+        function startAnimation() {
+            if (!animationId) {
+                draw();
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Animation smoothing
+            currentTilt += (state.tiltAngle - currentTilt) * 0.1;
+
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const scale = 30; // pixels per unit
+
+            // Draw Stand
+            ctx.strokeStyle = '#666';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(cx + state.pivot * scale, cy + 10);
+            ctx.lineTo(cx + state.pivot * scale - 20, cy + 120);
+            ctx.lineTo(cx + state.pivot * scale + 20, cy + 120);
+            ctx.closePath();
+            ctx.stroke();
+            ctx.fillStyle = '#eee';
+            ctx.fill();
+
+            // Transform to Lever System
+            ctx.save();
+            ctx.translate(cx + state.pivot * scale, cy);
+            ctx.rotate(currentTilt * Math.PI / 180);
+
+            // Re-calculate lever endpoint relative to pivot
+            const leftX = (-10 - state.pivot) * scale;
+            const rightX = (10 - state.pivot) * scale;
+
+            // Draw Plank
+            ctx.fillStyle = '#8B4513';
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = 'rgba(0,0,0,0.1)';
+            ctx.fillRect(leftX, -10, (rightX - leftX), 20);
+            ctx.shadowBlur = 0;
+
+            // Draw Scale
+            ctx.textAlign = 'center';
+            ctx.font = '10px Fredoka';
+            ctx.fillStyle = 'rgba(255,255,255,0.8)';
+            for (let i = -10; i <= 10; i++) {
+                const tickX = (i - state.pivot) * scale;
+                // Full height tick for readability
+                ctx.fillRect(tickX - 0.5, -10, 1, 20);
+                if (i % 2 === 0) {
+                    // Numbers clearly below the bar
+                    ctx.fillStyle = '#333';
+                    ctx.fillText(i, tickX, 25);
+                    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+                }
+            }
+
+            // Draw Mass 1
+            drawBox((state.x1 - state.pivot) * scale, -10, state.m1, '#3498db');
+
+            // Draw Mass 2
+            drawBox((state.x2 - state.pivot) * scale, -10, state.m2, '#e74c3c');
+
+            ctx.restore();
+
+            const isStillAnimating = Math.abs(currentTilt - state.tiltAngle) > 0.01;
+            if (state.isChecked || isStillAnimating) {
+                animationId = requestAnimationFrame(draw);
+            } else {
+                currentTilt = state.tiltAngle;
+                animationId = null;
+            }
+        }
+
+        function drawBox(x, yAnchor, mass, color) {
+            const size = 20 + Math.sqrt(mass) * 4;
+            ctx.fillStyle = color;
+            // Draw box sitting on the plank
+            ctx.fillRect(x - size / 2, yAnchor - size, size, size);
+
+            // Texture
+            ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x - size / 2 + 3, yAnchor - size + 3, size - 6, size - 6);
+
+            // Label
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 11px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(mass + 'k', x, yAnchor - size / 2 + 4);
+        }
+
+        // Init
+        resize();
+        updateLabels();
+        draw();
+    
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+</script>
+<div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
+</body>
+</html>

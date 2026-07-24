@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wuli布雷克物理模拟实验室 - 波速公式 / Wave Equation。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:title" content="波速公式 / Wave Equation - Wuli布雷克">
+    <meta property="og:description" content="Wuli布雷克物理模拟实验室 - 波速公式 / Wave Equation。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wuliblake.com/WaveSpeed.html">
+    <meta property="og:site_name" content="Wuli布雷克物理模拟实验室">
+    <link rel="stylesheet" href="common.css">
+    <meta name="author" content="Wuli布雷克">
+    <meta name="copyright" content="Copyright 2025 Wuli布雷克">
+    <title>波速公式 / Wave Equation - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>        :root {
+    --radius: 30px;
+    --v-color: #9b59b6;
+    --f-color: #2ecc71;
+    --l-color: #3498db;
+        }
+/* Formula Section */
+        .formula-display {
+            grid-area: formula;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px solid #fff5eb;
+        }
+/* Legend */
+        .legend {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+.sym-key {
+            font-weight: 700;
+            margin-right: 5px;
+        }
+/* Diagram Section */
+        .diagram-section {
+            grid-area: diagram;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+            border: 2px solid #fff;
+        }
+canvas {
+            width: 100%;
+            flex: 1;
+            display: block;
+        }
+/* Controls Section */
+        .controls-section {
+            grid-area: controls;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+#freq-slider::-webkit-slider-thumb {
+            background: var(--f-color);
+        }
+#len-slider::-webkit-slider-thumb {
+            background: var(--l-color);
+        }</style>
+</head>
+
+<body>
+<a href="waves.html" class="back-link" aria-label="返回波分类页">← 返回波</a>
+    <div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div>
+    </div>
+
+    <div class="container" id="main">
+        <header>
+            <h1>波速公式 / Wave Equation</h1>
+        </header>
+
+        <!-- Formula Section -->
+        <section class="formula-display" aria-label="公式与实时数值">
+            <div class="formula-container" id="formula-root">
+                <!-- Dynamic Formula -->
+            </div>
+            <div class="result-row">
+                <span id="res-calc" style="font-size:1.1rem; color:#6B6B6B; font-weight:normal;"></span>
+                <span style="color:var(--v-color)">v = <span id="res-v">0</span> cm/s</span>
+            </div>
+            <div class="legend" aria-label="图例说明">
+                <div class="legend-item"><span class="sym-key" style="color:var(--v-color)">v</span>: Wave Speed (波速)
+                </div>
+                <div class="legend-item"><span class="sym-key" style="color:var(--f-color)">f</span>: Frequency (频率)
+                </div>
+                <div class="legend-item"><span class="sym-key" style="color:var(--l-color)">λ</span>: Wavelength (波长)
+                </div>
+            </div>
+        </section>
+
+        <!-- Diagram Section -->
+        <section class="diagram-section" aria-label="模拟动画区">
+            <canvas id="simCanvas" role="img" aria-label="波速公式模拟动画 — 交互式物理仿真画面"></canvas>
+        </section>
+
+        <!-- Controls Section -->
+        <section class="controls-section" aria-label="参数控制区">
+            <div class="control-panel">
+                <div class="control-group">
+                    <label for="freq-slider" class="label-row">
+                        <span>Frequency (频率 f)</span>
+                        <span id="freq-badge" class="val-badge" aria-live="polite">1.0 Hz</span>
+                    </label>
+                    <input type="range" id="freq-slider" min="0.5" max="5.0" step="0.1" value="1.0" aria-valuemin="0.5" aria-valuemax="5.0" aria-valuenow="1.0" aria-valuetext="1.0赫兹">>
+                </div>
+
+                <div class="control-group">
+                    <label for="len-slider" class="label-row">
+                        <span>Wavelength (波长 λ)</span>
+                        <span id="len-badge" class="val-badge" aria-live="polite">10 cm</span>
+                    </label>
+                    <input type="range" id="len-slider" min="4" max="25" step="0.5" value="10" aria-valuemin="4" aria-valuemax="25" aria-valuenow="10" aria-valuetext="10匝">>
+                </div>
+
+                <div class="btn-row">
+                    <button id="btn-start" class="ctrl-btn start" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false">开始 Start</button>
+                    <button id="btn-reset" class="ctrl-btn reset" aria-label="重置参数" aria-label="重置参数">重置 Reset</button>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div style="font-weight: 700; color: var(--primary); margin-bottom: 12px; font-size: 1.25rem;">演示要点 /
+                    Key points</div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div
+                        style="background: white; padding: 12px; border: 1px solid #eee; border-radius: 15px; display: grid; grid-template-columns: 45px 1fr; gap: 10px; align-items: center;">
+                        <div
+                            style="width: 40px; height: 40px; background: rgba(155, 89, 182, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--v-color); font-weight: 700; font-size: 1.2rem;">
+                            v</div>
+                        <div>
+                            <div style="font-weight: 700; font-size: 1rem;">波速由介质决定</div>
+                            <div style="font-size: 0.85rem; color: #6B6B6B;">Wave speed is determined by the medium.</div>
+                        </div>
+                    </div>
+                    <div
+                        style="background: white; padding: 12px; border: 1px solid #eee; border-radius: 15px; display: grid; grid-template-columns: 45px 1fr; gap: 10px; align-items: center;">
+                        <div
+                            style="width: 40px; height: 40px; background: rgba(46, 204, 113, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--f-color); font-weight: 700; font-size: 1.2rem;">
+                            f</div>
+                        <div>
+                            <div style="font-weight: 700; font-size: 1rem;">频率由波源决定</div>
+                            <div style="font-size: 0.85rem; color: #6B6B6B;">Frequency is determined by the source.</div>
+                        </div>
+                    </div>
+                    <div
+                        style="background: white; padding: 12px; border: 1px solid #eee; border-radius: 15px; display: grid; grid-template-columns: 45px 1fr; gap: 10px; align-items: center;">
+                        <div
+                            style="width: 40px; height: 40px; background: rgba(52, 152, 219, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--l-color); font-weight: 700; font-size: 1.2rem;">
+                            λ</div>
+                        <div>
+                            <div style="font-weight: 700; font-size: 1rem;">波长由公式决定</div>
+                            <div style="font-size: 0.85rem; color: #6B6B6B;">Wavelength determined by wave equation</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas'), ctx = canvas.getContext('2d');
+        const sFreq = document.getElementById('freq-slider'), sLen = document.getElementById('len-slider');
+        const bFreq = document.getElementById('freq-badge'), bLen = document.getElementById('len-badge');
+        const resV = document.getElementById('res-v'), resCalc = document.getElementById('res-calc');
+        const bStart = document.getElementById('btn-start'), bReset = document.getElementById('btn-reset');
+        const fRoot = document.getElementById('formula-root');
+
+        const state = {
+            freq: 1.0, wavelength: 10, amp: 2.5,
+            time: 0, isPlaying: false, // Initial equilibrium
+            pxPerCm: 25
+        };
+
+        function resize() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+        }
+        window.addEventListener('resize', resize);
+
+        function update() {
+            state.freq = parseFloat(sFreq.value);
+            state.wavelength = parseFloat(sLen.value);
+
+            bFreq.textContent = state.freq.toFixed(1) + ' Hz';
+            bLen.textContent = state.wavelength.toFixed(1) + ' cm';
+
+            if (state.isPlaying) {
+                state.time += 0.016;
+            }
+
+            const speed = state.freq * state.wavelength;
+            updateUI(speed);
+            draw(speed);
+            requestAnimationFrame(update);
+        }
+
+        function updateUI(speed) {
+            resV.textContent = speed.toFixed(1);
+            resCalc.innerHTML = `v = f × λ = ${state.freq.toFixed(1)}Hz × ${state.wavelength.toFixed(1)}cm =`;
+
+            const baseSize = 40;
+            const sF = 1 + (state.freq / 5) * 0.3;
+            const sL = 1 + (state.wavelength / 25) * 0.3;
+            const sV = 1 + (speed / 125) * 0.4;
+
+            fRoot.innerHTML = `
+                <div style="display:flex; align-items:center; gap:15px;">
+                    <span style="color:var(--v-color); font-size:${baseSize * sV}px; font-weight:700;">v</span>
+                    <span style="font-size:30px">=</span>
+                    <span style="color:var(--f-color); font-size:${baseSize * sF}px; font-weight:700;">f</span>
+                    <span style="font-size:25px; color:#ccc;">×</span>
+                    <span style="color:var(--l-color); font-size:${baseSize * sL}px; font-weight:700;">λ</span>
+                </div>
+            `;
+        }
+
+        function draw(speed) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const midY = canvas.height / 2;
+            const pxSpeed = speed * state.pxPerCm;
+            const pxWavelength = state.wavelength * state.pxPerCm;
+            const pxAmp = state.amp * state.pxPerCm;
+
+            // Draw Background Grid
+            ctx.strokeStyle = '#fef5eb'; ctx.lineWidth = 1;
+            for (let x = 0; x < canvas.width; x += 50) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke(); }
+            for (let y = 0; y < canvas.height; y += 50) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke(); }
+
+            // Draw Axis
+            ctx.strokeStyle = '#95a5a6'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(50, midY); ctx.lineTo(canvas.width - 50, midY); ctx.stroke();
+
+            // Ticks
+            ctx.fillStyle = '#95a5a6'; ctx.font = '500 12px Fredoka'; ctx.textAlign = 'center';
+            for (let i = 0; i <= 40; i++) {
+                const x = 50 + i * state.pxPerCm;
+                if (x > canvas.width - 50) break;
+                ctx.beginPath(); ctx.moveTo(x, midY - 5); ctx.lineTo(x, midY + 5); ctx.stroke();
+                if (i % 5 === 0) ctx.fillText(i + ' cm', x, midY + 20);
+            }
+
+            // Draw Wave as connected line
+            const points = 100;
+            const step = (canvas.width - 100) / points;
+
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(255, 140, 66, 0.4)'; ctx.lineWidth = 2;
+
+            for (let i = 0; i <= points; i++) {
+                const x = 50 + i * step;
+                const pxX = i * step;
+                let y = midY;
+
+                if (pxSpeed > 0) {
+                    const timeNeeded = pxX / pxSpeed;
+                    if (state.time >= timeNeeded) {
+                        y = midY - pxAmp * Math.sin(2 * Math.PI * (state.freq * state.time - pxX / pxWavelength));
+                    }
+                }
+
+                if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            // Draw Balls
+            const ballInterval = 4;
+            for (let i = 0; i <= points; i += ballInterval) {
+                const x = 50 + i * step;
+                const pxX = i * step;
+                let y = midY;
+
+                if (pxSpeed > 0) {
+                    const timeNeeded = pxX / pxSpeed;
+                    if (state.time >= timeNeeded) {
+                        y = midY - pxAmp * Math.sin(2 * Math.PI * (state.freq * state.time - pxX / pxWavelength));
+                    }
+                }
+
+                ctx.beginPath();
+                ctx.arc(x, y, 6, 0, Math.PI * 2);
+                ctx.fillStyle = (i % (ballInterval * 5) === 0) ? '#FF5E5B' : '#FFC75F';
+                ctx.fill();
+                ctx.strokeStyle = '#fff'; ctx.lineWidth = 1; ctx.stroke();
+            }
+
+            // Highlight one moving peak to reinforce 'v'
+            if (state.isPlaying && pxSpeed > 0) {
+                const waveFrontX = pxSpeed * state.time;
+                let peakSearchX = waveFrontX - pxWavelength * 0.25;
+                while (peakSearchX > canvas.width - 150 && peakSearchX > pxWavelength) {
+                    peakSearchX -= pxWavelength;
+                }
+
+                if (peakSearchX > 0 && peakSearchX < canvas.width - 100) {
+                    const drawX = 50 + peakSearchX;
+                    const peakY = midY - pxAmp;
+                    ctx.beginPath();
+                    ctx.arc(drawX, peakY, 12, 0, Math.PI * 2);
+                    ctx.strokeStyle = '#9b59b6'; ctx.lineWidth = 3; ctx.stroke();
+                    drawArrow(drawX, peakY, drawX + pxSpeed * 0.15, peakY, '#9b59b6', 'v');
+                }
+            }
+        }
+
+        function drawArrow(x1, y1, x2, y2, color, label) {
+            const head = 8;
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = 3;
+            ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+            ctx.lineTo(x2 - head * Math.cos(angle - Math.PI / 6), y2 - head * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(x2 - head * Math.cos(angle + Math.PI / 6), y2 - head * Math.sin(angle + Math.PI / 6));
+            ctx.closePath();
+            ctx.fillStyle = color; ctx.fill(); ctx.stroke();
+
+            ctx.font = 'bold 14px Fredoka'; ctx.fillText(label, x2 + 10, y2 - 5);
+        }
+
+        bStart.onclick = () => {
+            state.isPlaying = !state.isPlaying;
+            bStart.textContent = state.isPlaying ? '暂停 Pause' : '开始 Start';
+            bStart.classList.toggle('start', !state.isPlaying);
+            bStart.classList.toggle('pause', state.isPlaying);
+        };
+
+        bReset.onclick = () => {
+            state.time = 0;
+            state.isPlaying = false;
+            bStart.textContent = '开始 Start';
+            bStart.className = 'ctrl-btn start';
+        };
+
+        resize();
+        update();
+    
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+</script>
+<div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
+</body>
+
+</html>

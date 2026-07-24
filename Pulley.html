@@ -7,20 +7,26 @@
 <link rel="stylesheet" href="common.css">
 <meta name="author" content="Wuli布雷克">
 <meta name="copyright" content="Copyright 2025 Wuli布雷克">
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
-<style>:root{--bg-color:#FFF9F0;--primary:#FF8c42;--accent:#FF5E5B;--text-dark:#4A403A;--card-bg:#FFFFFF;--shadow:0 6px 30px rgba(255,140,66,0.18)}*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Fredoka','Noto Sans SC',sans-serif;background:var(--bg-color);color:var(--text-dark);display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:5px 40px 10px}.container{width:100%;max-width:1400px;margin-top:8px;display:grid;grid-template-areas:"header header""formula formula""diagram controls";grid-template-columns:1fr 400px;gap:12px}header{grid-area:header;text-align:center}h1{font-size:2rem}.formula-display{grid-area:formula;background:#fff;border-radius:20px;box-shadow:var(--shadow);padding:10px 20px;display:flex;flex-direction:column;align-items:center;border:2px solid #fff5eb}.formula-container{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;min-height:44px}.result-row{font-size:.95rem;font-weight:600;margin-top:4px;display:flex;gap:20px;flex-wrap:wrap;justify-content:center}.result-row span{white-space:nowrap;display:inline-flex;align-items:baseline}}.diagram-section{grid-area:diagram;background:#fff;border-radius:20px;box-shadow:var(--shadow);overflow:hidden;min-height:420px;display:flex;flex-direction:column;border:2px solid #fff5eb}#simCanvas{width:100%;flex:1;display:block}.controls-section{grid-area:controls;display:flex;flex-direction:column;gap:10px}.control-panel{background:#fff;border-radius:20px;box-shadow:var(--shadow);padding:14px 18px;display:flex;flex-direction:column;gap:10px}.control-group{display:flex;flex-direction:column;gap:3px}.label-row{display:flex;justify-content:space-between;font-weight:600;font-size:.9rem}.val-badge{background:#fff;padding:1px 7px;border-radius:7px;font-size:.85rem;border:2px solid #f0f0f0}input[type=range]{width:100%;appearance:none;height:6px;background:#eee;border-radius:3px}input[type=range]::-webkit-slider-thumb{appearance:none;width:20px;height:20px;border-radius:50%;background:var(--primary);cursor:pointer}.mode-pills{display:flex;gap:6px}.mode-pill{flex:1;padding:8px;border-radius:12px;font-size:.82rem;font-weight:700;border:2px solid #e0e0e0;background:#fafafa;cursor:pointer;text-align:center;color:#666}.mode-pill.active{background:var(--primary);color:#fff;border-color:var(--primary)}.btn-row{display:flex;gap:8px}.ctrl-btn{padding:10px;border:none;border-radius:14px;font-size:1rem;font-weight:700;cursor:pointer;color:#fff;flex:1}.start{background:var(--primary)}.ghost{background:#fff;color:#888;border:1px solid #e0e0e0}.reset{background:#95a5a6}.info-card{background:#fff;border-radius:20px;padding:12px 16px;box-shadow:var(--shadow);font-size:.9rem;line-height:1.4;color:#5D6D7E}@media(max-width:1100px){.container{grid-template-areas:"header""formula""diagram""controls";grid-template-columns:1fr}}</style></head><body>
+<style>.result-row span{white-space:nowrap;display:inline-flex;align-items:baseline}
+}.diagram-section{grid-area:diagram;background:#fff;border-radius:20px;box-shadow:var(--shadow);overflow:hidden;min-height:420px;display:flex;flex-direction:column;border:2px solid #fff5eb}#simCanvas{width:100%;flex:1;display:block}.controls-section{grid-area:controls;display:flex;flex-direction:column;gap:10px}.control-panel{background:#fff;border-radius:20px;box-shadow:var(--shadow);padding:14px 18px;display:flex;flex-direction:column;gap:10px}.control-group{display:flex;flex-direction:column;gap:3px}.label-row{display:flex;justify-content:space-between;font-weight:600;font-size:.9rem}.val-badge{background:#fff;padding:1px 7px;border-radius:7px;font-size:.85rem;border:2px solid #f0f0f0}input[type=range]{width:100%;appearance:none;height:6px;background:#eee;border-radius:3px}input[type=range]::-webkit-slider-thumb{appearance:none;width:20px;height:20px;border-radius:50%;background:var(--primary);cursor:pointer}.mode-pills{display:flex;gap:6px}.mode-pill{flex:1;padding:8px;border-radius:12px;font-size:.82rem;font-weight:700;border:2px solid #e0e0e0;background:#fafafa;cursor:pointer;text-align:center;color:#666}.mode-pill.active{background:var(--primary);color:#fff;border-color:var(--primary)}.btn-row{display:flex;gap:8px}.ctrl-btn{padding:10px;border:none;border-radius:14px;font-size:1rem;font-weight:700;cursor:pointer;color:#fff;flex:1}.start{background:var(--primary)}.ghost{background:#fff;color:#6B6B6B;border:1px solid #e0e0e0}.reset{background:#95a5a6}.info-card{background:#fff;border-radius:20px;padding:12px 16px;box-shadow:var(--shadow);font-size:.9rem;line-height:1.4;color:#5D6D7E}@media(max-width:1100px){.container{grid-template-areas:"header""formula""diagram""controls";grid-template-columns:1fr}
+/* === 无障碍 Accessibility (批量注入) === */
+.skip-link { position: absolute; top: -40px; left: 8px; z-index: 2000; background: #185FA5; color: #fff; padding: 8px 16px; border-radius: 10px; font-size: 0.9rem; font-weight: 600; text-decoration: none; transition: top 0.2s; }
+.skip-link:focus { top: 8px; }
+:focus-visible { outline: 3px solid #185FA5; outline-offset: 2px; border-radius: 6px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+</style></head><body>
 <div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
-<a href="mechanics.html" class="back-link">← 返回力学</a>
-<div class="container"><header><h1>滑轮 / Pulley</h1></header>
-<section class="formula-display"><div class="formula-container" id="formula-root"></div><div class="result-row" id="result-row"></div></section>
-<section class="diagram-section"><canvas id="simCanvas"></canvas></section>
-<section class="controls-section"><div class="control-panel">
+<a href="mechanics.html" class="back-link" aria-label="返回力学分类页">← 返回力学</a>
+<div class="container" id="main"><header><h1>滑轮 / Pulley</h1></header>
+<section class="formula-display" aria-label="公式与实时数值"><div class="formula-container" id="formula-root"></div><div class="result-row" id="result-row"></div></section>
+<section class="diagram-section" aria-label="模拟动画区"><canvas id="simCanvas" role="img" aria-label="滑轮模拟动画 — 交互式物理仿真画面"></canvas></section>
+<section class="controls-section" aria-label="参数控制区"><div class="control-panel">
 <div class="control-group"><div class="label-row"><span>滑轮类型 / Type</span></div><div class="mode-pills" id="mode-pills"><button class="mode-pill active" data-mode="fixed">定滑轮 Fixed</button><button class="mode-pill" data-mode="movable">动滑轮 Movable</button><button class="mode-pill" data-mode="block">滑轮组 Block</button></div></div>
-<div class="control-group"><div class="label-row"><span>物重 G / Weight</span><span id="badge-g" class="val-badge">100 N</span></div><input type="range" id="slider-g" min="20" max="400" value="100"></div>
-<div class="control-group" id="n-group" style="display:none"><div class="label-row"><span>绳段数 n / Segments</span><span id="badge-n" class="val-badge">2</span></div><input type="range" id="slider-n" min="2" max="6" value="2"></div>
-<div class="control-group"><div class="label-row"><span>提升高度 h / Lift</span><span id="badge-h" class="val-badge">0.0 m</span></div><input type="range" id="slider-h" min="0" max="100" value="0"></div>
-<div class="control-group"><div class="label-row"><span>绳速 v / Pull Speed</span><span id="badge-v" class="val-badge">1.0×</span></div><input type="range" id="slider-v" min="0.2" max="4" step="0.1" value="1"></div>
-<div class="btn-row" style="grid-template-columns:1fr 1fr 1fr"><button id="btn-start" class="ctrl-btn start">开始 Start</button><button id="btn-pause" class="ctrl-btn" style="background:#2ecc71;display:none">暂停 Pause</button><button id="btn-reset" class="ctrl-btn reset">重置 Reset</button></div></div>
+<div class="control-group"><div class="label-row"><span>物重 G / Weight</span><span id="badge-g" class="val-badge">100 N</span></div><input type="range" id="slider-g" min="20" max="400" value="100" aria-valuemin="20" aria-valuemax="400" aria-valuenow="100" aria-valuetext="100匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">></div>
+<div class="control-group" id="n-group" style="display:none"><div class="label-row"><span>绳段数 n / Segments</span><span id="badge-n" class="val-badge">2</span></div><input type="range" id="slider-n" min="2" max="6" value="2" aria-valuemin="2" aria-valuemax="6" aria-valuenow="2" aria-valuetext="2匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">></div>
+<div class="control-group"><div class="label-row"><span>提升高度 h / Lift</span><span id="badge-h" class="val-badge">0.0 m</span></div><input type="range" id="slider-h" min="0" max="100" value="0" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">></div>
+<div class="control-group"><label for="slider-v" class="label-row"><span>绳速 v / Pull Speed</span><span id="badge-v" class="val-badge" aria-live="polite">1.0×</span></label><input type="range" id="slider-v" min="0.2" max="4" step="0.1" value="1" aria-valuemin="0.2" aria-valuemax="4" aria-valuenow="1" aria-valuetext="1匝">></div>
+<div class="btn-row" style="grid-template-columns:1fr 1fr 1fr"><button id="btn-start" class="ctrl-btn start" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false">开始 Start</button><button id="btn-pause" class="ctrl-btn" style="background:#2ecc71;display:none">暂停 Pause</button><button id="btn-reset" class="ctrl-btn reset" aria-label="重置参数" aria-label="重置参数" aria-label="重置参数" aria-label="重置参数" aria-label="重置参数">重置 Reset</button></div></div>
 <div class="info-card"><div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem">知识要点 / Key Points</div><div style="padding:8px 10px;background:#fff8f0;border-radius:10px;border-left:3px solid var(--primary)" id="kp-text"></div></div></section></div>
 <div class="site-footer">© 2025 Wuli布雷克 | MIT License </div>
 <script>
@@ -67,4 +73,22 @@ btnReset.onclick=()=>{if(animId){cancelAnimationFrame(animId);animId=null}btnSta
 
 resize();update();
 })();
+
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
 </script></body></html>

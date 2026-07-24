@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电流定义式 / Current Definition - Wuli布雷克</title>
+    <link rel="stylesheet" href="common.css">
+    <meta name="author" content="Wuli布雷克">
+    <meta name="copyright" content="Copyright 2025 Wuli布雷克">
+</head>
+<body>
+<a href="#main" class="skip-link">跳到主内容</a>
+<div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
+<a href="ElectricCurrent.html" class="back-link" aria-label="返回电流分类页">← 返回电流</a>
+<div class="container" id="main">
+    <header><h1>电流定义式 / Current Definition</h1></header>
+    <section class="formula-display" aria-label="公式与实时数值">
+        <div class="formula-container" id="formula-root"></div>
+        <div class="result-row">
+            <span>I = <strong style="color:var(--accent);font-size:1.3rem" id="res-i">—</strong> A</span>
+            <span>Q = <strong style="color:#9b59b6;font-size:1.3rem" id="res-q">10</strong> C</span>
+            <span>t = <strong style="color:#3498db;font-size:1.3rem" id="res-t">2.0</strong> s</span>
+        </div>
+        <div class="legend" aria-label="图例说明">
+            <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> I 电流</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#9b59b6"></span> Q 电荷量</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#3498db"></span> t 时间</div>
+        </div>
+    </section>
+    <section class="diagram-section" aria-label="模拟动画区"><canvas id="simCanvas" role="img" aria-label="电流定义式模拟动画 — 交互式物理仿真画面"></canvas></section>
+    <section class="controls-section" aria-label="参数控制区">
+        <div class="control-panel">
+            <div class="control-group">
+                <div class="label-row"><span style="color:#9b59b6;">电荷量 Q</span><span id="badge-q" class="val-badge" aria-live="polite">10 C</span></div>
+                <input type="range" id="slider-q" min="1" max="50" value="10" aria-valuemin="1" aria-valuemax="50" aria-valuenow="10" aria-valuetext="10匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+            </div>
+            <div class="control-group">
+                <div class="label-row"><span style="color:#3498db;">时间 t</span><span id="badge-t" class="val-badge" aria-live="polite">2.0 s</span></div>
+                <input type="range" id="slider-t" min="0.5" max="10" step="0.1" value="2.0" aria-valuemin="0.5" aria-valuemax="10" aria-valuenow="2.0" aria-valuetext="2.0匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+            </div>
+            <div class="btn-row">
+                <button id="btn-play" class="ctrl-btn" style="background:#2ecc71;">▶ 开始 Play</button>
+                <button id="btn-reset" class="ctrl-btn reset" aria-label="重置参数" aria-label="重置参数" aria-label="重置参数" aria-label="重置参数" aria-label="重置参数" aria-label="重置参数">重置</button>
+            </div>
+        </div>
+        <div class="info-card">
+            <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem;">演示要点 / Key Points</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;">I</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">I = Q / t 电流定义</div><div style="font-size:0.78rem;color:#6B6B6B;">电荷定向移动形成电流。正电荷从左向右流过红色截面，每经过一个记 1C；下方进度条按周期 t 计量，结算值即为 I。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(155,89,182,0.1);color:#9b59b6;font-weight:700;">Q</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">Q 越大 I 越大</div><div style="font-size:0.78rem;color:#6B6B6B;">相同时间内通过截面的电荷越多，电流越大，电荷流得也越快。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:#3498db;font-weight:700;">t</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">t 越大 I 越小</div><div style="font-size:0.78rem;color:#6B6B6B;">相同电荷量下计量时间越长，单位时间通过的电量越少，电流越小。</div></div>
+                </div>
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:#2ecc71;font-weight:700;">A</div>
+                    <div><div style="font-weight:700;font-size:0.9rem;">单位：安培 A = C/s</div><div style="font-size:0.78rem;color:#6B6B6B;">1A = 1C/s，是国际单位制七个基本单位之一。</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<script>
+const canvas=document.getElementById('simCanvas'),ctx=canvas.getContext('2d');
+const sQ=document.getElementById('slider-q'),sT=document.getElementById('slider-t');
+const bQ=document.getElementById('badge-q'),bT=document.getElementById('badge-t');
+const resI=document.getElementById('res-i'),resQ=document.getElementById('res-q'),resT=document.getElementById('res-t');
+const fRoot=document.getElementById('formula-root');
+const S={q:10,t:2.0,charges:[],periodT:0,periodCount:0,lastI:null,flash:0,running:false};
+const btnPlay=document.getElementById('btn-play');
+let rafId=null;
+const SPACING=34;            // 电荷间距(像素)：固定间距下，流速∝I，使 t 秒内通过≈Q 个
+let lastTs=performance.now();
+
+// 导体几何（每帧重算以适应 resize）
+function geom(){const w=canvas.width,h=canvas.height,barY=h*0.50,barH=42,barL=Math.min(w*0.74,780),barX=(w-barL)/2;return{w,h,barY,barH,barL,barX,sectionX:barX+barL/2}}
+
+function randY(g){return g.barY-g.barH/2+9+Math.random()*(g.barH-18)}
+
+// 沿导体均匀铺设电荷
+function initCharges(){const g=geom();S.charges=[];const n=Math.max(3,Math.ceil(g.barL/SPACING)+3);
+for(let i=0;i<n;i++)S.charges.push({x:g.barX-SPACING+i*SPACING,y:randY(g),counted:false})}
+
+// 文本/公式更新（仅在参数变化时调用）
+function updateText(){
+    S.q=parseFloat(sQ.value);S.t=parseFloat(sT.value);
+    bQ.textContent=S.q+' C';bT.textContent=S.t.toFixed(1)+' s';
+    const I=S.q/S.t;
+    resI.textContent=I.toFixed(2);resQ.textContent=S.q;resT.textContent=S.t.toFixed(1);
+    fRoot.innerHTML=`<span style="font-size:28px;font-weight:700;color:#FF5E5B">I</span><span style="font-size:28px">=</span><span style="display:inline-flex;flex-direction:column;align-items:center;font-size:22px;line-height:1.15;vertical-align:middle;margin:0 2px"><span style="color:#9b59b6;font-weight:700;padding:0 6px">Q</span><span style="border-top:2px solid #6B6B6B;width:100%"></span><span style="color:#3498db;font-weight:700;padding:0 6px">t</span></span><span style="font-size:28px">= <b>${I.toFixed(2)} A</b></span>`;
+}
+
+// 动画主循环（deltaTime 归一化）
+function frame(ts){
+    if(!S.running)return;
+    const dt=Math.min(0.05,(ts-lastTs)/1000);lastTs=ts;
+    const g=geom();
+    // 流速：在精确对应 Q/t 的基础上做上下限，保证可视性
+    const speed=Math.min(Math.max(S.q*SPACING/S.t,55),420);
+    for(const c of S.charges){
+        const prev=c.x;c.x+=speed*dt;
+        if(!c.counted && prev<g.sectionX && c.x>=g.sectionX){c.counted=true;S.periodCount++;S.flash=1}
+    }
+    // 电荷移出右端后回卷到队列最左端，保持均匀间距
+    let guard=0;
+    while(guard++<S.charges.length+1){
+        let mx=-1e9,mn=1e9,wi=-1;
+        for(let i=0;i<S.charges.length;i++){const c=S.charges[i];if(c.x>mx){mx=c.x;wi=i}if(c.x<mn)mn=c.x}
+        if(S.charges[wi].x>g.barX+g.barL+12){S.charges[wi].x=mn-SPACING;S.charges[wi].y=randY(g);S.charges[wi].counted=false}
+        else break;
+    }
+    S.flash*=0.88;
+    // 计量周期：满 t 秒结算一次实测电流
+    S.periodT+=dt;
+    if(S.periodT>=S.t){S.lastI=S.periodCount/S.t;S.periodT=0;S.periodCount=0}
+    draw(g,S.q/S.t);
+    requestAnimationFrame(frame);
+}
+
+function draw(g,I){
+    const {w,h,barY,barH,barL,barX,sectionX}=g;
+    ctx.clearRect(0,0,w,h);ctx.fillStyle='#fafaf7';ctx.fillRect(0,0,w,h);
+
+    // 导体
+    const g1=ctx.createLinearGradient(0,barY-barH/2,0,barY+barH/2);
+    g1.addColorStop(0,'#ececdf');g1.addColorStop(0.5,'#d8d8cc');g1.addColorStop(1,'#c4c4b8');
+    ctx.fillStyle=g1;ctx.fillRect(barX,barY-barH/2,barL,barH);
+    ctx.strokeStyle='#8a8a7a';ctx.lineWidth=2;ctx.strokeRect(barX,barY-barH/2,barL,barH);
+
+    // 截面（穿过电荷时闪烁高亮）
+    ctx.strokeStyle=S.flash>0.25?'#e74c3c':'rgba(231,76,60,0.55)';
+    ctx.lineWidth=S.flash>0.25?3.5:2;ctx.setLineDash([6,5]);
+    ctx.beginPath();ctx.moveTo(sectionX,barY-barH/2-20);ctx.lineTo(sectionX,barY+barH/2+20);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#e74c3c';ctx.font='bold 12px Fredoka';ctx.textAlign='center';
+    ctx.fillText('截面 S',sectionX,barY-barH/2-26);
+
+    // 电荷（正电荷，与电流同向）
+    ctx.textBaseline='middle';
+    for(const c of S.charges){
+        if(c.x<barX-8||c.x>barX+barL+8)continue;
+        ctx.fillStyle='#FF5E5B';ctx.beginPath();ctx.arc(c.x,c.y,6,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle='#fff';ctx.font='bold 9px Fredoka';ctx.textAlign='center';ctx.fillText('+',c.x,c.y+0.5);
+    }
+    ctx.textBaseline='alphabetic';
+
+    // 电流方向箭头（导体上方，向右）
+    const ay=barY-barH/2-52;
+    ctx.strokeStyle='#FF8c42';ctx.lineWidth=3.5;ctx.fillStyle='#FF8c42';
+    ctx.beginPath();ctx.moveTo(barX+4,ay);ctx.lineTo(barX+barL-10,ay);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(barX+barL,ay);ctx.lineTo(barX+barL-13,ay-7);ctx.lineTo(barX+barL-13,ay+7);ctx.closePath();ctx.fill();
+    ctx.font='bold 15px Fredoka';ctx.textAlign='center';ctx.fillText('I = '+I.toFixed(2)+' A',barX+barL/2,ay-9);
+
+    // 计量周期进度条（导体下方）
+    const pbY=barY+barH/2+40,pbX=barX,pbW=barL;
+    ctx.fillStyle='#eee';ctx.fillRect(pbX,pbY,pbW,14);ctx.strokeStyle='#bbb';ctx.lineWidth=1;ctx.strokeRect(pbX,pbY,pbW,14);
+    ctx.fillStyle='#3498db';ctx.fillRect(pbX,pbY,pbW*Math.min(1,S.periodT/S.t),14);
+    ctx.fillStyle='#555';ctx.font='bold 12px Fredoka';ctx.textAlign='left';
+    ctx.fillText('本周期已通过 '+S.periodCount+' C    计时 '+S.periodT.toFixed(1)+' / '+S.t.toFixed(1)+' s',pbX,pbY+30);
+    if(S.lastI!=null){ctx.fillStyle='#e67e22';ctx.textAlign='right';ctx.fillText('上一周期实测 I ≈ '+S.lastI.toFixed(2)+' A',pbX+pbW,pbY+30)}
+}
+
+// 开始/暂停切换
+function togglePlay(){
+    S.running=!S.running;
+    if(S.running){lastTs=performance.now();requestAnimationFrame(frame);btnPlay.textContent='⏸ 暂停 Pause';btnPlay.style.background='var(--primary)'}
+    else{btnPlay.textContent='▶ 开始 Play';btnPlay.style.background='#2ecc71'}
+}
+function resize(){canvas.width=canvas.clientWidth;canvas.height=canvas.clientHeight;initCharges();if(!S.running)draw(geom(),S.q/S.t)}
+window.addEventListener('resize',resize);
+sQ.addEventListener('input',()=>{updateText();if(!S.running)draw(geom(),S.q/S.t)});sT.addEventListener('input',()=>{updateText();if(!S.running)draw(geom(),S.q/S.t)});
+btnPlay.onclick=togglePlay;
+document.getElementById('btn-reset').onclick=()=>{sQ.value=10;sT.value=2.0;S.periodT=0;S.periodCount=0;S.lastI=null;updateText();initCharges();if(!S.running)draw(geom(),S.q/S.t)};
+resize();updateText();draw(geom(),S.q/S.t);
+
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+</script>
+<div class="site-footer">© 2025 Wuli布雷克 | MIT License </div>
+</body>
+</html>

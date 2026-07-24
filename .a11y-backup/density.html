@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wuli布雷克物理模拟实验室 - 密度 / Density。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:title" content="密度 / Density - Wuli布雷克">
+    <meta property="og:description" content="Wuli布雷克物理模拟实验室 - 密度 / Density。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wuliblake.com/density.html">
+    <meta property="og:site_name" content="Wuli布雷克物理模拟实验室">
+    <link rel="stylesheet" href="common.css">
+    <meta name="author" content="Wuli布雷克">
+    <meta name="copyright" content="Copyright 2025 Wuli布雷克">
+    <title>密度 / Density - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>#m-slider::-webkit-slider-thumb { background: #3498db; }
+#v-slider::-webkit-slider-thumb { background: #b58900; }
+.material-tag { display: inline-block; background: rgba(255,140,66,0.1); color: var(--primary); padding: 4px 14px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; }</style>
+</head>
+
+<body>
+    <div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
+<a href="mechanics.html" class="back-link" aria-label="返回力学分类页">← 返回力学</a>
+    <div class="container" id="main">
+        <header style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;">
+    <h1 style="margin:0;">密度 / Density</h1>
+    <a href="https://www.bilibili.com/video/BV1fWvkBzEd7/?vd_source=3224f35e098a02c0a9fb70d0049a72fb" target="_blank" rel="noopener"
+       style="display:inline-flex;align-items:center;gap:4px;background:#FB7299;color:#fff;padding:4px 14px;border-radius:14px;font-size:0.85rem;font-weight:600;text-decoration:none;transition:all 0.2s;box-shadow:0 2px 8px rgba(251,114,153,0.3);"
+       onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+       📺 视频讲解
+    </a>
+</header>
+
+        <section class="formula-display" aria-label="公式与实时数值">
+            <div class="formula-container" id="formula-root"></div>
+            <div class="result-row">
+                <span>密度 ρ = <strong id="res-rho" style="color:var(--primary)">1.000</strong> g/cm³</span>
+                <span id="match-tag" class="material-tag" style="display:none"></span>
+            </div>
+            <div class="legend" aria-label="图例说明">
+                <div class="legend-item"><span class="legend-dot" style="background:#3498db"></span> 质量 m (g)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#b58900"></span> 体积 V (cm³)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--primary)"></span> 密度 ρ (g/cm³)</div>
+            </div>
+        </section>
+
+        <section class="diagram-section" aria-label="模拟动画区"><canvas id="simCanvas" role="img" aria-label="密度模拟动画 — 交互式物理仿真画面"></canvas></section>
+
+        <section class="controls-section" aria-label="参数控制区">
+            <div class="control-panel">
+                <div class="control-group">
+                    <div class="label-row"><span style="color:#3498db">质量 m / Mass</span><span id="m-badge" class="val-badge" aria-live="polite">1000 g</span></div>
+                    <input type="range" id="m-slider" min="1" max="5000" value="1000" aria-valuemin="1" aria-valuemax="5000" aria-valuenow="1000" aria-valuetext="1000匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+                </div>
+                <div class="control-group">
+                    <div class="label-row"><span style="color:#b58900">体积 V / Volume</span><span id="v-badge" class="val-badge" aria-live="polite">1000 cm³</span></div>
+                    <input type="range" id="v-slider" min="10" max="2000" value="1000" aria-valuemin="10" aria-valuemax="2000" aria-valuenow="1000" aria-valuetext="1000匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">>
+                </div>
+            </div>
+            <div class="info-card">
+                <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem">演示要点 / Key Points</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700">ρ</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">ρ = m / V</div><div style="font-size:0.78rem;color:#6B6B6B">密度等于质量除以体积，相同质量下体积越小密度越大。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:#3498db;font-weight:700">m</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">方块中粒子数代表质量</div><div style="font-size:0.78rem;color:#6B6B6B">粒子越多 = 质量越大，粒子密度 = 物体密度。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(181,137,0,0.1);color:#b58900;font-weight:700">V</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">方块尺寸代表体积</div><div style="font-size:0.78rem;color:#6B6B6B">方块边长 ∝ ³√V，视觉上直观感受体积变化。</div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas'), ctx = canvas.getContext('2d');
+        const sM = document.getElementById('m-slider'), sV = document.getElementById('v-slider');
+        const bM = document.getElementById('m-badge'), bV = document.getElementById('v-badge');
+        const resRho = document.getElementById('res-rho'), matchTag = document.getElementById('match-tag');
+        const fRoot = document.getElementById('formula-root');
+
+        const materials = [
+            { name: "气凝胶 Aerogel", d: 0.003, r: 0.01 }, { name: "软木 Cork", d: 0.24, r: 0.05 },
+            { name: "松木 Pine", d: 0.5, r: 0.05 }, { name: "锂 Lithium", d: 0.53, r: 0.02 },
+            { name: "冰 Ice", d: 0.92, r: 0.02 }, { name: "纯水 Water", d: 1.0, r: 0.01 },
+            { name: "镁 Magnesium", d: 1.74, r: 0.05 }, { name: "铝 Aluminum", d: 2.7, r: 0.1 },
+            { name: "钛 Titanium", d: 4.5, r: 0.1 }, { name: "铁 Iron", d: 7.87, r: 0.2 },
+            { name: "铜 Copper", d: 8.96, r: 0.2 }, { name: "银 Silver", d: 10.5, r: 0.2 },
+            { name: "汞 Mercury", d: 13.6, r: 0.3 }, { name: "金 Gold", d: 19.3, r: 0.3 },
+            { name: "铂 Platinum", d: 21.4, r: 0.3 }, { name: "锇 Osmium", d: 22.59, r: 0.4 }
+        ];
+
+        function resize() { canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+        window.addEventListener('resize', () => { resize(); update(); });
+
+        function update() {
+            const m = parseFloat(sM.value), v = parseFloat(sV.value), rho = m / v;
+            bM.textContent = m + ' g'; bV.textContent = v + ' cm³'; resRho.textContent = rho.toFixed(3);
+
+            const mFS = Math.min(80, Math.max(22, 28 + (m / 5000) * 50));
+            const vFS = Math.min(80, Math.max(22, 28 + (v / 2000) * 50));
+            const rFS = Math.min(90, Math.max(24, 32 + (rho / 12) * 45));
+
+            fRoot.innerHTML = `
+                <span style="color:var(--primary);font-size:${rFS}px;font-weight:700;line-height:1;">ρ</span>
+                <span style="font-size:26px;color:#ccc;">=</span>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+                    <span style="color:#3498db;font-size:${mFS}px;font-weight:700;line-height:1;">m</span>
+                    <div style="width:60px;height:3px;background:#ccc;border-radius:2px;"></div>
+                    <span style="color:#b58900;font-size:${vFS}px;font-weight:700;line-height:1;">V</span>
+                </div>
+                <span style="font-size:20px;color:#999;">ρ = m/V = ${rho.toFixed(3)} g/cm³</span>
+            `;
+
+            draw(m, v, rho);
+            let match = materials.find(mat => Math.abs(rho - mat.d) <= mat.r);
+            if (match) { matchTag.textContent = '匹配: ' + match.name; matchTag.style.display = 'inline-block'; }
+            else matchTag.style.display = 'none';
+        }
+
+        function rhoColor(rho) {
+            if (rho < 1) return 'rgba(38,139,210,0.8)';
+            if (rho < 10) return 'rgba(181,137,0,0.8)';
+            return 'rgba(220,50,47,0.9)';
+        }
+
+        function draw(m, v, rho) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const side = Math.pow(v, 1 / 3) * 35;
+            const x = (canvas.width - side) / 2, y = (canvas.height - side) / 2;
+
+            ctx.fillStyle = 'rgba(255,255,255,0.8)'; ctx.strokeStyle = rhoColor(rho); ctx.lineWidth = 3;
+            ctx.fillRect(x, y, side, side); ctx.strokeRect(x, y, side, side);
+
+            const n = Math.min(m, 4000); ctx.fillStyle = rhoColor(rho);
+            let seed = 42;
+            function sr() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+            for (let i = 0; i < n; i++) {
+                const px = x + sr() * side, py = y + sr() * side;
+                ctx.beginPath();
+                ctx.arc(px, py, Math.max(0.5, Math.min(2.5, rho * 0.4)), 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        sM.addEventListener('input', update); sV.addEventListener('input', update);
+        resize(); update();
+    
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+</script>
+<div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
+</body>
+</html>

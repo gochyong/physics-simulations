@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>滑轮 / Pulley - Wuli布雷克</title>
+<link rel="stylesheet" href="common.css">
+<meta name="author" content="Wuli布雷克">
+<meta name="copyright" content="Copyright 2025 Wuli布雷克">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+<style>.result-row span{white-space:nowrap;display:inline-flex;align-items:baseline}
+}.diagram-section{grid-area:diagram;background:#fff;border-radius:20px;box-shadow:var(--shadow);overflow:hidden;min-height:420px;display:flex;flex-direction:column;border:2px solid #fff5eb}#simCanvas{width:100%;flex:1;display:block}.controls-section{grid-area:controls;display:flex;flex-direction:column;gap:10px}.control-panel{background:#fff;border-radius:20px;box-shadow:var(--shadow);padding:14px 18px;display:flex;flex-direction:column;gap:10px}.control-group{display:flex;flex-direction:column;gap:3px}.label-row{display:flex;justify-content:space-between;font-weight:600;font-size:.9rem}.val-badge{background:#fff;padding:1px 7px;border-radius:7px;font-size:.85rem;border:2px solid #f0f0f0}input[type=range]{width:100%;appearance:none;height:6px;background:#eee;border-radius:3px}input[type=range]::-webkit-slider-thumb{appearance:none;width:20px;height:20px;border-radius:50%;background:var(--primary);cursor:pointer}.mode-pills{display:flex;gap:6px}.mode-pill{flex:1;padding:8px;border-radius:12px;font-size:.82rem;font-weight:700;border:2px solid #e0e0e0;background:#fafafa;cursor:pointer;text-align:center;color:#666}.mode-pill.active{background:var(--primary);color:#fff;border-color:var(--primary)}.btn-row{display:flex;gap:8px}.ctrl-btn{padding:10px;border:none;border-radius:14px;font-size:1rem;font-weight:700;cursor:pointer;color:#fff;flex:1}.start{background:var(--primary)}.ghost{background:#fff;color:#6B6B6B;border:1px solid #e0e0e0}.reset{background:#95a5a6}.info-card{background:#fff;border-radius:20px;padding:12px 16px;box-shadow:var(--shadow);font-size:.9rem;line-height:1.4;color:#5D6D7E}@media(max-width:1100px){.container{grid-template-areas:"header""formula""diagram""controls";grid-template-columns:1fr}</style></head><body>
+<div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
+<a href="mechanics.html" class="back-link" aria-label="返回力学分类页">← 返回力学</a>
+<div class="container" id="main"><header><h1>滑轮 / Pulley</h1></header>
+<section class="formula-display" aria-label="公式与实时数值"><div class="formula-container" id="formula-root"></div><div class="result-row" id="result-row"></div></section>
+<section class="diagram-section" aria-label="模拟动画区"><canvas id="simCanvas" role="img" aria-label="滑轮模拟动画 — 交互式物理仿真画面"></canvas></section>
+<section class="controls-section" aria-label="参数控制区"><div class="control-panel">
+<div class="control-group"><div class="label-row"><span>滑轮类型 / Type</span></div><div class="mode-pills" id="mode-pills"><button class="mode-pill active" data-mode="fixed">定滑轮 Fixed</button><button class="mode-pill" data-mode="movable">动滑轮 Movable</button><button class="mode-pill" data-mode="block">滑轮组 Block</button></div></div>
+<div class="control-group"><div class="label-row"><span>物重 G / Weight</span><span id="badge-g" class="val-badge">100 N</span></div><input type="range" id="slider-g" min="20" max="400" value="100" aria-valuemin="20" aria-valuemax="400" aria-valuenow="100" aria-valuetext="100匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">></div>
+<div class="control-group" id="n-group" style="display:none"><div class="label-row"><span>绳段数 n / Segments</span><span id="badge-n" class="val-badge">2</span></div><input type="range" id="slider-n" min="2" max="6" value="2" aria-valuemin="2" aria-valuemax="6" aria-valuenow="2" aria-valuetext="2匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">></div>
+<div class="control-group"><div class="label-row"><span>提升高度 h / Lift</span><span id="badge-h" class="val-badge">0.0 m</span></div><input type="range" id="slider-h" min="0" max="100" value="0" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">></div>
+<div class="control-group"><label for="slider-v" class="label-row"><span>绳速 v / Pull Speed</span><span id="badge-v" class="val-badge" aria-live="polite">1.0×</span></label><input type="range" id="slider-v" min="0.2" max="4" step="0.1" value="1" aria-valuemin="0.2" aria-valuemax="4" aria-valuenow="1" aria-valuetext="1匝">></div>
+<div class="btn-row" style="grid-template-columns:1fr 1fr 1fr"><button id="btn-start" class="ctrl-btn start" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false">开始 Start</button><button id="btn-pause" class="ctrl-btn" style="background:#2ecc71;display:none">暂停 Pause</button><button id="btn-reset" class="ctrl-btn reset" aria-label="重置参数" aria-label="重置参数">重置 Reset</button></div></div>
+<div class="info-card"><div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem">知识要点 / Key Points</div><div style="padding:8px 10px;background:#fff8f0;border-radius:10px;border-left:3px solid var(--primary)" id="kp-text"></div></div></section></div>
+<div class="site-footer">© 2025 Wuli布雷克 | MIT License </div>
+<script>
+(function(){
+const canvas=document.getElementById('simCanvas'),ctx=canvas.getContext('2d');
+const sG=document.getElementById('slider-g'),sN=document.getElementById('slider-n'),sH=document.getElementById('slider-h'),sV=document.getElementById('slider-v');
+const bG=document.getElementById('badge-g'),bN=document.getElementById('badge-n'),bH=document.getElementById('badge-h'),bV=document.getElementById('badge-v');
+const fRoot=document.getElementById('formula-root'),rRow=document.getElementById('result-row');
+const modePills=document.getElementById('mode-pills'),kpText=document.getElementById('kp-text');
+const S={mode:'fixed',G:100,n:2,h:0};
+const KP={fixed:"<b>定滑轮</b>：相当于等臂杠杆。不省力也不费力，<b>不省距离</b>，但能<b>改变力的方向</b>。F = G，s = h。",movable:"<b>动滑轮</b>：相当于动力臂为阻力臂2倍的杠杆。<b>省一半力</b>，但<b>费2倍距离</b>。F = G/2，s = 2h。",block:"<b>滑轮组</b>：由n段绳子承担重物。<b>省力</b>F=G/n，但<b>费距离</b>s=n·h。n越大越省力。"};
+function nSeg(){return S.mode==='fixed'?1:S.mode==='movable'?2:S.n}
+function Fval(){return S.G/nSeg()}
+function hM(){return S.h/10}
+function sVal(){return nSeg()*hM()}
+
+function resize(){const r=canvas.getBoundingClientRect();canvas.width=r.width;canvas.height=r.height}
+window.addEventListener('resize',resize);
+modePills.onclick=e=>{const p=e.target.closest('.mode-pill');if(!p)return;modePills.querySelectorAll('.mode-pill').forEach(x=>x.classList.remove('active'));p.classList.add('active');S.mode=p.dataset.mode;document.getElementById('n-group').style.display=S.mode==='block'?'':'none';S.h=0;sH.value=0;update()};
+
+function update(){S.G=parseInt(sG.value);S.n=parseInt(sN.value);S.h=parseInt(sH.value);S.v=parseFloat(sV.value);bG.textContent=S.G+' N';bN.textContent=nSeg();bH.textContent=hM().toFixed(1)+' m';bV.textContent=S.v.toFixed(1)+'×';const F=Fval();fRoot.innerHTML='<span style="font-size:26px;font-weight:700;color:var(--primary)">F = G / n = '+F.toFixed(1)+' N</span>';rRow.innerHTML='<span>拉力 <b>F='+F.toFixed(1)+' N</b></span><span>物重 <b>G='+S.G+' N</b></span><span>绳段 <b>n='+nSeg()+'</b></span><span>物体升高 <b style="color:var(--primary)">h='+hM().toFixed(1)+' m</b></span><span>绳端移动 <b style="color:var(--primary)">s='+sVal().toFixed(1)+' m</b></span>';kpText.innerHTML=KP[S.mode];draw();requestAnimationFrame(update)}
+
+function draw(){resize();const w=canvas.width,h=canvas.height;ctx.clearRect(0,0,w,h);ctx.fillStyle='#fafaf7';ctx.fillRect(0,0,w,h);const C={primary:'var(--primary)',accent:'var(--accent)',mute:'#95a5a6'};const cs=getComputedStyle(document.documentElement);const clr={primary:cs.getPropertyValue('--primary').trim(),accent:cs.getPropertyValue('--accent').trim(),mute:'#95a5a6',rope:'#8d6e63',surface:'#fff',border:'#ddd',text:'#333'};if(S.mode==='fixed')drawFixed(w,h,clr);else if(S.mode==='movable')drawMovable(w,h,clr);else drawBlock(w,h,clr)}
+
+function ceil(y,W,C){ctx.strokeStyle=C.mute;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();ctx.lineWidth=1;ctx.strokeStyle=C.border;for(let x=0;x<W;x+=14){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-8,y-8);ctx.stroke()}}
+function wheel(x,y,r,C){ctx.fillStyle=C.surface;ctx.strokeStyle=C.primary;ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.fillStyle=C.primary;ctx.beginPath();ctx.arc(x,y,r*0.18,0,Math.PI*2);ctx.fill()}
+function box(x,y,ww,hh,label,C){ctx.fillStyle='rgba(255,140,66,0.15)';ctx.strokeStyle=C.accent;ctx.lineWidth=2.5;ctx.beginPath();ctx.rect(x,y,ww,hh);ctx.fill();ctx.stroke();ctx.fillStyle=C.text;ctx.font='bold 13px sans-serif';ctx.textAlign='center';ctx.fillText(label,x+ww/2,y+hh/2+4)}
+function arrow(x1,y1,x2,y2,color,label){ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();const ang=Math.atan2(y2-y1,x2-x1),s=8;ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-s*Math.cos(ang-0.4),y2-s*Math.sin(ang-0.4));ctx.lineTo(x2-s*Math.cos(ang+0.4),y2-s*Math.sin(ang+0.4));ctx.closePath();ctx.fill();if(label){ctx.font='bold 12px sans-serif';ctx.textAlign='left';ctx.fillText(label,x2+6,y2+4)}}
+function scaleMark(x,y0,y1,label,val,C){if(val<=0)return;ctx.strokeStyle=C.mute;ctx.lineWidth=1.5;ctx.setLineDash([4,3]);ctx.beginPath();ctx.moveTo(x,y0);ctx.lineTo(x,y1);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=C.primary;ctx.font='bold 11px sans-serif';ctx.textAlign='left';ctx.fillText(label+'='+val.toFixed(0),x+6,(y0+y1)/2)}
+function drawHand(x,y,C){ctx.save();ctx.strokeStyle='#F5C28F';ctx.lineWidth=8;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(x,y-7);ctx.lineTo(x,y-22);ctx.stroke();ctx.fillStyle='#F5C28F';ctx.strokeStyle='#a67c52';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(x,y,9,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.fillStyle='#a67c52';ctx.beginPath();ctx.arc(x-4,y-4,1.5,0,Math.PI*2);ctx.arc(x,y-6,1.5,0,Math.PI*2);ctx.arc(x+4,y-4,1.5,0,Math.PI*2);ctx.fill();ctx.restore()}
+
+function drawFixed(W,H,C){const cTop=24,R=24,cx=W*0.4,hangY=cTop+55,ropeL=Math.max(95,(H-hangY-100)/2),objW=64,objH=50,objX=cx-R,objY0=hangY+ropeL,objY=objY0-S.h*0.7,pullX=cx+R,pullY0=hangY+ropeL,pullY=pullY0+S.h*0.7;ceil(cTop,W,C);ctx.strokeStyle=C.rope;ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(cx,cTop);ctx.lineTo(cx,hangY);ctx.stroke();ctx.strokeStyle=C.rope;ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(objX,objY);ctx.lineTo(cx-R,hangY);ctx.arc(cx,hangY,R,Math.PI,0);ctx.lineTo(pullX,pullY);ctx.stroke();wheel(cx,hangY,R,C);box(objX-objW/2,objY,objW,objH,'G='+S.G,C);arrow(pullX,pullY,pullX,pullY+30,C.primary,'F='+Fval().toFixed(1)+'N');arrow(objX,objY+objH+2,objX,objY+objH+30,C.accent,'G');scaleMark(objX-34,objY0+objH,objY+objH,'h',hM(),C);scaleMark(pullX+28,pullY0,pullY,'s',sVal(),C)}
+
+function drawMovable(W,H,C){const cTop=24,R=24,cx=W*0.5,cy0=H*0.5+40,cy=cy0-S.h*0.7,objW=64,objH=50,handY=cy0-45-S.h*1.4,objTop=cy+R+2,objBoxY=objTop+14;ceil(cTop,W,C);ctx.fillStyle=C.mute;ctx.beginPath();ctx.arc(cx-R,cTop,3.5,0,Math.PI*2);ctx.fill();ctx.strokeStyle=C.rope;ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(cx-R,cTop);ctx.lineTo(cx-R,cy);ctx.stroke();ctx.beginPath();ctx.moveTo(cx-R,cy);ctx.arc(cx,cy,R,Math.PI,0,true);ctx.lineTo(cx+R,handY);ctx.stroke();ctx.beginPath();ctx.moveTo(cx,objTop);ctx.lineTo(cx,objBoxY);ctx.stroke();wheel(cx,cy,R,C);box(cx-objW/2,objBoxY,objW,objH,'G='+S.G,C);drawHand(cx+R,handY,C);arrow(cx+R+12,handY+4,cx+R+12,handY-24,C.primary,'F='+Fval().toFixed(1)+'N↑');arrow(cx,objBoxY+objH+2,cx,objBoxY+objH+30,C.accent,'G');scaleMark(cx+R+30,cy0,cy,'h',hM(),C);scaleMark(cx+R+60,cy0-45,handY,'s=2h',sVal(),C)}
+
+function drawBlock(W,H,C){const cTop=24,R=15,fy=cTop+R+30,n=S.n,beamY0=H-88,beamY=beamY0-S.h*0.7,objW=64,objH=50,even=(n%2===0),xa=(W-2*n*R)/2,px=i=>xa+i*R,isTop=(k,e)=>e?(k%2===1):(k%2===0),movX=[],fixX=[];for(let k=0;k<n;k++){const x=px(2*k+1);(isTop(k,even)?fixX:movX).push(x)}const beamList=even?movX:[px(0),...movX],bMin=Math.min(...beamList),bMax=Math.max(...beamList),bC=(bMin+bMax)/2,bHalf=Math.max((bMax-bMin)/2,objW/2-6),mLeft=bC-bHalf-10,mRight=bC+bHalf+10,handX=px(2*n),handY0=fy+60,handY=handY0+S.h*0.7*n;ceil(cTop,W,C);ctx.fillStyle=C.mute;ctx.beginPath();ctx.arc(px(0),even?cTop:beamY,3.5,0,Math.PI*2);ctx.fill();ctx.strokeStyle=C.rope;ctx.lineWidth=2.5;fixX.forEach(x=>{ctx.beginPath();ctx.moveTo(x,cTop);ctx.lineTo(x,fy-R);ctx.stroke()});ctx.beginPath();ctx.moveTo(px(0),even?cTop:beamY);for(let k=0;k<n;k++){const cxp=px(2*k+1),top=isTop(k,even),py=top?fy:beamY;ctx.lineTo(cxp-R,py);if(top)ctx.arc(cxp,py,R,Math.PI,0,false);else ctx.arc(cxp,py,R,Math.PI,0,true)}ctx.lineTo(handX,handY);ctx.stroke();fixX.forEach(x=>wheel(x,fy,R,C));movX.forEach(x=>wheel(x,beamY,R,C));const objGap=22;ctx.strokeStyle=C.rope;ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(bC,beamY);ctx.lineTo(bC,beamY+objGap);ctx.stroke();box(bC-objW/2,beamY+objGap,objW,objH,'G='+S.G,C);drawHand(handX,handY,C);arrow(handX+16,handY,handX+16,handY+32,C.primary,'F='+Fval().toFixed(1)+'N');arrow(bC,beamY+objGap+objH+2,bC,beamY+objGap+objH+30,C.accent,'G');scaleMark(mLeft-26,beamY0+objGap,beamY+objGap,'h',hM(),C);scaleMark(handX+26,handY0,handY,'s',sVal(),C)}
+
+let animId=null,dir=1;
+const btnStart=document.getElementById('btn-start'),btnPause=document.getElementById('btn-pause'),btnReset=document.getElementById('btn-reset');
+function startAnim(){dir=1;btnStart.style.display='none';btnPause.style.display='';const step=()=>{if(dir>0){S.h+=1.6*S.v;if(S.h>=100){S.h=100;cancelAnimationFrame(animId);animId=null;btnStart.style.display='';btnPause.style.display='none';btnStart.textContent='已到顶 At Top';sH.value=100;update();return}}else{S.h-=1.6*S.v;if(S.h<=0){S.h=0;cancelAnimationFrame(animId);animId=null;btnStart.style.display='';btnPause.style.display='none';sH.value=0;update();return}}sH.value=S.h;update();animId=requestAnimationFrame(step)};step()}
+btnStart.onclick=startAnim;
+btnPause.onclick=()=>{if(animId){cancelAnimationFrame(animId);animId=null}btnStart.style.display='';btnPause.style.display='none';btnStart.textContent='继续 Resume'};
+btnReset.onclick=()=>{if(animId){cancelAnimationFrame(animId);animId=null}btnStart.style.display='';btnPause.style.display='none';btnStart.textContent='开始 Start';S.h=0;sH.value=0;update()};
+
+resize();update();
+})();
+
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+</script></body></html>

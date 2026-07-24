@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wuli布雷克物理模拟实验室 - 洛伦兹力 / Lorentz Force。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:title" content="洛伦兹力 / Lorentz Force - Wuli布雷克">
+    <meta property="og:description" content="Wuli布雷克物理模拟实验室 - 洛伦兹力 / Lorentz Force。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wuliblake.com/LorentzForce.html">
+    <meta property="og:site_name" content="Wuli布雷克物理模拟实验室">
+    <link rel="stylesheet" href="common.css">
+    <meta name="author" content="Wuli布雷克">
+    <meta name="copyright" content="Copyright 2025 Wuli布雷克">
+    <title>洛伦兹力 / Lorentz Force - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>        :root {
+    --green: #2ecc71;
+    --blue: #3498db;
+    --orange: #ff9800;
+    --canvas-bg: #1a1a2e;
+        }
+/* Formula section */
+        .formula-display {
+            grid-area: formula;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            padding: 10px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px solid #fff5eb;
+        }
+.result-item { padding: 2px 8px; border-radius: 8px; background: #fff8f0; }
+.legend-arrow { width: 20px; height: 3px; border-radius: 2px; display: inline-block; }
+/* Diagram section */
+        .diagram-section { grid-area: diagram; display: flex; flex-direction: column; gap: 6px; }
+/* Controls section */
+        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
+.toggle-btn {
+            flex: 1; padding: 10px 8px; border: 2px solid #e0e0e0; border-radius: 14px;
+            font-size: 0.82rem; font-weight: 700; cursor: pointer; background: #fff;
+            color: #666; transition: all 0.25s ease; text-align: center;
+            font-family: inherit;
+            line-height: 1.3;
+        }
+.toggle-btn:hover { border-color: var(--primary); color: var(--primary); }
+.toggle-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); box-shadow: 0 4px 15px rgba(255,140,66,0.3); }</style>
+</head>
+<body>
+
+<div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
+<a href="electricity.html" class="back-link" aria-label="返回电磁学分类页">← 返回电磁学</a>
+
+<div class="container" id="main">
+
+    <!-- Header -->
+    <header>
+        <h1>洛伦兹力 / Lorentz Force</h1>
+    </header>
+
+    <!-- Formula Display -->
+    <section class="formula-display" aria-label="公式与实时数值">
+        <div class="formula-container" id="formula-root" style="flex-direction:column;gap:2px;font-family:'Fredoka','Noto Sans SC',sans-serif;">
+            <div style="font-size:1.15rem;font-weight:600;color:#e67e22;line-height:1.7;" id="formula-sub-f"></div>
+            <div style="font-size:0.82rem;color:#6B6B6B;line-height:1.6;" id="formula-sub-rt"></div>
+        </div>
+        <div class="result-row" id="result-row"></div>
+        <div class="legend" aria-label="图例说明">
+            <div class="legend-item"><span class="legend-arrow" style="background:var(--green)"></span> 速度 v</div>
+            <div class="legend-item"><span class="legend-arrow" style="background:var(--orange)"></span> 洛伦兹力 F</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#e74c3c"></span> 正电荷 (+)</div>
+            <div class="legend-item"><span class="legend-dot" style="background:var(--blue)"></span> 负电荷 (&minus;)</div>
+            <div class="legend-item" style="color:#aaa;">&times; B向内 / &middot; B向外</div>
+        </div>
+    </section>
+
+    <!-- Diagram Section -->
+    <section class="diagram-section" aria-label="模拟动画区">
+        <div class="main-canvas-wrap">
+            <canvas id="simCanvas" role="img" aria-label="洛伦兹力模拟动画 — 交互式物理仿真画面"></canvas>
+        </div>
+    </section>
+
+    <!-- Controls Section -->
+    <section class="controls-section" aria-label="参数控制区">
+        <div class="control-panel">
+            <div class="control-group">
+                <label for="slider-q" class="label-row"><span>电荷量 q</span><span id="badge-q" class="val-badge" aria-live="polite">1.6</span></label>
+                <input type="range" id="slider-q" min="0.5" max="5" step="0.1" value="1.6" aria-valuemin="0.5" aria-valuemax="5" aria-valuenow="1.6" aria-valuetext="1.6匝">>
+                <div style="font-size:0.7rem;color:#aaa;text-align:right;">&times;10<sup>&minus;19</sup> C</div>
+            </div>
+            <div class="control-group">
+                <label for="slider-v" class="label-row"><span>速率 v</span><span id="badge-v" class="val-badge" aria-live="polite">5</span></label>
+                <input type="range" id="slider-v" min="1" max="10" step="0.1" value="5" aria-valuemin="1" aria-valuemax="10" aria-valuenow="5" aria-valuetext="5匝">>
+                <div style="font-size:0.7rem;color:#aaa;text-align:right;">&times;10<sup>6</sup> m/s</div>
+            </div>
+            <div class="control-group">
+                <label for="slider-B" class="label-row"><span>磁感应强度 B</span><span id="badge-B" class="val-badge" aria-live="polite">2</span></label>
+                <input type="range" id="slider-B" min="0.5" max="5" step="0.1" value="2" aria-valuemin="0.5" aria-valuemax="5" aria-valuenow="2" aria-valuetext="2匝">>
+                <div style="font-size:0.7rem;color:#aaa;text-align:right;">T (特斯拉)</div>
+            </div>
+
+            <!-- Field direction toggle -->
+            <div class="toggle-row">
+                <button id="btn-field-into" class="toggle-btn active">B 垂直向里<br><span style="font-size:0.7rem;">Into Page &times;</span></button>
+                <button id="btn-field-out" class="toggle-btn">B 垂直向外<br><span style="font-size:0.7rem;">Out of Page &middot;</span></button>
+            </div>
+
+            <!-- Charge sign toggle -->
+            <div class="toggle-row">
+                <button id="btn-charge-pos" class="toggle-btn active">正电荷 +q<br><span style="font-size:0.7rem;">Positive</span></button>
+                <button id="btn-charge-neg" class="toggle-btn">负电荷 &minus;q<br><span style="font-size:0.7rem;">Negative</span></button>
+            </div>
+
+            <div class="btn-row">
+                <button id="btn-start" class="ctrl-btn start" aria-label="开始模拟" aria-pressed="false" aria-label="开始模拟" aria-pressed="false">开始 Start</button>
+                <button id="btn-reset" class="ctrl-btn reset" aria-label="重置参数" aria-label="重置参数">重置 Reset</button>
+            </div>
+        </div>
+
+        <!-- Info Card -->
+        <div class="info-card">
+            <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem;">演示要点 / Key Points</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                <!-- Right-hand rule -->
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700;font-size:1.1rem;">&#x261C;</div>
+                    <div>
+                        <div style="font-weight:700;font-size:0.9rem;">左手定则 Left-Hand Rule</div>
+                        <div style="font-size:0.78rem;color:#6B6B6B;">食指指向B，中指指向v，大拇指为F方向（负电荷受力反向）。</div>
+                    </div>
+                </div>
+                <!-- Circular motion -->
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(46,204,113,0.1);color:var(--green);font-weight:700;">&#x21BB;</div>
+                    <div>
+                        <div style="font-weight:700;font-size:0.9rem;">匀速圆周运动</div>
+                        <div style="font-size:0.78rem;color:#6B6B6B;">F &perp; v，提供向心力 mv&sup2;/r = qvB，速率不变、方向连续偏转。</div>
+                    </div>
+                </div>
+                <!-- Cyclotron period -->
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(52,152,219,0.1);color:var(--blue);font-weight:700;">T</div>
+                    <div>
+                        <div style="font-weight:700;font-size:0.9rem;">回旋周期 Cyclotron Period</div>
+                        <div style="font-size:0.78rem;color:#6B6B6B;">T = 2πm/(qB)，与速率 v 无关。改变 v 只改变轨道半径 r，不改变回旋一周所需的时间。</div>
+                    </div>
+                </div>
+                <!-- Mass spectrometer -->
+                <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,94,91,0.1);color:var(--accent);font-weight:700;">&#x2696;</div>
+                    <div>
+                        <div style="font-weight:700;font-size:0.9rem;">质谱仪原理 Mass Spectrometer</div>
+                        <div style="font-size:0.78rem;color:#6B6B6B;">r = mv/(qB)，相同 v、B 下轨道半径 r &prop; m/q，据此分离同位素。</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<script>
+// --- Physics Constants ---
+const M_PROTON = 1.67e-27; // kg (proton mass)
+
+// --- DOM refs ---
+const simC = document.getElementById('simCanvas');
+const ctx = simC.getContext('2d');
+
+const sQ = document.getElementById('slider-q');
+const sV = document.getElementById('slider-v');
+const sB = document.getElementById('slider-B');
+const bQ = document.getElementById('badge-q');
+const bV = document.getElementById('badge-v');
+const bB = document.getElementById('badge-B');
+
+const btnFieldInto = document.getElementById('btn-field-into');
+const btnFieldOut  = document.getElementById('btn-field-out');
+const btnChargePos = document.getElementById('btn-charge-pos');
+const btnChargeNeg = document.getElementById('btn-charge-neg');
+const btnStart     = document.getElementById('btn-start');
+const btnReset     = document.getElementById('btn-reset');
+
+const fRoot = document.getElementById('formula-root');
+const rRow  = document.getElementById('result-row');
+
+// --- Simulation state ---
+const S = {
+    q: 1.6,             // ×10⁻¹⁹ C
+    v: 5,               // ×10⁶ m/s
+    B: 2,               // T
+    fieldIntoPage: true,   // true = into page, false = out of page
+    positiveCharge: true,  // true = positive, false = negative
+    playing: false,
+    angle: 0,           // current angular position (radians)
+    time: 0             // simulated time (scaled)
+};
+
+let lastTime = 0;
+
+// --- Time scaling: map real period to visible period ---
+// Real period at defaults: T_real = 2πm/(qB) ≈ 3.28×10⁻⁸ s
+// We want ~3 seconds per visible revolution at defaults
+const Q_DEF = 1.6e-19;
+const B_DEF = 2;
+const T_DEFAULT_REAL = (2 * Math.PI * M_PROTON) / (Q_DEF * B_DEF); // ≈ 3.28×10⁻⁸ s
+const VISUAL_PERIOD = 3.0;  // seconds per visible revolution at defaults
+// TIME_SCALE = T_real / T_visual: when T_real is tiny, slow it down; when parameters change T_real, T_visual changes proportionally
+const TIME_SCALE = T_DEFAULT_REAL / VISUAL_PERIOD;  // ≈ 1.09×10⁻⁸
+
+// --- Resize ---
+function resize() {
+    simC.width  = simC.clientWidth;
+    simC.height = simC.clientHeight;
+}
+window.addEventListener('resize', resize);
+
+// --- Arrow helper ---
+function arrow(c, x, y, dx, dy, clr, lw) {
+    const a = Math.atan2(dy, dx);
+    const h = 8;
+    const tx = x + dx;
+    const ty = y + dy;
+    c.strokeStyle = clr;
+    c.fillStyle = clr;
+    c.lineWidth = lw || 2.5;
+    c.lineCap = 'round';
+    c.beginPath();
+    c.moveTo(x, y);
+    c.lineTo(tx, ty);
+    c.stroke();
+    c.beginPath();
+    c.moveTo(tx, ty);
+    c.lineTo(tx - h * Math.cos(a - Math.PI / 6), ty - h * Math.sin(a - Math.PI / 6));
+    c.lineTo(tx - h * Math.cos(a + Math.PI / 6), ty - h * Math.sin(a + Math.PI / 6));
+    c.closePath();
+    c.fill();
+}
+
+// --- Physics computation ---
+function computePhysics() {
+    const qAbs   = S.q * 1e-19;     // absolute charge (C)
+    const vReal  = S.v * 1e6;       // speed (m/s)
+    const BVal   = S.B;             // magnetic field magnitude (T)
+
+    const force  = qAbs * vReal * BVal;                    // F = qvB (N)
+    const radius = M_PROTON * vReal / (qAbs * BVal);      // r = mv/(qB) (m)
+    const omega  = qAbs * BVal / M_PROTON;                 // ω = qB/m (rad/s)
+    const period = (2 * Math.PI) / omega;                  // T = 2π/ω (s)
+
+    const chargeSign = S.positiveCharge ? 1 : -1;
+    const fieldSign  = S.fieldIntoPage ? -1 : 1;           // +1=out, -1=into
+    const rotSign    = -chargeSign * fieldSign;             // +1=CCW, -1=CW
+
+    return { force, radius, omega, period, rotSign, chargeSign, fieldSign };
+}
+
+// --- Display radius (map real meters to canvas pixels) ---
+function getDisplayRadius(realRadius, canvasMinDim) {
+    // Scale so v=10 → ~47% of canvas; v=1 → ~4.7%, all visible
+    // At defaults: r(v=10) = mv/(qB) = 1.67e-27×1e7/(1.6e-19×2) ≈ 0.0522 m
+    const scale = canvasMinDim * 0.47 / 0.0522;
+    let rPx = realRadius * scale;
+    // Only cap to prevent overflow when q or B is set very small
+    return Math.max(12, Math.min(canvasMinDim * 0.48, rPx));
+}
+
+// --- Format number in scientific notation ---
+function fmtSci(val) {
+    if (val === 0) return '0';
+    const exp = Math.floor(Math.log10(Math.abs(val)));
+    const mant = val / Math.pow(10, exp);
+    return mant.toFixed(2) + '×10<sup>' + exp + '</sup>';
+}
+
+function fmtSciShort(val) {
+    if (val === 0) return '0';
+    if (val >= 0.01 && val < 1000) return val.toPrecision(3);
+    const exp = Math.floor(Math.log10(Math.abs(val)));
+    const mant = val / Math.pow(10, exp);
+    return mant.toFixed(2) + 'e' + exp;
+}
+
+// --- Draw function ---
+function draw() {
+    const cw = simC.width;
+    const ch = simC.height;
+    if (cw < 10 || ch < 10) return;
+
+    const cx = cw / 2;   // center of canvas = center of orbit
+    const cy = ch / 2;
+    const minDim = Math.min(cw, ch);
+
+    // Physics
+    const phy = computePhysics();
+    const rPx = getDisplayRadius(phy.radius, minDim);
+
+    // --- Clear with dark background ---
+    ctx.clearRect(0, 0, cw, ch);
+    ctx.fillStyle = '#1a1a2e';
+    ctx.fillRect(0, 0, cw, ch);
+
+    // --- Subtle radial glow at center ---
+    const glow = ctx.createRadialGradient(cx, cy, rPx * 0.3, cx, cy, rPx * 1.1);
+    glow.addColorStop(0, 'rgba(255,140,66,0.06)');
+    glow.addColorStop(1, 'rgba(26,26,46,0)');
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, cw, ch);
+
+    // --- B-field background symbols ---
+    const spacing = 32;
+    const symSize = 4;
+    ctx.save();
+    for (let gx = spacing; gx < cw; gx += spacing) {
+        for (let gy = spacing; gy < ch; gy += spacing) {
+            // Skip area too close to the particle region (visually cleaner center)
+            const distFromCenter = Math.hypot(gx - cx, gy - cy);
+            if (distFromCenter < rPx + 40 && distFromCenter > rPx - 40) continue;
+
+            ctx.strokeStyle = 'rgba(180,190,210,0.18)';
+            ctx.lineWidth = 1;
+            if (S.fieldIntoPage) {
+                // Cross (×) = tail of arrow going into page
+                const s = symSize;
+                ctx.beginPath();
+                ctx.moveTo(gx - s, gy - s);
+                ctx.lineTo(gx + s, gy + s);
+                ctx.moveTo(gx + s, gy - s);
+                ctx.lineTo(gx - s, gy + s);
+                ctx.stroke();
+            } else {
+                // Dot (·) = tip of arrow coming out of page
+                ctx.fillStyle = 'rgba(180,190,210,0.22)';
+                ctx.beginPath();
+                ctx.arc(gx, gy, symSize * 0.8, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+    }
+    ctx.restore();
+
+    // --- B-field direction label at top-right of canvas ---
+    ctx.fillStyle = 'rgba(200,200,220,0.5)';
+    ctx.font = 'bold 16px Fredoka';
+    ctx.textAlign = 'right';
+    const blabel = S.fieldIntoPage ? 'B ⊗ (into page)' : 'B ⊙ (out of page)';
+    ctx.fillText(blabel, cw - 20, 30);
+
+    // --- Coordinate crosshair (faint) ---
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - rPx - 50);
+    ctx.lineTo(cx, cy + rPx + 50);
+    ctx.moveTo(cx - rPx - 50, cy);
+    ctx.lineTo(cx + rPx + 50, cy);
+    ctx.stroke();
+
+    // --- Orbit circle ---
+    ctx.strokeStyle = 'rgba(255,152,0,0.45)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([8, 5]);
+    ctx.beginPath();
+    ctx.arc(cx, cy, rPx, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // --- Center point ---
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(cx, cy, 4.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.beginPath();
+    ctx.arc(cx, cy, 10, 0, Math.PI * 2);
+    ctx.fill();
+
+    // --- Radius dimension line ---
+    const rAngle = S.angle;
+    const ppx = cx + rPx * Math.cos(rAngle);   // particle canvas x
+    const ppy = cy - rPx * Math.sin(rAngle);   // particle canvas y (inverted y)
+
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 6]);
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(ppx, ppy);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // --- Radius label at midpoint ---
+    const midX = (cx + ppx) / 2;
+    const midY = (cy + ppy) / 2;
+    const labelAngle = Math.atan2(-(ppy - cy), ppx - cx); // angle from center to midpoint in canvas
+    const labelOffX = -16 * Math.sin(labelAngle);
+    const labelOffY = -16 * Math.cos(labelAngle);
+    ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    ctx.font = 'bold 11px Fredoka';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('r=' + fmtSciShort(phy.radius) + ' m', midX + labelOffX, midY + labelOffY);
+
+    // --- Particle ---
+    const ballRadius = Math.max(8, Math.min(14, rPx * 0.12));
+    const particleColor1 = S.positiveCharge ? '#ff6b6b' : '#5dade2';
+    const particleColor2 = S.positiveCharge ? '#c0392b' : '#2471a3';
+    const bg = ctx.createRadialGradient(ppx - ballRadius * 0.25, ppy - ballRadius * 0.35, ballRadius * 0.2, ppx, ppy, ballRadius);
+    bg.addColorStop(0, particleColor1);
+    bg.addColorStop(1, particleColor2);
+    ctx.fillStyle = bg;
+    ctx.beginPath();
+    ctx.arc(ppx, ppy, ballRadius, 0, Math.PI * 2);
+    ctx.fill();
+    // Highlight
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx.beginPath();
+    ctx.arc(ppx - ballRadius * 0.3, ppy - ballRadius * 0.3, ballRadius * 0.3, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Charge label next to particle
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 10px Fredoka';
+    ctx.textAlign = 'left';
+    const qlabel = S.positiveCharge ? '+q' : '−q';
+    ctx.fillText(qlabel, ppx + ballRadius + 6, ppy + 4);
+
+    // --- Velocity arrow (green) ---
+    const vScale = 2.2;
+    let vDx, vDy;
+    if (phy.rotSign > 0) {
+        // CCW: physics velocity = (-sin, cos)
+        // canvas: vx_phys unchanged, vy_canvas = -vy_phys
+        vDx = -vScale * rPx * Math.sin(S.angle) * 0.3;
+        vDy = -vScale * rPx * Math.cos(S.angle) * 0.3;
+    } else {
+        // CW: physics velocity = (sin, -cos)
+        vDx =  vScale * rPx * Math.sin(S.angle) * 0.3;
+        vDy =  vScale * rPx * Math.cos(S.angle) * 0.3;
+    }
+    const vLen = Math.hypot(vDx, vDy);
+    if (vLen > 1) {
+        // Scale velocity arrow to a reasonable length
+        const vTargetLen = Math.min(80, rPx * 0.55);
+        const vNorm = vTargetLen / vLen;
+        vDx *= vNorm;
+        vDy *= vNorm;
+        arrow(ctx, ppx, ppy, vDx, vDy, '#2ecc71', 2.5);
+        // Label
+        ctx.fillStyle = '#2ecc71';
+        ctx.font = 'bold 11px Fredoka';
+        ctx.textAlign = 'left';
+        const vlx = ppx + vDx + (vDx > 0 ? 5 : -5);
+        const vly = ppy + vDy + (vDy > 0 ? 5 : -5);
+        ctx.fillText('v=' + S.v.toFixed(1) + '×10⁶ m/s', vlx, vly);
+    }
+
+    // --- Lorentz force arrow (orange, toward center) ---
+    // Force always toward center: direction = (-cos(angle), -sin(angle)) in physics
+    // Canvas: vx unchanged, vy inverted → (-cos, +sin)
+    const fScale = 1.8;
+    let fDx = -fScale * rPx * Math.cos(S.angle) * 0.25;
+    let fDy =  fScale * rPx * Math.sin(S.angle) * 0.25;
+    const fLen = Math.hypot(fDx, fDy);
+    if (fLen > 1) {
+        const fTargetLen = Math.min(70, rPx * 0.5);
+        const fNorm = fTargetLen / fLen;
+        fDx *= fNorm;
+        fDy *= fNorm;
+        // Shift arrow start to particle edge
+        const fEdgeX = fDx / fLen * ballRadius;
+        const fEdgeY = fDy / fLen * ballRadius;
+        arrow(ctx, ppx + fEdgeX, ppy + fEdgeY, fDx - fEdgeX, fDy - fEdgeY, '#ff9800', 2.5);
+        // Label
+        ctx.fillStyle = '#ff9800';
+        ctx.font = 'bold 11px Fredoka';
+        ctx.textAlign = 'left';
+        const flx = ppx + fDx + (fDx > 0 ? 5 : -15);
+        const fly = ppy + fDy + (fDy > 0 ? -8 : 8);
+        ctx.fillText('F=' + fmtSciShort(phy.force) + ' N', flx, fly);
+    }
+
+    // --- Angle indicator (small arc at center showing rotation direction) ---
+    ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    const arcR = 18;
+    ctx.arc(cx, cy, arcR, phy.rotSign > 0 ? -Math.PI/2 : -Math.PI/2, phy.rotSign > 0 ? Math.PI/2 : Math.PI/2, phy.rotSign < 0);
+    ctx.stroke();
+    // Arrowhead at end of arc
+    const arcEndAngle = phy.rotSign > 0 ? Math.PI/2 : -Math.PI/2;
+    const ax = cx + arcR * Math.cos(arcEndAngle);
+    const ay = cy - arcR * Math.sin(arcEndAngle);
+    const ah = 6;
+    if (phy.rotSign > 0) {
+        // CCW arrowhead at top
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.beginPath();
+        ctx.moveTo(ax, ay);
+        ctx.lineTo(ax - ah, ay - ah * 1.5);
+        ctx.lineTo(ax + ah, ay - ah * 1.5);
+        ctx.closePath();
+        ctx.fill();
+    } else {
+        // CW arrowhead at bottom
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.beginPath();
+        ctx.moveTo(ax, ay);
+        ctx.lineTo(ax - ah, ay + ah * 1.5);
+        ctx.lineTo(ax + ah, ay + ah * 1.5);
+        ctx.closePath();
+        ctx.fill();
+    }
+
+    // --- Update UI badges ---
+    bQ.textContent = S.q.toFixed(1);
+    bV.textContent = S.v.toFixed(1);
+    bB.textContent = S.B.toFixed(1);
+
+    // --- Formula display: force in detail, r + T on one line ---
+    const qVal = S.q;          // ×10⁻¹⁹ C
+    const vVal = S.v;          // ×10⁶ m/s
+    const bVal = S.B;          // T
+
+    document.getElementById('formula-sub-f').innerHTML =
+        '<b>F</b> = qvB = (' + qVal.toFixed(1) + '×10<sup>−19</sup> C) × (' + vVal.toFixed(1) + '×10<sup>6</sup> m/s) × ' + bVal.toFixed(1) + ' T' +
+        ' = <b>' + fmtSci(phy.force) + ' N</b>';
+
+    document.getElementById('formula-sub-rt').innerHTML =
+        'r = mv/(qB) = <b>' + fmtSci(phy.radius) + ' m</b> &nbsp;|&nbsp; T = 2πm/(qB) = <b>' + fmtSci(phy.period) + ' s</b>';
+
+    // --- Result row ---
+    rRow.innerHTML =
+        '<span class="result-item">F = <b>' + fmtSci(phy.force) + '</b> N</span>' +
+        '<span class="result-item">r = <b>' + fmtSci(phy.radius) + '</b> m</span>' +
+        '<span class="result-item">T = <b>' + fmtSci(phy.period) + '</b> s</span>';
+}
+
+// --- Animation loop ---
+function loop(ts) {
+    if (!lastTime) lastTime = ts;
+    let dt = (ts - lastTime) / 1000;
+    lastTime = ts;
+    if (dt > 0.1) dt = 0.016;
+
+    if (S.playing) {
+        const phy = computePhysics();
+        S.angle += phy.rotSign * phy.omega * dt * TIME_SCALE;
+        // Keep angle in a reasonable range
+        if (Math.abs(S.angle) > 1e4) S.angle = S.angle % (2 * Math.PI);
+    }
+
+    draw();
+  // aria状态同步
+  (function syncAria(){
+    const ranges=document.querySelectorAll('input[type=range]');
+    ranges.forEach(r=>{
+      const v=r.value,min=r.min,max=r.max;
+      const unit=r.id.includes('freq')?'赫兹':r.id.includes('vp')?'伏':'匝';
+      r.setAttribute('aria-valuenow',v);
+      r.setAttribute('aria-valuetext',v+unit);
+    });
+    const startBtn=document.getElementById('btn-start');
+    if(startBtn&&startBtn.textContent.includes('暂停')){
+      startBtn.setAttribute('aria-pressed','true');
+      startBtn.setAttribute('aria-label','暂停模拟');
+    }
+  })();
+
+    requestAnimationFrame(loop);
+}
+
+// --- Event handlers ---
+function onSliderChange() {
+    S.q = parseFloat(sQ.value);
+    S.v = parseFloat(sV.value);
+    S.B = parseFloat(sB.value);
+    lastTime = 0;
+    resize();
+    draw();
+}
+
+sQ.addEventListener('input', onSliderChange);
+sV.addEventListener('input', onSliderChange);
+sB.addEventListener('input', onSliderChange);
+
+// Field direction toggle
+btnFieldInto.onclick = () => {
+    S.fieldIntoPage = true;
+    btnFieldInto.classList.add('active');
+    btnFieldOut.classList.remove('active');
+    lastTime = 0;
+    draw();
+};
+btnFieldOut.onclick = () => {
+    S.fieldIntoPage = false;
+    btnFieldOut.classList.add('active');
+    btnFieldInto.classList.remove('active');
+    lastTime = 0;
+    draw();
+};
+
+// Charge sign toggle
+btnChargePos.onclick = () => {
+    S.positiveCharge = true;
+    btnChargePos.classList.add('active');
+    btnChargeNeg.classList.remove('active');
+    lastTime = 0;
+    draw();
+};
+btnChargeNeg.onclick = () => {
+    S.positiveCharge = false;
+    btnChargeNeg.classList.add('active');
+    btnChargePos.classList.remove('active');
+    lastTime = 0;
+    draw();
+};
+
+// Start / Pause
+btnStart.onclick = () => {
+    S.playing = !S.playing;
+    btnStart.textContent = S.playing ? '暂停 Pause' : '开始 Start';
+    btnStart.className = 'ctrl-btn ' + (S.playing ? 'pause' : 'start');
+    lastTime = 0;
+};
+
+// Reset
+btnReset.onclick = () => {
+    S.angle = 0;
+    S.playing = false;
+    btnStart.textContent = '开始 Start';
+    btnStart.className = 'ctrl-btn start';
+    draw();
+};
+
+// --- Initialize ---
+resize();
+draw();
+  // aria状态同步
+  (function syncAria(){
+    const ranges=document.querySelectorAll('input[type=range]');
+    ranges.forEach(r=>{
+      const v=r.value,min=r.min,max=r.max;
+      const unit=r.id.includes('freq')?'赫兹':r.id.includes('vp')?'伏':'匝';
+      r.setAttribute('aria-valuenow',v);
+      r.setAttribute('aria-valuetext',v+unit);
+    });
+    const startBtn=document.getElementById('btn-start');
+    if(startBtn&&startBtn.textContent.includes('暂停')){
+      startBtn.setAttribute('aria-pressed','true');
+      startBtn.setAttribute('aria-label','暂停模拟');
+    }
+  })();
+
+requestAnimationFrame(loop);
+
+document.addEventListener('keydown',(e)=>{
+  const tag=e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  const startBtn=document.getElementById('btn-start');
+  const resetBtn=document.getElementById('btn-reset');
+  if(e.code==='Space'){e.preventDefault();startBtn&&startBtn.click();}
+  else if(e.code==='KeyR'){e.preventDefault();resetBtn&&resetBtn.click();}
+});
+</script>
+
+<div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
+</body>
+</html>

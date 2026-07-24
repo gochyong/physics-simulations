@@ -14,27 +14,12 @@
     <meta name="author" content="Wuli布雷克">
     <meta name="copyright" content="Copyright 2025 Wuli布雷克">
     <title>Wuli布雷克 - 物理模拟实验室</title>
-    <style>
-        :root {
-            --bg-color: #fffaf5;
-            --primary-warm: #ff9800;
-            --accent-warm: #f57c00;
-            --text-main: #3e2723;
-            --card-bg: #ffffff;
+    <style>        :root {
+    --primary-warm: #ff9800;
+    --accent-warm: #f57c00;
+    --text-main: #3e2723;
         }
-
-        body {
-            font-family: 'Segoe UI', 'PingFang SC', system-ui, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        /* Header */
+/* Header */
         header {
             width: 100%;
             padding: 40px 0 20px;
@@ -42,15 +27,13 @@
             flex-direction: column;
             align-items: center;
         }
-
-        .brand-logo {
+.brand-logo {
             display: flex;
             flex-direction: column;
             align-items: center;
             margin-bottom: 20px;
         }
-
-        .logo-main {
+.logo-main {
             font-size: 2.2rem;
             font-weight: 900;
             color: #fff;
@@ -59,8 +42,7 @@
             border-radius: 15px 15px 15px 0;
             box-shadow: 5px 5px 20px rgba(245, 124, 0, 0.2);
         }
-
-        .logo-sub {
+.logo-sub {
             font-size: 0.9rem;
             letter-spacing: 4px;
             color: var(--accent-warm);
@@ -68,16 +50,14 @@
             font-weight: bold;
             text-transform: uppercase;
         }
-
-        .intro {
+.intro {
             text-align: center;
             max-width: 600px;
             padding: 0 20px;
             color: #795548;
             line-height: 1.6;
         }
-
-        /* Category Grid */
+/* Category Grid */
         .category-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -86,8 +66,7 @@
             max-width: 1100px;
             padding: 20px 0 50px;
         }
-
-        .cat-card {
+.cat-card {
             text-decoration: none;
             color: #3e2723;
             border-radius: 24px;
@@ -101,61 +80,54 @@
             position: relative;
             overflow: hidden;
         }
-
-        .cat-card:hover {
+.cat-card:hover {
             transform: translateY(-8px);
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
         }
-
-        .cat-icon {
+.cat-icon {
             font-size: 3.5rem;
             margin-bottom: 16px;
             filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
         }
-
-        .cat-title {
+.cat-title {
             font-size: 1.8rem;
             font-weight: 800;
             margin-bottom: 4px;
             letter-spacing: 2px;
         }
-
-        .cat-subtitle {
+.cat-subtitle {
             font-size: 0.95rem;
             opacity: 0.85;
             margin-bottom: 12px;
             font-weight: 500;
         }
-
-        .cat-count {
+.cat-count {
             background: rgba(0, 0, 0, 0.08);
             padding: 4px 16px;
             border-radius: 20px;
             font-size: 0.85rem;
             font-weight: 600;
         }
-
-        /* Category backgrounds — RGB top (lighter) / RGB bottom (deeper) */
+/* Category backgrounds — RGB top (lighter) / RGB bottom (deeper) */
         .cat-mechanics {
             background: #f0b8b0;  /* R light — warm coral */
         }
-        .cat-thermal {
+.cat-thermal {
             background: #b0d0b8;  /* G light — warm sage */
         }
-        .cat-electricity {
+.cat-electricity {
             background: #b0b8e0;  /* B light — warm cornflower */
         }
-        .cat-waves {
+.cat-waves {
             background: #e89088;  /* R deep — warm red */
         }
-        .cat-modern {
+.cat-modern {
             background: #88b898;  /* G deep — warm green */
         }
-        .cat-astronomy {
+.cat-astronomy {
             background: #7888b8;  /* B deep — warm blue */
         }
-
-        .visitor-counter {
+.visitor-counter {
             position: fixed;
             bottom: 20px;
             left: 24px;
@@ -167,19 +139,17 @@
             color: #a1887f;
             box-shadow: 0 2px 12px rgba(0,0,0,0.06);
         }
-        .visitor-counter span {
+.visitor-counter span {
             color: var(--accent-warm);
             font-weight: 700;
         }
-
-        footer {
+footer {
             margin-top: auto;
             padding: 40px;
             font-size: 0.85rem;
             color: #a1887f;
         }
-
-        @media (max-width: 800px) {
+@media (max-width: 800px) {
             .category-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 16px;
@@ -194,13 +164,17 @@
                 font-size: 2.5rem;
             }
         }
-
-        @media (max-width: 480px) {
+@media (max-width: 480px) {
             .category-grid {
                 grid-template-columns: 1fr;
             }
         }
-    </style>
+/* === 无障碍 Accessibility (批量注入) === */
+.skip-link { position: absolute; top: -40px; left: 8px; z-index: 2000; background: #185FA5; color: #fff; padding: 8px 16px; border-radius: 10px; font-size: 0.9rem; font-weight: 600; text-decoration: none; transition: top 0.2s; }
+.skip-link:focus { top: 8px; }
+:focus-visible { outline: 3px solid #185FA5; outline-offset: 2px; border-radius: 6px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+</style>
 </head>
 
 <body>
@@ -226,32 +200,32 @@
     <main class="category-grid">
 
         <!-- 力学 -->
-        <a href="mechanics.html" class="cat-card cat-mechanics">
-            <div class="cat-icon">⚙️</div>
+        <a href="mechanics.html" class="cat-card cat-mechanics" aria-label="查看力学分类（mechanics）">
+            <div class="cat-icon" aria-hidden="true">⚙️</div>
             <div class="cat-title">力学</div>
             <div class="cat-subtitle">Mechanics</div>
             <div class="cat-count">23 个模拟</div>
         </a>
 
         <!-- 热学 -->
-        <a href="thermal.html" class="cat-card cat-thermal">
-            <div class="cat-icon">🔥</div>
+        <a href="thermal.html" class="cat-card cat-thermal" aria-label="查看热学分类（thermal）">
+            <div class="cat-icon" aria-hidden="true">🔥</div>
             <div class="cat-title">热学</div>
             <div class="cat-subtitle">Thermal Physics</div>
             <div class="cat-count">5 个模拟</div>
         </a>
 
         <!-- 电磁学 -->
-        <a href="electricity.html" class="cat-card cat-electricity">
-            <div class="cat-icon">⚡</div>
+        <a href="electricity.html" class="cat-card cat-electricity" aria-label="查看电磁学分类（electricity）">
+            <div class="cat-icon" aria-hidden="true">⚡</div>
             <div class="cat-title">电磁学</div>
             <div class="cat-subtitle">Electromagnetism</div>
             <div class="cat-count">11 个模拟</div>
         </a>
 
         <!-- 波 -->
-        <a href="waves.html" class="cat-card cat-waves">
-            <div class="cat-icon">🌊</div>
+        <a href="waves.html" class="cat-card cat-waves" aria-label="查看波分类（waves）">
+            <div class="cat-icon" aria-hidden="true">🌊</div>
             <div class="cat-title">波</div>
             <div class="cat-subtitle">Waves</div>
             <div class="cat-count">11 个模拟</div>
@@ -266,8 +240,8 @@
         </a>
 
         <!-- 天文 -->
-        <a href="astronomy.html" class="cat-card cat-astronomy">
-            <div class="cat-icon">🌌</div>
+        <a href="astronomy.html" class="cat-card cat-astronomy" aria-label="查看天文分类（astronomy）">
+            <div class="cat-icon" aria-hidden="true">🌌</div>
             <div class="cat-title">天文</div>
             <div class="cat-subtitle">Astronomy</div>
             <div class="cat-count">5 个模拟</div>

@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wuli布雷克物理模拟实验室 - 胡克定律 / Hooke's Law。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:title" content="胡克定律 / Hooke's Law - Wuli布雷克">
+    <meta property="og:description" content="Wuli布雷克物理模拟实验室 - 胡克定律 / Hooke's Law。50个免费交互式物理模拟，覆盖力学、热学、电磁学、波、近代物理、天文六大板块。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://wuliblake.com/HookesLaw.html">
+    <meta property="og:site_name" content="Wuli布雷克物理模拟实验室">
+    <link rel="stylesheet" href="common.css">
+    <meta name="author" content="Wuli布雷克">
+    <meta name="copyright" content="Copyright 2025 Wuli布雷克">
+    <title>胡克定律 / Hooke's Law - Wuli布雷克</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #FFF9F0; --primary: #FF8c42; --secondary: #FFC75F;
+            --accent: #FF5E5B; --text-dark: #4A403A; --card-bg: #FFFFFF;
+            --shadow: 0 6px 30px rgba(255,140,66,0.18);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Fredoka','Noto Sans SC',sans-serif; background: var(--bg-color); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 5px 40px 10px; }
+        .branding { position: fixed; top: 10px; left: 20px; z-index: 1000; }
+        .logo { font-weight: 700; font-size: 1.3rem; color: #fff; background: var(--primary); padding: 6px 18px; border-radius: 16px; box-shadow: 4px 4px 15px rgba(255,140,66,0.3); }
+        .container { width: 100%; max-width: 1400px; margin-top: 8px; display: grid; grid-template-areas:"header header" "formula formula" "diagram controls" "graph graph"; grid-template-columns: 1fr 400px; gap: 12px; }
+        header { grid-area: header; text-align: center; }
+        h1 { font-size: 2rem; color: var(--text-dark); margin-bottom: 2px; }
+        .formula-display { grid-area: formula; background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 10px 20px; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb; }
+        .formula-container { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; min-height: 50px; }
+        .result-row { font-size: 1rem; font-weight: 600; margin-top: 6px; display: flex; gap: 20px; justify-content: center; }
+        .legend { display: flex; gap: 16px; justify-content: center; border-top: 1px solid #eee; padding-top: 6px; width: 100%; flex-wrap: wrap; }
+        .legend-item { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .legend-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+        .diagram-section { grid-area: diagram; background: #fff; border-radius: 20px; box-shadow: var(--shadow); overflow: hidden; min-height: 400px; display: flex; align-items: center; justify-content: center; border: 2px solid #fff5eb; }
+        .graph-section { grid-area: graph; background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 20px; display: flex; flex-direction: column; align-items: center; border: 2px solid #fff5eb; }
+        .graph-title { font-weight: 700; margin-bottom: 10px; color: var(--text-dark); font-size: 1rem; }
+        .controls-section { grid-area: controls; display: flex; flex-direction: column; gap: 10px; }
+        .control-panel { background: #fff; border-radius: 20px; box-shadow: var(--shadow); padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+        .control-group { display: flex; flex-direction: column; gap: 3px; }
+        .label-row { display: flex; justify-content: space-between; font-weight: 600; font-size: 0.9rem; }
+        .val-badge { background: #fff; padding: 1px 7px; border-radius: 7px; font-size: 0.85rem; border: 2px solid #f0f0f0; }
+        input[type=range] { width: 100%; appearance: none; height: 6px; background: #eee; border-radius: 3px; }
+        input[type=range]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; border-radius: 50%; cursor: pointer; background: var(--primary); }
+        #slider-F::-webkit-slider-thumb { background: var(--accent); }
+        #slider-k::-webkit-slider-thumb { background: var(--primary); }
+        .symbol { transition: transform 0.3s ease, color 0.3s ease; font-weight: 700; display: inline-block; }
+        #sym-F { color: var(--accent); }
+        #sym-k { color: var(--primary); }
+        #sym-x { color: #0081a7; }
+        .button-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; }
+        .btn { padding: 12px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 1rem; color: white; font-family: inherit; transition: all 0.2s; }
+        .btn-start { background-color: var(--primary); box-shadow: 0 4px #d47430; }
+        .btn-start:hover { background-color: #e67e3a; }
+        .btn-start:active { transform: translateY(3px); box-shadow: 0 1px #d47430; }
+        .btn-reset { background-color: #eee; color: var(--text-dark); box-shadow: 0 4px #ccc; }
+        .btn-reset:hover { background-color: #ddd; }
+        .btn-reset:active { transform: translateY(3px); box-shadow: 0 1px #ccc; }
+        .info-card { background: #fff; border-radius: 20px; padding: 12px 16px; box-shadow: var(--shadow); font-size: 0.9rem; line-height: 1.4; color: #5D6D7E; }
+        .result-box { text-align: center; font-size: 1.1rem; font-weight: bold; color: #0081a7; padding: 8px 0; }
+        canvas { display: block; }
+        @media(max-width:1100px){.container{grid-template-areas:"header" "formula" "diagram" "controls" "graph";grid-template-columns:1fr}}
+    </style>
+</head>
+
+<body>
+    <div class="branding"><a href="index.html" class="logo">Wuli布雷克</a><div class="brand-nav"><a href="mechanics.html">力学</a><a href="thermal.html">热学</a><a href="electricity.html">电磁学</a><a href="waves.html">波</a><a href="modern-physics.html">近代物理</a><a href="astronomy.html">天文</a></div></div>
+<a href="mechanics.html" class="back-link">← 返回力学</a>
+    <div class="container">
+        <header><h1>胡克定律 / Hooke's Law</h1></header>
+
+        <section class="formula-display">
+            <div class="formula-container">
+                <span id="sym-F" class="symbol" style="font-size:3rem;">F</span>
+                <span style="font-size:26px;color:#ccc;">=</span>
+                <span id="sym-k" class="symbol" style="font-size:3rem;">k</span>
+                <span style="font-size:20px;color:#ccc;">·</span>
+                <span id="sym-x" class="symbol" style="font-size:3rem;">x</span>
+            </div>
+            <div class="result-row">
+                <span>形变量 x = F/k = <strong id="disp-x-res" style="color:#0081a7">2.50</strong> m</span>
+            </div>
+            <div class="legend">
+                <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span> F: 力 / Force (N)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:var(--primary)"></span> k: 劲度系数 / Spring Constant (N/m)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#0081a7"></span> x: 形变量 / Extension (m)</div>
+            </div>
+        </section>
+
+        <section class="diagram-section">
+            <canvas id="springCanvas" width="450" height="400"></canvas>
+        </section>
+
+        <section class="controls-section">
+            <div class="control-panel">
+                <div class="control-group">
+                    <div class="label-row"><span style="color:var(--accent)">拉力 / Force F</span><span id="disp-F" class="val-badge">50 N</span></div>
+                    <input type="range" id="slider-F" min="0" max="100" step="1" value="50">
+                </div>
+
+                <div class="control-group">
+                    <div class="label-row"><span style="color:var(--primary)">劲度系数 / Constant k</span><span id="disp-k" class="val-badge">20 N/m</span></div>
+                    <input type="range" id="slider-k" min="10" max="50" step="1" value="20">
+                </div>
+
+                <div class="result-box">
+                    形变量 Extension (x = F/k) = <span id="disp-x">2.50</span> m
+                </div>
+
+                <div class="button-row">
+                    <button id="btn-start" class="btn btn-start">开始 Start</button>
+                    <button id="btn-reset" class="btn btn-reset">重置 Reset</button>
+                </div>
+            </div>
+            <div class="info-card">
+                <div style="font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.1rem">演示要点 / Key Points</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,66,0.1);color:var(--primary);font-weight:700">F</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">F = k · x</div><div style="font-size:0.78rem;color:#888">弹簧的伸长量（或压缩量）与施加的力成正比，比例系数为劲度系数k。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,94,91,0.1);color:var(--accent);font-weight:700">k</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">劲度系数 k</div><div style="font-size:0.78rem;color:#888">k 越大，弹簧越"硬"，同样的力产生的形变越小。k 越小，弹簧越"软"。</div></div>
+                    </div>
+                    <div style="background:#fff;padding:8px 10px;border:1px solid #eee;border-radius:12px;display:grid;grid-template-columns:36px 1fr;gap:8px">
+                        <div style="width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(0,129,167,0.1);color:#0081a7;font-weight:700">x</div>
+                        <div><div style="font-weight:700;font-size:0.9rem">弹性限度</div><div style="font-size:0.78rem;color:#888">胡克定律仅在弹性限度内成立，超过限度弹簧发生永久形变。</div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="graph-section">
+            <div class="graph-title">x - F 图像 / Extension-Force Graph</div>
+            <canvas id="graphCanvas" width="800" height="300"></canvas>
+        </section>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('springCanvas');
+        const ctx = canvas.getContext('2d');
+        const graphCanvas = document.getElementById('graphCanvas');
+        const graphCtx = graphCanvas.getContext('2d');
+
+        const btnStart = document.getElementById('btn-start');
+        const btnReset = document.getElementById('btn-reset');
+
+        const sliderF = document.getElementById('slider-F');
+        const sliderK = document.getElementById('slider-k');
+        const dispF = document.getElementById('disp-F');
+        const dispK = document.getElementById('disp-k');
+        const dispX = document.getElementById('disp-x');
+
+        const symF = document.getElementById('sym-F');
+        const symK = document.getElementById('sym-k');
+        const symX = document.getElementById('sym-x');
+
+        let state = {
+            F: 50,
+            k: 20,
+            x: 2.5
+        };
+
+        let animationId = null;
+
+        function update() {
+            state.F = parseFloat(sliderF.value);
+            state.k = parseFloat(sliderK.value);
+            state.x = state.F / state.k;
+
+            // Update text displays
+            dispF.textContent = state.F;
+            dispK.textContent = state.k;
+            dispX.textContent = state.x.toFixed(2);
+
+            // Update formula scaling
+            // F: 0-100 -> scale 0.8 to 2.2
+            const scaleF = 0.8 + (state.F / 100) * 1.4;
+            // k: 10-50 -> scale 0.8 to 1.8
+            const scaleK = 0.8 + ((state.k - 10) / 40) * 1.0;
+            // x: depends on F/k. Max x = 100/10 = 10, Min x = 0.
+            // x scale: 0.8 to 2.5
+            const scaleX = 0.8 + (state.x / 10) * 1.7;
+
+            symF.style.transform = `scale(${scaleF})`;
+            symK.style.transform = `scale(${scaleK})`;
+            symX.style.transform = `scale(${Math.min(scaleX, 2.5)})`;
+
+            draw();
+            drawGraph();
+        }
+
+        function drawSpring(x, y, width, height, coils) {
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+
+            const coilHeight = height / coils;
+            for (let i = 0; i < coils; i++) {
+                const startY = y + i * coilHeight;
+                // Draw a zig-zag coil
+                ctx.lineTo(x + width / 2, startY + coilHeight * 0.25);
+                ctx.lineTo(x - width / 2, startY + coilHeight * 0.75);
+                ctx.lineTo(x, startY + coilHeight);
+            }
+            ctx.stroke();
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const cx = canvas.width / 2 + 30; // Shifted right for left labels
+            const topY = 60;
+            const springWidth = 40;
+            const naturalLength = 100;
+
+            // Draw Ceiling/Support
+            ctx.strokeStyle = '#4A403A';
+            ctx.lineWidth = 6;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(cx - 60, topY);
+            ctx.lineTo(cx + 60, topY);
+            ctx.stroke();
+
+            // Draw shadow/texture on ceiling
+            ctx.lineWidth = 2;
+            for (let i = -50; i <= 50; i += 10) {
+                ctx.beginPath();
+                ctx.moveTo(cx + i, topY);
+                ctx.lineTo(cx + i + 5, topY - 10);
+                ctx.stroke();
+            }
+
+            // Calculate visual extension
+            // Map x (0-10m) to pixels (0-250px)
+            const visualExtension = state.x * 20; // Adjusted for smaller scale if needed
+            const currentSpringHeight = naturalLength + visualExtension;
+
+            // Draw Spring
+            ctx.strokeStyle = '#777';
+            ctx.lineWidth = 3;
+            // The spring stiffness k affects thickness visually?
+            // Let's make it thicker if k is higher
+            ctx.lineWidth = 2 + (state.k / 50) * 4;
+            drawSpring(cx, topY, springWidth, currentSpringHeight, 15);
+
+            const bottomY = topY + currentSpringHeight;
+
+            // Draw Hook at the bottom
+            ctx.strokeStyle = '#777';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(cx, bottomY + 10, 10, -Math.PI / 2, Math.PI / 2, false);
+            ctx.stroke();
+
+            // Draw Weight / Force Arrow
+            if (state.F > 0) {
+                // Draw Weight
+                ctx.fillStyle = '#FF5E5B';
+                const weightSize = 30 + (state.F / 100) * 30;
+                ctx.fillRect(cx - weightSize / 2, bottomY + 20, weightSize, weightSize * 0.7);
+
+                // Label on weight
+                ctx.fillStyle = '#FFF';
+                ctx.font = 'bold 14px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(state.F.toFixed(0) + "N", cx, bottomY + 20 + weightSize * 0.45);
+
+                // Force Arrow
+                const arrowLength = 20 + (state.F / 100) * 60;
+                const arrowY = bottomY + 20 + weightSize * 0.7 + 5;
+                drawArrow(cx, arrowY, cx, arrowY + arrowLength);
+            }
+
+            // --- LEFT LABELS (Natural + Total) ---
+            const leftX = cx - 100;
+            ctx.strokeStyle = '#4A403A';
+            ctx.fillStyle = '#4A403A';
+            ctx.lineWidth = 1;
+            ctx.font = '14px sans-serif';
+
+            // Natural Length L0
+            drawDimensionLineSimple(leftX, topY, topY + naturalLength, "L₀ = 4.0m", "left");
+
+            // Total Length L
+            if (state.x > 0) {
+                drawDimensionLineSimple(leftX - 40, topY, bottomY, "L = " + (4.0 + state.x).toFixed(2) + "m", "left");
+            }
+
+            // --- RIGHT LABEL (Extension x) ---
+            if (state.x > 0) {
+                ctx.setLineDash([5, 5]);
+                ctx.strokeStyle = '#0081a7';
+                ctx.lineWidth = 1;
+
+                // Natural length horizontal line
+                ctx.beginPath();
+                ctx.moveTo(cx + 60, topY + naturalLength);
+                ctx.lineTo(cx + 100, topY + naturalLength);
+                ctx.stroke();
+
+                // Current length horizontal line
+                ctx.beginPath();
+                ctx.moveTo(cx + 60, bottomY);
+                ctx.lineTo(cx + 100, bottomY);
+                ctx.stroke();
+
+                ctx.setLineDash([]);
+                // Dimension line for x
+                drawDimensionLine(cx + 90, topY + naturalLength, bottomY, "x=" + state.x.toFixed(2) + "m");
+            }
+        }
+
+        function drawDimensionLineSimple(x, y1, y2, label, side) {
+            ctx.beginPath();
+            ctx.moveTo(x, y1);
+            ctx.lineTo(x, y2);
+            ctx.stroke();
+
+            // End ticks
+            ctx.beginPath();
+            ctx.moveTo(x - 5, y1); ctx.lineTo(x + 5, y1);
+            ctx.moveTo(x - 5, y2); ctx.lineTo(x + 5, y2);
+            ctx.stroke();
+
+            ctx.save();
+            ctx.translate(side === "left" ? x - 10 : x + 10, (y1 + y2) / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.textAlign = 'center';
+            ctx.font = "bold 13px sans-serif";
+            ctx.fillText(label, 0, 0);
+            ctx.restore();
+        }
+
+        function drawGraph() {
+            const w = graphCanvas.width;
+            const h = graphCanvas.height;
+            graphCtx.clearRect(0, 0, w, h);
+
+            const margin = 50;
+            const chartW = w - margin * 2;
+            const chartH = h - margin * 2;
+
+            // Draw Axes
+            graphCtx.strokeStyle = '#4A403A';
+            graphCtx.lineWidth = 2;
+            graphCtx.beginPath();
+            graphCtx.moveTo(margin, margin);
+            graphCtx.lineTo(margin, h - margin); // Y axis (Extension x)
+            graphCtx.lineTo(w - margin, h - margin); // X axis (Force F)
+            graphCtx.stroke();
+
+            // Labels
+            graphCtx.fillStyle = '#4A403A';
+            graphCtx.font = 'bold 14px sans-serif';
+            graphCtx.textAlign = 'center';
+            graphCtx.fillText("拉力 Force F (N)", w / 2, h - 10);
+
+            graphCtx.save();
+            graphCtx.translate(15, h / 2);
+            graphCtx.rotate(-Math.PI / 2);
+            graphCtx.fillText("形变量 Extension x (m)", 0, 0);
+            graphCtx.restore();
+
+            // Max Ranges
+            const maxF = 100;
+            const maxX = 10;
+
+            // Draw Line x = (1/k) * F
+            graphCtx.strokeStyle = '#0081a7';
+            graphCtx.lineWidth = 3;
+            graphCtx.beginPath();
+            graphCtx.moveTo(margin, h - margin);
+
+            // Equation x = F/k. If F = 100, x = 100/k.
+            const forceAtEdge = 100;
+            const extAtEdgeF = forceAtEdge / state.k; // max 10m
+
+            const edgeVisualX = margin + (forceAtEdge / maxF) * chartW;
+            const edgeVisualY = (h - margin) - (extAtEdgeF / maxX) * chartH;
+
+            graphCtx.lineTo(edgeVisualX, edgeVisualY);
+            graphCtx.stroke();
+
+            // Trace Dot for current state
+            const currentVisualX = margin + (state.F / maxF) * chartW;
+            const currentVisualY = (h - margin) - (state.x / maxX) * chartH;
+
+            // Dotted lines to axes
+            graphCtx.setLineDash([3, 3]);
+            graphCtx.strokeStyle = '#aaa';
+            graphCtx.beginPath();
+            graphCtx.moveTo(currentVisualX, currentVisualY);
+            graphCtx.lineTo(margin, currentVisualY);
+            graphCtx.moveTo(currentVisualX, currentVisualY);
+            graphCtx.lineTo(currentVisualX, h - margin);
+            graphCtx.stroke();
+            graphCtx.setLineDash([]);
+
+            // Dot
+            graphCtx.fillStyle = '#FF5E5B';
+            graphCtx.beginPath();
+            graphCtx.arc(currentVisualX, currentVisualY, 6, 0, Math.PI * 2);
+            graphCtx.fill();
+        }
+
+        function drawArrow(x1, y1, x2, y2) {
+            const headlen = 10;
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            ctx.strokeStyle = '#FF8c42';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(x2, y2);
+            ctx.lineTo(x2 - headlen * Math.cos(angle - Math.PI / 6), y2 - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(x2 - headlen * Math.cos(angle + Math.PI / 6), y2 - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.fillStyle = '#FF8c42';
+            ctx.fill();
+        }
+
+        function drawDimensionLine(x, y1, y2, label) {
+            ctx.strokeStyle = '#0081a7';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(x, y1);
+            ctx.lineTo(x, y2);
+            ctx.stroke();
+
+            // Arrows
+            ctx.beginPath();
+            ctx.moveTo(x - 5, y1 + 10);
+            ctx.lineTo(x, y1);
+            ctx.lineTo(x + 5, y1 + 10);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(x - 5, y2 - 10);
+            ctx.lineTo(x, y2);
+            ctx.lineTo(x + 5, y2 - 10);
+            ctx.stroke();
+
+            // Label
+            ctx.save();
+            ctx.translate(x + 5, (y1 + y2) / 2);
+            ctx.rotate(Math.PI / 2);
+            ctx.fillStyle = '#0081a7';
+            ctx.font = 'bold 14px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, 0, 0);
+            ctx.restore();
+        }
+
+        // --- Interaction Logic ---
+
+        btnReset.addEventListener('click', () => {
+            if (animationId) cancelAnimationFrame(animationId);
+            sliderF.value = 50;
+            sliderK.value = 20;
+            update();
+        });
+
+        btnStart.addEventListener('click', () => {
+            if (animationId) cancelAnimationFrame(animationId);
+            const targetF = parseFloat(sliderF.value);
+            let currentF = 0;
+
+            function animate() {
+                currentF += 2; // Animation speed
+                if (currentF >= targetF) {
+                    currentF = targetF;
+                    sliderF.value = currentF;
+                    update();
+                    return;
+                }
+
+                sliderF.value = currentF;
+                update();
+                animationId = requestAnimationFrame(animate);
+            }
+            animate();
+        });
+
+        sliderF.addEventListener('input', update);
+        sliderK.addEventListener('input', update);
+
+        // Initial draw
+        update();
+    </script>
+<div style="text-align:center;padding:20px;font-size:0.8rem;color:#a1887f;margin-top:auto;">© 2025 Wuli布雷克 | MIT License </div>
+</body>
+
+</html>
