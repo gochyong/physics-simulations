@@ -67,24 +67,23 @@
                     <input type="range" id="sld-r" min="1" max="50" step="1" value="10" aria-valuemin="1" aria-valuemax="50" aria-valuenow="10" aria-valuetext="10匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">
                 </div>
                 <svg width="100%" height="160" viewBox="0 0 400 180" preserveAspectRatio="xMidYMid meet">
-                    <!-- 完整矩形回路（闭合） -->
-                    <path d="M 50 150 L 50 40 L 350 40 L 350 150 L 50 150" fill="none" stroke="#444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                    <!-- 电源（电池）：底部导线上，长线=正极(+)、短线=负极(-)，与导线垂直相交 -->
+                    <!-- 矩形回路：左下→左上→右上→右下→电池右端（电池处断开） -->
+                    <path d="M 50 150 L 50 40 L 350 40 L 350 150 L 215 150" fill="none" stroke="#444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    <!-- 电池左端→左下闭合 -->
+                    <path d="M 185 150 L 50 150" fill="none" stroke="#444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    <!-- 电源（电池）：底部断开处，长线=正极、短线=负极 -->
                     <line x1="195" y1="138" x2="195" y2="162" stroke="#444" stroke-width="3" stroke-linecap="round"/>
-                    <line x1="207" y1="143" x2="207" y2="157" stroke="#444" stroke-width="3" stroke-linecap="round"/>
-                    <!-- 电池 + - 标记 -->
-                    <text x="195" y="135" font-size="11" fill="#444" font-weight="bold" text-anchor="middle">+</text>
-                    <text x="207" y="173" font-size="11" fill="#444" font-weight="bold" text-anchor="middle">−</text>
+                    <line x1="205" y1="143" x2="205" y2="157" stroke="#444" stroke-width="3" stroke-linecap="round"/>
                     <!-- 电阻 R：顶部中间 -->
                     <rect x="140" y="23" width="70" height="30" fill="white" stroke="var(--col-r)" stroke-width="3" rx="4"/>
                     <text x="175" y="43" font-size="14" fill="var(--col-r)" font-weight="bold" text-anchor="middle">R</text>
-                    <!-- 电流表 A：右侧导线上 -->
-                    <circle cx="250" cy="95" r="16" fill="white" stroke="var(--col-i)" stroke-width="3"/>
-                    <text x="250" y="101" font-size="14" fill="var(--col-i)" font-weight="bold" text-anchor="middle">A</text>
+                    <!-- 电流表 A：右侧垂直导线上 -->
+                    <circle cx="350" cy="95" r="18" fill="white" stroke="var(--col-i)" stroke-width="3"/>
+                    <text x="350" y="101" font-size="15" fill="var(--col-i)" font-weight="bold" text-anchor="middle">A</text>
                     <!-- 电压表 V：并联在电阻两端 -->
-                    <path d="M 140 38 L 110 38 L 110 120 L 290 120 L 290 38 L 210 38" fill="none" stroke="var(--col-v)" stroke-width="2" stroke-dasharray="4,3"/>
-                    <circle cx="200" cy="120" r="16" fill="white" stroke="var(--col-v)" stroke-width="3"/>
-                    <text x="200" y="126" font-size="14" fill="var(--col-v)" font-weight="bold" text-anchor="middle">V</text>
+                    <path d="M 140 38 L 105 38 L 105 120 L 290 120 L 290 38 L 210 38" fill="none" stroke="var(--col-v)" stroke-width="2" stroke-dasharray="4,3"/>
+                    <circle cx="198" cy="120" r="18" fill="white" stroke="var(--col-v)" stroke-width="3"/>
+                    <text x="198" y="126" font-size="15" fill="var(--col-v)" font-weight="bold" text-anchor="middle">V</text>
                 </svg>
             </div>
             <div class="info-card">
