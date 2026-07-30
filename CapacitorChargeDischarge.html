@@ -51,7 +51,7 @@
                 <input type="range" id="slider-c" min="10" max="500" step="10" value="100" aria-valuemin="10" aria-valuemax="500" aria-valuenow="100" aria-valuetext="100匝">
             </div>
             <div class="control-group">
-                <div class="label-row"><span>放电电阻 Rd</span><span id="badge-rd" class="val-badge" aria-live="polite">20 kΩ</span></div>
+                <div class="label-row"><span>放电电阻 R<sub>d</sub></span><span id="badge-rd" class="val-badge" aria-live="polite">20 kΩ</span></div>
                 <input type="range" id="slider-rd" min="1" max="50" value="20" aria-valuemin="1" aria-valuemax="50" aria-valuenow="20" aria-valuetext="20匝" oninput="this.setAttribute('aria-valuenow',this.value);this.setAttribute('aria-valuetext',this.value+'匝')">
             </div>
             <div class="control-group">
@@ -60,7 +60,7 @@
             </div>
             <div class="btn-row">
                 <button id="btn-charge" class="ctrl-btn start">充电 Charge</button>
-                <button id="btn-discharge" class="ctrl-btn pause">放电 Discharge</button>
+                <button id="btn-discharge" class="ctrl-btn start">放电 Discharge</button>
                 <button id="btn-reset" class="ctrl-btn reset" aria-label="重置参数" aria-label="重置参数" aria-label="重置参数" aria-label="重置参数" aria-label="重置参数">重置</button>
             </div>
         </div>
@@ -111,10 +111,10 @@ function update(){
     }
     resVc.textContent=S.vc.toFixed(2);
     resTime.textContent=S.time.toFixed(2);
-    const tauLabel=S.charging?('τ_充=RC='+(tauCharge*1000).toFixed(1)+'ms'):('τ_放=RdC='+(tauDischarge*1000).toFixed(1)+'ms');
+    const tauLabel=S.charging?('τ_充=RC='+(tauCharge*1000).toFixed(1)+'ms'):('τ_放=R<sub>d</sub>C='+(tauDischarge*1000).toFixed(1)+'ms');
     fRoot.innerHTML=S.charging?
         `<span style="font-size:22px;font-weight:700;color:#2ecc71;">V<sub>c</sub>=V₀(1−e<sup>−t/RC</sup>)</span><span style="font-size:18px;">${tauLabel}</span>`:
-        `<span style="font-size:22px;font-weight:700;color:#e74c3c;">V<sub>c</sub>=V₀e<sup>−t/RdC</sup></span><span style="font-size:18px;">${tauLabel}</span>`;
+        `<span style="font-size:22px;font-weight:700;color:#e74c3c;">V<sub>c</sub>=V₀e<sup>−t/R<sub>d</sub>C</sup></span><span style="font-size:18px;">${tauLabel}</span>`;
     draw();requestAnimationFrame(update);
 }
 function draw(){
@@ -184,15 +184,38 @@ function draw(){
     // === Lower row: discharge resistor Rd ===
     ctx.beginPath();ctx.moveTo(LX,row2Y);ctx.lineTo((LX+RX)/2-19,row2Y);ctx.stroke();
     ctx.strokeRect((LX+RX)/2-19,row2Y-14,38,28);
-    ctx.fillText('Rd',(LX+RX)/2,row2Y+30);
-    ctx.fillText(S.rd+'kΩ',(LX+RX)/2,row2Y+44);
+    // Draw R with subscript d
+    const rdCx=(LX+RX)/2;
+    ctx.font='bold 12px ';ctx.textAlign='center';
+    const rWidth=ctx.measureText('R').width;
+    ctx.fillText('R',rdCx-rWidth*0.25,row2Y+30);
+    ctx.font='bold 9px ';ctx.fillText('d',rdCx+rWidth*0.30,row2Y+33);
+    ctx.font='bold 12px ';ctx.textAlign='center';
+    ctx.fillText(S.rd+'kΩ',rdCx,row2Y+44);
     ctx.beginPath();ctx.moveTo((LX+RX)/2+19,row2Y);ctx.lineTo(RX,row2Y);ctx.stroke();
 
     // Title
     ctx.fillStyle='#333';ctx.font='bold 16px ';ctx.textAlign='center';
     const R=S.r*1000,Rd=S.rd*1000,C=S.c*1e-6;
     const tauVc=S.charging?(R*C):(Rd*C);
-    ctx.fillText((S.charging?'充电 Charging':'放电 Discharging')+'    τ = '+(S.charging?'RC':'RdC')+' = '+(tauVc*1000).toFixed(1)+' ms',(LX+RX)/2,h*0.06);
+    // Draw title with subscript for Rd
+    ctx.font='bold 16px ';ctx.textAlign='center';
+    const titleCx=(LX+RX)/2, titleY=h*0.06;
+    if(S.charging){
+        ctx.fillText('充电 Charging    τ = RC = '+(tauVc*1000).toFixed(1)+' ms',titleCx,titleY);
+    }else{
+        const prefix='放电 Discharging    τ = R';
+        const suffix='C = '+(tauVc*1000).toFixed(1)+' ms';
+        const prefixW=ctx.measureText(prefix).width;
+        const fullW=ctx.measureText(prefix+suffix).width;
+        // Draw prefix (includes R), then subscript d, then suffix
+        ctx.textAlign='center';
+        ctx.fillText(prefix,titleCx-fullW*0.5+prefixW*0.5,titleY);
+        ctx.font='bold 11px ';
+        ctx.fillText('d',titleCx-fullW*0.5+prefixW,titleY+5);
+        ctx.font='bold 16px ';
+        ctx.fillText(suffix,titleCx+prefixW*0.5,titleY);
+    }
 
     // V-t graph on right
     const gx=w*0.50,gy=h*0.15,gw=w*0.45,gh=h*0.55;
@@ -229,9 +252,42 @@ function draw(){
     const taux=gx+(tau/maxT)*gw;
     if(taux<gx+gw){ctx.strokeStyle='#3498db';ctx.beginPath();ctx.moveTo(taux,gy);ctx.lineTo(taux,gy+gh);ctx.setLineDash([3,3]);ctx.stroke();ctx.setLineDash([]);ctx.fillText('τ',taux,gy-5);}
 }
-document.getElementById('btn-charge').onclick=()=>{S.charging=true;S.time=0;S.vc=0;S.playing=true;};
-document.getElementById('btn-discharge').onclick=()=>{S.charging=false;S.time=0;S.vc=S.v0;S.playing=true;};
-document.getElementById('btn-reset').onclick=()=>{S.time=0;S.vc=0;S.playing=false;};
+const btnCharge=document.getElementById('btn-charge'),btnDischarge=document.getElementById('btn-discharge'),btnReset=document.getElementById('btn-reset');
+btnCharge.onclick=()=>{
+    if(S.playing&&S.charging){ // Pause
+        S.playing=false;
+        btnCharge.textContent='充电 Charge';btnCharge.className='ctrl-btn start';
+        return;
+    }
+    if(!S.playing&&S.charging&&S.time>0){ // Resume after pause
+        S.playing=true;
+        btnCharge.textContent='暂停 Pause';btnCharge.className='ctrl-btn pause';
+        btnDischarge.textContent='放电 Discharge';btnDischarge.className='ctrl-btn start';
+        return;
+    }
+    // Fresh start
+    S.charging=true;S.time=0;S.vc=0;S.playing=true;
+    btnCharge.textContent='暂停 Pause';btnCharge.className='ctrl-btn pause';
+    btnDischarge.textContent='放电 Discharge';btnDischarge.className='ctrl-btn start';
+};
+btnDischarge.onclick=()=>{
+    if(S.playing&&!S.charging){ // Pause
+        S.playing=false;
+        btnDischarge.textContent='放电 Discharge';btnDischarge.className='ctrl-btn start';
+        return;
+    }
+    if(!S.playing&&!S.charging&&S.time>0){ // Resume after pause
+        S.playing=true;
+        btnDischarge.textContent='暂停 Pause';btnDischarge.className='ctrl-btn pause';
+        btnCharge.textContent='充电 Charge';btnCharge.className='ctrl-btn start';
+        return;
+    }
+    // Fresh start
+    S.charging=false;S.time=0;S.vc=S.v0;S.playing=true;
+    btnDischarge.textContent='暂停 Pause';btnDischarge.className='ctrl-btn pause';
+    btnCharge.textContent='充电 Charge';btnCharge.className='ctrl-btn start';
+};
+btnReset.onclick=()=>{S.time=0;S.vc=0;S.playing=false;btnCharge.textContent='充电 Charge';btnCharge.className='ctrl-btn start';btnDischarge.textContent='放电 Discharge';btnDischarge.className='ctrl-btn start'};
 resize();requestAnimationFrame(update);
 
 document.addEventListener('keydown',(e)=>{
