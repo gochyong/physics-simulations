@@ -1,78 +1,97 @@
-// Build script: reads simulations.json and regenerates all category page cards
+/**
+ * 内容构建脚本：simulations.json 是分类页、首页计数与项目总数的唯一来源。
+ * 运行：node build-category-pages.js
+ */
 const fs = require('fs');
-const data = JSON.parse(fs.readFileSync('simulations.json', 'utf8'));
 
-const catFiles = {
-    mechanics: 'mechanics.html',
-    thermal: 'thermal.html',
-    electricity: 'electricity.html',
-    waves: 'waves.html',
-    modern: 'modern-physics.html',
-    astronomy: 'astronomy.html'
+const ROOT = __dirname;
+const dataPath = `${ROOT}/simulations.json`;
+const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+const categoryFiles = {
+  mechanics: 'mechanics.html',
+  thermal: 'thermal.html',
+  electricity: 'electricity.html',
+  waves: 'waves.html',
+  modern: 'modern-physics.html',
+  astronomy: 'astronomy.html'
 };
 
-function makeCard(sim, idx) {
-    return `        <!-- ${idx}. ${sim.name} / ${sim.nameEn} -->
-        <a href="${sim.file}" class="sim-card">
+const total = data.categories.reduce((sum, category) => sum + category.simulations.length, 0);
+data.totalSimulations = total;
+data.categories.forEach(category => { category.count = category.simulations.length; });
+fs.writeFileSync(dataPath, `${JSON.stringify(data, null, 2)}\n`, 'utf8');
+
+const escapeHtml = value => String(value)
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&#39;');
+
+function makeCard(sim, category, index) {
+  return `        <!-- ${index}. ${sim.name} / ${sim.nameEn} -->
+        <a href="${escapeHtml(sim.file)}" class="sim-card" aria-label="访问${escapeHtml(sim.name)}">
             <div class="sim-card-header">
-                <span class="sim-card-icon">${sim.icon||'📝'}</span>
+                <span class="sim-card-icon" aria-hidden="true">${sim.icon || '🔬'}</span>
                 <div>
-                    <div class="sim-card-title">${sim.name}</div>
-                    <div class="sim-card-subtitle">${sim.nameEn}</div>
+                    <div class="sim-card-title">${escapeHtml(sim.name)}</div>
+                    <div class="sim-card-subtitle">${escapeHtml(sim.nameEn)}</div>
                 </div>
             </div>
-            <div class="sim-card-desc">${sim.desc||sim.formula}</div>
-            <span class="tag">${data.categories.find(c=>c.id===catId(sim.file)).name} / ${data.categories.find(c=>c.id===catId(sim.file)).nameEn}</span>
+            <div class="sim-card-desc">${escapeHtml(sim.desc || sim.formula)}</div>
+            <span class="tag">${escapeHtml(category.name)} / ${escapeHtml(category.nameEn)}</span>
         </a>`;
 }
 
-function catId(filename) {
-    for (const cat of data.categories) {
-        if (cat.simulations.some(s => s.file === filename)) return cat.id;
-    }
-    return '';
+function replaceOnce(html, pattern, replacement, filename) {
+  if (!pattern.test(html)) throw new Error(`无法在 ${filename} 找到需要更新的区域`);
+  return html.replace(pattern, replacement);
 }
 
-// Process each category
-data.categories.forEach(cat => {
-    const file = catFiles[cat.id];
-    if (!file) return;
-    let html = fs.readFileSync(file, 'utf8');
+function upsertMeta(html, attribute, key, content) {
+  const pattern = new RegExp(`<meta\\s+${attribute}="${key}"\\s+content="[^"]*"\\s*\\/>`, 'i');
+  const tag = `<meta ${attribute}="${key}" content="${escapeHtml(content)}">`;
+  if (pattern.test(html)) return html.replace(pattern, tag);
+  return html.replace(/<meta charset="UTF-8">/, `$&\n    ${tag}`);
+}
 
-    // Build all cards
-    const cards = cat.simulations.map((sim, i) => makeCard(sim, i + 1)).join('\n\n');
+for (const category of data.categories) {
+  const filename = categoryFiles[category.id];
+  if (!filename) continue;
+  const path = `${ROOT}/${filename}`;
+  let html = fs.readFileSync(path, 'utf8');
+  const cards = category.simulations.map((sim, index) => makeCard(sim, category, index + 1)).join('\n\n');
 
-    // Replace card section between <main class="grid-container"> and </main>
-    const startMarker = '<main class="grid-container">';
-    const endMarker = '</main>';
-    const startIdx = html.indexOf(startMarker);
-    const endIdx = html.indexOf(endMarker, startIdx);
-    if (startIdx === -1 || endIdx === -1) {
-        console.log('WARNING: Could not find card grid in ' + file);
-        return;
-    }
+  html = replaceOnce(
+    html,
+    /(<main\s+class="grid-container"[^>]*>)[\s\S]*?(<\/main>)/,
+    `$1\n\n${cards}\n\n$2`,
+    filename
+  );
+  html = replaceOnce(html, /<div class="page-subtitle">\s*\d+\s*个模拟\s*<\/div>/, `<div class="page-subtitle">${category.count} 个模拟</div>`, filename);
+  html = html.replace(/(content="[^"]*?)[0-9]+个免费交互式物理模拟/g, `$1${total}个免费交互式物理模拟`);
+  fs.writeFileSync(path, html, 'utf8');
+}
 
-    const before = html.substring(0, startIdx + startMarker.length);
-    const after = html.substring(endIdx);
-    const newHtml = before + '\n\n' + cards + '\n\n' + after;
+const indexPath = `${ROOT}/index.html`;
+let indexHtml = fs.readFileSync(indexPath, 'utf8');
+for (const category of data.categories) {
+  const filename = categoryFiles[category.id];
+  const cardPattern = new RegExp(`(<a href="${filename}"[\\s\\S]*?<div class="cat-count">)\\s*\\d+\\s*个模拟(</div>)`);
+  indexHtml = replaceOnce(indexHtml, cardPattern, `$1${category.count} 个模拟$2`, 'index.html');
+}
+indexHtml = indexHtml.replace(/(content="[^"]*?)[0-9]+个免费交互式物理模拟/g, `$1${total}个免费交互式物理模拟`);
+fs.writeFileSync(indexPath, indexHtml, 'utf8');
 
-    // Update the count
-    const updatedCount = newHtml.replace(/(\d+)\s*个模拟/, `${cat.count} 个模拟`);
+for (const category of data.categories) {
+  for (const sim of category.simulations) {
+    const path = `${ROOT}/${sim.file}`;
+    let html = fs.readFileSync(path, 'utf8');
+    const description = `${data.siteName} - ${sim.name} / ${sim.nameEn}。${sim.desc || sim.formula}`;
+    html = upsertMeta(html, 'name', 'description', description);
+    html = upsertMeta(html, 'property', 'og:description', description);
+    fs.writeFileSync(path, html, 'utf8');
+  }
+}
 
-    fs.writeFileSync(file, updatedCount);
-    console.log(`Generated ${cat.count} cards for ${file} (${cat.name})`);
-});
-
-// Add "更新中" card
-data.categories.forEach(cat => {
-    const file = catFiles[cat.id];
-    let html = fs.readFileSync(file, 'utf8');
-    if (!html.includes('更新中')) {
-        const comingSoon = '\n        <div class="sim-card" style="opacity:0.5;cursor:default;border:2px dashed #e0d0c0;"><div class="sim-card-header" style="justify-content:center;"><span class="sim-card-icon">📝</span><div><div class="sim-card-title">更新中</div><div class="sim-card-subtitle">More Coming Soon</div></div></div><div class="sim-card-desc" style="text-align:center;">新模拟持续添加中，敬请期待。</div></div>\n';
-        html = html.replace('</main>', comingSoon + '</main>');
-        fs.writeFileSync(file, html);
-        console.log('Added coming-soon to: ' + file);
-    }
-});
-
-console.log('\nDone! All category pages regenerated from simulations.json');
+console.log(`已从 simulations.json 更新 ${data.categories.length} 个分类页、首页计数、${total} 个模拟总数及全部模拟页 SEO 描述。`);
